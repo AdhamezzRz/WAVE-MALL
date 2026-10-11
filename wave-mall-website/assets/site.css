@@ -24,3 +24,13 @@ html,body{height:auto;min-height:100%;overflow-x:hidden;overflow-y:auto}
 @media(max-width:1100px){#topnav{display:none}#hdr{padding:.8rem 1rem}.slide{padding:6rem 1.3rem 4rem}#brand .t{display:none}}
 @media(max-width:700px){#hdr .pwr{display:none}}
 #s-film>.in{margin-block:auto 0}
+
+.logo{display:block;fill:currentColor;aspect-ratio:166.75/60.66;width:auto;flex:none}
+#brand .logo.l-head{height:1.7rem;color:var(--grey)}
+#loader .logo{height:3.4rem;margin:0 auto 1rem;color:var(--grey)}
+.cover-by{display:flex;align-items:center;gap:1rem;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase}
+.cover-by .logo{height:2.6rem;color:var(--grey)}
+.logo.l-close{height:3.2rem}
+.btn .logo.l-btn{height:1.35rem;display:inline-block;vertical-align:middle;margin:0 .3rem}
+#foot .powered{display:inline-flex;align-items:center;gap:.5rem}
+#foot .logo.l-foot{height:1.1rem;color:var(--grey)}
