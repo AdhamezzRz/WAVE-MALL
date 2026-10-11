@@ -1,0 +1,30 @@
+<section class="slide" id="s-catchment" data-title="Who can reach you?||من يستطيع الوصول إليك؟" data-sec="Catchment||منطقة الجذب" data-cam="top" data-dim=".5" data-radar="1" data-labels="none">
+  <div class="in">
+    <div class="eyebrow rv">[[02 · Catchment simulator||02 · محاكاة منطقة الجذب]]</div>
+    <h2 class="rv">[[Who can reach you depends on the traffic||من يصل إليك يتوقف على الزحمة]]</h2>
+    <div class="split">
+      <div class="glass rv l" data-nowheel>
+        <div class="mono mute" style="font-size:.72rem;letter-spacing:.16em;text-transform:uppercase">[[Drag the slider: traffic level||حرّك المؤشر: مستوى الزحمة]]</div>
+        <div style="margin:1rem 0 .4rem"><input type="range" id="ccRange" min="0" max="2" step="1" value="0" aria-label="Traffic level"></div>
+        <div style="display:flex;justify-content:space-between" class="mono mute"><span style="font-size:.7rem">[[FREE-FLOW||فاضي]]</span><span style="font-size:.7rem">[[MODERATE||متوسط]]</span><span style="font-size:.7rem">[[PEAK||ذروة]]</span></div>
+        <div style="margin-top:1.1rem"><div class="big g" id="ccName" style="font-size:clamp(1.6rem,2.6vw,2.6rem)"></div><div class="mute" id="ccSub"></div></div>
+        <svg viewBox="0 0 520 520" width="100%" style="max-height:44vh;margin-top:.6rem" role="img" aria-label="Reachable rings">
+          <circle cx="260" cy="260" r="210" id="ccr2" fill="rgba(217,164,65,.07)" stroke="#d9a441" stroke-width="2" style="transition:r .9s cubic-bezier(.2,.8,.2,1)"/>
+          <circle cx="260" cy="260" r="140" id="ccr1" fill="rgba(62,207,158,.09)" stroke="#3ecf9e" stroke-width="2" style="transition:r .9s cubic-bezier(.2,.8,.2,1)"/>
+          <circle cx="260" cy="260" r="70" id="ccr0" fill="rgba(255,210,122,.16)" stroke="#ffd27a" stroke-width="2" style="transition:r .9s cubic-bezier(.2,.8,.2,1)"/>
+          <circle cx="260" cy="260" r="7" fill="#ffd27a"/>
+          <text class="cc-lab" x="260" y="248" fill="#ffd27a" font-size="13" text-anchor="middle">5 min</text>
+          <text class="cc-lab" x="260" y="248" fill="#3ecf9e" font-size="13" text-anchor="middle">10 min</text>
+          <text class="cc-lab" x="260" y="248" fill="#d9a441" font-size="13" text-anchor="middle">15 min</text>
+        </svg>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1rem">
+        <div class="glass top-a rv r"><div class="mono mute" style="font-size:.72rem;letter-spacing:.14em">[[5-MINUTE DRIVE||5 دقائق بالسيارة]]</div><div class="num a cc-n">0</div><div class="mini">[[people · ≈ <span class="cc-h">0</span> households||نسمة · ≈ <span class="cc-h">0</span> أسرة]]</div></div>
+        <div class="glass top-g rv r"><div class="mono mute" style="font-size:.72rem;letter-spacing:.14em">[[10-MINUTE DRIVE||10 دقائق بالسيارة]]</div><div class="num g cc-n">0</div><div class="mini">[[people · ≈ <span class="cc-h">0</span> households||نسمة · ≈ <span class="cc-h">0</span> أسرة]]</div></div>
+        <div class="glass top-i rv r"><div class="mono mute" style="font-size:.72rem;letter-spacing:.14em">[[15-MINUTE DRIVE||15 دقيقة بالسيارة]]</div><div class="num i cc-n">0</div><div class="mini">[[people · ≈ <span class="cc-h">0</span> households||نسمة · ≈ <span class="cc-h">0</span> أسرة]]</div></div>
+        <p class="note rv">[[Satellite-built population model (JRC GHSL) × OSRM drive times; moderate and peak scale travel time by 1.33× and 2× (assumption). Likely under-counts new compounds. Read as a ranking.||نموذج سكان من الأقمار الصناعية (JRC GHSL) × أزمنة قيادة OSRM؛ الزحمة المتوسطة والذروة تضاعف زمن الرحلة 1.33× و2× (افتراض). غالبًا أقل من الواقع. للمقارنة فقط.]]</p>
+      </div>
+    </div>
+  </div>
+  <div class="notes">[[Move the slider to peak: the 15-minute reach collapses from about 471,000 to about 23,000. That is why parking, drop-off and entry design are part of the offer.||حرّك المؤشر للذروة: يتراجع الوصول خلال 15 دقيقة من نحو 471,000 إلى نحو 23,000. لذلك المواقف والنزول ومداخل المبنى جزء من العرض.]]</div>
+</section>
