@@ -8,7 +8,7 @@
   const fmt = n => Number(n).toLocaleString('en-US');
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
-  const slides = $$('.slide'); let cur = -1; let auto = null; let animToken = 0;
+  const slides = $$('.slide'); let cur = -1;
   const Scene = window.Scene3D; const Mod = {};
 
   /* ---------- language ---------- */
@@ -18,9 +18,9 @@
     $('#langBtn').textContent = lang === 'ar' ? 'EN' : 'عربي';
     document.title = lang === 'ar' ? 'ويف مول · دراسة الموقع والسوق · NAJ' : 'Wave Mall · Location & Market Study · NAJ';
     if (Scene && Scene.ready) Scene.setLang(lang);
-    buildMenu(); updateChrome();
+    buildMenu(); buildNav(); updateChrome();
     Object.keys(Mod).forEach(k => Mod[k].lang && Mod[k].lang());
-    buildCover(); if (typeof fitSoon === 'function') fitSoon();
+    buildCover(); $$('.slide.active [data-to]').forEach(el => countUp(el));
   }
   function setLang(l) { lang = l; store.set('wm-lang', l); applyLang(); }
 
@@ -40,95 +40,76 @@
   const tipOn = (el, fn) => { el.addEventListener('pointerenter', e => showTip(fn(), e.clientX, e.clientY)); el.addEventListener('pointerleave', hideTip); };
 
   /* ---------- numbers ---------- */
-  function countUp(el, token) {
-    const to = parseFloat(el.dataset.to), dec = +el.dataset.dec || 0, pre = el.dataset.pre || '', suf = (lang === 'ar' && el.dataset.sufAr !== undefined) ? el.dataset.sufAr : (el.dataset.suf || ''), dur = +el.dataset.dur || 1700; const t0 = performance.now();
-    const f = now => { if (token !== animToken) return; const p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 4); el.textContent = pre + (to * e).toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec }) + suf; if (p < 1) requestAnimationFrame(f); };
+  function countUp(el) {
+    const tk = (el._ct = {}); const to = parseFloat(el.dataset.to), dec = +el.dataset.dec || 0, pre = el.dataset.pre || '', suf = (lang === 'ar' && el.dataset.sufAr !== undefined) ? el.dataset.sufAr : (el.dataset.suf || ''), dur = +el.dataset.dur || 1700; const t0 = performance.now();
+    const f = now => { if (el._ct !== tk) return; const p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 4); el.textContent = pre + (to * e).toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec }) + suf; if (p < 1) requestAnimationFrame(f); };
     requestAnimationFrame(f);
   }
   function tween(el, to, dur) { const from = el._v || 0, t0 = performance.now(); dur = dur || 900; el._v = to; const tok = (el._tk = (el._tk || 0) + 1); const f = now => { if (el._tk !== tok) return; const p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 3); el.textContent = fmt(Math.round(from + (to - from) * e)); if (p < 1) requestAnimationFrame(f); }; requestAnimationFrame(f); }
 
-  /* ---------- fit slide content to the viewport ---------- */
-  function fit(s) {
-    s = s || slides[cur]; if (!s || s.classList.contains('free')) return; const inn = s.querySelector(':scope > .in'); if (!inn) return;
-    inn.style.zoom = 1; inn.style.setProperty('--z', 1); const cs = getComputedStyle(s);
-    const avail = s.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom); const need = inn.scrollHeight;
-    const k = Math.max(.6, Math.min(1, avail / need)); inn.style.zoom = k; inn.style.setProperty('--z', k);
+  /* ---------- website mode: scroll-driven sections ---------- */
+  const NAV = [['Overview||نظرة عامة', 'cover'], ['Identity||الهوية', 'pin'], ['Location||الموقع', 'numbers'], ['Catchment||منطقة الجذب', 'catchment'], ['Competitors||المنافسون', 'bubble'], ['Market||السوق', 'market'], ['Strategy||الاستراتيجية', 'swot'], ['Plan||الخطة', 'roadmap'], ['Next||الخطوات', 'gaps']];
+  const idxOf = id => slides.findIndex(s => s.id === 's-' + id);
+  let ticking = false, firstCur = true;
+  function fitSoon() { }
+  function buildNav() { const n = $('#topnav'); if (!n) return; n.innerHTML = ''; NAV.forEach(x => { const a = document.createElement('a'); a.href = '#s-' + x[1]; a.textContent = tt(x[0]); a.dataset.i = idxOf(x[1]); n.appendChild(a); }); markNav(); }
+  function markNav() { let best = -1; $$('#topnav a').forEach(a => { if (cur >= 0 && +a.dataset.i <= cur) best = +a.dataset.i; }); $$('#topnav a').forEach(a => a.classList.toggle('on', +a.dataset.i === best)); }
+  function updateChrome() { if (cur < 0) return; markNav(); $$('#menu button').forEach((b, k) => b.classList.toggle('cur', k === cur)); }
+  function reveal(s) {
+    if (s.classList.contains('active')) return;
+    $$('.rv', s).forEach((el, k) => { if (!el.dataset.fixed) el.style.setProperty('--d', (k * 75 + 80) + 'ms'); });
+    s.classList.add('active'); $$('[data-to]', s).forEach(el => countUp(el));
   }
-  const fitSoon = () => { clearTimeout(fitSoon.t); fitSoon.t = setTimeout(() => fit(), 80); setTimeout(() => fit(), 900); };
-  addEventListener('resize', fitSoon);
-  /* ---------- navigation ---------- */
-  function go(i, instant) {
-    i = clamp(i, 0, slides.length - 1); if (i === cur) return;
-    const prev = slides[cur]; if (prev) { prev.classList.remove('active'); const m = Mod[prev.id.slice(2)]; m && m.leave && m.leave(prev); }
-    cur = i; const s = slides[cur]; animToken++;
-    $$('.rv', s).forEach((el, k) => { if (!el.dataset.fixed) el.style.setProperty('--d', (k * 75 + 120) + 'ms'); });
-    s.classList.add('active'); s.scrollTop = 0;
+  function setCurrent(i) {
+    if (i === cur) return; const prev = slides[cur]; if (prev) { prev.classList.remove('current'); const pm = Mod[prev.id.slice(2)]; pm && pm.leave && pm.leave(prev); }
+    cur = i; const s = slides[cur]; s.classList.add('current'); reveal(s);
     document.body.classList.toggle('free', s.classList.contains('free'));
-    // scene
     if (Scene && Scene.ready) {
-      Scene.setPreset(s.dataset.cam || 'iso', { snap: instant });
-      Scene.setDim(s.dataset.dim || '1'); Scene.setBlur(s.dataset.blur || 0);
-      Scene.setLayers((s.dataset.layers || 'health,school,retail,living,transit').split(','));
-      Scene.setLabels(s.dataset.labels || 'none'); Scene.setRadar(s.dataset.radar === '1'); Scene.arcs = s.dataset.arcs === '1';
-      Scene.highlight(null);
+      Scene.setPreset(s.dataset.cam || 'iso', { snap: firstCur }); Scene.setDim(s.dataset.dim || '1'); Scene.setBlur(s.dataset.blur || 0);
+      Scene.setLayers((s.dataset.layers || 'health,school,retail,living,transit').split(',')); Scene.setLabels(s.dataset.labels || 'none'); Scene.setRadar(s.dataset.radar === '1'); Scene.arcs = s.dataset.arcs === '1'; Scene.highlight(null);
     }
-    $$('[data-to]', s).forEach(el => countUp(el, animToken));
-    const m = Mod[s.id.slice(2)]; m && m.enter && m.enter(s);
-    fitSoon(); updateChrome(); history.replaceState(null, '', '#' + s.id.slice(2)); store.set('wm-pos', s.id.slice(2));
-    $('#hint').style.opacity = cur === 0 ? 1 : 0; hideTip(); updateNotes();
+    firstCur = false; const m = Mod[s.id.slice(2)]; m && m.enter && m.enter(s);
+    updateChrome(); hideTip(); try { history.replaceState(null, '', '#' + s.id); } catch (e) { }
   }
-  const next = () => go(cur + 1), prevS = () => go(cur - 1);
-  function updateChrome() {
-    if (cur < 0) return; const s = slides[cur];
-    $('#bar i').style.width = ((cur + 1) / slides.length * 100) + '%';
-    $('#count').textContent = String(cur + 1).padStart(2, '0') + ' / ' + String(slides.length).padStart(2, '0');
-    $('#sec').textContent = tt(s.dataset.sec || '');
-    $$('#menu button').forEach((b, k) => b.classList.toggle('cur', k === cur));
+  function onScroll() {
+    ticking = false; const vh = innerHeight; let c = -1;
+    slides.forEach((s, i) => { const r = s.getBoundingClientRect(); if (r.top < vh * .9) reveal(s); if (r.top <= vh * .5 && r.bottom > vh * .5) c = i; });
+    if (c >= 0) setCurrent(c);
+    const h = document.documentElement; const p = h.scrollTop / ((h.scrollHeight - vh) || 1); $('#bar i').style.width = (clamp(p, 0, 1) * 100) + '%';
+    const hint = $('#hint'); if (hint) hint.style.opacity = h.scrollTop < 60 ? 1 : 0;
   }
+  addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
+  addEventListener('resize', onScroll);
+  function go(i) { slides[clamp(i, 0, slides.length - 1)].scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   function buildMenu() {
     const g = $('#menu .grid'); g.innerHTML = '';
     slides.forEach((s, k) => { const b = document.createElement('button'); b.innerHTML = '<em>' + String(k + 1).padStart(2, '0') + '</em><span></span>'; b.querySelector('span').textContent = tt(s.dataset.title || s.dataset.sec || ''); b.onclick = () => { toggleMenu(false); go(k); }; g.appendChild(b); });
   }
-  function toggleMenu(v) { const m = $('#menu'); const on = v === undefined ? !m.classList.contains('on') : v; m.classList.toggle('on', on); }
-  function updateNotes() { const box = $('#notes'); if (!box) return; const n = $('.notes', slides[cur]); box.innerHTML = n ? n.innerHTML : ''; }
-  function toggleNotes() { const b = $('#notes'); b.classList.toggle('on'); $('#notesBtn').classList.toggle('on', b.classList.contains('on')); }
-  function fullscreen() { const d = document, el = d.documentElement; if (!d.fullscreenElement) { (el.requestFullscreen || el.webkitRequestFullscreen || function () { }).call(el); } else { (d.exitFullscreen || d.webkitExitFullscreen || function () { }).call(d); } }
-  function toggleAuto() { const b = $('#autoBtn'); if (auto) { clearInterval(auto); auto = null; b.classList.remove('on'); } else { b.classList.add('on'); auto = setInterval(() => { if (cur >= slides.length - 1) go(0); else next(); }, 14000); } }
-
-  /* input */
+  function toggleMenu(v) { const m = $('#menu'); const on = v === undefined ? !m.classList.contains('on') : v; m.classList.toggle('on', on); document.body.style.overflow = on ? 'hidden' : ''; }
   addEventListener('keydown', e => {
-    if (e.target.matches('input,textarea')) { if (e.key === 'Escape') e.target.blur(); if (!['ArrowRight', 'ArrowLeft'].includes(e.key) || e.target.type === 'range') return; }
-    const k = e.key;
-    if (k === 'ArrowRight' || k === 'ArrowDown' || k === 'PageDown' || k === ' ' || k === 'Enter') { e.preventDefault(); next(); }
-    else if (k === 'ArrowLeft' || k === 'ArrowUp' || k === 'PageUp' || k === 'Backspace') { e.preventDefault(); prevS(); }
-    else if (k === 'Home') go(0); else if (k === 'End') go(slides.length - 1);
-    else if (k === 'm' || k === 'M') toggleMenu(); else if (k === 'Escape') toggleMenu(false);
-    else if (k === 'f' || k === 'F') fullscreen(); else if (k === 'l' || k === 'L') setLang(lang === 'ar' ? 'en' : 'ar');
-    else if (k === 'n' || k === 'N') toggleNotes(); else if (k === 'a' || k === 'A') toggleAuto();
+    if (e.target.matches('input,textarea')) return; const k = e.key;
+    if (k === 'm' || k === 'M') toggleMenu(); else if (k === 'Escape') toggleMenu(false); else if (k === 'l' || k === 'L') setLang(lang === 'ar' ? 'en' : 'ar');
   });
-  let wlock = 0;
-  addEventListener('wheel', e => {
-    if (e.target.closest('[data-nowheel],#menu')) return; const s = slides[cur];
-    if (s && s.scrollHeight > s.clientHeight + 6) { const atEnd = s.scrollTop + s.clientHeight >= s.scrollHeight - 3, atTop = s.scrollTop <= 0; if ((e.deltaY > 0 && !atEnd) || (e.deltaY < 0 && !atTop)) return; }
-    const now = Date.now(); if (now - wlock < 900 || Math.abs(e.deltaY) < 12) return; wlock = now; e.deltaY > 0 ? next() : prevS();
-  }, { passive: true });
-  let tx = 0, ty = 0, tt0 = 0;
-  addEventListener('touchstart', e => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; tt0 = Date.now(); }, { passive: true });
-  addEventListener('touchend', e => { if (e.target.closest('input,[data-nowheel]')) return; const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty; if (Date.now() - tt0 < 700 && Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.4) { (dx < 0) === (lang !== 'ar') ? next() : prevS(); } }, { passive: true });
-  addEventListener('hashchange', () => { const i = slides.findIndex(s => s.id === 's-' + location.hash.slice(1)); if (i >= 0) go(i); });
   document.addEventListener('click', e => { const f = e.target.closest('.flip'); if (f) f.classList.toggle('on'); });
 
-  /* scene drag / zoom on free slides */
-  (function () { const c = $('#scene'); let d = false, lx = 0, ly = 0;
-    c.addEventListener('pointerdown', e => { if (!document.body.classList.contains('free')) return; d = true; lx = e.clientX; ly = e.clientY; c.setPointerCapture(e.pointerId); c.style.cursor = 'grabbing'; });
-    c.addEventListener('pointermove', e => { if (!d) return; Scene.nudge(e.clientX - lx, e.clientY - ly); lx = e.clientX; ly = e.clientY; });
+  /* scene drag (horizontal only, so the page still scrolls) on the 3D explorer */
+  (function () { const c = $('#scene'); let d = false, lx = 0;
+    c.addEventListener('pointerdown', e => { if (!document.body.classList.contains('free')) return; d = true; lx = e.clientX; try { c.setPointerCapture(e.pointerId); } catch (x) { } c.style.cursor = 'grabbing'; });
+    c.addEventListener('pointermove', e => { if (!d) return; Scene.nudge(e.clientX - lx, 0); lx = e.clientX; });
     c.addEventListener('pointerup', () => { d = false; c.style.cursor = ''; });
-    c.addEventListener('wheel', e => { if (!document.body.classList.contains('free')) return; Scene.zoom(e.deltaY > 0 ? 1.08 : .92); }, { passive: true });
   })();
 
   /* ====================== MODULES ====================== */
-  /* film */
-  Mod.film = { enter(s) { const v = $('video', s); v.currentTime = 0; const p = v.play(); p && p.catch(() => { }); }, leave(s) { $('video', s).pause(); } };
+  /* film: decoded from the embedded base64 when this is the single-file build */
+  Mod.film = {
+    enter(s) { const v = $('video', s); const p = v.play(); p && p.catch(() => { }); const b = $('#filmBtn'); if (b) b.textContent = v.paused ? '▶' : '❚❚'; },
+    leave(s) { $('video', s).pause(); }
+  };
+  function loadFilm() {
+    const v = $('#s-film video'), d = $('#filmData'); if (!v) return;
+    if (d && d.textContent.trim()) { try { const bin = atob(d.textContent.trim()), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); v.src = URL.createObjectURL(new Blob([u], { type: 'video/mp4' })); d.textContent = ''; } catch (e) { } }
+    const b = $('#filmBtn'); if (b) b.onclick = () => { if (v.paused) { v.play(); b.textContent = '❚❚'; } else { v.pause(); b.textContent = '▶'; } };
+  }
 
   /* explore (3D) */
   (function () {
@@ -275,11 +256,10 @@
   /* ---------- init ---------- */
   function init() {
     $('#menuBtn').onclick = () => toggleMenu(); $('#menu .x').onclick = () => toggleMenu(false); $('#langBtn').onclick = () => setLang(lang === 'ar' ? 'en' : 'ar');
-    $('#fsBtn').onclick = fullscreen; $('#prevBtn').onclick = prevS; $('#nextBtn').onclick = next; $('#autoBtn').onclick = toggleAuto; $('#notesBtn').onclick = toggleNotes;
     try { Scene.init($('#scene'), $('#pins')); } catch (e) { console.warn('3D unavailable', e); document.body.classList.add('no3d'); }
-    applyLang();
-    let start = 0; const h = location.hash.slice(1); const hi = slides.findIndex(s => s.id === 's-' + h); if (hi >= 0) start = hi;
-    go(start, true);
+    loadFilm(); applyLang(); buildNav();
+    const h = location.hash.slice(1); let t = slides.find(s => s.id === h) || slides.find(s => s.id === 's-' + h);
+    onScroll(); if (t && t.id !== 's-cover') { t.scrollIntoView({ behavior: 'auto', block: 'start' }); setTimeout(onScroll, 60); }
     setTimeout(() => $('#loader') && $('#loader').classList.add('gone'), 300);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
