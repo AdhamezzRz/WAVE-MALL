@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" dir="ltr">
+<html lang="@LANG@" dir="@DIR@" data-force-lang="@LANG@">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -24,7 +24,7 @@
   <div class="ctl">
     <a class="pwr" href="https://najmarketing.co" target="_blank" rel="noopener">Powered by NAJ</a>
     <button class="btn" id="menuBtn" title="Sections (M)">MENU</button>
-    <button class="btn" id="langBtn" title="Language (L)">عربي</button>
+    <div class="langsw" id="langSw" role="group" aria-label="Language"><button data-l="en" aria-label="English">EN</button><button data-l="ar" aria-label="العربية">عربي</button></div>
   </div>
 </header>
 <div id="sec"></div>

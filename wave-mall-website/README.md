@@ -1,6 +1,6 @@
 # Wave Mall · Location & Market Study (website)
 
-**Deliverable: `../wave-mall.html`** — one self-contained file (CSS, JS, 3D library, fonts and the
+**Deliverables: `../wave-mall.html` (English first) and `../wave-mall-ar.html` (Arabic first)** — each one self-contained file; both have the EN | عربي switch (CSS, JS, 3D library, fonts and the
 concept film are all inside). Upload it as `index.html` to any host, or just double-click it.
 
 - Scroll to read; the sticky 3D site behind the page follows the section you are in.
@@ -8,6 +8,7 @@ concept film are all inside). Upload it as `index.html` to any host, or just dou
 - Deep links: `wave-mall.html#s-explore`, `#s-catchment`, `#s-fork` ...
 
 ## Editing
+Sources live in `src/refs.json` (use `{{src:1,2,3}}` in a slide to list reference numbers).
 Copy lives in `src/slides/*.html` (inline bilingual markup `[[English||العربية]]`),
 styles in `assets/*.css`, behaviour in `assets/app.js` and `assets/scene.js`.
 Rebuild the single file with `python3 build.py` (needs only Python 3).

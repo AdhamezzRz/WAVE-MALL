@@ -3,7 +3,7 @@
   'use strict';
   const $ = (s, r) => (r || document).querySelector(s), $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
   const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) { } } };
-  let lang = store.get('wm-lang') || ((navigator.language || '').toLowerCase().indexOf('ar') === 0 ? 'ar' : 'en');
+  let lang = document.documentElement.dataset.forceLang || store.get('wm-lang') || ((navigator.language || '').toLowerCase().indexOf('ar') === 0 ? 'ar' : 'en');
   const tt = s => { const p = String(s).split('||'); return lang === 'ar' && p[1] ? p[1] : p[0]; };
   const fmt = n => Number(n).toLocaleString('en-US');
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -15,7 +15,7 @@
   function applyLang() {
     document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
     $$('[data-t]').forEach(el => { el.textContent = tt(el.dataset.t); });
-    $('#langBtn').textContent = lang === 'ar' ? 'EN' : 'عربي';
+    $$('#langSw button').forEach(b => b.classList.toggle('on', b.dataset.l === lang));
     document.title = lang === 'ar' ? 'ويف مول · دراسة الموقع والسوق · NAJ' : 'Wave Mall · Location & Market Study · NAJ';
     if (Scene && Scene.ready) Scene.setLang(lang);
     buildMenu(); buildNav(); updateChrome();
@@ -48,7 +48,7 @@
   function tween(el, to, dur) { const from = el._v || 0, t0 = performance.now(); dur = dur || 900; el._v = to; const tok = (el._tk = (el._tk || 0) + 1); const f = now => { if (el._tk !== tok) return; const p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 3); el.textContent = fmt(Math.round(from + (to - from) * e)); if (p < 1) requestAnimationFrame(f); }; requestAnimationFrame(f); }
 
   /* ---------- website mode: scroll-driven sections ---------- */
-  const NAV = [['Overview||نظرة عامة', 'cover'], ['Identity||الهوية', 'pin'], ['Location||الموقع', 'numbers'], ['Catchment||منطقة الجذب', 'catchment'], ['Competitors||المنافسون', 'bubble'], ['Market||السوق', 'market'], ['Strategy||الاستراتيجية', 'swot'], ['Plan||الخطة', 'roadmap'], ['Next||الخطوات', 'gaps']];
+  const NAV = [['Overview||نظرة عامة', 'cover'], ['Identity||الهوية', 'pin'], ['Location||الموقع', 'numbers'], ['Catchment||منطقة الجذب', 'catchment'], ['Competitors||المنافسون', 'bubble'], ['Market||السوق', 'market'], ['Strategy||الاستراتيجية', 'swot'], ['Plan||الخطة', 'roadmap'], ['Next||الخطوات', 'gaps'], ['Sources||المصادر', 'references']];
   const idxOf = id => slides.findIndex(s => s.id === 's-' + id);
   let ticking = false, firstCur = true;
   function fitSoon() { }
@@ -255,7 +255,7 @@
 
   /* ---------- init ---------- */
   function init() {
-    $('#menuBtn').onclick = () => toggleMenu(); $('#menu .x').onclick = () => toggleMenu(false); $('#langBtn').onclick = () => setLang(lang === 'ar' ? 'en' : 'ar');
+    $('#menuBtn').onclick = () => toggleMenu(); $('#menu .x').onclick = () => toggleMenu(false); $$('#langSw button').forEach(b => b.onclick = () => setLang(b.dataset.l));
     try { Scene.init($('#scene'), $('#pins')); } catch (e) { console.warn('3D unavailable', e); document.body.classList.add('no3d'); }
     loadFilm(); applyLang(); buildNav();
     const h = location.hash.slice(1); let t = slides.find(s => s.id === h) || slides.find(s => s.id === 's-' + h);
