@@ -1,68 +1,46 @@
 #!/usr/bin/env python3
-"""Hand-built vector recreation of the lit 'The WAVE' sign (wave-stroke lettering).
-All lettering is monoline strokes with round caps, so it scales and recolours cleanly."""
-SW = 44          # stroke width of the WAVE letters
-H = 150          # letter height (centre-line)
+"""The WAVE sign as clean vector: each neon tube is one smooth round-capped stroke.
+Coordinates are measured from the reference photo (838x408 px space)."""
+import json, sys
+SW = 25.5        # tube width for W, A, V
+SW_E = 21.5      # tube width for the E bars
+# (x, y) key points measured on the reference
+W_PATH = "M176,199 C192,201 203,252 220,252 C246,252 262,187 296,187 C330,187 336,252 361,252 C391,252 400,190 424,184"
+A_PATH = "M407,243 C436,243 438,185 467,185 C496,185 505,246 538,246"
+V_PATH = "M523,182 C548,182 556,252 586,252 C616,252 622,177 664,176 L749,177"
+E_MID = "M666,209 L752,204"
+E_BOT = "M666,238 L752,233"
+THE = ('<path d="M97,238 H119 M108,238 V269"/>'
+       '<path d="M131,238 V269 M131,255 C131,249 135,247 140,247 C147,247 150,251 150,258 V269"/>'
+       '<path d="M158,259 H176 C176,251 171,247 167,247 C161,247 157,252 157,259 C157,266 161,270 167,270 C171,270 174,268 176,265"/>')
 
-def wave_paths():
-    # W: two valleys, built as one sine with 4 half-waves
-    W = "M0,0 C48,0 47,150 95,150 C143,150 142,0 190,0 C238,0 237,150 285,150 C333,150 332,0 380,0"
-    # A: a hump
-    A = "M0,150 C75,150 75,0 150,0 C225,0 225,150 300,150"
-    # V: a valley
-    V = "M0,0 C62,0 63,150 125,150 C187,150 188,0 250,0"
-    # E: spine + three softly waving bars
-    E = ("M24,0 C2,0 2,150 24,150 "
-         "M24,0 C72,-12 122,12 190,0 "
-         "M24,75 C72,63 122,87 190,75 "
-         "M24,150 C72,138 122,162 190,150")
-    return W, A, V, E
-
-def the_paths():
-    # small bold rounded 'The' (monoline), cap height ~ 100
-    T = "M0,8 H66 M33,8 V100"
-    h = "M104,-14 V100 M104,58 C104,36 120,30 134,30 C152,30 160,42 160,60 V100"
-    e = "M184,66 H232 C232,44 216,30 204,30 C188,30 176,46 176,66 C176,86 188,100 206,100 C220,100 230,94 236,86"
-    return T, h, e
-
-def group(color, glow=False):
-    W, A, V, E = wave_paths(); T, h, e = the_paths()
-    st = f'fill="none" stroke="{color}" stroke-linecap="round" stroke-linejoin="round"'
-    big = f'<g {st} stroke-width="{SW}">'
-    # x offsets (centre-line coordinates); letters nearly touch like the lit sign
-    big += f'<path transform="translate(310,60)" d="{W}"/>'
-    big += f'<path transform="translate(712,60)" d="{A}"/>'
-    big += f'<path transform="translate(1018,60)" d="{V}"/>'
-    big += '</g>'
-    big += f'<g {st} stroke-width="48"><path transform="translate(1312,60)" d="{E}"/></g>'
-    small = f'<g {st} stroke-width="30" transform="translate(12,116) scale(.9)">'
-    small += f'<path d="{T}"/><path d="{h}"/><path d="{e}"/></g>'
-    return big + small
-
-VB = "0 0 1650 280"
-def svg(bg=None, color="#0B0B0B", glow=False, name="The WAVE"):
+def svg(color, bg=None, glow=False, preview=False):
+    tubes = (f'<g fill="none" stroke="{color}" stroke-linecap="round" stroke-linejoin="round">'
+             f'<g stroke-width="{SW}"><path d="{W_PATH}"/><path d="{A_PATH}"/><path d="{V_PATH}"/></g>'
+             f'<g stroke-width="{SW_E}"><path d="{E_MID}"/><path d="{E_BOT}"/></g>'
+             f'<g stroke-width="9">{THE}</g></g>')
     defs = ''
-    body = group(color)
     if glow:
-        defs = ('<defs><filter id="g" filterUnits="userSpaceOnUse" x="-120" y="-120" width="1890" height="520">'
-                '<feGaussianBlur stdDeviation="14" result="b1"/><feGaussianBlur stdDeviation="34" result="b2"/>'
-                '<feMerge><feMergeNode in="b2"/><feMergeNode in="b1"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>')
-        body = f'<g filter="url(#g)">{body}</g>'
-    rect = f'<rect x="-120" y="-120" width="1890" height="520" fill="{bg}"/>' if bg else ''
-    vb = "-120 -120 1890 520" if bg else VB
-    return f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{vb}" role="img" aria-label="{name}">{defs}{rect}{body}</svg>'
+        defs = ('<defs><filter id="g" filterUnits="userSpaceOnUse" x="40" y="110" width="780" height="220">'
+                '<feGaussianBlur stdDeviation="5" result="a"/><feGaussianBlur stdDeviation="13" result="b"/>'
+                '<feMerge><feMergeNode in="b"/><feMergeNode in="a"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>')
+        tubes = f'<g filter="url(#g)">{tubes}</g>'
+    rect = f'<rect x="40" y="110" width="780" height="220" fill="{bg}"/>' if bg else ''
+    vb = "40 110 780 220" if bg else "84 160 690 124"
+    return f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{vb}" role="img" aria-label="The WAVE">{defs}{rect}{tubes}</svg>'
 
 if __name__ == '__main__':
-    out = {
-        '01-neon-sign-look': dict(bg='#0A0A0A', color='#FFF2B0', glow=True),
-        '02-flat-gold-on-black': dict(bg='#0B0B0B', color='#D9A441'),
-        '03-flat-black-on-ivory': dict(bg='#F3F4F1', color='#151515'),
-        '04-flat-forest-on-ivory': dict(bg='#F3F4F1', color='#0E3319'),
-        '05-flat-ivory-on-emerald': dict(bg='#046146', color='#F3F4F1'),
-        '06-transparent-black': dict(color='#151515'),
-        '07-transparent-ivory': dict(color='#F3F4F1'),
-        '08-transparent-gold': dict(color='#D9A441'),
+    OUT = '.'
+    variants = {
+     '01-neon-sign-look': dict(color='#FFF3B8', bg='#0A0A0A', glow=True),
+     '02-flat-gold-on-black': dict(color='#D9A441', bg='#0B0B0B'),
+     '03-flat-black-on-ivory': dict(color='#151515', bg='#F3F4F1'),
+     '04-flat-forest-on-ivory': dict(color='#0E3319', bg='#F3F4F1'),
+     '05-flat-ivory-on-emerald': dict(color='#F3F4F1', bg='#046146'),
+     '06-transparent-black': dict(color='#151515'),
+     '07-transparent-ivory': dict(color='#F3F4F1'),
+     '08-transparent-gold': dict(color='#D9A441'),
     }
-    for n, kw in out.items():
-        open(n + '.svg', 'w').write(svg(**kw))
-    print(len(out), 'files')
+    for n, kw in variants.items(): open(f'{OUT}/{n}.svg', 'w').write(svg(**kw))
+    pass
+    print('written', len(variants))
