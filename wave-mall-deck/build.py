@@ -7,30 +7,28 @@ here = os.path.dirname(os.path.abspath(__file__))
 root = os.path.dirname(here)
 P = lambda *a: os.path.join(here, *a)
 U = '/root/.claude/uploads/be9dde7a-4204-5a77-aa94-14cffa81f8a2/'
-bb = json.load(open(P('build/bbox.json')))
-SRC = {'A': 'logoA_raw.svg', 'B': 'logoB_raw.svg'}
-
-def symbol(n):
-    s = open(P('build', SRC[n])).read()
-    paths = re.findall(r'<path .*?/>', s, flags=re.S)
-    paths = [p for p in paths if 'rgb(243,244,241)' not in p]          # drop background rect
-    out = []
-    for p in paths:
-        p = p.replace(' transform="translate(0,0)"', '')
-        p = p.replace('rgb(14,51,25)', 'var(--ink)').replace('url(#Gradient1)', 'var(--ink)')
-        p = p.replace('rgb(91,101,77)', 'var(--ink2)').replace('rgb(159,163,148)', 'var(--ink2)')
-        out.append(p)
-    x0, y0, x1, y1 = bb[n]; pad = 18
-    vb = f'{x0-pad} {y0-pad} {x1-x0+2*pad} {y1-y0+2*pad}'
-    return f'<symbol id="lg{n}" viewBox="{vb}">{"".join(out)}</symbol>', (x1-x0+2*pad)/(y1-y0+2*pad)
-
-SYM = {}; RATIO = {}
-for n in 'AB':
-    SYM[n], RATIO[n] = symbol(n)
+SRC = {'A': 'logoA.png', 'B': 'logoB.png'}      # the client's two logo images (wave-mall-mockups/src)
+import numpy as np
+LOGO_CSS = []; RATIO = {}
+for _n in 'AB':
+    _im = np.array(Image.open(os.path.join(root, 'wave-mall-mockups', 'src', SRC[_n])).convert('RGB')).astype(float)
+    _bg = _im[0, 0]; _lum = _im @ np.array([.299, .587, .114]); _bgl = _bg @ np.array([.299, .587, .114])
+    _ink = _bgl - 0.0 - (_lum.min())            # darkest pixel = full ink
+    _a = np.clip(((_bgl - _lum) / _ink - .06) / .88, 0, 1)
+    _ys, _xs = np.where(_a > .08); _pad = 14
+    _box = (max(_xs.min()-_pad, 0), max(_ys.min()-_pad, 0), min(_xs.max()+_pad, _a.shape[1]), min(_ys.max()+_pad, _a.shape[0]))
+    _c = _a[_box[1]:_box[3], _box[0]:_box[2]].copy(); _c[:3, :] = 0; _c[-3:, :] = 0; _c[:, :3] = 0; _c[:, -3:] = 0
+    _m = Image.fromarray((_c*255).astype('uint8'), 'L'); _w = _m.width
+    RATIO[_n] = _m.width / _m.height
+    def _col(rgb):
+        _p = Image.merge('RGBA', [Image.new('L', _m.size, v) for v in rgb] + [_m]); _b = io.BytesIO(); _p.save(_b, 'PNG', optimize=True)
+        return 'data:image/png;base64,' + base64.b64encode(_b.getvalue()).decode()
+    LOGO_CSS.append(f".lg{_n}{{background:url({_col((14, 51, 25))}) center/100% 100% no-repeat}}.rev .lg{_n}{{background-image:url({_col((243, 244, 241))})}}")
 
 def logo(n, h=None, w=None, cls=''):
-    st = f'height:{h}px;' if h else f'width:{w}px;'
-    return f'<svg class="lg {cls}" style="{st}aspect-ratio:{RATIO[n]:.4f}" role="img" aria-label="Wave logo {n}"><use href="#lg{n}"/></svg>'
+    if h: st = f'height:{h}px;width:{h*RATIO[n]:.1f}px;'
+    else: st = f'width:{w}px;height:{w/RATIO[n]:.1f}px;'
+    return f'<div class="lg lg{n} {cls}" style="{st}" role="img" aria-label="Wave logo {n}"></div>'
 
 def img(path, w=1600, crop=None, q=80):
     im = Image.open(path).convert('RGB')
@@ -77,7 +75,7 @@ slides.append(f'''<section class="slide light" data-title="Two directions">
 </div>{CHROME}</section>''')
 
 def detail(n, name, role, best, watch):
-    sizes = ''.join(f'<div class="sz">{logo(n, w=w)}<span>{w}px</span></div>' for w in (360, 190, 100))
+    sizes = ''.join(f'<div class="sz">{logo(n, w=w)}<span>{w}px</span></div>' for w in (290, 160, 90))
     return f'''<section class="slide light" data-title="Logo {n}">
 <div class="head"><div class="eyebrow">Option {n}</div><h2>{name}</h2></div>
 <div class="det">
@@ -155,7 +153,7 @@ faces = re.findall(r'@font-face\s*\{.*?\}', fonts, flags=re.S)
 fonts = '\n'.join(f for f in faces if ('Bricolage' in f) or ("IBM Plex Mono" in f and 'font-weight: 400' in f))
 
 html = open(P('template.html')).read()
-html = html.replace('/*FONTS*/', fonts).replace('<!--SYMBOLS-->', '<svg width="0" height="0" style="position:absolute" aria-hidden="true">' + SYM['A'] + SYM['B'] + '</svg>').replace('<!--SLIDES-->', body)
+html = html.replace('/*FONTS*/', fonts + '\n' + '\n'.join(LOGO_CSS)).replace('<!--SYMBOLS-->', '').replace('<!--SLIDES-->', body)
 out = os.path.join(root, 'wave-mall-logo-deck.html')
 open(out, 'w', encoding='utf-8').write(html)
 print(out, round(len(html.encode())/1e6, 1), 'MB', len(slides), 'slides')
