@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wave Mall Logo Directions</title>
+<style>
+/*FONTS*/
+:root{--cream:#f3f4f1;--ink:#0e3319;--ink2:#5b654d;--dark:#0b0b0b;--brass:#b99a5b;--mint:#3ecf9e;--mut:#6f7a72}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:#000;overflow:hidden;font-family:'Bricolage Grotesque',Arial,sans-serif;-webkit-font-smoothing:antialiased}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:0 0}
+.slide{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;opacity:0;visibility:hidden;transition:opacity .45s ease,visibility .45s;background:var(--cream);color:var(--ink)}
+.slide.on{opacity:1;visibility:visible}
+.dark{background:var(--dark);color:#e6e7e7;--ink:#e6e7e7;--ink2:#9fb0a7}
+.eyebrow{font:400 22px/1 'IBM Plex Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--mut)}
+.dark .eyebrow,.cmp .eyebrow,.hero .eyebrow{color:var(--brass)}
+h2{font-weight:700;font-size:64px;line-height:1.05;margin-top:18px;letter-spacing:-.01em}
+h3{font-size:34px;font-weight:700;margin:28px 0 10px}
+.head{position:absolute;left:96px;top:72px;z-index:3}
+.foot{position:absolute;left:96px;right:96px;bottom:36px;display:flex;justify-content:space-between;font:400 16px 'IBM Plex Mono',monospace;letter-spacing:.18em;color:var(--mut);z-index:3}
+.cmp .foot,.hero .foot{color:#9aa39d}
+.lg{display:block;fill:var(--ink)}
+.stage{display:flex;align-items:center;justify-content:center;background:var(--cream)}
+/* cover */
+.cover{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.cover .eyebrow{position:absolute;top:84px;left:96px}
+.cover .covfoot{position:absolute;left:96px;right:96px;bottom:64px;display:flex;justify-content:space-between;font:400 20px 'IBM Plex Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--mut)}
+.cv{margin-top:20px}
+/* options */
+.two{position:absolute;left:96px;right:96px;top:290px;display:grid;grid-template-columns:1fr 1fr;gap:56px}
+.card{background:#fff;border:1px solid #dfe1dc;border-radius:20px;padding:44px 52px 46px}
+.card .stage{height:380px;background:#fff}
+.card p{font-size:26px;line-height:1.4;color:#3d4842}
+.slide.light:not(.cover){background:var(--cream)}
+/* detail */
+.det{position:absolute;left:96px;right:96px;top:250px;height:520px;display:grid;grid-template-columns:1.35fr 1fr;gap:40px}
+.big{border-radius:20px;background:#fff;border:1px solid #dfe1dc}
+.side{display:grid;grid-template-rows:1fr 190px;gap:40px}
+.rev{border-radius:20px;background:#0e3319;--ink:#f3f4f1;--ink2:#b9c4b0}
+.sizes{display:flex;gap:40px;align-items:center;justify-content:space-around;background:#fff;border:1px solid #dfe1dc;border-radius:20px;padding:0 30px}
+.sz{display:flex;flex-direction:column;align-items:center;gap:14px}.sz span{font:400 16px 'IBM Plex Mono',monospace;color:var(--mut)}
+.notes{position:absolute;left:96px;right:96px;top:810px;display:grid;grid-template-columns:repeat(3,1fr);gap:40px}
+.notes b{font:400 18px 'IBM Plex Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--mut);font-weight:400}
+.notes p{font-size:24px;line-height:1.35;margin-top:10px;color:#2b3a30}
+/* compare */
+.cmp{background:var(--dark)}
+.cmp .head{color:#e6e7e7}
+.cmp .imgs{position:absolute;display:grid;gap:36px;transition:all .35s ease}
+.cmp figure{position:relative;margin:0;min-width:0;min-height:0}
+.cmp img{width:100%;height:100%;display:block;border-radius:14px}
+.cmp figcaption{position:absolute;left:18px;top:16px;background:#000b;color:#e6e7e7;padding:7px 14px;border-radius:99px;font:400 17px 'IBM Plex Mono',monospace;letter-spacing:.12em}
+.cmp.sp .imgs{left:60px;right:60px;top:200px;bottom:150px;grid-template-columns:1fr 1fr;align-items:center}
+.cmp.sp img{object-fit:cover;width:100%;height:auto;aspect-ratio:3/2;margin:auto}
+.cmp.sp.contain img{object-fit:contain;aspect-ratio:auto;max-height:700px}
+.cmp.sp figure{display:flex;align-items:center;justify-content:center}
+.cmp.sp figcaption{left:auto;top:auto;bottom:-14px;position:absolute}
+.cmp.ma .imgs,.cmp.mb .imgs{inset:0;grid-template-columns:1fr}
+.cmp.ma .ib,.cmp.mb .ia{display:none}
+.cmp.ma img,.cmp.mb img{object-fit:cover;border-radius:0;height:1080px;width:1920px;max-height:none}
+.cmp.contain.ma img,.cmp.contain.mb img{object-fit:contain}
+.cmp.ma:after,.cmp.mb:after{content:'';position:absolute;inset:0;background:linear-gradient(#000c,#0000 30%,#0000 78%,#0009);z-index:2;pointer-events:none}
+.cmp.ma figcaption,.cmp.mb figcaption{left:auto;right:36px;top:36px;position:absolute}
+.cmp .cap{position:absolute;left:96px;right:96px;bottom:84px;z-index:3;font-size:27px;line-height:1.35;color:#e6e7e7;max-width:1500px;text-shadow:0 2px 14px #000}
+.cmp.sp .cap{text-shadow:none;bottom:78px;color:#c9d0cb}
+.cmp.ma .cap,.cmp.mb .cap{background:#000a;padding:14px 22px;border-radius:12px;width:fit-content}
+.tog{position:absolute;right:96px;top:72px;z-index:5;display:flex;background:#000b;border:1px solid #ffffff30;border-radius:99px;padding:5px;gap:4px}
+.tog button{all:unset;cursor:pointer;color:#c9d0cb;font:500 20px 'Bricolage Grotesque',sans-serif;padding:10px 22px;border-radius:99px}
+.cmp.sp [data-m=split],.cmp.ma [data-m=a],.cmp.mb [data-m=b]{background:#f3f4f1;color:#0b0b0b}
+/* hero + tiles */
+.hero{background:#000}
+.hero>img{position:absolute;left:0;top:140px;width:1920px;height:800px;object-fit:cover}
+.hero .head{color:#e6e7e7}.hero .cap{position:absolute;left:96px;right:96px;bottom:84px;font-size:27px;color:#e6e7e7;z-index:3}
+.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(#000c,#0000 30%,#0000 70%,#000d)}
+.tiles{background:var(--dark);color:#e6e7e7}
+.tiles .eyebrow{color:var(--brass)}
+.tgrid{position:absolute;left:96px;right:96px;top:300px;display:grid;grid-template-columns:repeat(3,1fr);gap:36px}
+.tgrid figure{position:relative}.tgrid img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block}
+.tgrid figcaption{position:absolute;left:16px;top:14px;background:#000b;padding:7px 14px;border-radius:99px;font:400 17px 'IBM Plex Mono',monospace;letter-spacing:.12em}
+.tiles .cap{position:absolute;left:96px;right:96px;bottom:84px;font-size:27px;color:#c9d0cb}
+/* verdict */
+.vt{position:absolute;left:96px;right:96px;top:260px;width:calc(100% - 192px);border-collapse:collapse;font-size:30px}
+.vt th{font:400 20px 'IBM Plex Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--brass);text-align:left;padding:0 0 18px;font-weight:400}
+.vt td{padding:22px 0;border-top:1px solid #ffffff22;color:#c9d0cb}
+.vt td:first-child{color:#e6e7e7;width:42%}
+.vt .win{color:var(--mint);font-weight:600}
+/* rec + points */
+.rec{position:absolute;left:96px;right:96px;top:290px;display:grid;grid-template-columns:1fr 1.25fr;gap:40px}
+.rec .stage{flex-direction:column;gap:30px;height:420px;background:#fff;border:1px solid #dfe1dc;border-radius:20px}
+.rec small{font:400 19px 'IBM Plex Mono',monospace;letter-spacing:.1em;color:var(--mut)}
+.lede{position:absolute;left:96px;right:96px;top:790px;font-size:32px;line-height:1.35;color:#2b3a30}
+.pts{position:absolute;left:96px;right:96px;top:270px;list-style:none;padding:0;display:grid;gap:26px}
+.pts li{font-size:30px;line-height:1.35;color:#c9d0cb;border-top:1px solid #ffffff22;padding-top:22px}
+.pts b{color:#e6e7e7}
+/* chrome */
+#bar{position:fixed;left:0;top:0;height:4px;background:var(--mint);width:0;z-index:20;transition:width .3s}
+#hud{position:fixed;left:50%;transform:translateX(-50%);bottom:12px;z-index:20;font:400 14px 'IBM Plex Mono',monospace;color:#ffffffaa;background:#0008;padding:6px 12px;border-radius:99px;display:flex;gap:12px;align-items:center}
+#hud button{all:unset;cursor:pointer;padding:2px 6px}
+#hud button:hover{color:#fff}
+</style></head><body>
+<!--SYMBOLS-->
+<div id="bar"></div>
+<div id="stage">
+<!--SLIDES-->
+</div>
+<div id="hud"><button id="prev" aria-label="Previous">‹</button><span id="n">1 / 1</span><button id="next" aria-label="Next">›</button><button id="fs" aria-label="Fullscreen">⛶</button></div>
+<script>
+(function(){
+var st=document.getElementById('stage'),S=[].slice.call(st.querySelectorAll('.slide')),i=0;
+function fit(){var s=Math.min(innerWidth/1920,innerHeight/1080);st.style.transform='scale('+s+') translate(-50%,-50%)';st.style.left='50%';st.style.top='50%';st.style.transformOrigin='0 0';
+ // center: translate in unscaled px
+ st.style.transform='translate('+(-960*s)+'px,'+(-540*s)+'px) scale('+s+')';}
+function go(n){i=Math.max(0,Math.min(S.length-1,n));S.forEach(function(s,k){s.classList.toggle('on',k===i)});
+ document.getElementById('n').textContent=(i+1)+' / '+S.length;document.getElementById('bar').style.width=((i+1)/S.length*100)+'%';
+ try{history.replaceState(null,'','#'+(i+1))}catch(e){};document.title='Wave Mall Logo Directions · '+(S[i].getAttribute('data-title')||'')}
+S.forEach(function(s){if(s.classList.contains('cmp')){mode(s,'split')}});
+function mode(s,m){s.classList.remove('sp','ma','mb');s.classList.add(m==='a'?'ma':m==='b'?'mb':'sp')}
+st.addEventListener('click',function(e){var b=e.target.closest('.tog button');if(b){mode(b.closest('.cmp'),b.dataset.m);e.stopPropagation()}});
+addEventListener('keydown',function(e){var k=e.key,cur=S[i];
+ if(k==='ArrowRight'||k==='PageDown'||k===' '){e.preventDefault();go(i+1)}
+ else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();go(i-1)}
+ else if(k==='Home')go(0);else if(k==='End')go(S.length-1);
+ else if(k==='f'||k==='F')fs();
+ else if(cur.classList.contains('cmp')){if(k==='a'||k==='A')mode(cur,'a');else if(k==='b'||k==='B')mode(cur,'b');else if(k==='s'||k==='S')mode(cur,'split')}});
+var x0=null;addEventListener('touchstart',function(e){x0=e.touches[0].clientX},{passive:true});
+addEventListener('touchend',function(e){if(x0===null)return;var d=e.changedTouches[0].clientX-x0;if(Math.abs(d)>50)go(i+(d<0?1:-1));x0=null});
+function fs(){var d=document;if(!d.fullscreenElement)d.documentElement.requestFullscreen&&d.documentElement.requestFullscreen();else d.exitFullscreen()}
+document.getElementById('prev').onclick=function(){go(i-1)};document.getElementById('next').onclick=function(){go(i+1)};document.getElementById('fs').onclick=fs;
+addEventListener('resize',fit);fit();go((parseInt(location.hash.slice(1),10)||1)-1);
+})();
+</script></body></html>
