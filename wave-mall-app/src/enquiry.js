@@ -16,6 +16,7 @@ function validate(body = {}) {
     email: clean(body.email, 200),
     phone: clean(body.phone, 40),
     category: clean(body.category, 20),
+    size: clean(body.size, 4),
     message: clean(body.message, 2000),
     lang: body.lang === 'ar' ? 'ar' : 'en',
   };
@@ -24,6 +25,7 @@ function validate(body = {}) {
   if (!value.brand) errors.push('brand');
   if (!EMAIL_RE.test(value.email)) errors.push('email');
   if (!CATEGORIES.includes(value.category)) errors.push('category');
+  if (!['', 's', 'm', 'l'].includes(value.size)) errors.push('size');
   return errors.length ? { ok: false, errors } : { ok: true, value };
 }
 

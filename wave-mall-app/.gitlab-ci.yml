@@ -1,0 +1,18 @@
+# Runs the test suite on every push and merge request. Hostinger deploys the
+# connected branch itself through its Git webhook; this pipeline is the gate.
+image: node:22
+
+stages: [test]
+
+cache:
+  key: { files: [package-lock.json] }
+  paths: [node_modules/]
+
+test:
+  stage: test
+  script:
+    - npm ci
+    - npm test
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH
