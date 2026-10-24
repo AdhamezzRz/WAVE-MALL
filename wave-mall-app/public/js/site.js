@@ -463,6 +463,16 @@
     return tl;
   }
 
+  // Hold the curtain until the new page's hero image is in, so it never opens on a blank hero.
+  function heroImageReady(scope) {
+    const img = $('.hero__img, .phero__img, .map__media img', scope);
+    if (!img || img.complete) return Promise.resolve();
+    return Promise.race([
+      new Promise((res) => { img.addEventListener('load', res, { once: true }); img.addEventListener('error', res, { once: true }); }),
+      new Promise((res) => setTimeout(res, 1800)),
+    ]);
+  }
+
   function updateNav(pathname) {
     $$('.nav a, .menu__nav a').forEach((a) => {
       const href = a.getAttribute('href');
@@ -500,6 +510,7 @@
     W.scrollTo(0, 0);
     header.classList.remove('is-hidden');
     await D.fonts.ready;
+    await heroImageReady(main);
     initPage(main);
     const outTl = curtainOut();
     outTl.add(() => heroIntro(main), 0.25);
