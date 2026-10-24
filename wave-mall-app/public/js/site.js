@@ -449,7 +449,7 @@
   function curtainIn() {
     const logo = $('.curtain__logo', curtain);
     const tl = gsap.timeline();
-    tl.set(curtain, { yPercent: 110 })
+    tl.set(curtain, { y: 0, yPercent: 110 })
       .to(curtain, { yPercent: 0, duration: 0.9, ease: 'power3.inOut' })
       .fromTo(logo, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6 }, '-=0.3');
     return tl;
@@ -459,7 +459,7 @@
     const tl = gsap.timeline();
     tl.to(logo, { opacity: 0, duration: 0.3 })
       .to(curtain, { yPercent: -115, duration: 0.95, ease: 'power3.inOut' }, 0.05)
-      .set(curtain, { yPercent: 110 });
+      .set(curtain, { y: 0, yPercent: 110 });
     return tl;
   }
 
