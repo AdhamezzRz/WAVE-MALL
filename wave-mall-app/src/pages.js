@@ -4,6 +4,7 @@ const { content } = require('./content');
 const { COORDS, FLOORS, GROUND_UNITS, STREET_UNITS, FACTS } = require('./data');
 const journal = require('./journal');
 const { floorSvg } = require('./plan');
+const { areaMap } = require('./map');
 const { esc, picture, frame, imgUrl, link, arrow, label, title, num, crumbs, crumbsLd, newsletter, fmtDate, layout, logoSvg } = require('./render');
 
 const mapUrl = `https://www.google.com/maps?q=${COORDS.lat},${COORDS.lng}`;
@@ -120,8 +121,8 @@ function home(lang, ctx) {
 </section>
 
 <section class="place">
-  <div class="place__map" data-wipe><div class="frame__clip">${picture('map', c.visit.mapAlt, { sizes: '100vw' })}</div><span class="place__pin" style="--x:55.2%;--y:44%"><i></i><b>${esc(c.brand)}</b></span></div>
   <div class="wrap place__text">${label(h.place.kicker)}<p class="lead" data-rise>${esc(h.place.text)}</p>${link(p(lang, '/visit/'), h.place.more)}</div>
+  <div class="wrap">${areaMap(lang)}</div>
 </section>
 
 <section class="journal-teaser">
@@ -244,15 +245,13 @@ ${opener(c.nav[3][1], L.hero, L.intro)}
 }
 
 /* ---------- visit ---------- */
-const PINS = [['plot', 55.2, 44], ['north90', 50, 15], ['south90', 46, 90], ['airforce', 74, 70], ['nasaaem', 74, 47], ['nbk', 55.5, 61], ['fab', 40, 56]];
 function visit(lang, ctx) {
   const c = content[lang];
   const v = c.visit;
-  const pins = PINS.map(([id, x, y]) => `<span class="pin ${id === 'plot' ? 'pin--plot' : ''}" style="--x:${x}%;--y:${y}%"><i></i><b>${esc(v.labels[id])}</b></span>`).join('');
   const rows = v.rows.map(([k, t]) => `<div class="row" data-rise><p class="label">${esc(k)}</p><p>${esc(t)}</p></div>`).join('');
   const body = `
 ${opener(c.nav[5][1], v.hero, v.intro)}
-<section class="map"><div class="wrap"><div class="map__frame" data-wipe><div class="frame__clip">${picture('map', v.mapAlt, { sizes: '100vw' })}</div><div class="map__pins" data-pins>${pins}</div></div>
+<section class="map"><div class="wrap">${areaMap(lang)}
 <div class="map__foot"><address class="label">${esc(v.address)}</address>${link(mapUrl, v.button, '', 'target="_blank" rel="noopener"')}</div></div></section>
 <section class="wide">${frame('north90', c.building.gallery[3].cap, { cls: 'frame--wide', cap: c.building.gallery[3].cap })}</section>
 <section class="rows"><div class="wrap rows__list">${rows}</div></section>`;

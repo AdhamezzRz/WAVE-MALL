@@ -135,8 +135,6 @@ const content = {
       description: 'The Wave is on North 90 Street in New Cairo’s First Sector, between the two Teseen roads, beside the Air Force Hospital and a short walk from the monorail.',
       hero: { a: 'North 90,', b: 'First Sector.' },
       intro: 'On the block between the two Teseen roads, among the banks, offices and hospitals that keep the First Sector busy every day.',
-      labels: { plot: 'The Wave', north90: 'North 90', south90: 'South 90 · Monorail', airforce: 'Air Force Hospital', nasaaem: 'Nasaaem Hospital', nbk: 'NBK', fab: 'FABMISR' },
-      mapAlt: 'Satellite view of the First Sector, New Cairo, with The Wave between North 90 and South 90.',
       address: 'North 90 Street, First Sector, New Cairo, Egypt',
       button: 'Open in Google Maps',
       rows: [
@@ -276,8 +274,6 @@ const content = {
       description: 'يقع ذا ويف على شارع التسعين الشمالي في القطاع الأول بالقاهرة الجديدة، بين طريقي التسعين، بجوار مستشفى القوات الجوية وعلى بُعد خطوات من المونوريل.',
       hero: { a: 'التسعين الشمالي،', b: 'القطاع الأول.' },
       intro: 'في الكتلة بين طريقي التسعين، وسط البنوك والمكاتب والمستشفيات التي تُبقي القطاع الأول نابضاً كل يوم.',
-      labels: { plot: 'ذا ويف', north90: 'التسعين الشمالي', south90: 'التسعين الجنوبي · المونوريل', airforce: 'مستشفى القوات الجوية', nasaaem: 'مستشفى نسائم', nbk: 'بنك الكويت الوطني', fab: 'بنك أبوظبي الأول' },
-      mapAlt: 'صورة فضائية للقطاع الأول بالقاهرة الجديدة مع ذا ويف بين التسعين الشمالي والجنوبي.',
       address: 'شارع التسعين الشمالي، القطاع الأول، القاهرة الجديدة، مصر',
       button: 'افتح في خرائط جوجل',
       rows: [

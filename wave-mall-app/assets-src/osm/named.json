@@ -1,0 +1,5189 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-05-31T22:37:44Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "node",
+  "id": 591905916,
+  "lat": 30.0259621,
+  "lon": 31.4551578,
+  "tags": {
+    "name": "Dusit Thani Hotel",
+    "stars": "5",
+    "tourism": "hotel",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 602445427,
+  "lat": 30.0040855,
+  "lon": 31.4248829,
+  "tags": {
+    "alt_name": "مترو",
+    "name": "مترو",
+    "name:ar": "مترو",
+    "name:en": "Metro Supermarket",
+    "name:fa": "مترو",
+    "shop": "supermarket"
+  }
+},
+{
+  "type": "node",
+  "id": 1015761172,
+  "lat": 30.0117503,
+  "lon": 31.4332336,
+  "tags": {
+    "amenity": "school",
+    "name": "المدرسة الألمانية الخاصة",
+    "name:ar": "المدرسة الألمانية الخاصة",
+    "name:en": "Private Deutsche Schule",
+    "website": "www.private-deutsche-schule.de"
+  }
+},
+{
+  "type": "node",
+  "id": 1015767913,
+  "lat": 30.0169119,
+  "lon": 31.4321586,
+  "tags": {
+    "amenity": "fuel",
+    "name": "محطة توتال",
+    "name:ar": "محطة توتال",
+    "name:en": "Total Gas station"
+  }
+},
+{
+  "type": "node",
+  "id": 1015767917,
+  "lat": 30.0172397,
+  "lon": 31.4322951,
+  "tags": {
+    "amenity": "fast_food",
+    "brand": "McDonald's",
+    "brand:wikidata": "Q38076",
+    "brand:wikipedia": "en:McDonald's",
+    "cuisine": "burger",
+    "name": "McDonald's",
+    "name:ar": "ماكدونالدز",
+    "name:en": "McDonalds",
+    "takeaway": "yes",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2287575529,
+  "lat": 30.0170217,
+  "lon": 31.4132435,
+  "tags": {
+    "amenity": "bank",
+    "name": "بنك كريدى أجريكول",
+    "name:ar": "بنك كريدى أجريكول",
+    "name:en": "Crédit Agricole Bank"
+  }
+},
+{
+  "type": "node",
+  "id": 2287575530,
+  "lat": 30.0170907,
+  "lon": 31.4132426,
+  "tags": {
+    "name": "اتصالات",
+    "name:ar": "اتصالات",
+    "name:en": "Etisalat",
+    "shop": "mobile_shop"
+  }
+},
+{
+  "type": "node",
+  "id": 2287575533,
+  "lat": 30.0178254,
+  "lon": 31.4117862,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "ماندرين قويدر",
+    "name:ar": "ماندرين قويدر",
+    "name:en": "Mandarin Queider"
+  }
+},
+{
+  "type": "node",
+  "id": 2287575534,
+  "lat": 30.0167337,
+  "lon": 31.4129048,
+  "tags": {
+    "amenity": "cafe",
+    "name": "بول",
+    "name:ar": "بول",
+    "name:en": "Paul"
+  }
+},
+{
+  "type": "node",
+  "id": 2287575535,
+  "lat": 30.0172553,
+  "lon": 31.4132360,
+  "tags": {
+    "name": "سمير وعلى",
+    "name:ar": "سمير وعلى",
+    "name:en": "Samir & Ali",
+    "shop": "stationery"
+  }
+},
+{
+  "type": "node",
+  "id": 2287575536,
+  "lat": 30.0167303,
+  "lon": 31.4125208,
+  "tags": {
+    "amenity": "cafe",
+    "brand": "ستاربكس",
+    "brand:ar": "ستاربكس",
+    "brand:en": "Starbucks",
+    "brand:wikidata": "Q37158",
+    "cuisine": "coffee_shop",
+    "name": "ستاربكس",
+    "name:ar": "ستاربكس",
+    "name:en": "Starbucks",
+    "official_name": "ستاربكس كافية",
+    "official_name:ar": "ستاربكس كافية",
+    "official_name:en": "Starbucks Coffee",
+    "outdoor_seating": "yes",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2287575537,
+  "lat": 30.0182171,
+  "lon": 31.4118066,
+  "tags": {
+    "name": "فودافون",
+    "name:ar": "فودافون",
+    "name:en": "Vodafone",
+    "shop": "mobile_shop"
+  }
+},
+{
+  "type": "node",
+  "id": 2293628448,
+  "lat": 30.0170821,
+  "lon": 31.4134078,
+  "tags": {
+    "name": "كارفور",
+    "name:ar": "كارفور",
+    "name:en": "Carrefour",
+    "shop": "supermarket"
+  }
+},
+{
+  "type": "node",
+  "id": 2297596468,
+  "lat": 30.0167711,
+  "lon": 31.4118027,
+  "tags": {
+    "amenity": "bank",
+    "name": "بنك إن إس جى بى",
+    "name:ar": "بنك إن إس جى بى",
+    "name:en": "NSGB Bank"
+  }
+},
+{
+  "type": "node",
+  "id": 2297596470,
+  "lat": 30.0168136,
+  "lon": 31.4131951,
+  "tags": {
+    "name": "إتش آند إم",
+    "name:ar": "إتش آند إم",
+    "name:en": "H&M",
+    "shop": "clothes"
+  }
+},
+{
+  "type": "node",
+  "id": 2297596471,
+  "lat": 30.0172577,
+  "lon": 31.4122792,
+  "tags": {
+    "amenity": "cafe",
+    "name": "سيلانترو",
+    "name:ar": "سيلانترو",
+    "name:en": "Cilantro Cafe"
+  }
+},
+{
+  "type": "node",
+  "id": 2302350011,
+  "lat": 30.0166627,
+  "lon": 31.4122721,
+  "tags": {
+    "name": "Burberry",
+    "name:ar": "بوربيرى",
+    "name:en": "Burburry",
+    "shop": "clothes"
+  }
+},
+{
+  "type": "node",
+  "id": 2302350012,
+  "lat": 30.0166648,
+  "lon": 31.4121043,
+  "tags": {
+    "name": "سالفاتورى فيراجامو",
+    "name:ar": "سالفاتورى فيراجامو",
+    "name:en": "Salvatore Ferragamo",
+    "shop": "clothes"
+  }
+},
+{
+  "type": "node",
+  "id": 2302350013,
+  "lat": 30.0169471,
+  "lon": 31.4116767,
+  "tags": {
+    "name": "أباظة",
+    "name:ar": "أباظة",
+    "name:en": "Abaza",
+    "shop": "car"
+  }
+},
+{
+  "type": "node",
+  "id": 2303724882,
+  "lat": 30.0169295,
+  "lon": 31.4127134,
+  "tags": {
+    "name": "داليدرس",
+    "name:ar": "داليدرس",
+    "name:en": "Dalydress",
+    "shop": "clothes"
+  }
+},
+{
+  "type": "node",
+  "id": 2303724883,
+  "lat": 30.0172522,
+  "lon": 31.4117789,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "international",
+    "name": "أروما",
+    "name:ar": "أروما",
+    "name:en": "Aroma"
+  }
+},
+{
+  "type": "node",
+  "id": 2303724884,
+  "lat": 30.0173206,
+  "lon": 31.4117789,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "japanese",
+    "name": "مورى سوشى",
+    "name:ar": "مورى سوشى",
+    "name:en": "Mori Sushi"
+  }
+},
+{
+  "type": "node",
+  "id": 2303724885,
+  "lat": 30.0174001,
+  "lon": 31.4117789,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "burger",
+    "name": "بفالو برجر",
+    "name:ar": "بفالو برجر",
+    "name:en": "Buffalo Burger"
+  }
+},
+{
+  "type": "node",
+  "id": 2310832938,
+  "lat": 30.0187286,
+  "lon": 31.4230815,
+  "tags": {
+    "amenity": "bank",
+    "atm": "yes",
+    "name": "البنك التجاري الدولي",
+    "name:ar": "البنك التجاري الدولي",
+    "name:en": "CIB (Commercial International Bank)",
+    "operator": "البنك التجاري الدولي"
+  }
+},
+{
+  "type": "node",
+  "id": 2574275515,
+  "lat": 30.0302092,
+  "lon": 31.4093709,
+  "tags": {
+    "brand": "Marks & Spencer",
+    "brand:wikidata": "Q714491",
+    "brand:wikipedia": "en:Marks & Spencer",
+    "name": "Marks & Spencer",
+    "shop": "department_store"
+  }
+},
+{
+  "type": "node",
+  "id": 2581546054,
+  "lat": 30.0193909,
+  "lon": 31.4216881,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "chicken",
+    "name": "أندريا المريوطية",
+    "name:ar": "أندريا المريوطية",
+    "name:en": "Andrea Al Maryouteya"
+  }
+},
+{
+  "type": "node",
+  "id": 2581546058,
+  "lat": 30.0195522,
+  "lon": 31.4217189,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "sandwich",
+    "name": "شاورمة فاكتورى",
+    "name:ar": "شاورمة فاكتورى",
+    "name:en": "Shawarma Factory"
+  }
+},
+{
+  "type": "node",
+  "id": 2581546061,
+  "lat": 30.0194164,
+  "lon": 31.4213342,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "italian",
+    "name": "بريغو",
+    "name:ar": "بريغو",
+    "name:en": "Prego"
+  }
+},
+{
+  "type": "node",
+  "id": 2581546065,
+  "lat": 30.0187754,
+  "lon": 31.4214945,
+  "tags": {
+    "amenity": "cafe",
+    "name": "سكوير",
+    "name:ar": "سكوير",
+    "name:en": "Square"
+  }
+},
+{
+  "type": "node",
+  "id": 2581546071,
+  "lat": 30.0191310,
+  "lon": 31.4214172,
+  "tags": {
+    "amenity": "cafe",
+    "name": "تايم أوت",
+    "name:ar": "تايم أوت",
+    "name:en": "Time Out"
+  }
+},
+{
+  "type": "node",
+  "id": 2582461462,
+  "lat": 30.0187502,
+  "lon": 31.4222633,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "kebab",
+    "name": "مطعم المنوفى",
+    "name:ar": "مطعم المنوفى",
+    "name:en": "El Menoufy"
+  }
+},
+{
+  "type": "node",
+  "id": 2582461463,
+  "lat": 30.0189174,
+  "lon": 31.4250149,
+  "tags": {
+    "amenity": "cafe",
+    "name": "أينشتاين كفي شب",
+    "name:ar": "كفي شب",
+    "name:en": "Einstein Cafe"
+  }
+},
+{
+  "type": "node",
+  "id": 2582476616,
+  "lat": 30.0172185,
+  "lon": 31.4316755,
+  "tags": {
+    "amenity": "cafe",
+    "name": "ذا موود كافيه",
+    "name:ar": "ذا موود كافيه",
+    "name:en": "The Mood Cafe"
+  }
+},
+{
+  "type": "node",
+  "id": 2582476622,
+  "lat": 30.0171233,
+  "lon": 31.4321802,
+  "tags": {
+    "name": "دي آش إل",
+    "name:ar": "دي آش إل",
+    "name:de": "DHL",
+    "name:en": "DHL",
+    "name:fr": "DHL",
+    "shop": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2584742886,
+  "lat": 30.0210910,
+  "lon": 31.4318292,
+  "tags": {
+    "amenity": "fuel",
+    "name": "محطة بنزين موبيل",
+    "name:ar": "محطة بنزين موبيل",
+    "name:en": "Mobil Gas station"
+  }
+},
+{
+  "type": "node",
+  "id": 2584742887,
+  "lat": 30.0207735,
+  "lon": 31.4321642,
+  "tags": {
+    "amenity": "fast_food",
+    "brand": "Subway",
+    "brand:wikidata": "Q244457",
+    "brand:wikipedia": "en:Subway (restaurant)",
+    "cuisine": "sandwich",
+    "name": "Subway",
+    "name:ar": "صابواى",
+    "name:en": "Subway",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2586754737,
+  "lat": 30.0050804,
+  "lon": 31.4217863,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "مطعم سبكترا",
+    "name:ar": "مطعم سبكترا",
+    "name:en": "Spectra tagamoaa"
+  }
+},
+{
+  "type": "node",
+  "id": 2588999760,
+  "lat": 30.0167110,
+  "lon": 31.4118789,
+  "tags": {
+    "amenity": "pharmacy",
+    "name": "صيدلية العزبى",
+    "name:ar": "صيدلية العزبى",
+    "name:en": "El Ezaby Pharmacy"
+  }
+},
+{
+  "type": "node",
+  "id": 2589739628,
+  "lat": 30.0168925,
+  "lon": 31.4272707,
+  "tags": {
+    "name": "شركة سامسونج الكترونيكس مصر",
+    "name:ar": "شركة سامسونج الكترونيكس مصر",
+    "name:en": "Samsung Electronics Egypt",
+    "office": "company"
+  }
+},
+{
+  "type": "node",
+  "id": 2589739629,
+  "lat": 30.0168938,
+  "lon": 31.4270224,
+  "tags": {
+    "amenity": "bank",
+    "atm": "yes",
+    "name": "البنك الأهلى المتحد",
+    "name:ar": "البنك الأهلى المتحد",
+    "name:en": "ahli united bank"
+  }
+},
+{
+  "type": "node",
+  "id": 2589750756,
+  "lat": 30.0203535,
+  "lon": 31.4211883,
+  "tags": {
+    "name": "نستله",
+    "name:ar": "نستله",
+    "name:en": "Nestlé",
+    "office": "company"
+  }
+},
+{
+  "type": "node",
+  "id": 2589750757,
+  "lat": 30.0206897,
+  "lon": 31.4211729,
+  "tags": {
+    "name": "ألستوم",
+    "name:ar": "ألستوم",
+    "name:en": "Alstom",
+    "office": "company"
+  }
+},
+{
+  "type": "node",
+  "id": 3223255753,
+  "lat": 30.0186963,
+  "lon": 31.4231660,
+  "tags": {
+    "amenity": "bank",
+    "brand": "Barclays",
+    "brand:wikidata": "Q245343",
+    "brand:wikipedia": "en:Barclays",
+    "name": "Barclays",
+    "name:ar": "باركليز",
+    "name:en": "Barclays",
+    "operator": "باركليز"
+  }
+},
+{
+  "type": "node",
+  "id": 3687053258,
+  "lat": 30.0288000,
+  "lon": 31.4093725,
+  "tags": {
+    "brand": "Paul",
+    "brand:wikidata": "Q3370417",
+    "brand:wikipedia": "en:Paul (bakery)",
+    "name": "Paul",
+    "shop": "bakery"
+  }
+},
+{
+  "type": "node",
+  "id": 3687053259,
+  "lat": 30.0288731,
+  "lon": 31.4092491,
+  "tags": {
+    "amenity": "cafe",
+    "brand": "Costa",
+    "brand:wikidata": "Q608845",
+    "brand:wikipedia": "en:Costa Coffee",
+    "cuisine": "coffee_shop",
+    "name": "Costa",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3687053260,
+  "lat": 30.0292470,
+  "lon": 31.4094114,
+  "tags": {
+    "amenity": "restaurant",
+    "brand": "Ruby Tuesday",
+    "brand:wikidata": "Q7376400",
+    "brand:wikipedia": "en:Ruby Tuesday (restaurant)",
+    "cuisine": "american",
+    "name": "Ruby Tuesday"
+  }
+},
+{
+  "type": "node",
+  "id": 3687053261,
+  "lat": 30.0293945,
+  "lon": 31.4096018,
+  "tags": {
+    "amenity": "restaurant",
+    "brand": "Applebee's Neighborhood Grill & Bar",
+    "brand:wikidata": "Q621532",
+    "brand:wikipedia": "en:Applebee's",
+    "cuisine": "american",
+    "name": "Applebee's",
+    "official_name": "Applebee's Neighborhood Grill & Bar"
+  }
+},
+{
+  "type": "node",
+  "id": 3687053262,
+  "lat": 30.0288313,
+  "lon": 31.4090345,
+  "tags": {
+    "amenity": "restaurant",
+    "brand": "Chili's",
+    "brand:wikidata": "Q1072948",
+    "brand:wikipedia": "en:Chili's",
+    "cuisine": "tex-mex",
+    "name": "Chili's",
+    "official_name": "Chili's Grill & Bar"
+  }
+},
+{
+  "type": "node",
+  "id": 3687053263,
+  "lat": 30.0284505,
+  "lon": 31.4090520,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "lebanese",
+    "name": "أوليفز",
+    "name:ar": "أوليفز",
+    "name:en": "Olives"
+  }
+},
+{
+  "type": "node",
+  "id": 3687053264,
+  "lat": 30.0283727,
+  "lon": 31.4090989,
+  "tags": {
+    "amenity": "cafe",
+    "name": "كافيه سوبريم",
+    "name:ar": "كافيه سوبريم",
+    "name:en": "Cafe Supreme"
+  }
+},
+{
+  "type": "node",
+  "id": 3687053265,
+  "lat": 30.0282659,
+  "lon": 31.4090949,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "sushi",
+    "name": "سوشى باى",
+    "name:ar": "سوشى باى",
+    "name:en": "Sushi Bay"
+  }
+},
+{
+  "type": "node",
+  "id": 3687053266,
+  "lat": 30.0284238,
+  "lon": 31.4088374,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "egyptian",
+    "name": "ستوديو مصر",
+    "name:ar": "ستوديو مصر",
+    "name:en": "Sudio Misr"
+  }
+},
+{
+  "type": "node",
+  "id": 3687053267,
+  "lat": 30.0291715,
+  "lon": 31.4094610,
+  "tags": {
+    "amenity": "restaurant",
+    "brand": "TGI Friday's",
+    "brand:wikidata": "Q1524184",
+    "brand:wikipedia": "en:TGI Fridays",
+    "cuisine": "american",
+    "name": "TGI Friday's"
+  }
+},
+{
+  "type": "node",
+  "id": 3780919828,
+  "lat": 30.0131949,
+  "lon": 31.4252011,
+  "tags": {
+    "amenity": "kindergarten",
+    "name": "حضانة كيدتوبيا",
+    "name:ar": "حضانة كيدتوبيا",
+    "name:en": "Kidtopia Nursery",
+    "opening_hours": "10:00-22:00",
+    "phone": "+201001696671"
+  }
+},
+{
+  "type": "node",
+  "id": 4198286391,
+  "lat": 30.0211482,
+  "lon": 31.4207761,
+  "tags": {
+    "addr:housenumber": "44 مبني سوميت",
+    "addr:street": "شارع التسعين الشمالى",
+    "addr:street:en": "Al Tesein Northern Street",
+    "name": "تساهيل",
+    "name:ar": "تساهيل",
+    "name:en": "VFS Tasheel International",
+    "opening_hours": "Su-Th 09:00-17:00",
+    "shop": "travel_agency",
+    "website": "https://www.vfstasheel.com"
+  }
+},
+{
+  "type": "node",
+  "id": 4444670689,
+  "lat": 30.0186974,
+  "lon": 31.4230325,
+  "tags": {
+    "amenity": "bank",
+    "name": "البنك المصري الخليجي",
+    "name:ar": "البنك المصري الخليجي",
+    "name:en": "EG Bank",
+    "operator": "البنك المصري الخليجي",
+    "phone": "19342"
+  }
+},
+{
+  "type": "node",
+  "id": 4537142790,
+  "lat": 30.0043768,
+  "lon": 31.4263456,
+  "tags": {
+    "amenity": "courthouse",
+    "name": "محكمة القاهرة الجديدة",
+    "name:ar": "محكمة القاهرة الجديدة"
+  }
+},
+{
+  "type": "node",
+  "id": 4563419802,
+  "lat": 30.0343998,
+  "lon": 31.4298677,
+  "tags": {
+    "name": "الجامعة",
+    "name:ar": "الجامعة",
+    "name:en": "university",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 4585239799,
+  "lat": 30.0178197,
+  "lon": 31.4540516,
+  "tags": {
+    "name": "محمد معروف",
+    "name:ar": "محمد معروف",
+    "shop": "bookmaker"
+  }
+},
+{
+  "type": "node",
+  "id": 4624086870,
+  "lat": 30.0098295,
+  "lon": 31.4321321,
+  "tags": {
+    "name": "The Broker",
+    "shop": "books"
+  }
+},
+{
+  "type": "node",
+  "id": 4736355921,
+  "lat": 30.0167074,
+  "lon": 31.4201221,
+  "tags": {
+    "amenity": "bank",
+    "name": "HSBC BANK فرع التجمع",
+    "name:ar": "HSBC BANK فرع التجمع"
+  }
+},
+{
+  "type": "node",
+  "id": 4997492280,
+  "lat": 30.0177975,
+  "lon": 31.4117854,
+  "tags": {
+    "addr:housenumber": "Downtown Mall",
+    "addr:street": "Road 90",
+    "amenity": "restaurant",
+    "cuisine": "egyptian",
+    "name": "Zooba",
+    "opening_hours": "Mo-Sa 08:00-01:00; Su 08:00-00:00",
+    "website": "http://www.zoobaeats.com/"
+  }
+},
+{
+  "type": "node",
+  "id": 4997492281,
+  "lat": 30.0174596,
+  "lon": 31.4117792,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "lebanese",
+    "name": "Olives"
+  }
+},
+{
+  "type": "node",
+  "id": 5229290221,
+  "lat": 30.0226637,
+  "lon": 31.4280016,
+  "tags": {
+    "amenity": "doctors",
+    "healthcare": "doctor",
+    "name": "فيلا الدكتور شريف فكري",
+    "name:ar": "فيلا الدكتور شريف فكري",
+    "name:en": "Villa DR Sherif fikry"
+  }
+},
+{
+  "type": "node",
+  "id": 5238514626,
+  "lat": 30.0227992,
+  "lon": 31.4241254,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "burger",
+    "delivery": "yes",
+    "name": "داديز برغر",
+    "name:ar": "داديز برغر",
+    "name:en": "Daddy's Burger",
+    "outdoor_seating": "yes",
+    "phone": "01002313666"
+  }
+},
+{
+  "type": "node",
+  "id": 5238514627,
+  "lat": 30.0229781,
+  "lon": 31.4245975,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "pizza;italian",
+    "name": "توسكانا باستا غريل",
+    "name:ar": "توسكانا باستا غريل",
+    "name:en": "Tuscany Pasta Grill",
+    "phone": "01069555566"
+  }
+},
+{
+  "type": "node",
+  "id": 5238514628,
+  "lat": 30.0226576,
+  "lon": 31.4241737,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "regional",
+    "name": "ببر غريل لونج",
+    "name:ar": "ببر غريل لونج",
+    "name:en": "Pepper Grill Lounge",
+    "phone": "01283308807"
+  }
+},
+{
+  "type": "node",
+  "id": 5238514629,
+  "lat": 30.0226599,
+  "lon": 31.4243454,
+  "tags": {
+    "amenity": "cafe",
+    "brand": "Coffeeshop Company",
+    "brand:wikidata": "Q873767",
+    "brand:wikipedia": "en:Coffeeshop Company",
+    "cuisine": "coffee_shop",
+    "name": "Coffeeshop Company",
+    "name:ar": "شركة كفي شوب",
+    "name:en": "Coffee Shop Company",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5238514630,
+  "lat": 30.0228759,
+  "lon": 31.4241228,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "italian;chicken",
+    "name": "فرسل كنترب كويزين",
+    "name:ar": "فرسل كنترب كويزين",
+    "name:en": "Versal Country Cuisine",
+    "phone": "01154733364"
+  }
+},
+{
+  "type": "node",
+  "id": 5238514631,
+  "lat": 30.0229247,
+  "lon": 31.4244875,
+  "tags": {
+    "amenity": "cafe",
+    "name": "كفي بريك",
+    "name:ar": "كفي بريك",
+    "name:en": "Coffee Break",
+    "phone": "01000088974"
+  }
+},
+{
+  "type": "node",
+  "id": 5238514632,
+  "lat": 30.0229874,
+  "lon": 31.4243534,
+  "tags": {
+    "amenity": "cafe",
+    "cuisine": "pizza;italian",
+    "name": "كافيه سوبريم",
+    "name:ar": "كافيه سوبريم",
+    "name:en": "Cafe Supreme"
+  }
+},
+{
+  "type": "node",
+  "id": 5238514633,
+  "lat": 30.0229990,
+  "lon": 31.4241523,
+  "tags": {
+    "amenity": "restaurant",
+    "hotline": "16287",
+    "name": "فطيرة",
+    "name:ar": "فطيرة"
+  }
+},
+{
+  "type": "node",
+  "id": 5238514634,
+  "lat": 30.0229781,
+  "lon": 31.4241147,
+  "tags": {
+    "description": "تسلية ومتنزه",
+    "name": "ليغو مانيا",
+    "name:ar": "ليغو مانيا",
+    "name:en": "Lego Mania",
+    "phone": "01022229441",
+    "shop": "toys"
+  }
+},
+{
+  "type": "node",
+  "id": 5239489421,
+  "lat": 30.0207799,
+  "lon": 31.4318017,
+  "tags": {
+    "brand": "Mobil Mart",
+    "brand:wikidata": "Q3088656",
+    "brand:wikipedia": "en:Mobil",
+    "name": "Mobil Mart",
+    "shop": "convenience"
+  }
+},
+{
+  "type": "node",
+  "id": 5239489422,
+  "lat": 30.0208437,
+  "lon": 31.4317079,
+  "tags": {
+    "alt_name": "Dunkin' Donuts",
+    "amenity": "fast_food",
+    "brand": "Dunkin'",
+    "brand:wikidata": "Q847743",
+    "brand:wikipedia": "en:Dunkin' Donuts",
+    "cuisine": "donut;coffee_shop",
+    "name": "Dunkin'",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5239489423,
+  "lat": 30.0207740,
+  "lon": 31.4317562,
+  "tags": {
+    "brand": "Kodak Express",
+    "brand:wikidata": "Q6425126",
+    "brand:wikipedia": "en:Kodak Express",
+    "name": "Kodak Express",
+    "shop": "photo"
+  }
+},
+{
+  "type": "node",
+  "id": 5239489424,
+  "lat": 30.0207067,
+  "lon": 31.4317293,
+  "tags": {
+    "name": "Pets Office",
+    "shop": "pet"
+  }
+},
+{
+  "type": "node",
+  "id": 5239489425,
+  "lat": 30.0208437,
+  "lon": 31.4320083,
+  "tags": {
+    "amenity": "pharmacy",
+    "healthcare": "pharmacy",
+    "name": "صيدلية السداوي",
+    "name:ar": "صيدلية السداوي"
+  }
+},
+{
+  "type": "node",
+  "id": 5239489426,
+  "lat": 30.0207996,
+  "lon": 31.4319493,
+  "tags": {
+    "name": "Al Amin",
+    "name:ar": "حلواني الأمين",
+    "shop": "pastry"
+  }
+},
+{
+  "type": "node",
+  "id": 5241045634,
+  "lat": 30.0217782,
+  "lon": 31.4199576,
+  "tags": {
+    "name": "find well",
+    "office": "company"
+  }
+},
+{
+  "type": "node",
+  "id": 5249351619,
+  "lat": 30.0171929,
+  "lon": 31.4322577,
+  "tags": {
+    "amenity": "cafe",
+    "cuisine": "regional",
+    "name": "مقهى سيلانترو",
+    "name:ar": "مقهى سيلانترو",
+    "name:en": "Cilantro Café"
+  }
+},
+{
+  "type": "node",
+  "id": 5249375266,
+  "lat": 30.0171182,
+  "lon": 31.4123789,
+  "tags": {
+    "name": "Payless",
+    "name:ar": "بايلس",
+    "name:en": "Payless",
+    "shop": "shoes"
+  }
+},
+{
+  "type": "node",
+  "id": 5249375267,
+  "lat": 30.0172460,
+  "lon": 31.4121078,
+  "tags": {
+    "amenity": "cafe",
+    "cuisine": "coffee_shop",
+    "name": "House of Cocoa"
+  }
+},
+{
+  "type": "node",
+  "id": 5249473169,
+  "lat": 30.0173526,
+  "lon": 31.4129811,
+  "tags": {
+    "name": "Salem",
+    "name:ar": "سالم للأقمشة",
+    "shop": "tailor"
+  }
+},
+{
+  "type": "node",
+  "id": 5249473172,
+  "lat": 30.0173971,
+  "lon": 31.4128246,
+  "tags": {
+    "name": "Damas",
+    "name:ar": "داماس",
+    "shop": "jewelry"
+  }
+},
+{
+  "type": "node",
+  "id": 5249473173,
+  "lat": 30.0175002,
+  "lon": 31.4124230,
+  "tags": {
+    "name": "Salem",
+    "name:ar": "سالم",
+    "shop": "tailor"
+  }
+},
+{
+  "type": "node",
+  "id": 5249473174,
+  "lat": 30.0174537,
+  "lon": 31.4129787,
+  "tags": {
+    "name": "Anzio Massimo",
+    "shop": "clothes"
+  }
+},
+{
+  "type": "node",
+  "id": 5249473175,
+  "lat": 30.0178075,
+  "lon": 31.4116104,
+  "tags": {
+    "amenity": "cafe",
+    "name": "Kazouza",
+    "name:ar": "كازوزة"
+  }
+},
+{
+  "type": "node",
+  "id": 5249473176,
+  "lat": 30.0181229,
+  "lon": 31.4117645,
+  "tags": {
+    "amenity": "cafe",
+    "cuisine": "regional;coffee_shop",
+    "name": "Carpaccio Cafe"
+  }
+},
+{
+  "type": "node",
+  "id": 5249473177,
+  "lat": 30.0181665,
+  "lon": 31.4119209,
+  "tags": {
+    "amenity": "cafe",
+    "cuisine": "regional;coffee_shop",
+    "name": "Coffeeshop Company"
+  }
+},
+{
+  "type": "node",
+  "id": 5249473178,
+  "lat": 30.0181350,
+  "lon": 31.4120961,
+  "tags": {
+    "name": "أديداس",
+    "name:ar": "أديداس",
+    "name:en": "Adidas",
+    "shop": "clothes"
+  }
+},
+{
+  "type": "node",
+  "id": 5249473179,
+  "lat": 30.0181897,
+  "lon": 31.4115348,
+  "tags": {
+    "name": "L'ECLAIR PARIS",
+    "shop": "pastry"
+  }
+},
+{
+  "type": "node",
+  "id": 5249473181,
+  "lat": 30.0184282,
+  "lon": 31.4116828,
+  "tags": {
+    "amenity": "cafe",
+    "name": "Grapes Cafe"
+  }
+},
+{
+  "type": "node",
+  "id": 5249473182,
+  "lat": 30.0182806,
+  "lon": 31.4119560,
+  "tags": {
+    "name": "TATA TIO",
+    "shop": "shoes"
+  }
+},
+{
+  "type": "node",
+  "id": 5249473183,
+  "lat": 30.0182462,
+  "lon": 31.4120471,
+  "tags": {
+    "name": "La Cuisine Egypt",
+    "shop": "houseware"
+  }
+},
+{
+  "type": "node",
+  "id": 5249473184,
+  "lat": 30.0183130,
+  "lon": 31.4121381,
+  "tags": {
+    "name": "Sugar",
+    "shop": "gift"
+  }
+},
+{
+  "type": "node",
+  "id": 5249473185,
+  "lat": 30.0177913,
+  "lon": 31.4119677,
+  "tags": {
+    "amenity": "ice_cream",
+    "name": "Cold Stone Creamery"
+  }
+},
+{
+  "type": "node",
+  "id": 5249473186,
+  "lat": 30.0169098,
+  "lon": 31.4133220,
+  "tags": {
+    "name": "كارفور",
+    "name:ar": "كارفور",
+    "name:en": "Carrefour",
+    "operator": "كارفور",
+    "shop": "supermarket"
+  }
+},
+{
+  "type": "node",
+  "id": 5249473187,
+  "lat": 30.0175184,
+  "lon": 31.4126098,
+  "tags": {
+    "name": "Concrete",
+    "shop": "clothes"
+  }
+},
+{
+  "type": "node",
+  "id": 5249473188,
+  "lat": 30.0173991,
+  "lon": 31.4133360,
+  "tags": {
+    "name": "Kaian",
+    "shop": "furniture"
+  }
+},
+{
+  "type": "node",
+  "id": 5249473191,
+  "lat": 30.0178620,
+  "lon": 31.4127523,
+  "tags": {
+    "name": "Samsonite",
+    "shop": "bag"
+  }
+},
+{
+  "type": "node",
+  "id": 5249473192,
+  "lat": 30.0179834,
+  "lon": 31.4127265,
+  "tags": {
+    "name": "Brush Beauty Salon",
+    "shop": "beauty"
+  }
+},
+{
+  "type": "node",
+  "id": 5249473194,
+  "lat": 30.0185112,
+  "lon": 31.4124057,
+  "tags": {
+    "amenity": "cafe",
+    "cuisine": "regional;coffee_shop",
+    "name": "Mojo Cafe"
+  }
+},
+{
+  "type": "node",
+  "id": 5249473195,
+  "lat": 30.0175778,
+  "lon": 31.4129768,
+  "tags": {
+    "clothes": "women",
+    "name": "Tie Shop",
+    "shop": "clothes"
+  }
+},
+{
+  "type": "node",
+  "id": 5249484744,
+  "lat": 30.0187582,
+  "lon": 31.4242832,
+  "tags": {
+    "amenity": "cafe",
+    "brand": "Coffeeshop Company",
+    "brand:wikidata": "Q873767",
+    "brand:wikipedia": "en:Coffeeshop Company",
+    "cuisine": "coffee_shop",
+    "name": "Coffeeshop Company",
+    "name:ar": "شركة كفي شب",
+    "name:en": "Coffeeshop Company",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5249484745,
+  "lat": 30.0186833,
+  "lon": 31.4254447,
+  "tags": {
+    "name": "Spinneys",
+    "shop": "supermarket"
+  }
+},
+{
+  "type": "node",
+  "id": 5249484746,
+  "lat": 30.0186916,
+  "lon": 31.4229543,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "الشبراوي",
+    "name:ar": "الشبراوي",
+    "name:en": "Al Shabrawy"
+  }
+},
+{
+  "type": "node",
+  "id": 5249514970,
+  "lat": 30.0195539,
+  "lon": 31.4207832,
+  "tags": {
+    "amenity": "pharmacy",
+    "healthcare": "pharmacy",
+    "name": "صيدلية الحضري",
+    "name:ar": "صيدلية الحضري",
+    "name:en": "Al Hadary Pharmacy"
+  }
+},
+{
+  "type": "node",
+  "id": 5249514971,
+  "lat": 30.0195445,
+  "lon": 31.4190331,
+  "tags": {
+    "amenity": "bank",
+    "name": "البنك الأهلي المتحد",
+    "name:ar": "البنك الأهلي المتحد",
+    "name:en": "Ahli United Bank",
+    "operator": "البنك الأهلي المتحد"
+  }
+},
+{
+  "type": "node",
+  "id": 5249514972,
+  "lat": 30.0194726,
+  "lon": 31.4190371,
+  "tags": {
+    "name": "بي تك",
+    "name:ar": "بي تك",
+    "name:en": "B Tech",
+    "shop": "houseware"
+  }
+},
+{
+  "type": "node",
+  "id": 5249514973,
+  "lat": 30.0193519,
+  "lon": 31.4190318,
+  "tags": {
+    "name": "فودافون",
+    "name:ar": "فودافون",
+    "name:en": "Vodafone",
+    "operator": "فودافون",
+    "shop": "mobile_phone"
+  }
+},
+{
+  "type": "node",
+  "id": 5325965308,
+  "lat": 30.0181817,
+  "lon": 31.4132541,
+  "tags": {
+    "name": "Villa Home Accesories",
+    "shop": "antiques"
+  }
+},
+{
+  "type": "node",
+  "id": 5325965309,
+  "lat": 30.0182537,
+  "lon": 31.4132568,
+  "tags": {
+    "name": "Onix Silver",
+    "shop": "jewelry"
+  }
+},
+{
+  "type": "node",
+  "id": 5325965310,
+  "lat": 30.0183303,
+  "lon": 31.4132487,
+  "tags": {
+    "name": "Cushy Home",
+    "shop": "bed"
+  }
+},
+{
+  "type": "node",
+  "id": 5325965311,
+  "lat": 30.0184255,
+  "lon": 31.4132433,
+  "tags": {
+    "name": "Le Reve Galerie",
+    "shop": "furniture"
+  }
+},
+{
+  "type": "node",
+  "id": 5325965313,
+  "lat": 30.0184813,
+  "lon": 31.4131575,
+  "tags": {
+    "name": "Lightology",
+    "shop": "furniture"
+  }
+},
+{
+  "type": "node",
+  "id": 5325965314,
+  "lat": 30.0184813,
+  "lon": 31.4130636,
+  "tags": {
+    "name": "Carina Body Wear",
+    "shop": "clothes"
+  }
+},
+{
+  "type": "node",
+  "id": 5325965315,
+  "lat": 30.0184790,
+  "lon": 31.4129939,
+  "tags": {
+    "amenity": "cinema",
+    "name": "9D Cinema"
+  }
+},
+{
+  "type": "node",
+  "id": 5325965316,
+  "lat": 30.0184784,
+  "lon": 31.4129135,
+  "tags": {
+    "name": "Orange Square",
+    "shop": "clothes"
+  }
+},
+{
+  "type": "node",
+  "id": 5325965317,
+  "lat": 30.0184769,
+  "lon": 31.4128131,
+  "tags": {
+    "name": "Print Shop",
+    "shop": "fabric"
+  }
+},
+{
+  "type": "node",
+  "id": 5325965318,
+  "lat": 30.0184738,
+  "lon": 31.4127245,
+  "tags": {
+    "name": "Home Touch",
+    "shop": "furniture"
+  }
+},
+{
+  "type": "node",
+  "id": 5325965319,
+  "lat": 30.0184784,
+  "lon": 31.4126306,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "Tycoon"
+  }
+},
+{
+  "type": "node",
+  "id": 5325965320,
+  "lat": 30.0181974,
+  "lon": 31.4130839,
+  "tags": {
+    "name": "Paul and Shark",
+    "shop": "clothes"
+  }
+},
+{
+  "type": "node",
+  "id": 5325967621,
+  "lat": 30.0181997,
+  "lon": 31.4129846,
+  "tags": {
+    "name": "English House",
+    "shop": "clothes"
+  }
+},
+{
+  "type": "node",
+  "id": 5325967622,
+  "lat": 30.0181974,
+  "lon": 31.4129015,
+  "tags": {
+    "name": "Scarpa",
+    "shop": "shoes"
+  }
+},
+{
+  "type": "node",
+  "id": 5325967623,
+  "lat": 30.0182044,
+  "lon": 31.4128076,
+  "tags": {
+    "name": "Harmont and Blaine",
+    "shop": "clothes"
+  }
+},
+{
+  "type": "node",
+  "id": 5325967624,
+  "lat": 30.0182044,
+  "lon": 31.4127191,
+  "tags": {
+    "name": "Nespresso",
+    "shop": "coffee"
+  }
+},
+{
+  "type": "node",
+  "id": 5325967625,
+  "lat": 30.0182113,
+  "lon": 31.4126333,
+  "tags": {
+    "name": "Inca & Co",
+    "shop": "furniture"
+  }
+},
+{
+  "type": "node",
+  "id": 5325967626,
+  "lat": 30.0182949,
+  "lon": 31.4126333,
+  "tags": {
+    "name": "Texmar",
+    "shop": "fabric"
+  }
+},
+{
+  "type": "node",
+  "id": 5325967627,
+  "lat": 30.0182973,
+  "lon": 31.4127137,
+  "tags": {
+    "name": "Eye Fashion Optics",
+    "shop": "optician"
+  }
+},
+{
+  "type": "node",
+  "id": 5325967628,
+  "lat": 30.0182949,
+  "lon": 31.4128022,
+  "tags": {
+    "name": "El Mawardy Jewelery",
+    "shop": "jewelry"
+  }
+},
+{
+  "type": "node",
+  "id": 5325967629,
+  "lat": 30.0182949,
+  "lon": 31.4128961,
+  "tags": {
+    "name": "Miss Roberta",
+    "shop": "shoes"
+  }
+},
+{
+  "type": "node",
+  "id": 5450135021,
+  "lat": 30.0235343,
+  "lon": 31.4266661,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "باتيو فود هب",
+    "name:ar": "باتيو فود هب",
+    "name:en": "Patio food hub",
+    "phone": "11835"
+  }
+},
+{
+  "type": "node",
+  "id": 5497601227,
+  "lat": 30.0187018,
+  "lon": 31.4213478,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "indian",
+    "name": "تاج المهراجا",
+    "name:ar": "تاج المهراجا",
+    "name:en": "Taj Maharaja"
+  }
+},
+{
+  "type": "node",
+  "id": 5648421042,
+  "lat": 30.0069885,
+  "lon": 31.4261012,
+  "tags": {
+    "amenity": "cafe",
+    "internet_access": "wlan",
+    "name": "ولعه",
+    "name:ar": "ولعه",
+    "name:en": "welaa"
+  }
+},
+{
+  "type": "node",
+  "id": 5648461927,
+  "lat": 30.0069513,
+  "lon": 31.4258864,
+  "tags": {
+    "amenity": "cafe",
+    "internet_access": "wlan",
+    "name": "ولعه",
+    "name:ar": "ولعه",
+    "name:en": "welaa"
+  }
+},
+{
+  "type": "node",
+  "id": 5708732792,
+  "lat": 30.0169422,
+  "lon": 31.4123814,
+  "tags": {
+    "clothes": "children",
+    "name": "ماذركير",
+    "name:ar": "ماذركير",
+    "name:en": "Mothercare",
+    "shop": "clothes"
+  }
+},
+{
+  "type": "node",
+  "id": 5708732793,
+  "lat": 30.0170127,
+  "lon": 31.4123814,
+  "tags": {
+    "name": "ذا بودي شوب The Body Shop",
+    "name:ar": "ذا بودي شوب",
+    "name:en": "The Body Shop",
+    "shop": "beauty"
+  }
+},
+{
+  "type": "node",
+  "id": 5817986000,
+  "lat": 30.0141317,
+  "lon": 31.4174992,
+  "tags": {
+    "name": "كريستال عصفور",
+    "name:ar": "كريستال عصفور",
+    "name:en": "Asfour Crystal",
+    "shop": "lighting"
+  }
+},
+{
+  "type": "node",
+  "id": 5817986001,
+  "lat": 30.0157195,
+  "lon": 31.4197853,
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:district": "التجمع الخامس",
+    "addr:district:en": "Fifth Settlement",
+    "addr:housenumber": "97",
+    "addr:neighbourhood": "منطقة 7",
+    "addr:neighbourhood:en": "Area 7",
+    "addr:postcode": "11835",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "addr:street": "شارع التسعين الجنوبي",
+    "addr:street:en": "Al Tesein Southern Street",
+    "addr:subdistrict": "الحى 1",
+    "addr:subdistrict:en": "District 1",
+    "amenity": "Companies",
+    "building": "yes",
+    "designation": "Companies",
+    "name": "أويل اند جاز سوليوشنز",
+    "name:ar": "أويل اند جاز سوليوشنز",
+    "name:en": "Oil and Gas Solutions"
+  }
+},
+{
+  "type": "node",
+  "id": 5817986002,
+  "lat": 30.0140498,
+  "lon": 31.4175031,
+  "tags": {
+    "name": "لاتينوز",
+    "name:ar": "لاتينوز",
+    "name:en": "Latino's",
+    "shop": "coffee"
+  }
+},
+{
+  "type": "node",
+  "id": 5817986003,
+  "lat": 30.0140927,
+  "lon": 31.4175017,
+  "tags": {
+    "amenity": "fast_food",
+    "name": "وفلز أوت",
+    "name:ar": "وفلز أوت",
+    "name:en": "Waffles Out"
+  }
+},
+{
+  "type": "node",
+  "id": 5817986005,
+  "lat": 30.0154188,
+  "lon": 31.4200617,
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:district": "التجمع الخامس",
+    "addr:district:en": "Fifth Settlement",
+    "addr:housenumber": "94",
+    "addr:neighbourhood": "منطقة 7",
+    "addr:neighbourhood:en": "Area 7",
+    "addr:postcode": "11835",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "addr:street": "شارع سليمان بن حرب",
+    "addr:street:en": "Soliman Ibn Harb Street",
+    "addr:subdistrict": "الحى 1",
+    "addr:subdistrict:en": "District 1",
+    "amenity": "childcare",
+    "designation": "Nurseries",
+    "name": "سوبر كيدز",
+    "name:ar": "سوبر كيدز",
+    "name:en": "Super Kids"
+  }
+},
+{
+  "type": "node",
+  "id": 5817986006,
+  "lat": 30.0110449,
+  "lon": 31.4156638,
+  "tags": {
+    "amenity": "Companies",
+    "name": "براينكويل",
+    "name:ar": "براينكويل",
+    "name:en": "Brainquil"
+  }
+},
+{
+  "type": "node",
+  "id": 5817986008,
+  "lat": 30.0143859,
+  "lon": 31.4200235,
+  "tags": {
+    "amenity": "Companies",
+    "name": "كيوب",
+    "name:ar": "كيوب",
+    "name:en": "Qube Consulting"
+  }
+},
+{
+  "type": "node",
+  "id": 5817986010,
+  "lat": 30.0147462,
+  "lon": 31.4181409,
+  "tags": {
+    "amenity": "hospital",
+    "emergency": "yes",
+    "name": "مستشفى",
+    "name:ar": "مستشفى",
+    "name:en": "Hospital"
+  }
+},
+{
+  "type": "node",
+  "id": 5817986011,
+  "lat": 30.0151519,
+  "lon": 31.4232968,
+  "tags": {
+    "addr:city": "Fifth Settlement New Cairo",
+    "addr:housenumber": "32",
+    "addr:street": "street 57",
+    "amenity": "kindergarten",
+    "email": "littlehearts_nursery@yahoo.com",
+    "name": "حضانه القلوب الصغيرة",
+    "name:ar": "حضانه القلوب الصغيرة",
+    "name:en": "Little Hearts Nursery and PreSchool"
+  }
+},
+{
+  "type": "node",
+  "id": 5817986012,
+  "lat": 30.0140257,
+  "lon": 31.4176124,
+  "tags": {
+    "name": "جى اوت مول",
+    "name:ar": "جى اوت مول",
+    "name:en": "G.OUT Mall",
+    "shop": "mall"
+  }
+},
+{
+  "type": "node",
+  "id": 5817986014,
+  "lat": 30.0139656,
+  "lon": 31.4175917,
+  "tags": {
+    "name": "لا فلور",
+    "name:ar": "لا فلور",
+    "name:en": "La Fleur",
+    "shop": "florist"
+  }
+},
+{
+  "type": "node",
+  "id": 5817986015,
+  "lat": 30.0140098,
+  "lon": 31.4175388,
+  "tags": {
+    "amenity": "fast_food",
+    "name": "وايلد برجر",
+    "name:ar": "وايلد برجر",
+    "name:en": "Wild Burger"
+  }
+},
+{
+  "type": "node",
+  "id": 5817986016,
+  "lat": 30.0139043,
+  "lon": 31.4177035,
+  "tags": {
+    "amenity": "pharmacy",
+    "name": "صيدلية العدوي",
+    "name:ar": "صيدلية العدوي",
+    "name:en": "El Adawy Pharmacy"
+  }
+},
+{
+  "type": "node",
+  "id": 5817986017,
+  "lat": 30.0139305,
+  "lon": 31.4176559,
+  "tags": {
+    "name": "يونيك شارمس",
+    "name:ar": "يونيك شارمس",
+    "name:en": "Unique Charms",
+    "shop": "accessories"
+  }
+},
+{
+  "type": "node",
+  "id": 6315499285,
+  "lat": 30.0060214,
+  "lon": 31.4153594,
+  "tags": {
+    "amenity": "school",
+    "name": "أخناتون المصرية للغات",
+    "name:ar": "أخناتون المصرية للغات",
+    "name:en": "Akhnaton Egyptian Language Schools"
+  }
+},
+{
+  "type": "node",
+  "id": 6345481886,
+  "lat": 30.0051060,
+  "lon": 31.4297908,
+  "tags": {
+    "addr:housenumber": "21",
+    "addr:postcode": "11835",
+    "addr:street": "79",
+    "email": "info@investor-egypt.com",
+    "name": "المستثمر للتنمية والإستثمار",
+    "name:ar": "المستثمر للتنمية والإستثمار",
+    "name:en": "investor",
+    "office": "company",
+    "opening_hours": "Sa-Th 10:00-18:00",
+    "phone": "01144610000",
+    "website": "https://investor-egypt.com"
+  }
+},
+{
+  "type": "node",
+  "id": 6420349535,
+  "lat": 30.0103225,
+  "lon": 31.4145751,
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:district": "التجمع الخامس",
+    "addr:district:en": "Fifth Settlement",
+    "addr:housenumber": "193",
+    "addr:neighbourhood": "منطقة 6",
+    "addr:neighbourhood:en": "Area 6",
+    "addr:postcode": "11835",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "addr:street": "شارع ابو حامد محمد",
+    "addr:street:en": "Abou Hamed Mohamed Street",
+    "addr:subdistrict": "الحى 1",
+    "addr:subdistrict:en": "District 1",
+    "name": "techtroll",
+    "office": "company"
+  }
+},
+{
+  "type": "node",
+  "id": 7029577285,
+  "lat": 30.0123506,
+  "lon": 31.4410660,
+  "tags": {
+    "name": "لابوتيه بيوتي سنتر",
+    "name:ar": "لابوتيه بيوتي سنتر",
+    "name:en": "la beaute beauty center",
+    "shop": "beauty"
+  }
+},
+{
+  "type": "node",
+  "id": 7728121485,
+  "lat": 30.0062017,
+  "lon": 31.4168674,
+  "tags": {
+    "name": "شيري شوب",
+    "name:ar": "شيري شوب",
+    "shop": "supermarket"
+  }
+},
+{
+  "type": "node",
+  "id": 7809848485,
+  "lat": 30.0126065,
+  "lon": 31.4320329,
+  "tags": {
+    "name": "ستار",
+    "name:ar": "ستار",
+    "shop": "supermarket"
+  }
+},
+{
+  "type": "node",
+  "id": 7809880185,
+  "lat": 30.0125050,
+  "lon": 31.4338305,
+  "tags": {
+    "name": "مول الكوثر",
+    "name:ar": "مول الكوثر",
+    "shop": "supermarket"
+  }
+},
+{
+  "type": "node",
+  "id": 8142449266,
+  "lat": 30.0043182,
+  "lon": 31.4211553,
+  "tags": {
+    "name": "Life Mall",
+    "shop": "mall"
+  }
+},
+{
+  "type": "node",
+  "id": 8206638961,
+  "lat": 30.0191507,
+  "lon": 31.4207257,
+  "tags": {
+    "air_conditioning": "yes",
+    "amenity": "restaurant",
+    "name": "مطعم أبو العربى للمأكولات البحرية",
+    "website": "https://www.facebook.com/abuelarabyseafood"
+  }
+},
+{
+  "type": "node",
+  "id": 8206638962,
+  "lat": 30.0191595,
+  "lon": 31.4205361,
+  "tags": {
+    "air_conditioning": "yes",
+    "amenity": "restaurant",
+    "delivery": "yes",
+    "name": "مطعم وح وح للسندوتشات",
+    "smoking": "separated",
+    "website": "https://www.facebook.com/w7w7restaurant"
+  }
+},
+{
+  "type": "node",
+  "id": 9389055618,
+  "lat": 30.0091988,
+  "lon": 31.4360756,
+  "tags": {
+    "addr:street": "شارع 38",
+    "name": "مفتاح ال سمرا",
+    "name:en": "key",
+    "phone": "01223230922",
+    "shop": "variety_store"
+  }
+},
+{
+  "type": "node",
+  "id": 9898538917,
+  "lat": 30.0055010,
+  "lon": 31.4136968,
+  "tags": {
+    "addr:street": "شارع إخناتون",
+    "amenity": "school",
+    "name": "إخناتون"
+  }
+},
+{
+  "type": "node",
+  "id": 9934008817,
+  "lat": 30.0091982,
+  "lon": 31.4360940,
+  "tags": {
+    "addr:street": "شارع 39",
+    "name": "مفتاح ال سمرا",
+    "name:en": "key",
+    "opening_hours": "24/7",
+    "phone": "01223230922",
+    "shop": "variety_store"
+  }
+},
+{
+  "type": "node",
+  "id": 9974957546,
+  "lat": 30.0266410,
+  "lon": 31.4089611,
+  "tags": {
+    "name": "ركنه كتيرو فيستيفال مول",
+    "tourism": "camp_site"
+  }
+},
+{
+  "type": "node",
+  "id": 9974961624,
+  "lat": 30.0072682,
+  "lon": 31.4269208,
+  "tags": {
+    "name": "تاون جاس سكن مصر",
+    "name:en": "town gas",
+    "tourism": "camp_site"
+  }
+},
+{
+  "type": "node",
+  "id": 10277929309,
+  "lat": 30.0092268,
+  "lon": 31.4360675,
+  "tags": {
+    "addr:housenumber": "150998",
+    "addr:street": "منطقة 3",
+    "email": "nagmadinjewellery@gmail.com",
+    "internet_access": "wlan",
+    "name": "NAGM AD-DIN JEWELLERY",
+    "name:ar": "مجوهرات نجم الدين",
+    "opening_hours": "24/7",
+    "phone": "+201033449905",
+    "shop": "jewelry",
+    "website": "http://www.facebook.com/nagmadineg"
+  }
+},
+{
+  "type": "node",
+  "id": 10726573787,
+  "lat": 30.0071094,
+  "lon": 31.4280435,
+  "tags": {
+    "contact:facebook": "https://www.facebook.com/AwladElhjRagab/",
+    "name": "اولاد الحاج رجب للخضار والفاكهة",
+    "name:ar": "اولاد الحاج رجب للخضار والفاكهة",
+    "name:en": "Awlad Al Hag Ragab For Vegetables And Fruits",
+    "phone": "+20 102 2292938; +20 127 8181802; +20 114 2728789",
+    "shop": "greengrocer"
+  }
+},
+{
+  "type": "node",
+  "id": 10855656505,
+  "lat": 30.0292478,
+  "lon": 31.4084753,
+  "tags": {
+    "name": "Payless",
+    "name:en": "Festival City",
+    "shop": "shoes"
+  }
+},
+{
+  "type": "node",
+  "id": 11186182737,
+  "lat": 30.0103884,
+  "lon": 31.4380467,
+  "tags": {
+    "name": "الحي الثاني",
+    "shop": "sports"
+  }
+},
+{
+  "type": "node",
+  "id": 11866836369,
+  "lat": 30.0139891,
+  "lon": 31.4170850,
+  "tags": {
+    "name": "موقف الغاز التجمع",
+    "tourism": "camp_site"
+  }
+},
+{
+  "type": "node",
+  "id": 12597594971,
+  "lat": 30.0102967,
+  "lon": 31.4145843,
+  "tags": {
+    "addr:housenumber": "193",
+    "addr:street": "Abou Hamed Mohamed",
+    "name": "Techtroll",
+    "office": "it",
+    "phone": "+201003004203",
+    "website": "https://techtroll.co"
+  }
+},
+{
+  "type": "node",
+  "id": 12787773902,
+  "lat": 30.0185400,
+  "lon": 31.4220870,
+  "tags": {
+    "addr:street": "طريق البنوك",
+    "amenity": "restaurant",
+    "contact:facebook": "share/16Kqr4SFL6",
+    "name": "مطعم حضر موت عنتر"
+  }
+},
+{
+  "type": "node",
+  "id": 13016293101,
+  "lat": 30.0066259,
+  "lon": 31.4255951,
+  "tags": {
+    "name": "Drinkies",
+    "shop": "alcohol"
+  }
+},
+{
+  "type": "node",
+  "id": 13196382401,
+  "lat": 30.0194496,
+  "lon": 31.4216228,
+  "tags": {
+    "amenity": "fast_food",
+    "name": "مطعم طبالي تاون سنتر(احلى فول)"
+  }
+},
+{
+  "type": "node",
+  "id": 13338375010,
+  "lat": 30.0186289,
+  "lon": 31.4226477,
+  "tags": {
+    "addr:city": "New Cairo 1, Cairo Governorate",
+    "addr:housenumber": "Tree Plaza Mall, Banks Street",
+    "addr:postcode": "00000",
+    "air_conditioning": "yes",
+    "beauty": "cosmetics;nails;tanning;skin_care;spa;hair_removal;waxing;hair;eyelash;eyebrow;aesthetic;massage;pedicure",
+    "contact:facebook": "https://www.facebook.com/Juliabeauty2021",
+    "email": "julialoungeegypt@gmail.com",
+    "image": "https://i.postimg.cc/NMTG3kLT/Screenshot_2025_11_28_093113.png",
+    "internet_access": "wlan",
+    "mobile": "+201122922994",
+    "name": "Julia Beauty Lounge",
+    "not:name": "Julia The Beauty Lounge",
+    "official_name": "Julia Beauty Lounge",
+    "opening_hours": "Mo-Su 12:00-21:00",
+    "operator": "Julia Beauty Lounge",
+    "payment:app": "yes",
+    "payment:apple_pay": "yes",
+    "payment:cards": "yes",
+    "payment:cash": "yes",
+    "payment:credit_cards": "yes",
+    "payment:debit_cards": "yes",
+    "payment:mastercard": "yes",
+    "payment:visa": "yes",
+    "payment:visa_debit": "yes",
+    "phone": "+201122922994",
+    "shop": "beauty",
+    "toilets": "yes",
+    "website": "https://www.instagram.com/julia_beauty_lounge/",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13428280788,
+  "lat": 30.0176048,
+  "lon": 31.4117832,
+  "tags": {
+    "brand": "في إف إس جلوبال",
+    "brand:ar": "في إف إس جلوبال",
+    "brand:en": "VFS Global",
+    "brand:wikidata": "Q7906873",
+    "level": "3",
+    "name": "مركز تصديق الوثائق لدولة الإمارات العربية المتحدة",
+    "name:ar": "مركز تصديق الوثائق لدولة الإمارات العربية المتحدة",
+    "name:en": "UAE Attestation Centre",
+    "office": "visa",
+    "opening_hours": "Su-Th 09:00-12:00,15:00-17:00",
+    "operator": "VFS Global",
+    "operator:ar": "في إف إس جلوبال",
+    "operator:en": "VFS Global",
+    "operator:wikidata": "Q7906873",
+    "website": "https://services.vfsglobal.com/egy/en/atu/"
+  }
+},
+{
+  "type": "node",
+  "id": 13732063151,
+  "lat": 30.0194544,
+  "lon": 31.4218461,
+  "tags": {
+    "addr:city": "New Cairo 1, Cairo Governorate",
+    "addr:housenumber": "106",
+    "amenity": "restaurant",
+    "cuisine": "breakfast",
+    "name": "Tabali Tagamoaa",
+    "opening_hours": "Mo-Su 07:30-23:00"
+  }
+},
+{
+  "type": "node",
+  "id": 13764384339,
+  "lat": 30.0188163,
+  "lon": 31.4242145,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "regional",
+    "diet:halal": "yes",
+    "diet:vegan": "yes",
+    "diet:vegetarian": "yes",
+    "name": "Abou Tarek"
+  }
+},
+{
+  "type": "node",
+  "id": 13764485530,
+  "lat": 30.0153808,
+  "lon": 31.4080419,
+  "tags": {
+    "amenity": "cafe",
+    "name": "Moka Bistro"
+  }
+},
+{
+  "type": "way",
+  "id": 26753320,
+  "center": {
+    "lat": 30.0269351,
+    "lon": 31.4119810
+  },
+  "tags": {
+    "landuse": "commercial",
+    "name": "كايرو فستيفال سيتى",
+    "name:ar": "كايرو فستيفال سيتى",
+    "name:en": "Cairo Festival City",
+    "operator": "Al Fauttaim",
+    "place": "neighbourhood",
+    "start_date": "2015"
+  }
+},
+{
+  "type": "way",
+  "id": 94526273,
+  "center": {
+    "lat": 30.0235096,
+    "lon": 31.4463197
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "كمبوند ليك فيو",
+    "name:ar": "كمبوند ليك فيو",
+    "name:en": "Lakeview Compound",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 156407107,
+  "center": {
+    "lat": 30.0311801,
+    "lon": 31.4274569
+  },
+  "tags": {
+    "amenity": "school",
+    "name": "Hayah International Academy"
+  }
+},
+{
+  "type": "way",
+  "id": 156619597,
+  "center": {
+    "lat": 30.0059718,
+    "lon": 31.4232849
+  },
+  "tags": {
+    "amenity": "school",
+    "name": "المدرسة البريطانية",
+    "name:ar": "المدرسة البريطانية",
+    "name:en": "British School"
+  }
+},
+{
+  "type": "way",
+  "id": 198679735,
+  "center": {
+    "lat": 30.0261088,
+    "lon": 31.4544413
+  },
+  "tags": {
+    "building": "commercial",
+    "name": "فندق دوسيت ثانى",
+    "name:ar": "فندق دوسيت ثانى",
+    "name:en": "Dusit Thani Hotel",
+    "stars": "5",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "way",
+  "id": 198679736,
+  "center": {
+    "lat": 30.0264707,
+    "lon": 31.4554494
+  },
+  "tags": {
+    "building": "commercial",
+    "name": "فندق دوسيت ثانى",
+    "name:ar": "فندق دوسيت ثانى",
+    "name:en": "Dusit Thani Hotel",
+    "stars": "5",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "way",
+  "id": 198679737,
+  "center": {
+    "lat": 30.0255298,
+    "lon": 31.4553621
+  },
+  "tags": {
+    "building": "commercial",
+    "name": "فندق دوسيت ثانى",
+    "name:ar": "فندق دوسيت ثانى",
+    "name:en": "Dusit Thani Hotel",
+    "stars": "5"
+  }
+},
+{
+  "type": "way",
+  "id": 215354869,
+  "center": {
+    "lat": 30.0026070,
+    "lon": 31.4491407
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "النرجس عمارات 2",
+    "name:ar": "النرجس عمارات 2",
+    "name:en": "El Narges Buildings 2",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 215354870,
+  "center": {
+    "lat": 29.9995922,
+    "lon": 31.4366140
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "الحى 3",
+    "name:ar": "الحى 3",
+    "name:en": "District 3",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 219613696,
+  "center": {
+    "lat": 30.0183441,
+    "lon": 31.4129602
+  },
+  "tags": {
+    "building": "office",
+    "name": "S3"
+  }
+},
+{
+  "type": "way",
+  "id": 219613698,
+  "center": {
+    "lat": 30.0183499,
+    "lon": 31.4120752
+  },
+  "tags": {
+    "building": "office",
+    "name": "S2"
+  }
+},
+{
+  "type": "way",
+  "id": 219613700,
+  "center": {
+    "lat": 30.0175770,
+    "lon": 31.4120304
+  },
+  "tags": {
+    "building": "office",
+    "name": "S1"
+  }
+},
+{
+  "type": "way",
+  "id": 219613701,
+  "center": {
+    "lat": 30.0175356,
+    "lon": 31.4131653
+  },
+  "tags": {
+    "building": "office",
+    "name": "س 4",
+    "name:ar": "س 4",
+    "name:en": "S4"
+  }
+},
+{
+  "type": "way",
+  "id": 219613983,
+  "center": {
+    "lat": 30.0170285,
+    "lon": 31.4208380
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:district": "القطاع الأول",
+    "addr:district:en": "First Sector",
+    "addr:housenumber": "67",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "addr:street": "شارع التسعين الجنوبي",
+    "addr:street:en": "Al Tesein Southern Street",
+    "amenity": "bank",
+    "atm": "yes",
+    "building": "commercial",
+    "name": "بنك الاتحاد الوطنى",
+    "name:ar": "بنك الاتحاد الوطنى",
+    "name:en": "Egypt Union Bank"
+  }
+},
+{
+  "type": "way",
+  "id": 219613984,
+  "center": {
+    "lat": 30.0170409,
+    "lon": 31.4202683
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:district": "القطاع الأول",
+    "addr:district:en": "First Sector",
+    "addr:housenumber": "411",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "addr:street": "شارع التسعين الجنوبي",
+    "addr:street:en": "Al Tesein Southern Street",
+    "amenity": "bank",
+    "atm": "yes",
+    "building": "office",
+    "name": "بنك اتش اس بى سى",
+    "name:ar": "بنك HSBC",
+    "name:en": "HSBC Bank"
+  }
+},
+{
+  "type": "way",
+  "id": 219613985,
+  "center": {
+    "lat": 30.0169719,
+    "lon": 31.4214268
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:district": "القطاع الأول",
+    "addr:district:en": "First Sector",
+    "addr:housenumber": "69",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "addr:street": "شارع التسعين الجنوبي",
+    "addr:street:en": "Al Tesein Southern Street",
+    "building": "office",
+    "name": "شركة وادى دجلة",
+    "name:ar": "شركة وادى دجلة",
+    "name:en": "Wadi Degla Co."
+  }
+},
+{
+  "type": "way",
+  "id": 220234097,
+  "center": {
+    "lat": 30.0169579,
+    "lon": 31.4142023
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:housenumber": "15",
+    "addr:place": "القطاع الأول",
+    "addr:place:en": "First Sector",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "building": "office",
+    "name": "لافارﭺ",
+    "name:ar": "لافارﭺ",
+    "name:en": "Lafarge"
+  }
+},
+{
+  "type": "way",
+  "id": 220261249,
+  "center": {
+    "lat": 30.0173717,
+    "lon": 31.4497485
+  },
+  "tags": {
+    "building": "residential",
+    "name": "Villa"
+  }
+},
+{
+  "type": "way",
+  "id": 220261250,
+  "center": {
+    "lat": 30.0212103,
+    "lon": 31.4591628
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "النرجس 1",
+    "name:ar": "النرجس 1",
+    "name:en": "El Narges 1",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 220261251,
+  "center": {
+    "lat": 30.0177217,
+    "lon": 31.4547836
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "النرجس 2",
+    "name:ar": "النرجس 2",
+    "name:en": "El Narges 2",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 221188640,
+  "center": {
+    "lat": 30.0176084,
+    "lon": 31.4141119
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:housenumber": "17",
+    "addr:place": "القطاع الأول",
+    "addr:place:en": "First Sector",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "building": "office",
+    "name": "الثروة",
+    "name:ar": "الثروة",
+    "name:en": "Al Tharwa"
+  }
+},
+{
+  "type": "way",
+  "id": 221188641,
+  "center": {
+    "lat": 30.0176561,
+    "lon": 31.4148468
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:housenumber": "18",
+    "addr:place": "القطاع الأول",
+    "addr:place:en": "First Sector",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "building": "office",
+    "name": "ميدتاب",
+    "name:ar": "ميدتاب",
+    "name:en": "MIDTAP"
+  }
+},
+{
+  "type": "way",
+  "id": 221188644,
+  "center": {
+    "lat": 30.0183550,
+    "lon": 31.4148522
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:housenumber": "20",
+    "addr:place": "القطاع الأول",
+    "addr:place:en": "First Sector",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "building": "office",
+    "name": "EMC2 (شركة السويدى اليكتريك)",
+    "name:ar": "EMC2 (شركة السويدى اليكتريك)",
+    "name:en": "EMC2 (El Swedy Electric)"
+  }
+},
+{
+  "type": "way",
+  "id": 221190417,
+  "center": {
+    "lat": 30.0170966,
+    "lon": 31.4315182
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:district": "القطاع الأول",
+    "addr:district:en": "First Sector",
+    "addr:housenumber": "86",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "addr:street": "شارع التسعين الجنوبي",
+    "addr:street:en": "Al Tesein Southern Street",
+    "building": "office",
+    "name": "لا ميراج لاندمارك",
+    "name:ar": "لا ميراج لاندمارك",
+    "name:en": "Le Mirage Landmark"
+  }
+},
+{
+  "type": "way",
+  "id": 221193596,
+  "center": {
+    "lat": 30.0171595,
+    "lon": 31.4307711
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:ar": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:district": "القطاع الأول",
+    "addr:district:ar": "القطاع الأول",
+    "addr:district:en": "First Sector",
+    "addr:housenumber": "85",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:ar": "القاهرة",
+    "addr:province:en": "Cairo",
+    "addr:street": "شارع التسعين الجنوبي",
+    "addr:street:ar": "شارع التسعين الجنوبي",
+    "addr:street:en": "Al Tesein Southern Street",
+    "amenity": "bank",
+    "atm": "yes",
+    "building": "office",
+    "name": "بنك بى إن بى (BNP)",
+    "name:ar": "بنك الإمارات دبى الوطنى بطنطا",
+    "name:en": "EMIRATES NBD"
+  }
+},
+{
+  "type": "way",
+  "id": 221344076,
+  "center": {
+    "lat": 30.0170581,
+    "lon": 31.4183559
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:district": "القطاع الأول",
+    "addr:district:en": "First Sector",
+    "addr:housenumber": "61",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "addr:street": "شارع التسعين الجنوبي",
+    "addr:street:en": "Al Tesein Southern Street",
+    "building": "office",
+    "name": "بنك بلوم مصر",
+    "name:ar": "بنك بلوم مصر",
+    "name:en": "Blom Egypt Bank"
+  }
+},
+{
+  "type": "way",
+  "id": 221366308,
+  "center": {
+    "lat": 30.0206542,
+    "lon": 31.4237910
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:district": "القطاع الأول",
+    "addr:district:en": "First Sector",
+    "addr:housenumber": "46",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "addr:street": "شارع التسعين الشمالى",
+    "addr:street:en": "Al Tesein Northern Street",
+    "building": "office",
+    "name": "سيتى بنك",
+    "name:ar": "سيتى بنك",
+    "name:en": "Citibank"
+  }
+},
+{
+  "type": "way",
+  "id": 221366313,
+  "center": {
+    "lat": 30.0206698,
+    "lon": 31.4245323
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:district": "القطاع الأول",
+    "addr:district:en": "First Sector",
+    "addr:housenumber": "47",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "addr:street": "شارع التسعين الشمالى",
+    "addr:street:en": "Al Tesein Northern Street",
+    "building": "office",
+    "name": "رقم سبعة وأربعين",
+    "name:ar": "رقم سبعة وأربعين",
+    "name:en": "The Fourty Seventh"
+  }
+},
+{
+  "type": "way",
+  "id": 221455285,
+  "center": {
+    "lat": 30.0170125,
+    "lon": 31.4234822
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:district": "القطاع الأول",
+    "addr:district:en": "First Sector",
+    "addr:housenumber": "75",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "addr:street": "شارع التسعين الجنوبي",
+    "addr:street:en": "Al Tesein Southern Street",
+    "building": "commercial",
+    "name": "شركة ميت لايف",
+    "name:ar": "شركة ميت لايف",
+    "office": "company"
+  }
+},
+{
+  "type": "way",
+  "id": 221473395,
+  "center": {
+    "lat": 30.0207372,
+    "lon": 31.4148640
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:housenumber": "28",
+    "addr:place": "القطاع الأول",
+    "addr:place:en": "First Sector",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "amenity": "bank",
+    "building": "office",
+    "name": "بنك التعمير والإسكان",
+    "name:ar": "بنك التعمير والإسكان",
+    "name:en": "Housing & Development Bank"
+  }
+},
+{
+  "type": "way",
+  "id": 221553623,
+  "center": {
+    "lat": 30.0177279,
+    "lon": 31.4225164
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:district": "القطاع الأول",
+    "addr:district:en": "First Sector",
+    "addr:housenumber": "72",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "addr:street": "طريق البنوك",
+    "addr:street:en": "El Benouk Road",
+    "building": "office",
+    "name": "تيتراباك",
+    "name:ar": "تيتراباك",
+    "name:en": "Tetrapak"
+  }
+},
+{
+  "type": "way",
+  "id": 221617940,
+  "center": {
+    "lat": 30.0270743,
+    "lon": 31.4458221
+  },
+  "tags": {
+    "leisure": "stadium",
+    "name": "ستاد بتروسبورت",
+    "name:ar": "ستاد بتروسبورت",
+    "name:en": "Petro Sport Stadium",
+    "wikidata": "Q7178880",
+    "wikipedia": "en:Petrosport Stadium"
+  }
+},
+{
+  "type": "way",
+  "id": 221622023,
+  "center": {
+    "lat": 30.0187731,
+    "lon": 31.4226512
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:district": "القطاع الأول",
+    "addr:district:en": "First Sector",
+    "addr:housenumber": "114",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "addr:street": "طريق البنوك",
+    "addr:street:en": "El Benouk Road",
+    "building": "commercial",
+    "cuisine": "egyptian",
+    "name": "مطعم البرج",
+    "name:ar": "مطعم البرج",
+    "name:en": "El Borg"
+  }
+},
+{
+  "type": "way",
+  "id": 221622024,
+  "center": {
+    "lat": 30.0170980,
+    "lon": 31.4225257
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:district": "القطاع الأول",
+    "addr:district:en": "First Sector",
+    "addr:housenumber": "73",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "addr:street": "شارع التسعين الجنوبي",
+    "addr:street:en": "Al Tesein Southern Street",
+    "alt_name": "FEDCOC",
+    "building": "office",
+    "name": "الإتحاد العام للغرف التجارية المصرية",
+    "name:ar": "الإتحاد العام للغرف التجارية المصرية",
+    "name:en": "FEDCOC (Federation of Egyptian Chambers of Commerce)"
+  }
+},
+{
+  "type": "way",
+  "id": 240754303,
+  "center": {
+    "lat": 30.0337710,
+    "lon": 31.4547374
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "الياسمين 7",
+    "name:ar": "الياسمين 7",
+    "name:en": "Al Yasmeen 7",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 240754306,
+  "center": {
+    "lat": 30.0381241,
+    "lon": 31.4435874
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "الياسمين 6",
+    "name:en": "Al Yasmeen 6",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 240754307,
+  "center": {
+    "lat": 30.0315792,
+    "lon": 31.4435724
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "الياسمين 8",
+    "name:ar": "الياسمين 8",
+    "name:en": "Al Yasmeen 8",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 250642020,
+  "center": {
+    "lat": 30.0301793,
+    "lon": 31.4076087
+  },
+  "tags": {
+    "brand": "IKEA",
+    "brand:wikidata": "Q54078",
+    "brand:wikipedia": "en:IKEA",
+    "building": "commercial",
+    "name": "ايكيا",
+    "name:ar": "ايكيا",
+    "name:en": "IKEA",
+    "shop": "furniture",
+    "start_date": "2015",
+    "website": "https://m.ikea.com/eg/en/"
+  }
+},
+{
+  "type": "way",
+  "id": 251152518,
+  "center": {
+    "lat": 30.0361684,
+    "lon": 31.4210668
+  },
+  "tags": {
+    "amenity": "school",
+    "name": "AIS (المدرسة الأمريكية الدولية)",
+    "name:ar": "AIS (المدرسة الأمريكية الدولية)",
+    "name:en": "AIS (The American International School)"
+  }
+},
+{
+  "type": "way",
+  "id": 251157448,
+  "center": {
+    "lat": 30.0244223,
+    "lon": 31.4236849
+  },
+  "tags": {
+    "amenity": "school",
+    "name": "المدرسة الإنجليزية الحديثة بالقاهرة",
+    "name:ar": "المدرسة الإنجليزية الحديثة بالقاهرة",
+    "name:en": "MES (Modern English School) Cairo",
+    "phone": "+ 20 2 26189600",
+    "website": "https://www.mescairo.com/mesnew/index.asp"
+  }
+},
+{
+  "type": "way",
+  "id": 251158414,
+  "center": {
+    "lat": 30.0263555,
+    "lon": 31.4231697
+  },
+  "tags": {
+    "amenity": "school",
+    "name": "المدرسة الألمانية",
+    "name:ar": "المدرسة الألمانية",
+    "name:de": "Deutsche Schule",
+    "name:en": "German School",
+    "phone": "+20226161350"
+  }
+},
+{
+  "type": "way",
+  "id": 251266630,
+  "center": {
+    "lat": 30.0145147,
+    "lon": 31.4508083
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "النرجس 3",
+    "name:ar": "النرجس 3",
+    "name:en": "El Narges 3",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 251268285,
+  "center": {
+    "lat": 30.0083419,
+    "lon": 31.4506942
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "النرجس 4",
+    "name:ar": "النرجس 4",
+    "name:en": "El Narges 4",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 251573205,
+  "center": {
+    "lat": 30.0113056,
+    "lon": 31.4610997
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "النرجس 5",
+    "name:ar": "النرجس 5",
+    "name:en": "El Narges 5",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 251573206,
+  "center": {
+    "lat": 30.0053258,
+    "lon": 31.4598655
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "النرجس 7",
+    "name:ar": "النرجس 7",
+    "name:en": "El Narges 7",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 251573278,
+  "center": {
+    "lat": 30.0109808,
+    "lon": 31.4425699
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "منطقة 1",
+    "name:ar": "منطقة 1",
+    "name:en": "Area 1",
+    "name:fr": "Zone 1",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 251573565,
+  "center": {
+    "lat": 30.0089962,
+    "lon": 31.4410190
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "منطقة 2",
+    "name:ar": "منطقة 2",
+    "name:en": "Area 2",
+    "name:fr": "Zone 2",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 251573566,
+  "center": {
+    "lat": 30.0083183,
+    "lon": 31.4365210
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "منطقة 3",
+    "name:ar": "منطقة 3",
+    "name:en": "Area 3",
+    "name:fr": "Zone 3",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 251573567,
+  "center": {
+    "lat": 30.0083209,
+    "lon": 31.4329124
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "منطقة 4",
+    "name:ar": "منطقة 4",
+    "name:en": "Area 4",
+    "name:fr": "Zone 4",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 251573568,
+  "center": {
+    "lat": 30.0113348,
+    "lon": 31.4359804
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "منطقة 5",
+    "name:ar": "منطقة 5",
+    "name:en": "Area 5",
+    "name:fr": "Zone 5",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 251573569,
+  "center": {
+    "lat": 30.0145581,
+    "lon": 31.4357219
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "منطقة 6",
+    "name:ar": "منطقة 6",
+    "name:en": "Area 6",
+    "name:fr": "Zone 6",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 251576422,
+  "center": {
+    "lat": 30.0134413,
+    "lon": 31.4281226
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "منطقة 1",
+    "name:ar": "منطقة 1",
+    "name:en": "Area 1",
+    "name:fr": "Zone 1",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 251576423,
+  "center": {
+    "lat": 30.0130634,
+    "lon": 31.4199180
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "منطقة 7",
+    "name:ar": "منطقة 7",
+    "name:en": "Area 7",
+    "name:fr": "Zone 7",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 251576424,
+  "center": {
+    "lat": 30.0080935,
+    "lon": 31.4154068
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "منطقة 6",
+    "name:ar": "منطقة 6",
+    "name:en": "Area 6",
+    "name:fr": "Zone 6",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 251576425,
+  "center": {
+    "lat": 30.0069748,
+    "lon": 31.4194320
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "منطقة 5",
+    "name:ar": "منطقة 5",
+    "name:en": "Area 5",
+    "name:fr": "Zone 5",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 251576426,
+  "center": {
+    "lat": 30.0087530,
+    "lon": 31.4234666
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "منطقة 3",
+    "name:ar": "منطقة 3",
+    "name:en": "Area 3",
+    "name:fr": "Zone 3",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 251576427,
+  "center": {
+    "lat": 30.0110591,
+    "lon": 31.4278107
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "منطقة 2",
+    "name:ar": "منطقة 2",
+    "name:en": "Area 2",
+    "name:fr": "Zone 2",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 251576428,
+  "center": {
+    "lat": 30.0114879,
+    "lon": 31.4211470
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "منطقة 4",
+    "name:ar": "منطقة 4",
+    "name:en": "Area 4",
+    "name:fr": "Zone 4",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 252036870,
+  "center": {
+    "lat": 30.0192648,
+    "lon": 31.4213827
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:district": "القطاع الأول",
+    "addr:district:en": "First Sector",
+    "addr:housenumber": "106",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "addr:street": "شارع 90",
+    "addr:street:en": "Street 90",
+    "amenity": "food_court",
+    "building": "commercial",
+    "name": "تون سنتر مول",
+    "name:ar": "تون سنتر مول",
+    "name:en": "Town Center Mall"
+  }
+},
+{
+  "type": "way",
+  "id": 252128111,
+  "center": {
+    "lat": 30.0194078,
+    "lon": 31.4237454
+  },
+  "tags": {
+    "building": "yes",
+    "name": "هانيميكس مول",
+    "name:ar": "هانيميكس مول",
+    "name:en": "Hanimex Mall",
+    "shop": "mall"
+  }
+},
+{
+  "type": "way",
+  "id": 252128113,
+  "center": {
+    "lat": 30.0193958,
+    "lon": 31.4241714
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:district": "القطاع الأول",
+    "addr:district:en": "First Sector",
+    "addr:housenumber": "123",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "addr:street": "شارع 90",
+    "addr:street:en": "Street 90",
+    "building": "commercial",
+    "name": "أبا الدهب مول",
+    "name:ar": "أبا الدهب مول",
+    "name:en": "Aba Al Dahab Mall",
+    "shop": "supermarket"
+  }
+},
+{
+  "type": "way",
+  "id": 252128114,
+  "center": {
+    "lat": 30.0194122,
+    "lon": 31.4244706
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:district": "القطاع الأول",
+    "addr:district:en": "First Sector",
+    "addr:housenumber": "125",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "addr:street": "شارع 90",
+    "addr:street:en": "Street 90",
+    "building": "commercial",
+    "name": "بى . تك",
+    "name:ar": "بى . تك",
+    "name:en": "B. Tech",
+    "shop": "supermarket"
+  }
+},
+{
+  "type": "way",
+  "id": 252128115,
+  "center": {
+    "lat": 30.0193385,
+    "lon": 31.4205995
+  },
+  "tags": {
+    "building": "yes",
+    "name": "سيلفر ستار مول",
+    "name:ar": "سيلفر ستار مول",
+    "name:en": "Silver Star Mall",
+    "shop": "mall"
+  }
+},
+{
+  "type": "way",
+  "id": 252128116,
+  "center": {
+    "lat": 30.0192658,
+    "lon": 31.4196061
+  },
+  "tags": {
+    "building": "commercial",
+    "name": "معرض أبا المزاحم",
+    "name:ar": "معرض أبا المزاحم",
+    "name:en": "Aba El Mazahem Gallery"
+  }
+},
+{
+  "type": "way",
+  "id": 252128119,
+  "center": {
+    "lat": 30.0194387,
+    "lon": 31.4182729
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:district": "القطاع الأول",
+    "addr:district:en": "First Sector",
+    "addr:housenumber": "88",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "addr:street": "شارع 90",
+    "addr:street:en": "Street 90",
+    "building": "commercial",
+    "name": "بغسكو - شركة هندسة توليد الطاقة والخدمات",
+    "name:ar": "بغسكو - شركة هندسة توليد الطاقة والخدمات",
+    "name:en": "PGESCO - Power Generation Engineering and Service co."
+  }
+},
+{
+  "type": "way",
+  "id": 252128123,
+  "center": {
+    "lat": 30.0187867,
+    "lon": 31.4198317
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:district": "القطاع الأول",
+    "addr:district:en": "First Sector",
+    "addr:housenumber": "97",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "addr:street": "طريق البنوك",
+    "addr:street:en": "El Benouk Road",
+    "building": "yes",
+    "name": "Monaliza Mall",
+    "shop": "mall"
+  }
+},
+{
+  "type": "way",
+  "id": 252128124,
+  "center": {
+    "lat": 30.0187753,
+    "lon": 31.4201185
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:district": "القطاع الأول",
+    "addr:district:en": "First Sector",
+    "addr:housenumber": "99",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "addr:street": "طريق البنوك",
+    "addr:street:en": "El Benouk Road",
+    "building": "commercial",
+    "name": "Mashreq Bank",
+    "name:ar": "بنك المشرق"
+  }
+},
+{
+  "type": "way",
+  "id": 252128129,
+  "center": {
+    "lat": 30.0187695,
+    "lon": 31.4218197
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:district": "القطاع الأول",
+    "addr:district:en": "First Sector",
+    "addr:housenumber": "109",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "addr:street": "طريق البنوك",
+    "addr:street:en": "El Benouk Road",
+    "amenity": "restaurant",
+    "building": "commercial",
+    "cuisine": "american",
+    "name": "ستيك أوت",
+    "name:ar": "ستيك أوت",
+    "name:en": "Steak Out"
+  }
+},
+{
+  "type": "way",
+  "id": 252128134,
+  "center": {
+    "lat": 30.0188706,
+    "lon": 31.4240044
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:district": "القطاع الأول",
+    "addr:district:en": "First Sector",
+    "addr:housenumber": "122",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "addr:street": "طريق البنوك",
+    "addr:street:en": "El Benouk Road",
+    "building": "commercial",
+    "name": "ألبان المدينة المنورة",
+    "name:ar": "ألبان المدينة المنورة",
+    "name:en": "Al Madina Al Munawara",
+    "shop": "dairy"
+  }
+},
+{
+  "type": "way",
+  "id": 252128138,
+  "center": {
+    "lat": 30.0206218,
+    "lon": 31.4223766
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:housenumber": "45 B",
+    "addr:place": "القطاع الأول",
+    "addr:place:en": "First Sector",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "amenity": "bank",
+    "building": "commercial",
+    "contact:facebook": "https://www.facebook.com/egbankegypt",
+    "contact:phone": "+20 226733118",
+    "contact:website": "https://www.eg-bank.com/",
+    "name": "البنك المصري الخليجي",
+    "name:ar": "البنك المصري الخليجي",
+    "name:en": "Egyption Gulf Bank"
+  }
+},
+{
+  "type": "way",
+  "id": 252128142,
+  "center": {
+    "lat": 30.0205456,
+    "lon": 31.4176177
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:district": "القطاع الأول",
+    "addr:district:en": "First Sector",
+    "addr:housenumber": "40",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "addr:street": "شارع التسعين الشمالى",
+    "addr:street:en": "Al Tesein Northern Street",
+    "building": "commercial",
+    "name": "سوميد",
+    "name:ar": "سوميد",
+    "name:en": "Sumed"
+  }
+},
+{
+  "type": "way",
+  "id": 252128143,
+  "center": {
+    "lat": 30.0205371,
+    "lon": 31.4170009
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:district": "القطاع الأول",
+    "addr:district:en": "First Sector",
+    "addr:housenumber": "39",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "addr:street": "شارع التسعين الشمالى",
+    "addr:street:en": "Al Tesein Northern Street",
+    "building": "commercial",
+    "name": "EMC2 (شركة السويدى اليكتريك)",
+    "name:ar": "EMC2 (شركة السويدى اليكتريك)",
+    "name:en": "EMC2 (El Swedy Electric)"
+  }
+},
+{
+  "type": "way",
+  "id": 252415825,
+  "center": {
+    "lat": 30.0186508,
+    "lon": 31.4303850
+  },
+  "tags": {
+    "amenity": "bank",
+    "building": "commercial",
+    "name": "بنك أبوظبى الوطنى",
+    "name:ar": "بنك أبوظبى الوطنى",
+    "name:en": "National Bank of Abu Dhabi"
+  }
+},
+{
+  "type": "way",
+  "id": 252419497,
+  "center": {
+    "lat": 30.0170358,
+    "lon": 31.4264303
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:district": "القطاع الأول",
+    "addr:district:en": "First Sector",
+    "addr:housenumber": "80",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "addr:street": "شارع التسعين الجنوبي",
+    "addr:street:en": "Al Tesein Southern Street",
+    "amenity": "bank",
+    "building": "commercial",
+    "name": "البنك الأهلى المصرى",
+    "name:ar": "البنك الأهلى المصرى",
+    "name:en": "NBE (National Bank of Egypt)"
+  }
+},
+{
+  "type": "way",
+  "id": 252420865,
+  "center": {
+    "lat": 30.0227099,
+    "lon": 31.4231931
+  },
+  "tags": {
+    "amenity": "school",
+    "name": "مدرسة الليسيه بلزاك الدولية",
+    "name:ar": "مدرسة الليسيه بلزاك الدولية",
+    "name:en": "Lycée International Balzac",
+    "website": "https://www.lyceebalzac.com/"
+  }
+},
+{
+  "type": "way",
+  "id": 252422674,
+  "center": {
+    "lat": 30.0292592,
+    "lon": 31.4304894
+  },
+  "tags": {
+    "amenity": "place_of_worship",
+    "name": "مسجد حسن الشربتلى",
+    "name:ar": "مسجد حسن الشربتلى",
+    "name:en": "Hassan El Sharbatly Mosque",
+    "religion": "muslim"
+  }
+},
+{
+  "type": "way",
+  "id": 252565535,
+  "center": {
+    "lat": 30.0305916,
+    "lon": 31.4285641
+  },
+  "tags": {
+    "building": "school",
+    "building:levels": "4",
+    "name": "Hayah International Academy"
+  }
+},
+{
+  "type": "way",
+  "id": 252565538,
+  "center": {
+    "lat": 30.0307561,
+    "lon": 31.4297274
+  },
+  "tags": {
+    "building": "yes",
+    "leisure": "sports_centre",
+    "name": "Hayah Sports Academy"
+  }
+},
+{
+  "type": "way",
+  "id": 252565539,
+  "center": {
+    "lat": 30.0314101,
+    "lon": 31.4297881
+  },
+  "tags": {
+    "building": "school",
+    "building:levels": "3",
+    "name": "Hayah International Academy"
+  }
+},
+{
+  "type": "way",
+  "id": 252565769,
+  "center": {
+    "lat": 30.0343905,
+    "lon": 31.4257878
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "جنوب الأكاديمية منطقة ب",
+    "name:ar": "جنوب الأكاديمية منطقة ب",
+    "name:en": "Southern Academy Area B",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 252565770,
+  "center": {
+    "lat": 30.0353244,
+    "lon": 31.4352314
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "جنوب الأكاديمية منطقة د",
+    "name:ar": "جنوب الأكاديمية منطقة د",
+    "name:en": "Southern Academy Area D",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 252565771,
+  "center": {
+    "lat": 30.0298211,
+    "lon": 31.4353116
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "جنوب الأكاديمية منطقة هـ",
+    "name:ar": "جنوب الأكاديمية منطقة هـ",
+    "name:en": "Southern Academy Area E",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 252565772,
+  "center": {
+    "lat": 30.0271413,
+    "lon": 31.4392965
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "جنوب الأكاديمية منطقة ز",
+    "name:ar": "جنوب الأكاديمية منطقة ز",
+    "name:en": "Southern Academy Area G",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 252565773,
+  "center": {
+    "lat": 30.0244166,
+    "lon": 31.4349977
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "جنوب الأكاديمية منطقة و",
+    "name:ar": "جنوب الأكاديمية منطقة و",
+    "name:en": "Southern Academy Area F",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 252565774,
+  "center": {
+    "lat": 30.0250777,
+    "lon": 31.4280810
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "جنوب الأكاديمية منطقة ج",
+    "name:ar": "جنوب الأكاديمية منطقة ج",
+    "name:en": "Southern Academy Area C",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 252565783,
+  "center": {
+    "lat": 30.0254944,
+    "lon": 31.4168155
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "منطقة أ",
+    "name:ar": "منطقة أ",
+    "name:en": "Area A",
+    "name:fr": "Zone A",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 252625179,
+  "center": {
+    "lat": 30.0053118,
+    "lon": 31.4257845
+  },
+  "tags": {
+    "landuse": "commercial",
+    "name": "منطقة الخدمات",
+    "name:ar": "منطقة الخدمات",
+    "name:en": "Services Area",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 252630351,
+  "center": {
+    "lat": 30.0002873,
+    "lon": 31.4147735
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "الحى 5",
+    "name:ar": "الحى 5",
+    "name:en": "District 5",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 252630353,
+  "center": {
+    "lat": 30.0075484,
+    "lon": 31.4098864
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "الشويفات",
+    "name:ar": "الشويفات",
+    "name:en": "Al Choueifat",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 252661856,
+  "center": {
+    "lat": 30.0043792,
+    "lon": 31.4248279
+  },
+  "tags": {
+    "landuse": "commercial",
+    "name": "سفن ستارز مول",
+    "name:ar": "سفن ستارز مول",
+    "name:en": "Seven Stars Mall",
+    "shop": "mall"
+  }
+},
+{
+  "type": "way",
+  "id": 252862264,
+  "center": {
+    "lat": 30.0299905,
+    "lon": 31.4558513
+  },
+  "tags": {
+    "addr:street": "شارع التسعين الشمالى",
+    "building": "commercial",
+    "name": "جوميا مصر",
+    "name:ar": "جوميا مصر",
+    "name:en": "Jumia Egypt",
+    "website": "https://www.jumia.com.eg"
+  }
+},
+{
+  "type": "way",
+  "id": 252879287,
+  "center": {
+    "lat": 30.0277951,
+    "lon": 31.4644013
+  },
+  "tags": {
+    "landuse": "commercial",
+    "name": "القطاع الثانى",
+    "name:ar": "القطاع الثانى",
+    "name:en": "Second Sector",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 252879290,
+  "center": {
+    "lat": 30.0260482,
+    "lon": 31.4464798
+  },
+  "tags": {
+    "leisure": "sports_centre",
+    "name": "نادي القطامية بتروسبورت الرياضي",
+    "name:ar": "نادي القطامية بتروسبورت الرياضي",
+    "name:en": "Katameya Petrosport Sporting Club"
+  }
+},
+{
+  "type": "way",
+  "id": 252880106,
+  "center": {
+    "lat": 30.0175269,
+    "lon": 31.4124682
+  },
+  "tags": {
+    "name": "داون تاون مول",
+    "name:ar": "داون تاون مول",
+    "name:en": "Downtown Katameya",
+    "shop": "mall"
+  }
+},
+{
+  "type": "way",
+  "id": 252904454,
+  "center": {
+    "lat": 30.0148730,
+    "lon": 31.4606534
+  },
+  "tags": {
+    "landuse": "commercial",
+    "name": "منطقة خدمات",
+    "name:ar": "منطقة خدمات",
+    "name:en": "Services Area",
+    "name:fr": "Zone de services",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 252910940,
+  "center": {
+    "lat": 30.0233914,
+    "lon": 31.4243289
+  },
+  "tags": {
+    "amenity": "place_of_worship",
+    "name": "مسجد الرحمة",
+    "name:ar": "مسجد الرحمة",
+    "name:en": "Al Rahma Mosque",
+    "religion": "muslim"
+  }
+},
+{
+  "type": "way",
+  "id": 252910941,
+  "center": {
+    "lat": 30.0227747,
+    "lon": 31.4243701
+  },
+  "tags": {
+    "addr:city": "مدينة القاهرة الجديدة",
+    "amenity": "restaurant",
+    "building": "yes",
+    "cuisine": "burger;regional;coffee_shop;sushi",
+    "description": "Restaurant - Coffee Shop",
+    "name": "باتيو القاهرة الجديدة",
+    "name:ar": "باتيو القاهرة الجديدة",
+    "name:en": "Patio New Cairo",
+    "phone": "01225555570"
+  }
+},
+{
+  "type": "way",
+  "id": 253593226,
+  "center": {
+    "lat": 30.0281313,
+    "lon": 31.4081163
+  },
+  "tags": {
+    "building": "retail",
+    "name": "كايرو فستيفال سيتى مول",
+    "name:ar": "كايرو فستيفال سيتى مول",
+    "name:en": "Cairo Festival City Mall",
+    "operator": "ماجد الفطيم",
+    "shop": "mall",
+    "start_date": "2015"
+  }
+},
+{
+  "type": "way",
+  "id": 302498997,
+  "center": {
+    "lat": 30.0326886,
+    "lon": 31.4414037
+  },
+  "tags": {
+    "landuse": "recreation_ground",
+    "name": "Yasmin 8 Park #1"
+  }
+},
+{
+  "type": "way",
+  "id": 302499000,
+  "center": {
+    "lat": 30.0340819,
+    "lon": 31.4413677
+  },
+  "tags": {
+    "landuse": "recreation_ground",
+    "name": "Yasmin 8 Park #2"
+  }
+},
+{
+  "type": "way",
+  "id": 305167094,
+  "center": {
+    "lat": 30.0285028,
+    "lon": 31.4097365
+  },
+  "tags": {
+    "amenity": "fountain",
+    "name": "النافورة الراقصة",
+    "name:ar": "النافورة الراقصة",
+    "name:en": "Dancing Fountain",
+    "natural": "water"
+  }
+},
+{
+  "type": "way",
+  "id": 305168170,
+  "center": {
+    "lat": 30.0278256,
+    "lon": 31.4110286
+  },
+  "tags": {
+    "amenity": "parking",
+    "fee": "no",
+    "lit": "yes",
+    "name": "موقف سيارات",
+    "name:ar": "موقف سيارات",
+    "name:en": "Parking",
+    "smoothness": "excellent",
+    "start_date": "2015",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 338453497,
+  "center": {
+    "lat": 30.0138253,
+    "lon": 31.4182583
+  },
+  "tags": {
+    "landuse": "religious",
+    "name": "مسجد الفاروق",
+    "name:ar": "مسجد الفاروق",
+    "name:en": "El Farouk Mosque",
+    "religion": "muslim"
+  }
+},
+{
+  "type": "way",
+  "id": 364528523,
+  "center": {
+    "lat": 30.0260602,
+    "lon": 31.4088604
+  },
+  "tags": {
+    "amenity": "parking",
+    "fee": "no",
+    "lit": "yes",
+    "name": "موقف سيارات",
+    "name:ar": "موقف سيارات",
+    "name:en": "Parking",
+    "smoothness": "excellent",
+    "start_date": "2015",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 364695018,
+  "center": {
+    "lat": 30.0170039,
+    "lon": 31.4147921
+  },
+  "tags": {
+    "landuse": "greenfield",
+    "name": "أرض ملك السفارة الأردنية",
+    "name:ar": "أرض ملك السفارة الأردنية",
+    "name:en": "Jordanian Embassy Land"
+  }
+},
+{
+  "type": "way",
+  "id": 364695022,
+  "center": {
+    "lat": 30.0172472,
+    "lon": 31.4300324
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:district": "القطاع الأول",
+    "addr:district:en": "First Sector",
+    "addr:housenumber": "84",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "addr:street": "شارع التسعين الجنوبي",
+    "addr:street:en": "Al Tesein Southern Street",
+    "amenity": "bank",
+    "building": "office",
+    "name": "بنك عوده",
+    "name:ar": "بنك عوده",
+    "name:en": "Audi bank",
+    "start_date": "2015"
+  }
+},
+{
+  "type": "way",
+  "id": 447275391,
+  "center": {
+    "lat": 30.0229906,
+    "lon": 31.4116243
+  },
+  "tags": {
+    "building": "yes",
+    "building:levels": "4",
+    "name": "394"
+  }
+},
+{
+  "type": "way",
+  "id": 471573495,
+  "center": {
+    "lat": 30.0224992,
+    "lon": 31.4464311
+  },
+  "tags": {
+    "leisure": "resort",
+    "name": "سكاى ريزورت",
+    "name:ar": "سكاى ريزورت",
+    "name:en": "Sky Resort",
+    "name:fr": "Sky Resort"
+  }
+},
+{
+  "type": "way",
+  "id": 471583449,
+  "center": {
+    "lat": 30.0242134,
+    "lon": 31.4533788
+  },
+  "tags": {
+    "leisure": "resort",
+    "name": "ليك كلوب هاوس Lake Club House",
+    "name:ar": "ليك كلوب هاوس",
+    "name:en": "Lake Club House",
+    "name:fr": "Lake Club House"
+  }
+},
+{
+  "type": "way",
+  "id": 541768578,
+  "center": {
+    "lat": 30.0221785,
+    "lon": 31.4241929
+  },
+  "tags": {
+    "amenity": "fuel",
+    "brand": "Oilibya",
+    "brand:wikidata": "Q7081491",
+    "brand:wikipedia": "en:Oilibya",
+    "name": "محطة بنزين أويليبيا",
+    "name:ar": "محطة بنزين أويليبيا",
+    "name:en": "OiLibya"
+  }
+},
+{
+  "type": "way",
+  "id": 541768579,
+  "center": {
+    "lat": 30.0219781,
+    "lon": 31.4240681
+  },
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "italian",
+    "name": "روكا رازو",
+    "name:ar": "روكا رازو",
+    "name:en": "Rocca Razzo"
+  }
+},
+{
+  "type": "way",
+  "id": 541768580,
+  "center": {
+    "lat": 30.0222548,
+    "lon": 31.4240263
+  },
+  "tags": {
+    "amenity": "restaurant",
+    "building": "yes",
+    "cuisine": "burger",
+    "name": "مانهاتن برغر",
+    "name:ar": "مانهاتن برغر",
+    "name:en": "Manhattan's Burger"
+  }
+},
+{
+  "type": "way",
+  "id": 541768581,
+  "center": {
+    "lat": 30.0223631,
+    "lon": 31.4241362
+  },
+  "tags": {
+    "amenity": "cafe",
+    "building": "yes",
+    "cuisine": "coffee_shop",
+    "name": "مقهى فرجننو",
+    "name:ar": "مقهى فرجننو",
+    "name:en": "vergenanno Cafe"
+  }
+},
+{
+  "type": "way",
+  "id": 541768582,
+  "center": {
+    "lat": 30.0221003,
+    "lon": 31.4240225
+  },
+  "tags": {
+    "building": "yes",
+    "name": "ميني مارت",
+    "name:ar": "ميني مارت",
+    "name:en": "Mini Mart",
+    "shop": "convenience"
+  }
+},
+{
+  "type": "way",
+  "id": 542997379,
+  "center": {
+    "lat": 30.0186194,
+    "lon": 31.4220950
+  },
+  "tags": {
+    "building": "yes",
+    "name": "Katameya Plaza",
+    "shop": "mall"
+  }
+},
+{
+  "type": "way",
+  "id": 551480177,
+  "center": {
+    "lat": 30.0336033,
+    "lon": 31.4306154
+  },
+  "tags": {
+    "addr:city": "New Cairo",
+    "addr:street": "7 Khaled Ibn El walid",
+    "amenity": "school",
+    "email": "info@metropolitanschooleg.com",
+    "name": "مدرسة متروبوليتان الدولية",
+    "name:ar": "مدرسة متروبوليتان الدولية",
+    "name:en": "Metropolitan school",
+    "phone": "16489",
+    "website": "https://www.metropolitanschooleg.com/"
+  }
+},
+{
+  "type": "way",
+  "id": 551480178,
+  "center": {
+    "lat": 30.0337843,
+    "lon": 31.4297847
+  },
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "yes",
+    "name": "Al Farouk Omar Mosque",
+    "name:ar": "مسجد الفاروق عمر",
+    "religion": "muslim"
+  }
+},
+{
+  "type": "way",
+  "id": 551480180,
+  "center": {
+    "lat": 30.0351798,
+    "lon": 31.4300688
+  },
+  "tags": {
+    "building": "university",
+    "name": "Canadian International College",
+    "name:ar": "الكلية الكندية الدولية",
+    "phone": "16242",
+    "website": "https://www.cic-cairo.com/",
+    "wikidata": "Q5030197",
+    "wikipedia": "en:Canadian International College"
+  }
+},
+{
+  "type": "way",
+  "id": 665337418,
+  "center": {
+    "lat": 30.0055917,
+    "lon": 31.4422333
+  },
+  "tags": {
+    "building": "yes",
+    "name": "المستثمر للتنمية والإستثمار",
+    "name:ar": "المستثمر للتنمية والإستثمار",
+    "name:en": "investor"
+  }
+},
+{
+  "type": "way",
+  "id": 682258838,
+  "center": {
+    "lat": 30.0025962,
+    "lon": 31.4568395
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "النرجس عمارات 1",
+    "name:ar": "النرجس عمارات 1",
+    "name:en": "El Narges Buildings 1",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 688098793,
+  "center": {
+    "lat": 30.0075773,
+    "lon": 31.4027088
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "المشتل",
+    "name:ar": "المشتل",
+    "name:en": "Al Mashtal",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 769942974,
+  "center": {
+    "lat": 30.0075900,
+    "lon": 31.4281577
+  },
+  "tags": {
+    "amenity": "hospital",
+    "emergency": "yes",
+    "name": "مستشفى السلام الدولى",
+    "name:ar": "مستشفى السلام الدولى",
+    "name:en": "As-Salam International Hospital"
+  }
+},
+{
+  "type": "way",
+  "id": 773024488,
+  "center": {
+    "lat": 30.0176227,
+    "lon": 31.4345662
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "amenity": "hospital",
+    "emergency": "yes",
+    "healthcare": "hospital",
+    "name": "المستشفى الجوى التخصصى",
+    "name:ar": "المستشفى الجوى التخصصى",
+    "name:en": "Air Force Specialised Hospital"
+  }
+},
+{
+  "type": "way",
+  "id": 773787137,
+  "center": {
+    "lat": 30.0053319,
+    "lon": 31.4384710
+  },
+  "tags": {
+    "amenity": "fuel",
+    "name": "Caltex"
+  }
+},
+{
+  "type": "way",
+  "id": 774635278,
+  "center": {
+    "lat": 30.0034964,
+    "lon": 31.4248338
+  },
+  "tags": {
+    "landuse": "residential",
+    "name": "التجمع الخامس",
+    "name:ar": "التجمع الخامس",
+    "name:en": "Fifth Settlement",
+    "place": "neighbourhood"
+  }
+},
+{
+  "type": "way",
+  "id": 871819083,
+  "center": {
+    "lat": 30.0340657,
+    "lon": 31.4481606
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:housenumber": "90",
+    "addr:postcode": "11865",
+    "addr:street": "شارع جعفر بن ابى طالب",
+    "building": "school",
+    "building:levels": "K-12",
+    "name": "Salahaldin International School"
+  }
+},
+{
+  "type": "way",
+  "id": 1001051786,
+  "center": {
+    "lat": 30.0132392,
+    "lon": 31.4207946
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:district": "التجمع الخامس",
+    "addr:district:en": "Fifth Settlement",
+    "addr:housenumber": "118",
+    "addr:neighbourhood": "منطقة 4",
+    "addr:neighbourhood:en": "Area 4",
+    "addr:postcode": "11835",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "addr:street": "شارع 1;شارع ابن سعد",
+    "addr:street:en": "Ibn Saad Street",
+    "addr:subdistrict": "الحى 1",
+    "addr:subdistrict:en": "District 1",
+    "building": "yes",
+    "building:levels": "1",
+    "name": "Aqar Cloud Company"
+  }
+},
+{
+  "type": "way",
+  "id": 1085309207,
+  "center": {
+    "lat": 30.0208479,
+    "lon": 31.4357842
+  },
+  "tags": {
+    "building": "hospital",
+    "name": "مستشفى شفا",
+    "name:ar": "مستشفى شفا"
+  }
+},
+{
+  "type": "way",
+  "id": 1150711249,
+  "center": {
+    "lat": 30.0171348,
+    "lon": 31.4263390
+  },
+  "tags": {
+    "landuse": "commercial",
+    "name": "NBE"
+  }
+},
+{
+  "type": "way",
+  "id": 1232415412,
+  "center": {
+    "lat": 30.0162732,
+    "lon": 31.4338857
+  },
+  "tags": {
+    "building": "train_station",
+    "monorail": "yes",
+    "name": "المستشفى الجوي",
+    "name:en": "Airforce Hospital",
+    "network": "مونوريل",
+    "public_transport": "station",
+    "railway": "station",
+    "wikidata": "Q138818837"
+  }
+},
+{
+  "type": "way",
+  "id": 1232415413,
+  "center": {
+    "lat": 30.0162466,
+    "lon": 31.4089881
+  },
+  "tags": {
+    "building": "train_station",
+    "layer": "2",
+    "monorail": "yes",
+    "name": "190",
+    "network": "مونوريل",
+    "operator": "Alstom",
+    "public_transport": "station",
+    "railway": "station",
+    "wikidata": "Q138818836"
+  }
+},
+{
+  "type": "way",
+  "id": 1318969940,
+  "center": {
+    "lat": 30.0209293,
+    "lon": 31.4468457
+  },
+  "tags": {
+    "bridge": "viaduct",
+    "electrified": "rail",
+    "frequency": "0",
+    "layer": "3",
+    "name": "مونوريل",
+    "railway": "monorail",
+    "usage": "main",
+    "voltage": "750"
+  }
+},
+{
+  "type": "way",
+  "id": 1318969941,
+  "center": {
+    "lat": 30.0163218,
+    "lon": 31.4338859
+  },
+  "tags": {
+    "electrified": "rail",
+    "frequency": "0",
+    "name": "مونوريل",
+    "railway": "monorail",
+    "tunnel": "building_passage",
+    "usage": "main",
+    "voltage": "750"
+  }
+},
+{
+  "type": "way",
+  "id": 1318969942,
+  "center": {
+    "lat": 30.0208485,
+    "lon": 31.4468455
+  },
+  "tags": {
+    "bridge": "viaduct",
+    "electrified": "rail",
+    "frequency": "0",
+    "layer": "3",
+    "name": "مونوريل",
+    "name:ar": "مونوريل",
+    "name:en": "Monorail Cairo",
+    "railway": "monorail",
+    "usage": "main",
+    "voltage": "750"
+  }
+},
+{
+  "type": "way",
+  "id": 1318969943,
+  "center": {
+    "lat": 30.0162480,
+    "lon": 31.4338857
+  },
+  "tags": {
+    "electrified": "rail",
+    "frequency": "0",
+    "name": "مونوريل",
+    "name:ar": "مونوريل",
+    "name:en": "Monorail Cairo",
+    "railway": "monorail",
+    "tunnel": "building_passage",
+    "usage": "main",
+    "voltage": "750"
+  }
+},
+{
+  "type": "way",
+  "id": 1318972153,
+  "center": {
+    "lat": 30.0162451,
+    "lon": 31.4214204
+  },
+  "tags": {
+    "bridge": "viaduct",
+    "electrified": "rail",
+    "frequency": "0",
+    "layer": "3",
+    "name": "مونوريل",
+    "railway": "monorail",
+    "usage": "main",
+    "voltage": "750"
+  }
+},
+{
+  "type": "way",
+  "id": 1318972154,
+  "center": {
+    "lat": 30.0162766,
+    "lon": 31.4089868
+  },
+  "tags": {
+    "electrified": "rail",
+    "frequency": "0",
+    "name": "مونوريل",
+    "railway": "monorail",
+    "tunnel": "building_passage",
+    "usage": "main",
+    "voltage": "750"
+  }
+},
+{
+  "type": "way",
+  "id": 1318972155,
+  "center": {
+    "lat": 30.0161578,
+    "lon": 31.4198279
+  },
+  "tags": {
+    "bridge": "viaduct",
+    "electrified": "rail",
+    "frequency": "0",
+    "layer": "3",
+    "name": "مونوريل",
+    "name:ar": "مونوريل",
+    "name:en": "Monorail Cairo",
+    "railway": "monorail",
+    "usage": "main",
+    "voltage": "750"
+  }
+},
+{
+  "type": "way",
+  "id": 1318972156,
+  "center": {
+    "lat": 30.0161927,
+    "lon": 31.4089881
+  },
+  "tags": {
+    "electrified": "rail",
+    "frequency": "0",
+    "name": "مونوريل",
+    "name:ar": "مونوريل",
+    "name:en": "Monorail Cairo",
+    "railway": "monorail",
+    "tunnel": "building_passage",
+    "usage": "main",
+    "voltage": "750"
+  }
+},
+{
+  "type": "way",
+  "id": 1318972157,
+  "center": {
+    "lat": 30.0162331,
+    "lon": 31.4317498
+  },
+  "tags": {
+    "bridge": "viaduct",
+    "electrified": "rail",
+    "frequency": "0",
+    "layer": "3",
+    "name": "مونوريل",
+    "name:ar": "مونوريل",
+    "name:en": "Monorail Cairo",
+    "railway": "monorail",
+    "usage": "main",
+    "voltage": "750"
+  }
+},
+{
+  "type": "way",
+  "id": 1318972158,
+  "center": {
+    "lat": 30.0162765,
+    "lon": 31.4329261
+  },
+  "tags": {
+    "bridge": "yes",
+    "construction": "yes",
+    "electrified": "rail",
+    "frequency": "0",
+    "layer": "3",
+    "name": "مونوريل",
+    "railway": "monorail",
+    "service": "crossover",
+    "usage": "main",
+    "voltage": "750"
+  }
+},
+{
+  "type": "way",
+  "id": 1318977633,
+  "center": {
+    "lat": 30.0176809,
+    "lon": 31.3961755
+  },
+  "tags": {
+    "bridge": "viaduct",
+    "electrified": "rail",
+    "frequency": "0",
+    "layer": "3",
+    "name": "مونوريل",
+    "railway": "monorail",
+    "usage": "main",
+    "voltage": "750"
+  }
+},
+{
+  "type": "way",
+  "id": 1318977635,
+  "center": {
+    "lat": 30.0175976,
+    "lon": 31.3961623
+  },
+  "tags": {
+    "bridge": "viaduct",
+    "electrified": "rail",
+    "frequency": "0",
+    "layer": "3",
+    "name": "مونوريل",
+    "name:ar": "مونوريل",
+    "name:en": "Monorail Cairo",
+    "railway": "monorail",
+    "usage": "main",
+    "voltage": "750"
+  }
+},
+{
+  "type": "way",
+  "id": 1348520227,
+  "center": {
+    "lat": 30.0051798,
+    "lon": 31.4450986
+  },
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "mosque",
+    "name": "مسجد فاطمة الشربتلي",
+    "name:ar": "مسجد فاطمة الشربتلي",
+    "name:en": "Fatma Sharbtly Mosque",
+    "religion": "muslim"
+  }
+},
+{
+  "type": "way",
+  "id": 1348520230,
+  "center": {
+    "lat": 30.0058357,
+    "lon": 31.4566906
+  },
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "mosque",
+    "name": "مسجد المصطفى",
+    "name:ar": "مسجد المصطفى",
+    "name:en": "Al Mustafa Mosque",
+    "religion": "muslim"
+  }
+},
+{
+  "type": "way",
+  "id": 1353587266,
+  "center": {
+    "lat": 30.0124626,
+    "lon": 31.4321808
+  },
+  "tags": {
+    "addr:city": "التجمع الخامس",
+    "addr:street": "شارع ابن الخوام",
+    "building": "mosque",
+    "building:levels": "2",
+    "name": "مسجد خير الرسل"
+  }
+},
+{
+  "type": "way",
+  "id": 1414257448,
+  "center": {
+    "lat": 30.0301292,
+    "lon": 31.4231124
+  },
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "yes",
+    "name": "مسجد الشرطة",
+    "name:ar": "مسجد الشرطة",
+    "name:en": "Police Mosque",
+    "religion": "muslim"
+  }
+},
+{
+  "type": "way",
+  "id": 1416072210,
+  "center": {
+    "lat": 30.0110401,
+    "lon": 31.4113807
+  },
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "yes",
+    "name": "مسجد الايمان",
+    "name:ar": "مسجد الايمان",
+    "name:en": "Al Eman Mosque",
+    "religion": "muslim"
+  }
+},
+{
+  "type": "way",
+  "id": 1435106680,
+  "center": {
+    "lat": 30.0067191,
+    "lon": 31.4197726
+  },
+  "tags": {
+    "amenity": "theatre",
+    "building": "yes",
+    "name": "Hayah International Academy Theater",
+    "operator": "Hayah International Academy, Hayah Backstage Team"
+  }
+},
+{
+  "type": "way",
+  "id": 1436801387,
+  "center": {
+    "lat": 30.0129534,
+    "lon": 31.4401363
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "branch": "القاهرة الجديدة",
+    "building": "yes",
+    "government": "electricity",
+    "name": "شركة شمال القاهرة لتوزيع الكهرباء - القاهرة الجديدة",
+    "name:ar": "شركة شمال القاهرة لتوزيع الكهرباء - القاهرة الجديدة",
+    "office": "government",
+    "operator": "الشركة القابضة لكهرباء مصر",
+    "phone": "121",
+    "website": "https://ncedc.gov.eg/"
+  }
+},
+{
+  "type": "way",
+  "id": 1459470384,
+  "center": {
+    "lat": 30.0167953,
+    "lon": 31.4126198
+  },
+  "tags": {
+    "amenity": "fast_food",
+    "brand": "كرسبي كريم",
+    "brand:ar": "كرسبي كريم",
+    "brand:en": "Krispy Krem",
+    "brand:wikidata": "Q1192805",
+    "building": "yes",
+    "cuisine": "donut",
+    "name": "كرسبي كريم",
+    "name:ar": "كرسبي كريم",
+    "name:en": "Krispy Krem",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1463710117,
+  "center": {
+    "lat": 30.0161688,
+    "lon": 31.4455077
+  },
+  "tags": {
+    "alt_name": "ميدان ماونتن فيو",
+    "alt_name:en": "Mauntain View Square",
+    "junction": "yes",
+    "name": "ميدان طلعت حرب",
+    "name:ar": "ميدان طلعت حرب",
+    "name:en": "Talaat Harb Square",
+    "place": "square"
+  }
+},
+{
+  "type": "way",
+  "id": 1511381833,
+  "center": {
+    "lat": 30.0190027,
+    "lon": 31.4219448
+  },
+  "tags": {
+    "area": "yes",
+    "boundary": "delivery_area",
+    "branch": "Tabali Tagamoaa",
+    "delivery_area": "yes",
+    "name": "Tabali Tagamoaa Delivery Area 1",
+    "operator": "Tabali",
+    "service": "delivery"
+  }
+},
+{
+  "type": "way",
+  "id": 1511381834,
+  "center": {
+    "lat": 30.0299658,
+    "lon": 31.4277319
+  },
+  "tags": {
+    "area": "yes",
+    "boundary": "delivery_area",
+    "branch": "Tabali Tagamoaa",
+    "delivery_area": "yes",
+    "name": "Tabali Tagamoaa Delivery Area 2",
+    "operator": "Tabali",
+    "service": "delivery"
+  }
+},
+{
+  "type": "way",
+  "id": 1511381835,
+  "center": {
+    "lat": 30.0148160,
+    "lon": 31.4801828
+  },
+  "tags": {
+    "area": "yes",
+    "boundary": "delivery_area",
+    "branch": "Tabali Leven Square Mall",
+    "delivery_area": "yes",
+    "name": "Tabali Leven Square Mall Delivery Area 1",
+    "operator": "Tabali",
+    "service": "delivery"
+  }
+},
+{
+  "type": "relation",
+  "id": 384354,
+  "center": {
+    "lat": 30.0184230,
+    "lon": 31.4164968
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:housenumber": "33",
+    "addr:place": "القطاع الأول",
+    "addr:place:en": "First Sector",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "building": "office",
+    "name": "ناتا (الشركة المصرية للغاز الطبيعى)",
+    "name:ar": "ناتا (الشركة المصرية للغاز الطبيعى)",
+    "name:en": "NATA (Egyptian Company for Natural Gas)",
+    "type": "multipolygon"
+  }
+},
+{
+  "type": "relation",
+  "id": 9449784,
+  "center": {
+    "lat": 30.0134718,
+    "lon": 31.4535757
+  },
+  "tags": {
+    "name": "شارع يحيي المشد",
+    "name:ar": "شارع يحيي المشد",
+    "name:en": "Yehya Al Mashd Street",
+    "type": "associatedStreet"
+  }
+},
+{
+  "type": "relation",
+  "id": 13186211,
+  "center": {
+    "lat": 30.0326803,
+    "lon": 31.5438767
+  },
+  "tags": {
+    "colour": "#00309A",
+    "name": "خط مونوريل شرق النيل",
+    "name:en": "East Nile line: Stadium → New Capital",
+    "name:fr": "ligne de monorail du Nil oriental",
+    "network": "مونوريل القاهرة",
+    "public_transport:version": "2",
+    "route": "monorail",
+    "type": "route",
+    "wikidata": "Q138807842"
+  }
+},
+{
+  "type": "relation",
+  "id": 15021795,
+  "center": {
+    "lat": 30.0205184,
+    "lon": 31.4183171
+  },
+  "tags": {
+    "addr:city": "القاهرة الجديدة",
+    "addr:city:en": "New Cairo",
+    "addr:country": "EG",
+    "addr:district": "القطاع الأول",
+    "addr:district:en": "First Sector",
+    "addr:housenumber": "41",
+    "addr:postcode": "11865",
+    "addr:province": "القاهرة",
+    "addr:province:en": "Cairo",
+    "addr:street": "شارع التسعين الشمالى",
+    "addr:street:en": "Al Tesein Northern Street",
+    "building": "commercial",
+    "name": "بجيسكو - الشركة الاستشارية لهندسة محطات القوى والطاقة الكهربائية",
+    "name:ar": "بجيسكو - الشركة الاستشارية لهندسة محطات القوى والطاقة الكهربائية",
+    "name:en": "PGESCO - Power Generation Engineering & Service Co.",
+    "type": "multipolygon"
+  }
+},
+{
+  "type": "relation",
+  "id": 20384125,
+  "center": {
+    "lat": 30.0327314,
+    "lon": 31.5438799
+  },
+  "tags": {
+    "colour": "#00309A",
+    "name": "خط مونوريل شرق النيل",
+    "name:en": "East Nile line: New Capital → Stadium",
+    "name:fr": "ligne de monorail du Nil oriental",
+    "network": "مونوريل القاهرة",
+    "network:wikidata": "Q104850852",
+    "public_transport:version": "2",
+    "route": "monorail",
+    "type": "route",
+    "wikidata": "Q138807842"
+  }
+},
+{
+  "type": "relation",
+  "id": 20394210,
+  "center": {
+    "lat": 30.0162732,
+    "lon": 31.4338857
+  },
+  "tags": {
+    "name": "المستشفى الجوي",
+    "name:en": "Airforce Hospital",
+    "public_transport": "stop_area",
+    "type": "public_transport"
+  }
+},
+{
+  "type": "relation",
+  "id": 20394211,
+  "center": {
+    "lat": 30.0162466,
+    "lon": 31.4089881
+  },
+  "tags": {
+    "name": "190",
+    "public_transport": "stop_area",
+    "type": "public_transport"
+  }
+},
+{
+  "type": "relation",
+  "id": 20668487,
+  "center": {
+    "lat": 30.0299658,
+    "lon": 31.4277319
+  },
+  "tags": {
+    "name": "Tabali Tagamoaa Delivery",
+    "type": "site"
+  }
+},
+{
+  "type": "relation",
+  "id": 20668488,
+  "center": {
+    "lat": 30.0614192,
+    "lon": 31.5119947
+  },
+  "tags": {
+    "name": "Tabali Leven Square Mall Delivery",
+    "type": "site"
+  }
+}
+
+  ]
+}

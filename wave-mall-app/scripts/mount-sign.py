@@ -88,7 +88,7 @@ for name, s in SIGNS.items():
     x1, y1 = int(q[:, 0].max() + cap * 1.5), int(q[:, 1].max() + cap * 1.0)
     x0, y0, x1, y1 = max(0, x0), max(0, y0), min(w, x1), min(h, y1)
     roi = out[y0:y1, x0:x1]
-    roi = cv2.GaussianBlur(roi, (0, 0), .55)
+    roi = cv2.GaussianBlur(roi, (0, 0), .4 if s['mode'] == 'day' else .5)
     rng = np.random.default_rng(7)
     roi = roi + rng.normal(0, .005, roi.shape).astype(np.float32)
     blend = np.clip(cv2.GaussianBlur(np.maximum(face, side)[y0:y1, x0:x1], (0, 0), 6) * 4, 0, 1)[..., None]

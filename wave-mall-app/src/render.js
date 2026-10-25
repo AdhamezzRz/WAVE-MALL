@@ -28,13 +28,21 @@ function widths(name) {
   }
   return widthsCache.get(name);
 }
-const srcset = (name) => widths(name).map((w) => `/img/${name}-${w}.webp ${w}w`).join(', ');
-const imgUrl = (name) => `/img/${name}-${widths(name).at(-1)}.webp`;
+// Image URLs carry a content hash so a replaced photograph is never served from a stale cache.
+const imgVCache = new Map();
+function imgV(name) {
+  if (!imgVCache.has(name)) imgVCache.set(name, version(`img/${name}-${widths(name).at(-1)}.webp`));
+  return imgVCache.get(name);
+}
+const imgFile = (name, w) => `/img/${name}-${w}.webp?v=${imgV(name)}`;
+const srcset = (name) => widths(name).map((w) => `${imgFile(name, w)} ${w}w`).join(', ');
+const imgUrl = (name) => imgFile(name, widths(name).at(-1));
+const OG_V = version('img/og-image.jpg');
 
 function picture(name, alt, { sizes = '100vw', eager = false, cls = '' } = {}) {
   const ws = widths(name);
   const fallback = ws[Math.min(1, ws.length - 1)];
-  return `<img class="${cls}" src="/img/${name}-${fallback}.webp" srcset="${srcset(name)}" sizes="${sizes}" alt="${esc(alt)}" ${
+  return `<img class="${cls}" src="${imgFile(name, fallback)}" srcset="${srcset(name)}" sizes="${sizes}" alt="${esc(alt)}" ${
     eager ? 'fetchpriority="high" decoding="async"' : 'loading="lazy" decoding="async"'
   }>`;
 }
@@ -111,7 +119,7 @@ function header(c, pathname) {
 <aside class="rail" aria-hidden="true" data-rail>${FLOORS.map((f) => `<span data-floor="${f.id}">${f.id}</span>`).join('')}</aside>
 <div class="menu" id="menu" data-menu aria-hidden="true">
   <div class="menu__media" aria-hidden="true">
-    ${MENU_IMG.map((img, i) => `<img data-menu-img="${i}" data-src="/img/${img}-1080.webp" alt=""${i === active ? ' class="is-on"' : ''}>`).join('')}
+    ${MENU_IMG.map((img, i) => `<img data-menu-img="${i}" data-src="${imgFile(img, 1080)}" alt=""${i === active ? ' class="is-on"' : ''}>`).join('')}
   </div>
   <div class="menu__body">
     <nav class="menu__nav" aria-label="${esc(m.open)}">
@@ -159,7 +167,7 @@ function layout({ lang, pathname, title: pageTitle, description, body, siteUrl, 
   const base = (siteUrl || '').replace(/\/$/, '');
   const enPath = lang === 'en' ? pathname : pathname.replace(/^\/ar/, '') || '/';
   const arPath = lang === 'ar' ? pathname : `/ar${pathname === '/' ? '/' : pathname}`;
-  const ogImage = seo.image ? `${base}${imgUrl(seo.image)}` : `${base}/img/og-image.jpg`;
+  const ogImage = seo.image ? `${base}${imgUrl(seo.image)}` : `${base}/img/og-image.jpg?v=${OG_V}`;
   const org = {
     '@type': 'ShoppingCenter',
     '@id': `${base}/#org`,
@@ -168,7 +176,7 @@ function layout({ lang, pathname, title: pageTitle, description, body, siteUrl, 
     slogan: 'More than a destination.',
     url: `${base}/`,
     logo: `${base}/img/logo.svg`,
-    image: [`${base}/img/og-image.jpg`, `${base}${imgUrl('morning')}`, `${base}${imgUrl('night')}`],
+    image: [`${base}/img/og-image.jpg?v=${OG_V}`, `${base}${imgUrl('morning')}`, `${base}${imgUrl('night')}`],
     email: c.footer.email,
     sameAs: ['https://www.instagram.com/thewavemall'],
     address: { '@type': 'PostalAddress', streetAddress: 'North 90 Street, First Sector', addressLocality: 'New Cairo', addressRegion: 'Cairo Governorate', addressCountry: 'EG' },
@@ -212,7 +220,7 @@ ${seo.published ? `<meta property="article:published_time" content="${seo.publis
 <link rel="preload" href="/fonts/Archivo-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/Montserrat-var.woff2" as="font" type="font/woff2" crossorigin>
 ${lang === 'ar' ? '<link rel="preload" href="/fonts/Almarai-300.woff2" as="font" type="font/woff2" crossorigin>' : ''}
-${image ? `<link rel="preload" as="image" href="/img/${image}-1080.webp" imagesrcset="${srcset(image)}" imagesizes="100vw">` : ''}
+${image ? `<link rel="preload" as="image" href="${imgFile(image, 1080)}" imagesrcset="${srcset(image)}" imagesizes="100vw">` : ''}
 <link rel="stylesheet" href="/css/site.css?v=${ASSET_V.css}">
 <script nonce="${nonce}">document.documentElement.classList.add('js');</script>
 <script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@graph': [org, site, ...(seo.jsonld || [])] })}</script>

@@ -19,7 +19,7 @@ npm run package    # builds release/the-wave-website.zip for Hostinger
 | `/experience/` | `/ar/experience/` | A day from 09:00 to 21:00, what you will find |
 | `/leasing/` | `/ar/leasing/` | Plaza and street-level unit schedules linked to the plan, enquiry form |
 | `/journal/` | `/ar/journal/` | Journal index and articles (`src/journal.js`) |
-| `/visit/` | `/ar/visit/` | Map, address, directions |
+| `/visit/` | `/ar/visit/` | Area map (streets, malls, landmarks, distances), address, directions |
 | `/contact/` | `/ar/contact/` | Contact form, details, FAQ |
 | `/privacy/`, `/terms/` | `/ar/...` | Legal drafts |
 
@@ -61,6 +61,7 @@ The app reads `PORT` from the environment (Hostinger sets it) and trusts one pro
 - Figures: `src/data.js` holds every area and unit size from the developer's presentation. The plans in `src/plan.js` are drawn from the architect's floor plans.
 - Pages and sections: `src/pages.js`; shell, head, header, footer: `src/render.js`.
 - Styles: `public/css/site.css`. Motion and navigation: `public/js/site.js`.
+- Area map (home and Visit): drawn from OpenStreetMap data in `assets-src/osm/` by `python3 scripts/build-map.py`, which writes the base drawing `public/img/area-map.svg` and the street labels and places in `src/map-data.json` (`src/map.js` renders them). To add a place, add its name and coordinates to `PLACES` in the script and rebuild. Map data © OpenStreetMap contributors (ODbL); the credit is shown under the map.
 - Logo: `src/logo-paths.json` (vector paths pulled from the identity PDF), rendered inline so every letter can animate.
 - Images: `assets-src/reference-night.webp` is the client's night photograph; `assets-src/hf/` are Higgsfield photographs built from it and from the presentation renders (morning, golden hour, plaza, corner, tower, court, details). The rooftop frame sign is the only logo on the building, and it is the exact identity wordmark: Higgsfield produced each view with the steel frame empty (`assets-src/hf/frames/`), then `scripts/mount-sign.py` mounts the vector logo on the frame (daylight letters or lit at night). Rebuild with `python3 scripts/optimize-images.py`.
 

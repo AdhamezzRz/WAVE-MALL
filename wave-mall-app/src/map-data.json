@@ -1,0 +1,204 @@
+{
+ "w": 5157,
+ "h": 2985,
+ "wave": {
+  "x": 2790,
+  "y": 1496
+ },
+ "streets": [
+  {
+   "en": "North 90 Street",
+   "ar": "شارع التسعين الشمالي",
+   "x": 1026,
+   "y": 1292,
+   "rot": -1.9,
+   "weight": "major"
+  },
+  {
+   "en": "North 90 Street",
+   "ar": "شارع التسعين الشمالي",
+   "x": 4091,
+   "y": 463,
+   "rot": -36.1,
+   "weight": "major"
+  },
+  {
+   "en": "South 90 Street",
+   "ar": "شارع التسعين الجنوبي",
+   "x": 1567,
+   "y": 1867,
+   "rot": -2.1,
+   "weight": "major"
+  },
+  {
+   "en": "South 90 Street",
+   "ar": "شارع التسعين الجنوبي",
+   "x": 4180,
+   "y": 1781,
+   "rot": -40.4,
+   "weight": "major"
+  },
+  {
+   "en": "Banks Road",
+   "ar": "طريق البنوك",
+   "x": 2051,
+   "y": 1648,
+   "rot": 8.5,
+   "weight": "minor"
+  },
+  {
+   "en": "El Orouba Axis",
+   "ar": "محور العروبة",
+   "x": 1473,
+   "y": 487,
+   "rot": -32.1,
+   "weight": "minor"
+  },
+  {
+   "en": "Talaat Harb Axis",
+   "ar": "محور طلعت حرب",
+   "x": 4120,
+   "y": 2403,
+   "rot": -90.2,
+   "weight": "minor"
+  },
+  {
+   "en": "Mostafa Kamel Axis",
+   "ar": "محور مصطفى كامل",
+   "x": 3663,
+   "y": 427,
+   "rot": 51.8,
+   "weight": "minor"
+  },
+  {
+   "en": "Omar Ibn Abdel Aziz St.",
+   "ar": "شارع عمر بن عبد العزيز",
+   "x": 2699,
+   "y": 2534,
+   "rot": -89.6,
+   "weight": "minor"
+  },
+  {
+   "en": "Khaled Ibn El Walid St.",
+   "ar": "شارع خالد بن الوليد",
+   "x": 2719,
+   "y": 770,
+   "rot": -89.1,
+   "weight": "minor"
+  },
+  {
+   "en": "Choueifat St.",
+   "ar": "شارع الشويفات",
+   "x": 1071,
+   "y": 2399,
+   "rot": -59.5,
+   "weight": "minor"
+  }
+ ],
+ "places": [
+  {
+   "kind": "mall",
+   "en": "Downtown Katameya Mall",
+   "ar": "داون تاون مول القطامية",
+   "x": 913,
+   "y": 1711,
+   "km": 1.9
+  },
+  {
+   "kind": "mall",
+   "en": "Monaliza Mall",
+   "ar": "موناليزا مول",
+   "x": 1622,
+   "y": 1571,
+   "km": 1.2
+  },
+  {
+   "kind": "mall",
+   "en": "Silver Star Mall",
+   "ar": "سيلفر ستار مول",
+   "x": 1696,
+   "y": 1510,
+   "km": 1.1
+  },
+  {
+   "kind": "mall",
+   "en": "Town Center Mall",
+   "ar": "تاون سنتر مول",
+   "x": 1772,
+   "y": 1519,
+   "km": 1.0
+  },
+  {
+   "kind": "mall",
+   "en": "Katameya Plaza",
+   "ar": "قطامية بلازا",
+   "x": 1840,
+   "y": 1590,
+   "km": 1.0
+  },
+  {
+   "kind": "mall",
+   "en": "Hanimex Mall",
+   "ar": "هانيميكس مول",
+   "x": 2000,
+   "y": 1503,
+   "km": 0.8
+  },
+  {
+   "kind": "mall",
+   "en": "Cairo Festival City Mall",
+   "ar": "كايرو فستيفال سيتي مول",
+   "x": 494,
+   "y": 538,
+   "km": 2.5
+  },
+  {
+   "kind": "mall",
+   "en": "IKEA",
+   "ar": "ايكيا",
+   "x": 444,
+   "y": 312,
+   "km": 2.6
+  },
+  {
+   "kind": "landmark",
+   "en": "Air Force Specialised Hospital",
+   "ar": "المستشفى الجوي التخصصي",
+   "x": 3043,
+   "y": 1701,
+   "km": 0.3
+  },
+  {
+   "kind": "landmark",
+   "en": "As-Salam International Hospital",
+   "ar": "مستشفى السلام الدولي",
+   "x": 2425,
+   "y": 2810,
+   "km": 1.4
+  },
+  {
+   "kind": "landmark",
+   "en": "Katameya Petrosport Club",
+   "ar": "نادي القطامية بتروسبورت",
+   "x": 4191,
+   "y": 768,
+   "km": 1.6
+  },
+  {
+   "kind": "landmark",
+   "en": "Dusit Thani LakeView",
+   "ar": "فندق دوسيت ثاني",
+   "x": 4958,
+   "y": 762,
+   "km": 2.3
+  },
+  {
+   "kind": "transit",
+   "en": "Monorail · Air Force Hospital station",
+   "ar": "المونوريل · محطة المستشفى الجوي",
+   "x": 2977,
+   "y": 1850,
+   "km": 0.4
+  }
+ ]
+}

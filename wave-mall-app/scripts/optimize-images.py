@@ -30,7 +30,6 @@ IMAGES = {
     "north90": (SRC / "hf/north90.webp", False),
     "sculpture": (SRC / "hf/sculpture.webp", False),
     "shopfronts": (SRC / "hf/shopfronts.webp", False),
-    "map": (SRC / "map.webp", "map"),
 }
 WIDTHS = (640, 1080, 1600, 2400)
 

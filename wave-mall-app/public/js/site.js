@@ -367,11 +367,56 @@
       });
     },
 
-    pins(scope) {
-      const pins = $$('[data-pins] .pin', scope);
-      if (!pins.length) return;
-      gsap.set(pins, { scale: 0 });
-      ScrollTrigger.create({ trigger: pins[0].parentElement, start: 'top 70%', once: true, onEnter: () => gsap.to(pins, { scale: 1, duration: 0.9, stagger: 0.08, ease: 'back.out(1.7)', delay: 0.8 }) });
+    amap(scope) {
+      $$('[data-amap]', scope).forEach((map) => {
+        const stage = $('[data-amap-stage]', map);
+        const svg = $('svg', map);
+        const VW = svg.viewBox.baseVal.width;
+        const pins = $$('.amap__pin', map);
+        const items = $$('.amap__legend [data-place]', map);
+        // marks keep their size on screen: --k is map units per pixel
+        const fit = () => { const w = svg.getBoundingClientRect().width; if (w) map.style.setProperty('--k', (VW / w).toFixed(3)); };
+        fit();
+        if (W.ResizeObserver) new ResizeObserver(fit).observe(svg);
+        // name tags sized to their text; flipped to the left near the east edge
+        pins.forEach((p) => {
+          const rect = $('.amap__tip rect', p);
+          const text = $('.amap__tip text', p);
+          const len = text.getComputedTextLength();
+          rect.setAttribute('width', String(len + 20));
+          if (p.hasAttribute('data-left')) { rect.setAttribute('x', String(-15 - len - 20)); text.setAttribute('x', String(-15 - len - 10)); }
+        });
+        // phones and tablets: the map scrolls sideways, opening on The Wave
+        const panTo = (frac, smooth) => {
+          const max = stage.scrollWidth - stage.clientWidth;
+          if (max < 2) return;
+          stage.scrollTo({ left: Math.max(0, Math.min(max, frac * stage.scrollWidth - stage.clientWidth / 2)), behavior: smooth ? 'smooth' : 'auto' });
+        };
+        panTo(Number(map.dataset.wx), false);
+        const on = (id) => {
+          pins.forEach((p) => p.classList.toggle('is-on', p.dataset.place === id));
+          items.forEach((b) => b.classList.toggle('is-on', b.dataset.place === id));
+          const pin = pins.find((p) => p.dataset.place === id);
+          if (pin) pin.parentNode.appendChild(pin);
+        };
+        pins.forEach((p) => {
+          p.addEventListener('pointerenter', () => on(p.dataset.place));
+          p.addEventListener('click', () => on(p.dataset.place));
+        });
+        items.forEach((b) => {
+          b.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') on(b.dataset.place); });
+          b.addEventListener('focus', () => on(b.dataset.place));
+          b.addEventListener('click', () => {
+            on(b.dataset.place);
+            const pin = pins.find((p) => p.dataset.place === b.dataset.place);
+            if (pin) panTo(Number(pin.dataset.x) / VW, true);
+            const r = stage.getBoundingClientRect();
+            if (r.top < 0 || r.bottom > W.innerHeight) scrollTo(stage, { offset: -(top ? top.offsetHeight : 0) - 16 });
+          });
+        });
+        map.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse') on(null); });
+        ScrollTrigger.create({ trigger: stage, start: 'top 82%', once: true, onEnter: () => map.classList.add('is-in') });
+      });
     },
 
     forms(scope) {
