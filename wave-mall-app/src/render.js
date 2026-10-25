@@ -4,6 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const { content } = require('./content');
+const { FLOORS } = require('./data');
 const LOGO = require('./logo-paths.json');
 
 const PUBLIC = path.join(__dirname, '..', 'public');
@@ -30,14 +31,17 @@ function widths(name) {
 const srcset = (name) => widths(name).map((w) => `/img/${name}-${w}.webp ${w}w`).join(', ');
 const imgUrl = (name) => `/img/${name}-${widths(name).at(-1)}.webp`;
 
-function picture(name, alt, { sizes = '100vw', eager = false, cls = '', portrait } = {}) {
+function picture(name, alt, { sizes = '100vw', eager = false, cls = '' } = {}) {
   const ws = widths(name);
   const fallback = ws[Math.min(1, ws.length - 1)];
-  const source = portrait ? `<source media="(orientation: portrait)" srcset="${srcset(portrait)}" sizes="${sizes}">` : '';
-  return `<picture>${source}<img class="${cls}" src="/img/${name}-${fallback}.webp" srcset="${srcset(name)}" sizes="${sizes}" alt="${esc(alt)}" ${
+  return `<img class="${cls}" src="/img/${name}-${fallback}.webp" srcset="${srcset(name)}" sizes="${sizes}" alt="${esc(alt)}" ${
     eager ? 'fetchpriority="high" decoding="async"' : 'loading="lazy" decoding="async"'
-  }></picture>`;
+  }>`;
 }
+
+// Image in a frame that wipes open on scroll.
+const frame = (name, alt, { sizes, cls = '', cap = '' } = {}) =>
+  `<figure class="frame ${cls}" data-wipe><div class="frame__clip">${picture(name, alt, { sizes })}</div>${cap ? `<figcaption class="label">${esc(cap)}</figcaption>` : ''}</figure>`;
 
 const LOGO_VB = '0 0 490 225.2';
 function logoSvg({ cls = '', outline = false, label = 'The Wave' } = {}) {
@@ -45,102 +49,73 @@ function logoSvg({ cls = '', outline = false, label = 'The Wave' } = {}) {
   const draw = outline ? `<path class="l-draw" pathLength="1" fill="none" stroke="currentColor" stroke-width="1" d="${LOGO.AV}"/>` : '';
   return `<svg class="logo ${cls}" viewBox="${LOGO_VB}" role="img" aria-label="${esc(label)}" fill="currentColor"><g class="logo__fill">${letters}</g>${draw}</svg>`;
 }
-const ligature = (cls = '') => `<svg class="${cls}" viewBox="163 97 207 128" aria-hidden="true"><path fill="currentColor" d="${LOGO.AV}"/></svg>`;
 
-const arrow = '<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const arrow = '<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const link = (href, label, cls = '', attrs = '') => `<a class="link ${cls}" href="${href}" ${attrs}><span>${esc(label)}</span>${arrow}</a>`;
-
+const label = (t, cls = '') => `<p class="label ${cls}" data-rise>${esc(t)}</p>`;
 const fmtDate = (iso, lang) => new Date(iso + 'T00:00:00Z').toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+const num = (n, lang) => Number(n).toLocaleString(lang === 'ar' ? 'ar-EG' : 'en-US');
 
-function hero(h, img, alt, { portrait, meta } = {}) {
-  return `
-<section class="hero" data-hero>
-  <div class="hero__media">${picture(img, alt, { eager: true, portrait })}</div>
-  <div class="hero__fade"></div>
-  <div class="col hero__text">
-    <h1 class="h-hero" data-hero-title><span>${esc(h.a)}</span> <em>${esc(h.b)}</em></h1>
-    ${meta ? `<p class="hero__meta" data-hero-meta>${meta.map(esc).join('<i>·</i>')}</p>` : ''}
-  </div>
-</section>`;
-}
+// A two-part serif title: plain then italic.
+const title = (a, b, tag = 'h2', cls = '') => `<${tag} class="title ${cls}" data-rise>${esc(a)}${b ? ` <em>${esc(b)}</em>` : ''}</${tag}>`;
 
-const plainHero = (h, intro, extra = '') => `
-<section class="plain">
-  <div class="col">
-    ${extra}
-    <h1 class="h1" data-r><span>${esc(h.a)}</span> <em>${esc(h.b)}</em></h1>
-    ${intro ? `<p class="lead" data-r>${esc(intro)}</p>` : ''}
-  </div>
-</section>`;
-
-function markSection(c, m, { more } = {}) {
-  return `
-<section class="mark" data-mark>
-  <div class="col mark__col">
-    <button class="mark__logo" type="button" aria-label="${esc(m.hint)}" data-mark-toggle>${logoSvg({ outline: true })}</button>
-    <p class="lead mark__text" data-r>${esc(m.text)}</p>
-    <p class="cap mark__hint" data-r>${esc(m.hint)}</p>
-    ${more ? link(more.href, more.label) : ''}
-  </div>
-</section>`;
-}
-
-// Breadcrumbs: visible trail plus the matching schema.
 function crumbs(items) {
-  const html = `<nav class="crumbs" aria-label="Breadcrumb"><ol>${items
-    .map(([href, label], i) => (i === items.length - 1 ? `<li aria-current="page">${esc(label)}</li>` : `<li><a href="${href}">${esc(label)}</a></li>`))
+  return `<nav class="crumbs" aria-label="Breadcrumb"><ol>${items
+    .map(([href, l], i) => (i === items.length - 1 ? `<li aria-current="page">${esc(l)}</li>` : `<li><a href="${href}">${esc(l)}</a></li>`))
     .join('')}</ol></nav>`;
-  return html;
 }
 const crumbsLd = (items, base) => ({
   '@type': 'BreadcrumbList',
   itemListElement: items.map(([href, name], i) => ({ '@type': 'ListItem', position: i + 1, name, item: `${base}${href}` })),
 });
 
-function newsletter(c, { compact = false } = {}) {
+function newsletter(c, id = 'f') {
   const n = c.footer.newsletter;
   return `
-<form class="news ${compact ? 'news--compact' : ''}" method="post" action="/api/subscribe" novalidate data-form="subscribe" data-ok="${esc(n.ok)}" data-fail="${esc(n.fail)}" data-sending="…">
+<form class="news" method="post" action="/api/subscribe" novalidate data-form="subscribe" data-ok="${esc(n.ok)}" data-fail="${esc(n.fail)}" data-sending="…">
   <input type="hidden" name="lang" value="${c.lang}">
   <p class="hp" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></p>
-  ${compact ? '' : `<p class="news__title">${esc(n.title)}</p><p class="news__text">${esc(n.text)}</p>`}
+  <label class="sr" for="news-${id}">${esc(n.placeholder)}</label>
   <div class="news__row">
-    <label class="sr" for="news-${compact ? 'c' : 'f'}">${esc(n.placeholder)}</label>
-    <input id="news-${compact ? 'c' : 'f'}" type="email" name="email" required placeholder="${esc(n.placeholder)}" autocomplete="email" dir="ltr">
+    <input id="news-${id}" type="email" name="email" required placeholder="${esc(n.placeholder)}" autocomplete="email" dir="ltr">
     <button type="submit"><span>${esc(n.button)}</span>${arrow}</button>
   </div>
   <p class="status" role="status" data-form-status hidden></p>
 </form>`;
 }
 
+// Navigation doubles as an elevator panel: each page sits on a floor.
+const NAV_FLOORS = ['R', '4', '3', '2', '1', 'G', 'B1'];
+
 function header(c, pathname) {
   const home = c.lang === 'en' ? '/' : '/ar/';
   const other = c.lang === 'en' ? `/ar${pathname === '/' ? '/' : pathname}` : pathname.replace(/^\/ar/, '') || '/';
   const isCurrent = (href) => (href === home ? pathname === home : pathname.startsWith(href));
-  const main = c.nav.slice(1, -1);
-  const contact = c.nav[c.nav.length - 1];
-  const navLink = ([href, label]) => `<a href="${href}" ${isCurrent(href) ? 'aria-current="page"' : ''}>${esc(label)}</a>`;
+  const cur = (href) => (isCurrent(href) ? 'aria-current="page"' : '');
+  const [, ...pages] = c.nav;
+  const main = pages.slice(0, -1);
+  const contact = pages[pages.length - 1];
   return `
 <header class="top" data-top>
   <a class="top__brand" href="${home}" aria-label="${esc(c.brand)}">${logoSvg()}</a>
-  <nav class="top__nav" aria-label="Main">${main.map(navLink).join('')}</nav>
+  <nav class="top__nav" aria-label="Main">${main.map(([href, l]) => `<a href="${href}" ${cur(href)}>${esc(l)}</a>`).join('')}</nav>
   <div class="top__right">
-    <a class="top__contact" href="${contact[0]}" ${isCurrent(contact[0]) ? 'aria-current="page"' : ''}>${esc(contact[1])}</a>
-    <a class="top__lang" href="${other}" hreflang="${c.otherLang}" lang="${c.otherLang}" data-full-nav>${esc(c.otherLabel)}</a>
-    <button class="top__menu" type="button" aria-expanded="false" aria-controls="menu" data-menu-toggle><span data-open="${esc(c.menu.open)}" data-close="${esc(c.menu.close)}">${esc(c.menu.open)}</span><i aria-hidden="true"><b></b><b></b></i></button>
+    <a class="top__link" href="${contact[0]}" ${cur(contact[0])}>${esc(contact[1])}</a>
+    <a class="top__link" href="${other}" hreflang="${c.otherLang}" lang="${c.otherLang}" data-full-nav>${esc(c.otherLabel)}</a>
+    <span class="lift" aria-hidden="true"><span class="lift__arrow" data-lift-dir></span><span class="lift__floor" data-lift>R</span></span>
+    <button class="top__menu" type="button" aria-expanded="false" aria-controls="menu" data-menu-toggle><span data-open="${esc(c.menu.open)}" data-close="${esc(c.menu.close)}">${esc(c.menu.open)}</span></button>
   </div>
 </header>
+<aside class="rail" aria-hidden="true" data-rail>${FLOORS.map((f) => `<span data-floor="${f.id}">${f.id}</span>`).join('')}</aside>
 <div class="menu" id="menu" data-menu aria-hidden="true">
-  <div class="col menu__inner">
-    <nav class="menu__nav" aria-label="${esc(c.menu.open)}">${c.nav.map(([href, label]) => `<a href="${href}" ${isCurrent(href) ? 'aria-current="page"' : ''}><span>${esc(label)}</span></a>`).join('')}</nav>
-    <div class="menu__side">
-      <p class="cap">${esc(c.menu.contact)}</p>
-      <a href="mailto:${c.footer.email}">${esc(c.footer.email)}</a>
-      <p>${esc(c.footer.address)}</p>
-      <p class="cap">${esc(c.menu.follow)}</p>
-      <a href="https://www.instagram.com/thewavemall" target="_blank" rel="noopener">${esc(c.footer.instagram)}</a>
-      <p class="cap">${esc(c.menu.language)}</p>
-      <a href="${other}" hreflang="${c.otherLang}" lang="${c.otherLang}" data-full-nav>${esc(c.otherLabel)}</a>
+  <div class="menu__inner">
+    <nav class="menu__nav" aria-label="${esc(c.menu.open)}">
+      ${c.nav.map(([href, l], i) => `<a href="${href}" ${cur(href)}><i>${NAV_FLOORS[i]}</i><span>${esc(l)}</span></a>`).join('')}
+    </nav>
+    <div class="menu__foot">
+      <div><p class="label">${esc(c.menu.write)}</p><a href="mailto:${c.footer.email}">${esc(c.footer.email)}</a></div>
+      <div><p class="label">${esc(c.menu.follow)}</p><a href="https://www.instagram.com/thewavemall" target="_blank" rel="noopener">${esc(c.footer.instagram)}</a></div>
+      <div><a href="${other}" hreflang="${c.otherLang}" lang="${c.otherLang}" data-full-nav>${esc(c.otherLabel)}</a></div>
     </div>
   </div>
 </div>`;
@@ -151,40 +126,28 @@ function footer(c) {
   const home = c.lang === 'en' ? '/' : '/ar/';
   return `
 <footer class="foot">
-  <div class="col">
-    <div class="foot__grid">
-      <div class="foot__brand">
-        <a href="${home}" aria-label="${esc(c.brand)}">${logoSvg({ cls: 'foot__logo' })}</a>
-        <p class="foot__line">${esc(f.line)}</p>
-        <p class="foot__about">${esc(f.about)}</p>
-      </div>
-      <div class="foot__col">
-        <p class="cap">${esc(f.explore)}</p>
-        ${c.nav.slice(1).map(([href, label]) => `<a href="${href}">${esc(label)}</a>`).join('')}
-      </div>
-      <div class="foot__col">
-        <p class="cap">${esc(f.visit)}</p>
-        <p>${esc(f.address)}</p>
-        <p>${esc(f.hours)}</p>
-        <a href="mailto:${f.email}">${esc(f.email)}</a>
-      </div>
-      <div class="foot__col foot__col--news">
-        <p class="cap">${esc(f.follow)}</p>
-        <a href="https://www.instagram.com/thewavemall" target="_blank" rel="noopener">${esc(f.instagram)}</a>
-        ${newsletter(c)}
-      </div>
+  <div class="wrap">
+    <div class="foot__top">
+      <p class="foot__line">${esc(f.newsletter.title)}</p>
+      ${newsletter(c)}
     </div>
-    <div class="foot__mark" aria-hidden="true">${logoSvg()}</div>
-    <div class="foot__legal">
-      <p>© ${new Date().getFullYear()} ${esc(f.rights)} ${f.legal.map(([href, label]) => `<a href="${href}">${esc(label)}</a>`).join('')}</p>
-      <p>${esc(f.note)}</p>
-      <button type="button" data-top-btn>${esc(f.top)}${arrow}</button>
+    <div class="foot__cols">
+      <div class="foot__col">${c.nav.slice(1, 4).map(([href, l]) => `<a href="${href}">${esc(l)}</a>`).join('')}</div>
+      <div class="foot__col">${c.nav.slice(4).map(([href, l]) => `<a href="${href}">${esc(l)}</a>`).join('')}</div>
+      <div class="foot__col"><span>${esc(f.address)}</span><span>${esc(f.hours)}</span></div>
+      <div class="foot__col"><a href="mailto:${f.email}">${esc(f.email)}</a><a href="https://www.instagram.com/thewavemall" target="_blank" rel="noopener">${esc(f.instagram)}</a></div>
     </div>
+  </div>
+  <a class="foot__mark" href="${home}" aria-label="${esc(c.brand)}" data-foot-mark>${logoSvg()}</a>
+  <div class="wrap foot__legal">
+    <p>© ${new Date().getFullYear()} ${esc(f.rights)}${f.legal.map(([href, l]) => ` · <a href="${href}">${esc(l)}</a>`).join('')}</p>
+    <p>${esc(f.note)}</p>
+    <button type="button" data-top-btn>${esc(f.top)}</button>
   </div>
 </footer>`;
 }
 
-function layout({ lang, pathname, title, description, body, siteUrl, nonce, image = 'aerial', loader = true, thread = true, seo = {} }) {
+function layout({ lang, pathname, title: pageTitle, description, body, siteUrl, nonce, image = null, seo = {} }) {
   const c = content[lang];
   const base = (siteUrl || '').replace(/\/$/, '');
   const enPath = lang === 'en' ? pathname : pathname.replace(/^\/ar/, '') || '/';
@@ -194,28 +157,31 @@ function layout({ lang, pathname, title, description, body, siteUrl, nonce, imag
     '@type': 'ShoppingCenter',
     '@id': `${base}/#org`,
     name: 'The Wave',
-    alternateName: ['The Wave New Cairo Mall', 'ذا ويف'],
+    alternateName: ['The Wave New Cairo', 'ذا ويف'],
     slogan: 'More than a destination.',
     url: `${base}/`,
     logo: `${base}/img/logo.svg`,
-    image: `${base}/img/og-image.jpg`,
+    image: [`${base}/img/og-image.jpg`, `${base}${imgUrl('court')}`],
     email: c.footer.email,
     sameAs: ['https://www.instagram.com/thewavemall'],
     address: { '@type': 'PostalAddress', streetAddress: 'North 90 Street, First Sector', addressLocality: 'New Cairo', addressRegion: 'Cairo Governorate', addressCountry: 'EG' },
     geo: { '@type': 'GeoCoordinates', latitude: 30.0194714, longitude: 31.4319505 },
+    amenityFeature: [
+      { '@type': 'LocationFeatureSpecification', name: 'Parking', value: true },
+      { '@type': 'LocationFeatureSpecification', name: 'Outdoor terraces', value: true },
+    ],
   };
   const site = { '@type': 'WebSite', '@id': `${base}/#site`, url: `${base}/`, name: 'The Wave', inLanguage: lang, publisher: { '@id': `${base}/#org` } };
-  const graph = [org, site, ...(seo.jsonld || [])];
   const feed = `${lang === 'en' ? '' : '/ar'}/journal/feed.xml`;
   return `<!doctype html>
 <html lang="${c.lang}" dir="${c.dir}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>${esc(title)}</title>
+<title>${esc(pageTitle)}</title>
 <meta name="description" content="${esc(description)}">
 <meta name="robots" content="${seo.noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large'}">
-<meta name="theme-color" content="#ede7da">
+<meta name="theme-color" content="#283833">
 <link rel="canonical" href="${base}${pathname}">
 <link rel="alternate" hreflang="en" href="${base}${enPath}">
 <link rel="alternate" hreflang="ar" href="${base}${arPath}">
@@ -223,35 +189,34 @@ function layout({ lang, pathname, title, description, body, siteUrl, nonce, imag
 <link rel="alternate" type="application/rss+xml" title="${esc(c.journal.title)}" href="${base}${feed}">
 <meta property="og:type" content="${seo.type || 'website'}">
 <meta property="og:site_name" content="The Wave">
-<meta property="og:title" content="${esc(title)}">
+<meta property="og:title" content="${esc(pageTitle)}">
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:url" content="${base}${pathname}">
 <meta property="og:image" content="${ogImage}">
 <meta property="og:locale" content="${lang === 'en' ? 'en_US' : 'ar_EG'}">
 <meta property="og:locale:alternate" content="${lang === 'en' ? 'ar_EG' : 'en_US'}">
-${seo.published ? `<meta property="article:published_time" content="${seo.published}">` : ''}
-${seo.modified ? `<meta property="article:modified_time" content="${seo.modified}">` : ''}
+${seo.published ? `<meta property="article:published_time" content="${seo.published}">\n<meta property="article:modified_time" content="${seo.modified || seo.published}">` : ''}
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="${esc(title)}">
+<meta name="twitter:title" content="${esc(pageTitle)}">
 <meta name="twitter:description" content="${esc(description)}">
 <meta name="twitter:image" content="${ogImage}">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="/fonts/BodoniModa-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/fonts/BodoniModa-italic.woff2" as="font" type="font/woff2" crossorigin>
-${image ? `<link rel="preload" as="image" href="/img/${image}-1280.webp" imagesrcset="${srcset(image)}" imagesizes="100vw">` : ''}
+<link rel="preload" href="/fonts/Archivo-var.woff2" as="font" type="font/woff2" crossorigin>
+${lang === 'ar' ? '<link rel="preload" href="/fonts/PlexArabic-400.woff2" as="font" type="font/woff2" crossorigin>' : ''}
+${image ? `<link rel="preload" as="image" href="/img/${image}-1080.webp" imagesrcset="${srcset(image)}" imagesizes="100vw">` : ''}
 <link rel="stylesheet" href="/css/site.css?v=${ASSET_V.css}">
 <script nonce="${nonce}">document.documentElement.classList.add('js');</script>
-<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@graph': graph })}</script>
+<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@graph': [org, site, ...(seo.jsonld || [])] })}</script>
 </head>
 <body>
 <a class="skip" href="#main">${esc(c.skip)}</a>
-${loader ? `<div class="veil" data-veil aria-hidden="true">${ligature('veil__mark')}</div>` : ''}
 ${header(c, pathname)}
 <main id="main" class="page" data-page="${pathname}">
-${thread ? '<svg class="thread" data-thread aria-hidden="true"><path pathLength="1" fill="none" stroke="currentColor" stroke-width="1"/></svg>' : ''}
 ${body}
 </main>
 ${footer(c)}
+<svg class="curtain" data-curtain viewBox="0 0 1 1" preserveAspectRatio="none" aria-hidden="true"><path d=""/></svg>
 <script src="/js/vendor/gsap.min.js" defer></script>
 <script src="/js/vendor/ScrollTrigger.min.js" defer></script>
 <script src="/js/vendor/lenis.min.js" defer></script>
@@ -260,4 +225,4 @@ ${footer(c)}
 </html>`;
 }
 
-module.exports = { esc, picture, imgUrl, logoSvg, ligature, link, arrow, hero, plainHero, markSection, crumbs, crumbsLd, newsletter, fmtDate, layout, LOGO };
+module.exports = { esc, picture, frame, imgUrl, logoSvg, link, arrow, label, title, num, crumbs, crumbsLd, newsletter, fmtDate, layout, LOGO };

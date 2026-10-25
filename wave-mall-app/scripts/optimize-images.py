@@ -1,40 +1,62 @@
-"""Rebuild public/img from the source visuals (needs Pillow).
+"""Rebuild public/img from source images (needs Pillow + numpy).
 
-Renders in assets-src/ are the client's design renders with the "LOGO"
-placeholder painted out; the lifestyle images come from the launch posts.
+assets-src/hf/  photographs generated with Higgsfield for this site
+assets-src/*.webp  the client's renders (placeholder signage painted out), graded warm
+../wave-posts/visuals/  earlier Higgsfield photographs from the launch posts
 """
 from pathlib import Path
-from PIL import Image, ImageFilter
+import numpy as np
+from PIL import Image, ImageEnhance, ImageFilter
 
 APP = Path(__file__).resolve().parents[1]
 ROOT = APP.parent
 OUT = APP / "public" / "img"
-SRC = {
-    "aerial": APP / "assets-src/aerial.webp",
-    "dusk": APP / "assets-src/dusk.webp",
-    "side": APP / "assets-src/side.webp",
-    "map": APP / "assets-src/map.webp",
-    "architecture": ROOT / "wave-posts/visuals/architecture-curves.png",
-    "fashion": ROOT / "wave-posts/visuals/editorial-trench.png",
-    "bag": ROOT / "wave-posts/visuals/editorial-bag.png",
-    "terrace": ROOT / "wave-posts/visuals/terrace-cafe.png",
-    "ribbons": ROOT / "wave-posts/visuals/night-ribbons.png",
-    "green": ROOT / "wave-posts/visuals/green-paper.png",
-}
-WIDTHS = (640, 1280, 1920)
-MAX_UPSCALE = 1.6  # the renders are small; allow a mild upscale with sharpening
-NO_UPSCALE = {"architecture", "fashion", "bag", "terrace", "ribbons", "green"}
+SRC = APP / "assets-src"
+POSTS = ROOT / "wave-posts" / "visuals"
 
-for name, path in SRC.items():
+# name: (source, grade the render?)
+IMAGES = {
+    "court": (SRC / "hf/court.webp", False),
+    "ribbon": (SRC / "hf/ribbon.webp", False),
+    "boutique": (SRC / "hf/boutique.webp", False),
+    "steps": (SRC / "hf/steps.webp", False),
+    "terrace": (POSTS / "terrace-cafe.png", False),
+    "night": (POSTS / "night-ribbons.png", False),
+    "aerial": (SRC / "aerial.webp", True),
+    "corner": (SRC / "dusk.webp", True),
+    "map": (SRC / "map.webp", "map"),
+}
+WIDTHS = (640, 1080, 1600, 2200)
+
+
+def grade(im, mode):
+    """Warm the cool CG renders and add fine grain so they sit with the photographs."""
+    a = np.asarray(im).astype(np.float32) / 255
+    if mode == "map":
+        lum = a @ np.array([0.3, 0.59, 0.11])
+        ink = np.array([40, 56, 51]) / 255
+        sand = np.array([209, 201, 179]) / 255
+        a = ink + (sand - ink) * np.clip((lum[..., None] - 0.12) * 1.25, 0, 1)
+    else:
+        lum = (a @ np.array([0.3, 0.59, 0.11]))[..., None]
+        a = lum + (a - lum) * 0.62                      # desaturate
+        a = a * np.array([1.06, 1.0, 0.88])             # warm
+        a = np.clip((a - 0.5) * 1.08 + 0.5, 0, 1)       # gentle contrast
+    rng = np.random.default_rng(7)
+    a = a + rng.normal(0, 0.018, a.shape[:2])[..., None]
+    return Image.fromarray((np.clip(a, 0, 1) * 255).astype(np.uint8))
+
+
+for name, (path, g) in IMAGES.items():
     im = Image.open(path).convert("RGB")
+    if g:
+        im = grade(im, g)
     for w in WIDTHS:
-        limit = 1 if name in NO_UPSCALE else MAX_UPSCALE
-        if w > im.width * limit and w != WIDTHS[0]:
+        if w > im.width * (1.35 if g else 1) and w != WIDTHS[0]:
             continue
         h = round(im.height * w / im.width)
         r = im.resize((w, h), Image.LANCZOS)
         if w > im.width:
-            r = r.filter(ImageFilter.UnsharpMask(radius=1.2, percent=60, threshold=2))
+            r = r.filter(ImageFilter.UnsharpMask(radius=1.1, percent=55, threshold=2))
         r.save(OUT / f"{name}-{w}.webp", quality=80, method=6)
-    im.resize((24, round(24 * im.height / im.width)), Image.LANCZOS).save(OUT / f"{name}-lqip.jpg", quality=40)
     print(name, im.size)

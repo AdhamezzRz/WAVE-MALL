@@ -12,15 +12,20 @@ npm run package    # builds release/the-wave-website.zip for Hostinger
 
 ## Pages
 
-| English        | Arabic             | What                                                         |
-| -------------- | ------------------ | ------------------------------------------------------------ |
-| `/`            | `/ar/`             | Home: hero, manifesto, architecture panorama, four waves, the mark, location, leasing |
-| `/the-wave/`   | `/ar/the-wave/`    | Story, gallery, the mark (tap to cycle colourways), palette, pattern |
-| `/experience/` | `/ar/experience/`  | Four waves, a day at The Wave (day to night), categories     |
-| `/location/`   | `/ar/location/`    | Satellite map with landmarks, stats, directions              |
-| `/leasing/`    | `/ar/leasing/`     | Why, spaces, enquiry form                                    |
+| English | Arabic | What |
+| --- | --- | --- |
+| `/` | `/ar/` | The building's plan opens into the court; figures, scenes, plan teaser, place, journal |
+| `/the-wave/` | `/ar/the-wave/` | The building, gallery, interactive floor directory (R to B2), the mark |
+| `/experience/` | `/ar/experience/` | A day from 09:00 to 21:00, what you will find |
+| `/leasing/` | `/ar/leasing/` | Plaza and street-level unit schedules linked to the plan, enquiry form |
+| `/journal/` | `/ar/journal/` | Journal index and articles (`src/journal.js`) |
+| `/visit/` | `/ar/visit/` | Map, address, directions |
+| `/contact/` | `/ar/contact/` | Contact form, details, FAQ |
+| `/privacy/`, `/terms/` | `/ar/...` | Legal drafts |
 
-Also `/sitemap.xml`, `/robots.txt`, `/healthz`, `POST /api/enquiry`.
+Also `/sitemap.xml`, `/robots.txt`, `/journal/feed.xml`, `/healthz`, and `POST /api/enquiry`, `/api/contact`, `/api/subscribe`.
+
+The navigation behaves like a lift: the header shows the floor you are on (R at the top of a page, B2 at the bottom) and the menu lists pages as floors.
 
 ## Deploy on Hostinger (Node.js web app)
 
@@ -52,12 +57,13 @@ The app reads `PORT` from the environment (Hostinger sets it) and trusts one pro
 
 ## Editing
 
-- Copy: `src/content.js` (English and Arabic side by side; Arabic is a draft for native review).
+- Copy: `src/content.js` and `src/content-keep.json` (English and Arabic; Arabic is a draft for native review).
+- Figures: `src/data.js` holds every area and unit size from the developer's presentation. The plans in `src/plan.js` are drawn from the architect's floor plans.
 - Pages and sections: `src/pages.js`; shell, head, header, footer: `src/render.js`.
 - Styles: `public/css/site.css`. Motion and navigation: `public/js/site.js`.
 - Logo: `src/logo-paths.json` (vector paths pulled from the identity PDF), rendered inline so every letter can animate.
-- Images: sources in `assets-src/` (client renders with the placeholder signage removed) and `../wave-posts/visuals/`; rebuild the responsive set with `python3 scripts/optimize-images.py`.
+- Images: `assets-src/hf/` are photographs generated with Higgsfield for this site; `assets-src/*.webp` are the client's renders (placeholder signage removed, warm-graded by the script); a few come from `../wave-posts/visuals/`. Rebuild with `python3 scripts/optimize-images.py`.
 
 ## Brand
 
-Forest `#283833`, cocoa `#7c4d28`, sea glass `#a2c5b9`, sand `#d1c9b3`. Acumin Variable is Adobe-licensed, so the site uses Inter Display; Vladimir Script is replaced by Pinyon Script. Swap the `@font-face` rules in `site.css` if the licensed fonts become available.
+Forest `#283833` ground, sand `#d1c9b3` ink; sea glass and cocoa appear only inside photographs and as small accents. Display type is Bodoni Moda (closest open Didone to the wordmark); labels use Archivo at its widest setting in place of the licensed Acumin; Arabic uses IBM Plex Sans Arabic. Swap the `@font-face` rules in `site.css` if the licensed fonts become available.

@@ -1,0 +1,302 @@
+{
+ "en": {
+  "legal": {
+   "updated": "Last updated",
+   "privacy": {
+    "title": "Privacy",
+    "description": "How The Wave handles the personal data you share with us.",
+    "sections": [
+     [
+      "What we collect",
+      "When you write to us or subscribe, we keep the details you give us: your name, email address, phone number if you add it, and your message. The site itself sets no tracking cookies."
+     ],
+     [
+      "Why we use it",
+      "To answer your enquiry, to follow up on a leasing conversation you started, or to send the newsletter you asked for. Nothing else."
+     ],
+     [
+      "Who sees it",
+      "The Wave’s team and the service providers that deliver our email. We do not sell or share your details with advertisers."
+     ],
+     [
+      "How long we keep it",
+      "Enquiries for as long as the conversation is live and a reasonable time after; newsletter addresses until you unsubscribe."
+     ],
+     [
+      "Your choices",
+      "Write to leasing@thewavemall.com to see, correct or delete what we hold, or to unsubscribe at any time."
+     ]
+    ]
+   },
+   "terms": {
+    "title": "Terms of use",
+    "description": "The terms that apply to your use of thewavemall.com.",
+    "sections": [
+     [
+      "The site",
+      "thewavemall.com is published by The Wave, New Cairo Mall. The information on it is offered in good faith and may change as the project develops."
+     ],
+     [
+      "Renders and figures",
+      "Images are design renders and artist’s impressions. Distances, areas and dates are indicative and are not a contractual commitment."
+     ],
+     [
+      "Content",
+      "Text, photographs, renders and the wordmark are the property of The Wave or its licensors and may not be reproduced without permission."
+     ],
+     [
+      "Leasing",
+      "A leasing enquiry through this site is a request for information and does not constitute an offer or a reservation."
+     ],
+     [
+      "Law",
+      "These terms are governed by the laws of the Arab Republic of Egypt."
+     ]
+    ]
+   }
+  },
+  "journal": {
+   "title": "The Wave Journal",
+   "description": "Stories from The Wave, New Cairo: the building, the identity, the neighbourhood, the seasons. Updated as we move towards opening.",
+   "hero": {
+    "a": "The",
+    "b": "Journal."
+   },
+   "intro": "Notes on the building, the identity and the neighbourhood as we move towards opening.",
+   "latest": "Latest",
+   "read": "Read",
+   "minutes": "min read",
+   "more": "More from the Journal",
+   "all": "All articles",
+   "share": "Share",
+   "copy": "Copy link",
+   "copied": "Link copied",
+   "by": "The Wave",
+   "feed": "RSS feed"
+  },
+  "contact": {
+   "title": "Contact The Wave",
+   "description": "Write to The Wave, New Cairo: general enquiries, leasing, press and careers. We reply personally.",
+   "hero": {
+    "a": "Say",
+    "b": "hello."
+   },
+   "intro": "For anything at all: a question, a brand, a story, a job. We read everything and reply personally.",
+   "fields": {
+    "name": "Name",
+    "email": "Email",
+    "subject": "Subject",
+    "message": "Message",
+    "submit": "Send",
+    "sending": "Sending"
+   },
+   "subjects": [
+    [
+     "general",
+     "General"
+    ],
+    [
+     "leasing",
+     "Leasing"
+    ],
+    [
+     "press",
+     "Press"
+    ],
+    [
+     "careers",
+     "Careers"
+    ],
+    [
+     "other",
+     "Something else"
+    ]
+   ],
+   "ok": "Thank you. We will be in touch soon.",
+   "fail": "Something went wrong. Please check the form and try again.",
+   "privacy": "Used only to reply to your message.",
+   "details": {
+    "title": "Details",
+    "email": "leasing@thewavemall.com",
+    "address": "North 90 Street, First Sector, New Cairo, Egypt",
+    "hours": "Opening soon. Hours to be announced.",
+    "maps": "Open in Google Maps"
+   },
+   "faq": {
+    "title": "Questions",
+    "items": [
+     [
+      "When does The Wave open?",
+      "The opening date will be announced here, in the Journal and on Instagram. Subscribe below to hear first."
+     ],
+     [
+      "Where exactly is it?",
+      "On the block between North 90 and South 90 in New Cairo’s First Sector, beside the Air Force Hospital and a short walk from the monorail station."
+     ],
+     [
+      "Is there parking?",
+      "Yes, on site, with access from both Teseen roads."
+     ],
+     [
+      "How do I lease a space?",
+      "Tell us about your concept on the Leasing page. Our leasing team replies personally."
+     ]
+    ]
+   }
+  },
+  "notFound": {
+   "title": "This page drifted out to sea.",
+   "back": "Back to The Wave"
+  }
+ },
+ "ar": {
+  "legal": {
+   "updated": "آخر تحديث",
+   "privacy": {
+    "title": "الخصوصية",
+    "description": "كيف يتعامل ذا ويف مع البيانات الشخصية التي تشاركها معنا.",
+    "sections": [
+     [
+      "ما نجمعه",
+      "عندما تكتب إلينا أو تشترك، نحتفظ بالتفاصيل التي تقدمها: اسمك وبريدك الإلكتروني ورقم هاتفك إن أضفته ورسالتك. الموقع نفسه لا يضع ملفات تعريف تتبّع."
+     ],
+     [
+      "لماذا نستخدمها",
+      "للرد على استفسارك، أو لمتابعة حديث تأجير بدأته، أو لإرسال النشرة التي طلبتها. لا شيء غير ذلك."
+     ],
+     [
+      "من يراها",
+      "فريق ذا ويف ومزودو الخدمة الذين يوصلون بريدنا. لا نبيع بياناتك ولا نشاركها مع المعلنين."
+     ],
+     [
+      "كم نحتفظ بها",
+      "الاستفسارات ما دام الحديث قائماً ولفترة معقولة بعده؛ وعناوين النشرة حتى تلغي اشتراكك."
+     ],
+     [
+      "خياراتك",
+      "اكتب إلى leasing@thewavemall.com للاطلاع على ما نحتفظ به أو تصحيحه أو حذفه، أو لإلغاء الاشتراك في أي وقت."
+     ]
+    ]
+   },
+   "terms": {
+    "title": "شروط الاستخدام",
+    "description": "الشروط التي تنطبق على استخدامك لموقع thewavemall.com.",
+    "sections": [
+     [
+      "الموقع",
+      "يُنشر موقع thewavemall.com بواسطة ذا ويف، مول القاهرة الجديدة. المعلومات فيه مقدمة بحسن نية وقد تتغير مع تطور المشروع."
+     ],
+     [
+      "الصور والأرقام",
+      "الصور تصاميم وتصورات فنية. المسافات والمساحات والتواريخ استرشادية وليست التزاماً تعاقدياً."
+     ],
+     [
+      "المحتوى",
+      "النصوص والصور والتصاميم والشعار ملك لذا ويف أو لمرخّصيه ولا يجوز إعادة إنتاجها دون إذن."
+     ],
+     [
+      "التأجير",
+      "استفسار التأجير عبر هذا الموقع طلب للمعلومات ولا يُعد عرضاً أو حجزاً."
+     ],
+     [
+      "القانون",
+      "تخضع هذه الشروط لقوانين جمهورية مصر العربية."
+     ]
+    ]
+   }
+  },
+  "journal": {
+   "title": "مدونة ذا ويف",
+   "description": "قصص من ذا ويف، القاهرة الجديدة: المبنى والهوية والحي والمواسم. تتجدد مع اقتراب الافتتاح.",
+   "hero": {
+    "a": "المدونة",
+    "b": ""
+   },
+   "intro": "ملاحظات عن المبنى والهوية والحي مع اقترابنا من الافتتاح.",
+   "latest": "الأحدث",
+   "read": "اقرأ",
+   "minutes": "دقائق قراءة",
+   "more": "المزيد من المدونة",
+   "all": "كل المقالات",
+   "share": "مشاركة",
+   "copy": "نسخ الرابط",
+   "copied": "تم نسخ الرابط",
+   "by": "ذا ويف",
+   "feed": "خلاصة RSS"
+  },
+  "contact": {
+   "title": "تواصل مع ذا ويف",
+   "description": "اكتب إلى ذا ويف، القاهرة الجديدة: استفسارات عامة، التأجير، الصحافة والوظائف. نرد شخصياً.",
+   "hero": {
+    "a": "قل",
+    "b": "مرحباً."
+   },
+   "intro": "لأي شيء: سؤال، علامة تجارية، قصة، وظيفة. نقرأ كل شيء ونرد شخصياً.",
+   "fields": {
+    "name": "الاسم",
+    "email": "البريد الإلكتروني",
+    "subject": "الموضوع",
+    "message": "الرسالة",
+    "submit": "إرسال",
+    "sending": "جارٍ الإرسال"
+   },
+   "subjects": [
+    [
+     "general",
+     "عام"
+    ],
+    [
+     "leasing",
+     "التأجير"
+    ],
+    [
+     "press",
+     "الصحافة"
+    ],
+    [
+     "careers",
+     "الوظائف"
+    ],
+    [
+     "other",
+     "شيء آخر"
+    ]
+   ],
+   "ok": "شكراً لك. سنتواصل معك قريباً.",
+   "fail": "حدث خطأ ما. يرجى مراجعة النموذج والمحاولة مرة أخرى.",
+   "privacy": "تُستخدم للرد على رسالتك فقط.",
+   "details": {
+    "title": "التفاصيل",
+    "email": "leasing@thewavemall.com",
+    "address": "شارع التسعين الشمالي، القطاع الأول، القاهرة الجديدة، مصر",
+    "hours": "قريباً. تُعلن مواعيد العمل لاحقاً.",
+    "maps": "افتح في خرائط جوجل"
+   },
+   "faq": {
+    "title": "أسئلة",
+    "items": [
+     [
+      "متى يفتتح ذا ويف؟",
+      "يُعلن موعد الافتتاح هنا وفي المدونة وعلى إنستغرام. اشترك في الأسفل لتعرف أولاً."
+     ],
+     [
+      "أين يقع بالضبط؟",
+      "في الكتلة بين التسعين الشمالي والجنوبي في القطاع الأول بالقاهرة الجديدة، بجوار مستشفى القوات الجوية وعلى بُعد خطوات من محطة المونوريل."
+     ],
+     [
+      "هل توجد مواقف؟",
+      "نعم، داخل المشروع، بمداخل من طريقي التسعين."
+     ],
+     [
+      "كيف أستأجر مساحة؟",
+      "حدثنا عن مفهومك في صفحة التأجير. يرد فريق التأجير شخصياً."
+     ]
+    ]
+   }
+  },
+  "notFound": {
+   "title": "هذه الصفحة جرفها الموج.",
+   "back": "العودة إلى ذا ويف"
+  }
+ }
+}

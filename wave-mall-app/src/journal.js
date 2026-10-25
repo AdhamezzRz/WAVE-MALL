@@ -7,7 +7,7 @@ const posts = [
   {
     slug: 'the-story-behind-our-mark',
     date: '2026-10-20',
-    img: 'dusk',
+    img: 'ribbon',
     tag: { en: 'Identity', ar: 'الهوية' },
     en: {
       title: 'The story behind our mark',
@@ -53,7 +53,7 @@ Repeat the A–V ligature, offset every second row, and you get a pattern that r
   {
     slug: 'designed-to-flow',
     date: '2026-10-12',
-    img: 'side',
+    img: 'aerial',
     tag: { en: 'Architecture', ar: 'العمارة' },
     en: {
       title: 'Designed to flow',
@@ -197,7 +197,7 @@ The East Nile monorail runs along South 90, with the Air Force Hospital station 
   {
     slug: 'the-autumn-edit',
     date: '2026-09-18',
-    img: 'fashion',
+    img: 'steps',
     tag: { en: 'Style', ar: 'الأناقة' },
     en: {
       title: 'The Autumn Edit, Vol. 01',
@@ -241,7 +241,7 @@ Our own green, the deep palm forest of the identity, shows up this season as a b
   {
     slug: 'after-dark',
     date: '2026-09-10',
-    img: 'ribbons',
+    img: 'night',
     tag: { en: 'Evenings', ar: 'الأمسيات' },
     en: {
       title: 'After dark, The Wave glows',

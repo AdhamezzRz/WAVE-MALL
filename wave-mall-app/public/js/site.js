@@ -1,4 +1,5 @@
-/* The Wave: quiet motion. GSAP + ScrollTrigger + Lenis, loaded before this file. */
+/* The Wave: motion and interaction. GSAP + ScrollTrigger + Lenis load before this file.
+   Nothing fades. Things are revealed by masks, wipes and lines. */
 (function () {
   'use strict';
   if (!window.gsap || !window.ScrollTrigger) return;
@@ -10,17 +11,46 @@
   const STATIC = root.hasAttribute('data-static');
   const $ = (s, scope = D) => scope.querySelector(s);
   const $$ = (s, scope = D) => Array.from(scope.querySelectorAll(s));
-  const EASE = 'power2.out';
+  const EASE = 'power3.inOut';
+  const OUT = 'power3.out';
+  const NUM = new Intl.NumberFormat(root.lang === 'ar' ? 'ar-EG' : 'en-US');
 
   gsap.registerPlugin(ScrollTrigger);
-  gsap.defaults({ ease: EASE, duration: 1.6 });
+  gsap.defaults({ ease: OUT, duration: 1.2 });
 
-  /* smooth scroll */
+  /* ---------- the hourglass ---------- */
+  // The building's footprint as one path, in 0..1 units of a frame with the given aspect.
+  // s scales the plan around the centre; t opens it out to the frame's edges.
+  const SHAPE = [
+    ['M', 140, 40], ['L', 860, 40], ['Q', 960, 40, 960, 110], ['C', 960, 165, 862, 228, 862, 320], ['C', 862, 412, 960, 475, 960, 530],
+    ['Q', 960, 600, 860, 600], ['L', 140, 600], ['Q', 40, 600, 40, 530], ['C', 40, 475, 138, 412, 138, 320], ['C', 138, 228, 40, 165, 40, 110], ['Q', 40, 40, 140, 40],
+  ];
+  function hourglass({ t = 0, s = 1, aspect = W.innerWidth / W.innerHeight, fit = 0.5, cy = 0.5, sx = 1, sy = 1 } = {}) {
+    const portrait = aspect < 1;
+    const w0 = (portrait ? 0.84 : fit) * s;
+    const h0 = portrait ? w0 * aspect * 1.5625 : (w0 * aspect) / 1.5625;
+    const map = (u, v) => (portrait ? [0.5 + (v / 640 - 0.5) * w0, cy + (u / 1000 - 0.5) * h0] : [0.5 + (u / 1000 - 0.5) * w0, cy + (v / 640 - 0.5) * h0]);
+    const edge = (b) => (b < 0.4999 ? -0.03 : b > 0.5001 ? 1.03 : 0.5);
+    const f = (n) => n.toFixed(4);
+    let d = '';
+    for (const [cmd, ...xy] of SHAPE) {
+      d += cmd;
+      for (let i = 0; i < xy.length; i += 2) {
+        const [bx, by] = map(xy[i], xy[i + 1]);
+        const ey = by < cy - 0.0001 ? -0.03 : by > cy + 0.0001 ? 1.03 : by;
+        d += ` ${f((bx + (edge(bx) - bx) * t) * sx)} ${f((by + (ey - by) * t) * sy)}`;
+      }
+      d += ' ';
+    }
+    return d + 'Z';
+  }
+
+  /* ---------- smooth scroll ---------- */
   let lenis = null;
   if (!RM && W.Lenis) {
-    lenis = new Lenis({ lerp: 0.08, smoothWheel: true, syncTouch: false });
+    lenis = new Lenis({ lerp: 0.075, smoothWheel: true, syncTouch: false });
     lenis.on('scroll', ScrollTrigger.update);
-    gsap.ticker.add((t) => lenis.raf(t * 1000));
+    gsap.ticker.add((time) => lenis.raf(time * 1000));
     gsap.ticker.lagSmoothing(0);
   }
   const scrollTo = (target, opts = {}) => {
@@ -30,142 +60,244 @@
   };
   const lock = (on) => { if (lenis) on ? lenis.stop() : lenis.start(); D.body.style.overflow = on ? 'hidden' : ''; };
 
-  /* header follows the scroll; menu overlay */
+  /* ---------- header, lift display, floor rail ---------- */
   const top = $('[data-top]');
-  const menu = $('[data-menu]');
-  const menuBtn = $('[data-menu-toggle]');
-  const main = $('#main');
-  let heroBottom = 0;
+  const lift = $('[data-lift]');
+  const liftDir = $('[data-lift-dir]');
+  const rail = $$('[data-rail] span');
+  const FLOORS = rail.length ? rail.map((s) => s.dataset.floor) : ['R', '4', '3', '2', '1', 'G', 'B1', 'B2'];
+  let floorIdx = -1;
   let menuOpen = false;
-  function measureHero() { const h = $('[data-hero]', main); heroBottom = h ? h.offsetTop + h.offsetHeight : 0; }
+
+  function setFloor(i, dir) {
+    if (i === floorIdx) return;
+    floorIdx = i;
+    rail.forEach((s, k) => s.classList.toggle('is-on', k === i));
+    if (lift) {
+      if (RM) lift.textContent = FLOORS[i];
+      else gsap.timeline().to(lift, { yPercent: dir > 0 ? -110 : 110, duration: 0.18, ease: 'power2.in' }).add(() => { lift.textContent = FLOORS[i]; }).fromTo(lift, { yPercent: dir > 0 ? 110 : -110 }, { yPercent: 0, duration: 0.3, ease: OUT });
+    }
+    if (liftDir) liftDir.classList.toggle('is-up', dir < 0);
+  }
+  let lastY = 0;
   ScrollTrigger.create({
     start: 0,
     end: 'max',
     onUpdate(self) {
       const y = self.scroll();
+      const p = self.end > 0 ? y / self.end : 0;
+      setFloor(Math.min(FLOORS.length - 1, Math.floor(p * FLOORS.length)), self.direction);
       if (top && !menuOpen) {
-        top.classList.toggle('on-hero', y < heroBottom - 80);
-        top.classList.toggle('is-tint', y > heroBottom - 40);
+        const hero = $('[data-hero]');
+        const past = hero ? y > hero.offsetHeight - W.innerHeight - 10 : y > 30;
+        top.classList.toggle('is-solid', past && y > 30);
+        top.classList.toggle('is-away', y > 400 && y > lastY && self.direction === 1);
       }
+      lastY = y;
     },
   });
+  rail.forEach((s, k) => {
+    s.style.pointerEvents = 'auto';
+    s.style.cursor = 'pointer';
+    s.addEventListener('click', () => scrollTo((ScrollTrigger.maxScroll(W) * (k + 0.5)) / FLOORS.length));
+  });
+
+  /* ---------- menu: an elevator panel that wipes down ---------- */
+  const menu = $('[data-menu]');
+  const menuBtn = $('[data-menu-toggle]');
   function setMenu(open) {
     if (!menu || open === menuOpen) return;
     menuOpen = open;
     menuBtn.setAttribute('aria-expanded', String(open));
     const lbl = $('span', menuBtn);
     lbl.textContent = open ? lbl.dataset.close : lbl.dataset.open;
-    top.classList.toggle('is-menu', open);
     menu.setAttribute('aria-hidden', String(!open));
+    top.classList.remove('is-away');
     lock(open);
-    const spans = $$('.menu__nav a span', menu);
-    const side = $('.menu__side', menu);
+    const items = $$('.menu__nav span', menu);
     if (open) {
       menu.classList.add('is-open');
       gsap.timeline()
-        .to(menu, { opacity: 1, duration: 0.7, ease: 'power2.out' }, 0)
-        .to(spans, { opacity: 1, y: 0, duration: 1.2, stagger: 0.06, ease: 'power3.out' }, 0.15)
-        .to(side, { opacity: 1, duration: 1, ease: 'power2.out' }, 0.5);
+        .fromTo(menu, { clipPath: 'inset(0% 0% 100% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.9, ease: EASE })
+        .fromTo(items, { yPercent: 105 }, { yPercent: 0, duration: 1, stagger: 0.05, ease: OUT }, 0.35);
     } else {
-      gsap.timeline({ onComplete() { menu.classList.remove('is-open'); gsap.set(spans, { opacity: 0, y: 20 }); gsap.set(side, { opacity: 0 }); if (top) top.classList.toggle('on-hero', (lenis ? lenis.scroll : W.scrollY) < heroBottom - 80); } })
-        .to([spans, side], { opacity: 0, duration: 0.35, ease: 'power2.in' }, 0)
-        .to(menu, { opacity: 0, duration: 0.5, ease: 'power2.inOut' }, 0.1);
+      gsap.timeline({ onComplete: () => menu.classList.remove('is-open') })
+        .to(items, { yPercent: -105, duration: 0.45, stagger: 0.02, ease: 'power2.in' })
+        .to(menu, { clipPath: 'inset(0% 0% 100% 0%)', duration: 0.7, ease: EASE }, 0.2);
     }
   }
   if (menuBtn) menuBtn.addEventListener('click', () => setMenu(!menuOpen));
   D.addEventListener('keydown', (e) => { if (e.key === 'Escape' && menuOpen) setMenu(false); });
 
-  /* the thread: one line stitched through the page, drawn as you read */
-  const thread = $('[data-thread]');
-  const threadPath = thread && $('path', thread);
-  function buildThread() {
-    if (!thread) return;
-    const Wd = main.clientWidth;
-    const H = main.scrollHeight;
-    thread.setAttribute('viewBox', `0 0 ${Wd} ${H}`);
-    const mr = main.getBoundingClientRect();
-    const pts = [[Wd * 0.5, 0]];
-    let side = root.dir === 'rtl' ? -1 : 1;
-    const edge = () => (side > 0 ? Wd * 0.955 : Wd * 0.045);
-    $$('[data-thread-anchor]', main).forEach((a) => {
-      const r = a.getBoundingClientRect();
-      const cx = r.left - mr.left + r.width / 2;
-      const cy = r.top - mr.top + r.height / 2;
-      const prev = pts[pts.length - 1];
-      pts.push([edge(), (prev[1] + cy) / 2]);
-      side = -side;
-      pts.push([cx, cy]);
-    });
-    const last = pts[pts.length - 1];
-    pts.push([edge(), (last[1] + H) / 2]);
-    pts.push([Wd * 0.5, H]);
-    let d = `M${pts[0][0].toFixed(1)},${pts[0][1].toFixed(1)}`;
-    for (let i = 1; i < pts.length; i++) {
-      const p = pts[i - 1];
-      const q = pts[i];
-      const my = ((p[1] + q[1]) / 2).toFixed(1);
-      d += ` C${p[0].toFixed(1)},${my} ${q[0].toFixed(1)},${my} ${q[0].toFixed(1)},${q[1].toFixed(1)}`;
-    }
-    threadPath.setAttribute('d', d);
-    measureHero();
+  /* ---------- page modules ---------- */
+  function drawPlan(svg, { delay = 0, duration = 1.6 } = {}) {
+    const els = $$('.plan__outline, .plan__unit, .plan__line, .plan__tick, .plan__terrace', svg);
+    els.forEach((el) => el.setAttribute('pathLength', '1'));
+    return gsap.fromTo(els, { strokeDasharray: 1, strokeDashoffset: 1 }, { strokeDashoffset: 0, duration, delay, ease: 'power2.inOut', stagger: { amount: 0.8, from: 'center' } });
   }
-  if (thread && !RM) {
-    const draw = gsap.quickTo(threadPath, 'strokeDashoffset', { duration: 0.9, ease: 'power2.out' });
-    ScrollTrigger.create({
-      start: 0,
-      end: 'max',
-      onUpdate(self) {
-        const seen = gsap.utils.clamp(0, 1, (self.scroll() + W.innerHeight * 0.92 - main.offsetTop) / main.scrollHeight);
-        draw(1 - seen);
-      },
-    });
-    new ResizeObserver(() => buildThread()).observe(main);
+  function countUp(el, to, duration = 1.6) {
+    const o = { n: 0 };
+    return gsap.to(o, { n: to, duration, ease: 'power2.out', onUpdate: () => { el.textContent = NUM.format(Math.round(o.n)); } });
   }
 
-  /* page modules */
   const modules = {
+    hero(scope) {
+      const hero = $('[data-hero]', scope);
+      if (!hero) return;
+      const clip = $('[data-hero-clip]', hero);
+      const line = $('[data-hero-line]', hero);
+      const img = $('.hero__img', hero);
+      const state = { t: 0, s: 1 };
+      const lineSvg = line.ownerSVGElement;
+      const geo = () => {
+        const w = hero.clientWidth;
+        const h = $('.hero__stage', hero).clientHeight;
+        const a = w / h;
+        return { w, h, a, fit: a > 1.2 ? 0.44 : 0.5, cy: a < 1 ? 0.47 : 0.42 };
+      };
+      const paint = () => {
+        const { w, h, a, fit, cy } = geo();
+        clip.setAttribute('d', hourglass({ t: state.t, s: state.s, aspect: a, fit, cy }));
+        lineSvg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+        line.setAttribute('d', hourglass({ t: state.t, s: 1, aspect: a, fit, cy, sx: w, sy: h }));
+      };
+      state.s = RM ? 1 : 0.0001;
+      paint();
+      W.addEventListener('resize', paint);
+      // scroll: the plan opens to the whole frame
+      gsap.timeline({ scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom bottom', scrub: 0.8 } })
+        .to(state, { t: 1, ease: 'power2.inOut', onUpdate: paint }, 0)
+        .to(img, { scale: 1, ease: 'none' }, 0)
+        .to($('[data-hero-meta]', hero), { clipPath: 'inset(0 100% 0 0)', ease: 'power2.in', duration: 0.3 }, 0);
+      hero._intro = () => {
+        const tl = gsap.timeline();
+        const L = line.getTotalLength();
+        gsap.set(line, { strokeDasharray: L, strokeDashoffset: L });
+        tl.to(line, { strokeDashoffset: 0, duration: 1.8, ease: 'power2.inOut', onComplete: () => gsap.set(line, { strokeDasharray: 'none' }) })
+          .to(state, { s: 1, duration: 1.6, ease: 'expo.inOut', onUpdate: paint }, 0.9)
+          .to($('.title--hero span', hero), { y: 0, yPercent: 0, duration: 1.4, ease: OUT }, 1.9)
+          .to($('[data-hero-meta]', hero), { clipPath: 'inset(0 0% 0 0)', duration: 1.2, ease: EASE }, 2.1)
+          .to($('[data-hero-cue]', hero), { clipPath: 'inset(0 0% 0 0)', duration: 1, ease: EASE }, 2.4);
+        return tl;
+      };
+    },
+
     reveals(scope) {
-      $$('[data-r]', scope).forEach((el) => {
-        const img = el.dataset.r === 'img' ? $('img', el) : null;
-        const tl = gsap.timeline({ scrollTrigger: { trigger: el, start: 'top 88%', once: true } });
-        tl.fromTo(el, { opacity: 0, y: img ? 0 : 22 }, { opacity: 1, y: 0, duration: img ? 1.4 : 1.6 }, 0);
-        if (img) tl.fromTo(img, { scale: 1.06 }, { scale: 1, duration: 2.6 }, 0);
+      $$('[data-rise]', scope).forEach((el) => {
+        gsap.to(el, { clipPath: 'inset(0 0 0% 0)', y: 0, duration: 1.3, ease: OUT, scrollTrigger: { trigger: el, start: 'top 90%', once: true } });
       });
-      $$('.frame img', scope).forEach((img) => {
-        gsap.fromTo(img, { yPercent: -4 }, { yPercent: 4, ease: 'none', scrollTrigger: { trigger: img.closest('.frame'), start: 'top bottom', end: 'bottom top', scrub: 1.2 } });
+      $$('[data-wipe]', scope).forEach((el) => {
+        const clipEl = $('.frame__clip', el);
+        const img = $('img', el);
+        gsap.timeline({ scrollTrigger: { trigger: el, start: 'top 88%', once: true } })
+          .to(clipEl, { clipPath: 'inset(0% 0 0 0)', duration: 1.5, ease: EASE }, 0)
+          .to(img, { scale: 1, duration: 2.2, ease: OUT }, 0);
+        if (img && !el.closest('.card')) gsap.fromTo(img, { yPercent: -4 }, { yPercent: 4, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true } });
+      });
+      $$('[data-count]', scope).forEach((el) => {
+        if (el.closest('[data-floor-panel]')) return;
+        ScrollTrigger.create({ trigger: el, start: 'top 90%', once: true, onEnter: () => countUp(el, Number(el.dataset.count)) });
+      });
+      $$('[data-draw] .plan', scope).forEach((svg) => {
+        const els = $$('.plan__outline, .plan__unit, .plan__line, .plan__tick, .plan__terrace', svg);
+        els.forEach((e) => e.setAttribute('pathLength', '1'));
+        gsap.set(els, { strokeDasharray: 1, strokeDashoffset: 1 });
+        ScrollTrigger.create({ trigger: svg, start: 'top 80%', once: true, onEnter: () => drawPlan(svg) });
       });
     },
 
-    hero(scope) {
-      const h = $('[data-hero]', scope);
-      if (!h) return;
-      gsap.fromTo($('.hero__media img', h), { scale: 1.1 }, { scale: 1.06, duration: 4, ease: 'power1.out' });
-      gsap.to($('.hero__media', h), { yPercent: 14, ease: 'none', scrollTrigger: { trigger: h, start: 'top top', end: 'bottom top', scrub: true } });
-      gsap.to($('.hero__text', h), { opacity: 0, y: -24, ease: 'none', scrollTrigger: { trigger: h, start: '45% top', end: 'bottom top', scrub: true } });
+    directory(scope) {
+      const dir = $('[data-directory]', scope);
+      if (!dir) return;
+      const btns = $$('[data-floor-btn]', dir);
+      const show = (id, animate = true) => {
+        btns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.floorBtn === id)));
+        $$('[data-floor-panel]', dir).forEach((p) => {
+          const on = p.dataset.floorPanel === id;
+          p.hidden = !on;
+          if (on && animate) {
+            drawPlan($('.plan', p), { duration: 1.2 });
+            $$('[data-count]', p).forEach((n) => countUp(n, Number(n.dataset.count), 1.1));
+            gsap.fromTo($('.dir__facts', p), { clipPath: 'inset(0 0 100% 0)' }, { clipPath: 'inset(0 0 0% 0)', duration: 1, ease: EASE });
+          }
+        });
+      };
+      btns.forEach((b, i) => {
+        b.addEventListener('click', () => show(b.dataset.floorBtn));
+        b.addEventListener('keydown', (e) => {
+          const k = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key];
+          if (!k) return;
+          e.preventDefault();
+          const n = btns[(i + k + btns.length) % btns.length];
+          n.focus();
+          show(n.dataset.floorBtn);
+        });
+      });
+      const first = $('[aria-pressed="true"]', dir) || btns[0];
+      const panel = $(`[data-floor-panel="${first.dataset.floorBtn}"] .plan`, dir);
+      const els = $$('.plan__outline, .plan__unit, .plan__line, .plan__tick, .plan__terrace', panel);
+      els.forEach((e) => e.setAttribute('pathLength', '1'));
+      gsap.set(els, { strokeDasharray: 1, strokeDashoffset: 1 });
+      ScrollTrigger.create({ trigger: dir, start: 'top 65%', once: true, onEnter: () => show(first.dataset.floorBtn) });
+    },
+
+    schedule(scope) {
+      const sec = $('[data-schedule]', scope);
+      if (!sec) return;
+      const tabs = $$('[data-tab]', sec);
+      tabs.forEach((tab) =>
+        tab.addEventListener('click', () => {
+          tabs.forEach((t) => t.setAttribute('aria-selected', String(t === tab)));
+          $$('[data-pane]', sec).forEach((p) => {
+            p.hidden = p.dataset.pane !== tab.dataset.tab;
+            if (!p.hidden) {
+              drawPlan($('.plan', p), { duration: 1.2 });
+              gsap.fromTo($('.schedule__table', p), { clipPath: 'inset(0 0 100% 0)' }, { clipPath: 'inset(0 0 0% 0)', duration: 1.1, ease: EASE });
+            }
+          });
+        }),
+      );
+      $$('[data-pane]', sec).forEach((pane) => {
+        const rows = $$('[data-unit-row]', pane);
+        const units = $$('.plan [data-unit]', pane);
+        const light = (n) => {
+          rows.forEach((r) => r.classList.toggle('is-on', r.dataset.unitRow === n));
+          units.forEach((u) => u.classList.toggle('is-on', u.dataset.unit === n));
+        };
+        rows.forEach((r) => {
+          ['mouseenter', 'focus'].forEach((ev) => r.addEventListener(ev, () => light(r.dataset.unitRow)));
+          ['mouseleave', 'blur'].forEach((ev) => r.addEventListener(ev, () => light(null)));
+        });
+        units.forEach((u) => {
+          u.addEventListener('mouseenter', () => light(u.dataset.unit));
+          u.addEventListener('mouseleave', () => light(null));
+          u.addEventListener('click', () => { const r = rows.find((x) => x.dataset.unitRow === u.dataset.unit); if (r) r.focus(); });
+        });
+      });
     },
 
     mark(scope) {
       $$('[data-mark]', scope).forEach((sec) => {
-        const svg = $('svg', sec);
-        const fill = $('.logo__fill', svg);
+        const svg = $('.logo', sec);
         const draw = $('.l-draw', svg);
-        const tl = gsap.timeline({ scrollTrigger: { trigger: sec, start: 'top 65%', once: true } });
-        tl.to(draw, { strokeDashoffset: 0, duration: 2.4, ease: 'power2.inOut' })
-          .to(fill, { opacity: 1, duration: 1.8 }, '-=1')
-          .to(draw, { opacity: 0, duration: 1 }, '-=0.8');
-        if (!RM) gsap.to($('.l-av', svg), { y: -3, duration: 4, repeat: -1, yoyo: true, ease: 'sine.inOut' });
-        $('[data-mark-toggle]', sec).addEventListener('click', () => sec.classList.toggle('is-ink'));
+        gsap.timeline({ scrollTrigger: { trigger: sec, start: 'top 65%', once: true } })
+          .to(draw, { strokeDashoffset: 0, duration: 2, ease: 'power2.inOut' })
+          .to($('.logo__fill', svg), { clipPath: 'inset(0 0% 0 0)', duration: 1.6, ease: EASE }, 1.1)
+          .to(draw, { strokeDashoffset: -1, duration: 1.2, ease: 'power2.in' }, 2.2);
       });
     },
 
     pins(scope) {
-      const pins = $$('[data-pin]', scope);
+      const pins = $$('[data-pins] .pin', scope);
       if (!pins.length) return;
-      gsap.fromTo(pins, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 1.4, stagger: 0.14, delay: 0.6, scrollTrigger: { trigger: pins[0].closest('.map'), start: 'top 80%', once: true } });
+      gsap.set(pins, { scale: 0 });
+      ScrollTrigger.create({ trigger: pins[0].parentElement, start: 'top 70%', once: true, onEnter: () => gsap.to(pins, { scale: 1, duration: 0.9, stagger: 0.08, ease: 'back.out(1.7)', delay: 0.8 }) });
     },
 
     forms(scope) {
       $$('form[data-form]', scope).forEach((form) => {
+        if (form._wired) return;
+        form._wired = true;
         const status = $('[data-form-status]', form);
         const btn = $('button[type=submit]', form);
         const say = (msg, ok) => {
@@ -183,10 +315,10 @@
             say(form.dataset.fail, false);
             return;
           }
-          const label = $('span', btn);
-          const orig = label.textContent;
+          const lbl = $('span', btn);
+          const orig = lbl.textContent;
           btn.disabled = true;
-          label.textContent = form.dataset.sending;
+          lbl.textContent = form.dataset.sending;
           try {
             const res = await fetch(form.action, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(Object.fromEntries(new FormData(form))) });
             const data = await res.json().catch(() => ({}));
@@ -197,7 +329,7 @@
             }
           } catch (err) { say(form.dataset.fail, false); }
           btn.disabled = false;
-          label.textContent = orig;
+          lbl.textContent = orig;
         });
       });
     },
@@ -206,7 +338,7 @@
       $$('[data-copy]', scope).forEach((b) => {
         const orig = b.textContent;
         b.addEventListener('click', async () => {
-          try { await navigator.clipboard.writeText(b.dataset.copy); } catch (err) { /* fall through */ }
+          try { await navigator.clipboard.writeText(b.dataset.copy); } catch (err) { /* ignore */ }
           b.textContent = b.dataset.copied;
           setTimeout(() => { b.textContent = orig; }, 1600);
         });
@@ -215,53 +347,42 @@
   };
 
   let ctx = null;
+  const main = $('#main');
   function initPage(scope) {
     if (ctx) ctx.revert();
-    ctx = gsap.context(() => { Object.values(modules).forEach((fn) => { try { fn(scope); } catch (err) { console.error(err); } }); }, scope);
-    buildThread();
+    ctx = gsap.context(() => Object.values(modules).forEach((fn) => { try { fn(scope); } catch (err) { console.error(err); } }), scope);
     ScrollTrigger.refresh();
   }
-
-  function heroIntro(scope) {
-    const h = $('[data-hero]', scope);
-    if (!h) return;
-    const tl = gsap.timeline();
-    tl.to($$('.h-hero span, .h-hero em', h), { opacity: 1, y: 0, duration: 2, stagger: 0.28 }, 0.1);
-    const meta = $('[data-hero-meta]', h);
-    if (meta) tl.to(meta, { opacity: 1, duration: 1.6 }, 0.9);
+  function intro(scope) {
+    const hero = $('[data-hero]', scope);
+    if (hero && hero._intro) hero._intro();
   }
 
-  /* veil: first visit only */
-  const veil = $('[data-veil]');
-  function boot() {
-    let seen = true;
-    try { seen = !!sessionStorage.getItem('wave-seen'); sessionStorage.setItem('wave-seen', '1'); } catch (e) { /* private mode */ }
-    if (top) top.classList.toggle('on-hero', !!$('[data-hero]', main));
-    if (!veil || RM || seen) {
-      if (veil) veil.remove();
-      initPage(main);
-      heroIntro(main);
-      return;
-    }
-    lock(true);
-    const path = $('path', veil);
-    const L = path.getTotalLength();
-    const tl = gsap.timeline({ onComplete() { veil.remove(); lock(false); } });
-    tl.fromTo(path, { strokeDasharray: L, strokeDashoffset: L }, { strokeDashoffset: 0, duration: 1.3, ease: 'power2.inOut' }, 0.1)
-      .to(path, { fillOpacity: 1, duration: 0.7 }, 1.1)
-      .add(() => initPage(main), 1.5)
-      .to(veil, { opacity: 0, duration: 0.9, ease: 'power2.inOut' }, 1.9)
-      .add(() => heroIntro(main), 2.0);
+  /* footer: forms and the mark */
+  const foot = $('.foot');
+  if (foot) {
+    modules.forms(foot);
+    const mark = $('[data-foot-mark] .logo', foot);
+    if (mark && !RM) gsap.to(mark, { clipPath: 'inset(0% 0 0 0)', duration: 1.8, ease: EASE, scrollTrigger: { trigger: mark, start: 'top 95%', once: true } });
+    const topBtn = $('[data-top-btn]', foot);
+    if (topBtn) topBtn.addEventListener('click', () => scrollTo(0, { duration: 2.2 }));
   }
 
-  /* page changes: a quiet fade */
+  /* ---------- page changes: the hourglass closes over the page and opens on the next ---------- */
+  const curtain = $('[data-curtain]');
+  const curtainPath = curtain && $('path', curtain);
   let moving = false;
+  function curtainTo(s0, s1, ease) {
+    const o = { s: s0 };
+    curtain.classList.add('is-on');
+    return gsap.to(o, { s: s1, duration: 1, ease, onUpdate: () => curtainPath.setAttribute('d', hourglass({ s: o.s, fit: 0.5 })) });
+  }
   async function navigate(href, push) {
     if (moving) return;
     moving = true;
     if (menuOpen) setMenu(false);
     const fetching = fetch(href).then((r) => { if (!r.ok && r.status !== 404) throw new Error(r.status); return r.text(); });
-    await gsap.to(main, { opacity: 0, y: -10, duration: 0.5, ease: 'power2.in' });
+    await curtainTo(0.0001, 3.4, 'power3.in');
     let html;
     try { html = await fetching; } catch (err) { location.href = href; return; }
     const doc = new DOMParser().parseFromString(html, 'text/html');
@@ -269,27 +390,31 @@
     if (!next) { location.href = href; return; }
     if (ctx) { ctx.revert(); ctx = null; }
     main.innerHTML = next.innerHTML;
-    main.dataset.page = next.dataset.page;
     D.title = doc.title;
-    const d1 = D.querySelector('meta[name=description]');
+    const d1 = $('meta[name=description]');
     const d2 = doc.querySelector('meta[name=description]');
     if (d1 && d2) d1.setAttribute('content', d2.getAttribute('content'));
     if (push) history.pushState({ wave: true }, '', href);
     const pathname = new URL(href, location.href).pathname;
-    $$('.top__nav a, .top__contact, .menu__nav a').forEach((a) => { const h = a.getAttribute('href'); const home = root.lang === 'ar' ? '/ar/' : '/'; const cur = h === home ? pathname === home : pathname.startsWith(h); cur ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'); });
-    const lang = D.querySelector('.top__lang');
-    const lang2 = doc.querySelector('.top__lang');
-    if (lang && lang2) lang.setAttribute('href', lang2.getAttribute('href'));
+    const home = root.lang === 'ar' ? '/ar/' : '/';
+    $$('.top__nav a, .top__link, .menu__nav a').forEach((a) => {
+      const h = a.getAttribute('href');
+      if (a.hasAttribute('data-full-nav')) return;
+      (h === home ? pathname === home : pathname.startsWith(h)) ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current');
+    });
+    const other = doc.querySelectorAll('[data-full-nav]');
+    $$('[data-full-nav]').forEach((a, i) => { if (other[i]) a.setAttribute('href', other[i].getAttribute('href')); });
     scrollTo(0, { immediate: true });
     W.scrollTo(0, 0);
-    const img = $('.hero__media img, .map img', main);
-    if (img && !img.complete) await Promise.race([new Promise((r) => img.addEventListener('load', r, { once: true })), new Promise((r) => setTimeout(r, 1500))]);
+    top.classList.remove('is-away', 'is-solid');
+    const img = $('img', main);
+    if (img && !img.complete) await Promise.race([new Promise((r) => img.addEventListener('load', r, { once: true })), new Promise((r) => setTimeout(r, 1400))]);
     initPage(main);
-    if (top) top.classList.toggle('on-hero', !!$('[data-hero]', main));
-    gsap.fromTo(main, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 1, ease: EASE, onComplete: () => { moving = false; } });
-    heroIntro(main);
+    await curtainTo(3.4, 0.0001, 'power3.inOut');
+    curtain.classList.remove('is-on');
+    intro(main);
+    moving = false;
   }
-
   D.addEventListener('click', (e) => {
     const a = e.target.closest('a[href]');
     if (!a) return;
@@ -303,22 +428,21 @@
       scrollTo(t || 0);
       return;
     }
-    if (url.pathname.startsWith('/api/')) return;
+    if (url.pathname.startsWith('/api/') || url.pathname.endsWith('.xml')) return;
     const toAr = url.pathname === '/ar' || url.pathname.startsWith('/ar/');
-    if (toAr !== (root.lang === 'ar') || RM || STATIC) return;
+    if (toAr !== (root.lang === 'ar') || RM || STATIC || !curtain) return;
     e.preventDefault();
-    navigate(url.href, true);
+    navigate(url.href + (url.hash || ''), true);
   });
   W.addEventListener('popstate', () => { if (!RM && !STATIC) navigate(location.href, false); else location.reload(); });
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
-  const topBtn = $('[data-top-btn]');
-  if (topBtn) topBtn.addEventListener('click', () => scrollTo(0, { duration: 1.8 }));
-
-  // Forms outside <main> (the footer newsletter) are wired once.
-  const foot = $('.foot');
-  if (foot) { modules.forms(foot); }
-
-  D.fonts.ready.then(boot);
-  W.addEventListener('load', () => { buildThread(); ScrollTrigger.refresh(); });
+  /* ---------- go ---------- */
+  D.fonts.ready.then(() => {
+    initPage(main);
+    if (RM) return;
+    intro(main);
+    if (location.hash) { const t = $(location.hash); if (t) setTimeout(() => scrollTo(t), 600); }
+  });
+  W.addEventListener('load', () => ScrollTrigger.refresh());
 })();
