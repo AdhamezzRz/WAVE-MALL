@@ -128,6 +128,7 @@ function footer(c) {
 <footer class="foot">
   <div class="wrap">
     <div class="foot__top">
+      <a class="foot__logo" href="${home}" aria-label="${esc(c.brand)}">${logoSvg()}</a>
       <p class="foot__line">${esc(f.newsletter.title)}</p>
       ${newsletter(c)}
     </div>
@@ -138,7 +139,6 @@ function footer(c) {
       <div class="foot__col"><a href="mailto:${f.email}">${esc(f.email)}</a><a href="https://www.instagram.com/thewavemall" target="_blank" rel="noopener">${esc(f.instagram)}</a></div>
     </div>
   </div>
-  <a class="foot__mark" href="${home}" aria-label="${esc(c.brand)}" data-foot-mark>${logoSvg()}</a>
   <div class="wrap foot__legal">
     <p>© ${new Date().getFullYear()} ${esc(f.rights)}${f.legal.map(([href, l]) => ` · <a href="${href}">${esc(l)}</a>`).join('')}</p>
     <p>${esc(f.note)}</p>
@@ -161,7 +161,7 @@ function layout({ lang, pathname, title: pageTitle, description, body, siteUrl, 
     slogan: 'More than a destination.',
     url: `${base}/`,
     logo: `${base}/img/logo.svg`,
-    image: [`${base}/img/og-image.jpg`, `${base}${imgUrl('court')}`],
+    image: [`${base}/img/og-image.jpg`, `${base}${imgUrl('day')}`, `${base}${imgUrl('night')}`],
     email: c.footer.email,
     sameAs: ['https://www.instagram.com/thewavemall'],
     address: { '@type': 'PostalAddress', streetAddress: 'North 90 Street, First Sector', addressLocality: 'New Cairo', addressRegion: 'Cairo Governorate', addressCountry: 'EG' },
@@ -181,7 +181,7 @@ function layout({ lang, pathname, title: pageTitle, description, body, siteUrl, 
 <title>${esc(pageTitle)}</title>
 <meta name="description" content="${esc(description)}">
 <meta name="robots" content="${seo.noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large'}">
-<meta name="theme-color" content="#283833">
+<meta name="theme-color" content="#fbfaf6">
 <link rel="canonical" href="${base}${pathname}">
 <link rel="alternate" hreflang="en" href="${base}${enPath}">
 <link rel="alternate" hreflang="ar" href="${base}${arPath}">
@@ -210,6 +210,10 @@ ${image ? `<link rel="preload" as="image" href="/img/${image}-1080.webp" imagesr
 <script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@graph': [org, site, ...(seo.jsonld || [])] })}</script>
 </head>
 <body>
+<div class="pre" data-pre aria-hidden="true">
+  <svg class="pre__mark" viewBox="163 97 207 128"><path pathLength="1" d="${LOGO.AV}"/></svg>
+  <p class="pre__count"><span data-pre-count>00</span></p>
+</div>
 <a class="skip" href="#main">${esc(c.skip)}</a>
 ${header(c, pathname)}
 <main id="main" class="page" data-page="${pathname}">

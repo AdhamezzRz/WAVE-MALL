@@ -88,9 +88,7 @@
       const p = self.end > 0 ? y / self.end : 0;
       setFloor(Math.min(FLOORS.length - 1, Math.floor(p * FLOORS.length)), self.direction);
       if (top && !menuOpen) {
-        const hero = $('[data-hero]');
-        const past = hero ? y > hero.offsetHeight - W.innerHeight - 10 : y > 30;
-        top.classList.toggle('is-solid', past && y > 30);
+        top.classList.toggle('is-solid', y > 30);
         top.classList.toggle('is-away', y > 400 && y > lastY && self.direction === 1);
       }
       lastY = y;
@@ -113,6 +111,7 @@
     lbl.textContent = open ? lbl.dataset.close : lbl.dataset.open;
     menu.setAttribute('aria-hidden', String(!open));
     top.classList.remove('is-away');
+    top.classList.toggle('is-menu', open);
     lock(open);
     const items = $$('.menu__nav span', menu);
     if (open) {
@@ -144,42 +143,40 @@
     hero(scope) {
       const hero = $('[data-hero]', scope);
       if (!hero) return;
-      const clip = $('[data-hero-clip]', hero);
-      const line = $('[data-hero-line]', hero);
+      const frame = $('[data-hero-frame]', hero);
       const img = $('.hero__img', hero);
-      const state = { t: 0, s: 1 };
-      const lineSvg = line.ownerSVGElement;
-      const geo = () => {
-        const w = hero.clientWidth;
-        const h = $('.hero__stage', hero).clientHeight;
-        const a = w / h;
-        return { w, h, a, fit: a > 1.2 ? 0.44 : 0.5, cy: a < 1 ? 0.47 : 0.42 };
-      };
-      const paint = () => {
-        const { w, h, a, fit, cy } = geo();
-        clip.setAttribute('d', hourglass({ t: state.t, s: state.s, aspect: a, fit, cy }));
-        lineSvg.setAttribute('viewBox', `0 0 ${w} ${h}`);
-        line.setAttribute('d', hourglass({ t: state.t, s: 1, aspect: a, fit, cy, sx: w, sy: h }));
-      };
-      state.s = RM ? 1 : 0.0001;
-      paint();
-      W.addEventListener('resize', paint);
-      // scroll: the plan opens to the whole frame
-      gsap.timeline({ scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom bottom', scrub: 0.8 } })
-        .to(state, { t: 1, ease: 'power2.inOut', onUpdate: paint }, 0)
-        .to(img, { scale: 1, ease: 'none' }, 0)
-        .to($('[data-hero-meta]', hero), { clipPath: 'inset(0 100% 0 0)', ease: 'power2.in', duration: 0.3 }, 0);
-      hero._intro = () => {
-        const tl = gsap.timeline();
-        const L = line.getTotalLength();
-        gsap.set(line, { strokeDasharray: L, strokeDashoffset: L });
-        tl.to(line, { strokeDashoffset: 0, duration: 1.8, ease: 'power2.inOut', onComplete: () => gsap.set(line, { strokeDasharray: 'none' }) })
-          .to(state, { s: 1, duration: 1.6, ease: 'expo.inOut', onUpdate: paint }, 0.9)
-          .to($('.title--hero span', hero), { y: 0, yPercent: 0, duration: 1.4, ease: OUT }, 1.9)
-          .to($('[data-hero-meta]', hero), { clipPath: 'inset(0 0% 0 0)', duration: 1.2, ease: EASE }, 2.1)
-          .to($('[data-hero-cue]', hero), { clipPath: 'inset(0 0% 0 0)', duration: 1, ease: EASE }, 2.4);
-        return tl;
-      };
+      // the framed photograph widens to the full bleed as you scroll
+      gsap.fromTo(frame, { clipPath: () => `inset(0 ${getComputedStyle(D.documentElement).getPropertyValue('--gut').trim() || '5vw'} 0 ${getComputedStyle(D.documentElement).getPropertyValue('--gut').trim() || '5vw'})` }, { clipPath: 'inset(0px 0px 0px 0px)', ease: 'none', scrollTrigger: { trigger: frame, start: 'top 85%', end: 'top top', scrub: 0.6, invalidateOnRefresh: true } });
+      gsap.to(img, { yPercent: 7, ease: 'none', scrollTrigger: { trigger: frame, start: 'top bottom', end: 'bottom top', scrub: true } });
+      hero._intro = () =>
+        gsap.timeline()
+          .to($('[data-hero-kicker]', hero), { clipPath: 'inset(0 0% 0 0)', duration: 1.1, ease: EASE }, 0)
+          .to($$('.title--hero span, .title--hero em', hero), { clipPath: 'inset(0 0 0% 0)', y: 0, duration: 1.5, stagger: 0.14, ease: OUT }, 0.15)
+          .to($('[data-hero-meta]', hero), { clipPath: 'inset(0 0% 0 0)', duration: 1.1, ease: EASE }, 0.7)
+          .fromTo(img, { scale: 1.12 }, { scale: 1, duration: 2.4, ease: OUT }, 0);
+    },
+
+    lights(scope) {
+      const sec = $('[data-lights]', scope);
+      if (!sec) return;
+      const slides = $$('[data-light]', sec);
+      const texts = $$('[data-light-text]', sec);
+      const bar = $('[data-lights-bar]', sec);
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sec, start: 'top top', end: 'bottom bottom', scrub: 0.6,
+          onUpdate: (self) => {
+            const i = Math.min(slides.length - 1, Math.floor(self.progress * slides.length * 0.999));
+            texts.forEach((t, k) => t.classList.toggle('is-on', k === i));
+          },
+        },
+      });
+      tl.to(bar, { scaleX: 1, ease: 'none', duration: slides.length }, 0);
+      slides.forEach((sl, i) => {
+        const img = $('img', sl);
+        tl.fromTo(img, { scale: 1.12 }, { scale: 1, ease: 'none', duration: 1 }, Math.max(0, i - 0.6));
+        if (i) tl.to(sl, { clipPath: 'inset(0% 0 0 0)', ease: 'power2.inOut', duration: 0.6 }, i - 0.6);
+      });
     },
 
     reveals(scope) {
@@ -438,9 +435,32 @@
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
   /* ---------- go ---------- */
-  D.fonts.ready.then(() => {
+  const pre = $('[data-pre]');
+  function preload() {
+    let seen = true;
+    try { seen = !!sessionStorage.getItem('wave-pre'); sessionStorage.setItem('wave-pre', '1'); } catch (e) { /* private mode */ }
+    if (!pre || RM || seen) { if (pre) pre.remove(); return Promise.resolve(); }
+    lock(true);
+    const path = $('path', pre);
+    const count = $('[data-pre-count]', pre);
+    const o = { n: 0 };
+    const imgs = $$('img', main).slice(0, 4).filter((i) => !i.complete);
+    let loaded = 0;
+    imgs.forEach((i) => i.addEventListener('load', () => { loaded++; }, { once: true }));
+    return new Promise((resolve) => {
+      gsap.timeline({ onComplete() { pre.remove(); lock(false); resolve(); } })
+        .to(path, { strokeDashoffset: 0, duration: 1.8, ease: 'power2.inOut' }, 0)
+        .to(o, { n: 100, duration: 2.1, ease: 'power2.inOut', onUpdate: () => { count.textContent = String(Math.round(o.n)).padStart(2, '0'); } }, 0)
+        .to(path, { fillOpacity: 1, duration: 0.6 }, 1.5)
+        .to([path, count], { yPercent: -30, duration: 0.7, ease: 'power3.in' }, 2.3)
+        .to(pre, { clipPath: 'inset(0 0 100% 0)', duration: 1, ease: EASE }, 2.45);
+    });
+  }
+
+  D.fonts.ready.then(async () => {
     initPage(main);
-    if (RM) return;
+    if (RM) { if (pre) pre.remove(); return; }
+    await preload();
     intro(main);
     if (location.hash) { const t = $(location.hash); if (t) setTimeout(() => scrollTo(t), 600); }
   });

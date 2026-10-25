@@ -42,7 +42,15 @@ const content = {
     home: {
       title: 'The Wave, New Cairo | More than a destination',
       description: 'The Wave is a new destination on North 90, New Cairo: two curved wings around an open court, plaza shops with their own terraces, dining and long evenings. Opening soon.',
-      hero: { line: 'More than a destination.', meta: 'North 90 · New Cairo · Opening soon', scroll: 'Enter' },
+      hero: { kicker: 'North 90 · New Cairo', a: 'More than', b: 'a destination.', meta: 'Opening soon', scroll: 'Scroll' },
+      lights: {
+        kicker: 'One building, three lights',
+        items: [
+          { img: 'golden', time: '17:30', name: 'Golden hour', text: 'The curves catch the last of the sun.' },
+          { img: 'aerial', time: '19:00', name: 'Dusk', text: 'The plaza fills as the lights come on.' },
+          { img: 'night', time: '21:00', name: 'Night', text: 'Every floor becomes a line of light.' },
+        ],
+      },
       statement: 'Two curved wings around an open court, on the busiest block in New Cairo.',
       figures: [
         ['plazaUnits', 'shops on the plaza, each with its own terrace'],
@@ -53,7 +61,7 @@ const content = {
       scenes: [
         { img: 'boutique', name: 'Shop', text: 'Quiet rooms, curved stone, the season’s edit.' },
         { img: 'terrace', name: 'Dine', text: 'Breakfast under the sails, dinner on the terrace.' },
-        { img: 'night', name: 'Stay late', text: 'After dark the curves become lines of light.' },
+        { img: 'steps', name: 'Stay', text: 'The plaza steps face west for golden hour.' },
       ],
       directory: { kicker: 'Floor by floor', title: 'From the parking to the roof.', more: 'Explore the building' },
       place: { kicker: 'North 90, First Sector', text: 'Between the two Teseen roads. Banks, offices and two hospitals next door; the monorail a short walk away.', more: 'Plan your visit' },
@@ -67,9 +75,9 @@ const content = {
       hero: { a: 'Two wings,', b: 'one court.' },
       intro: 'The plan is an hourglass: two wings that curve towards each other around an open court. Every floor is edged by a ribbon balcony that follows the curve.',
       gallery: [
-        { img: 'court', cap: 'The court, looking up' },
+        { img: 'golden', cap: 'The North 90 façade at golden hour' },
         { img: 'ribbon', cap: 'The ribbon, after sunset' },
-        { img: 'corner', cap: 'The corner on North 90 · design render' },
+        { img: 'corner', cap: 'The corner at dusk · design render' },
         { img: 'aerial', cap: 'The plaza from above · design render' },
       ],
       directory: { kicker: 'Directory', title: 'Floor by floor.', hint: 'Select a floor', area: 'Floor area', spaces: 'parking spaces', units: 'plaza shops', street: 'street-level shops', terraces: 'Terraces on both wings', indicative: 'Plans simplified from the architect’s drawings. Indicative.' },
@@ -164,7 +172,15 @@ const content = {
     home: {
       title: 'ذا ويف، القاهرة الجديدة | أكثر من وجهة',
       description: 'ذا ويف وجهة جديدة على التسعين الشمالي بالقاهرة الجديدة: جناحان منحنيان حول ساحة مفتوحة، ومحلات على الساحة بتراسات خاصة، ومطاعم وأمسيات طويلة. قريباً.',
-      hero: { line: 'أكثر من وجهة.', meta: 'التسعين الشمالي · القاهرة الجديدة · قريباً', scroll: 'ادخل' },
+      hero: { kicker: 'التسعين الشمالي · القاهرة الجديدة', a: 'أكثر من', b: 'وجهة.', meta: 'قريباً', scroll: 'مرر' },
+      lights: {
+        kicker: 'مبنى واحد، ثلاثة أضواء',
+        items: [
+          { img: 'golden', time: '17:30', name: 'الساعة الذهبية', text: 'المنحنيات تلتقط آخر الشمس.' },
+          { img: 'aerial', time: '19:00', name: 'الغسق', text: 'الساحة تمتلئ مع إضاءة الأنوار.' },
+          { img: 'night', time: '21:00', name: 'الليل', text: 'كل طابق يصبح خطاً من الضوء.' },
+        ],
+      },
       statement: 'جناحان منحنيان حول ساحة مفتوحة، في أكثر كتل القاهرة الجديدة حركة.',
       figures: [
         ['plazaUnits', 'محلاً على الساحة، لكل منها تراسه الخاص'],
@@ -175,7 +191,7 @@ const content = {
       scenes: [
         { img: 'boutique', name: 'تسوّق', text: 'غرف هادئة، وحجر منحنٍ، ومختارات الموسم.' },
         { img: 'terrace', name: 'تناول', text: 'إفطار تحت المظلات، وعشاء على التراس.' },
-        { img: 'night', name: 'ابقَ حتى المساء', text: 'بعد الغروب تتحول المنحنيات إلى خطوط من الضوء.' },
+        { img: 'steps', name: 'ابقَ', text: 'درج الساحة يواجه الغرب للساعة الذهبية.' },
       ],
       directory: { kicker: 'طابقاً طابقاً', title: 'من المواقف إلى السطح.', more: 'استكشف المبنى' },
       place: { kicker: 'التسعين الشمالي، القطاع الأول', text: 'بين طريقي التسعين. بنوك ومكاتب ومستشفيان بجوارنا، والمونوريل على بُعد خطوات.', more: 'خطط لزيارتك' },
@@ -189,9 +205,9 @@ const content = {
       hero: { a: 'جناحان،', b: 'وساحة واحدة.' },
       intro: 'المخطط على شكل ساعة رملية: جناحان ينحنيان نحو بعضهما حول ساحة مفتوحة. وكل طابق تحده شرفة شريطية تتبع المنحنى.',
       gallery: [
-        { img: 'court', cap: 'الساحة، نظرة إلى الأعلى' },
+        { img: 'golden', cap: 'واجهة التسعين الشمالي وقت الغروب' },
         { img: 'ribbon', cap: 'الشريط بعد الغروب' },
-        { img: 'corner', cap: 'الزاوية على التسعين الشمالي · تصميم توضيحي' },
+        { img: 'corner', cap: 'الزاوية عند الغسق · تصميم توضيحي' },
         { img: 'aerial', cap: 'الساحة من الأعلى · تصميم توضيحي' },
       ],
       directory: { kicker: 'الدليل', title: 'طابقاً طابقاً.', hint: 'اختر طابقاً', area: 'مساحة الطابق', spaces: 'مكان انتظار', units: 'محلاً على الساحة', street: 'محلات على الشارع', terraces: 'تراسات على الجناحين', indicative: 'مخططات مبسطة عن رسومات المعماري. استرشادية.' },

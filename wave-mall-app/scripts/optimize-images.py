@@ -16,15 +16,20 @@ POSTS = ROOT / "wave-posts" / "visuals"
 
 # name: (source, grade the render?)
 IMAGES = {
-    "court": (SRC / "hf/court.webp", False),
+    # the actual building (mockups from the client's site photos, official wordmark mounted by sign.py)
+    "day": (SRC / "day.webp", False),
+    "golden": (SRC / "golden.webp", False),
+    "night": (SRC / "night.webp", False),
+    # the presentation renders, official wordmark in place of the placeholder
+    "aerial": (SRC / "render-aerial.webp", False),
+    "corner": (SRC / "render-dusk.webp", False),
+    "facade": (SRC / "render-day.webp", False),
+    "map": (SRC / "map.webp", "map"),
+    # details and life on the plaza (Higgsfield)
     "ribbon": (SRC / "hf/ribbon.webp", False),
     "boutique": (SRC / "hf/boutique.webp", False),
     "steps": (SRC / "hf/steps.webp", False),
     "terrace": (POSTS / "terrace-cafe.png", False),
-    "night": (POSTS / "night-ribbons.png", False),
-    "aerial": (SRC / "aerial.webp", True),
-    "corner": (SRC / "dusk.webp", True),
-    "map": (SRC / "map.webp", "map"),
 }
 WIDTHS = (640, 1080, 1600, 2200)
 
@@ -35,8 +40,8 @@ def grade(im, mode):
     if mode == "map":
         lum = a @ np.array([0.3, 0.59, 0.11])
         ink = np.array([40, 56, 51]) / 255
-        sand = np.array([209, 201, 179]) / 255
-        a = ink + (sand - ink) * np.clip((lum[..., None] - 0.12) * 1.25, 0, 1)
+        paper = np.array([246, 244, 238]) / 255
+        a = ink + (paper - ink) * np.clip((lum[..., None] - 0.08) * 1.35, 0, 1) ** 0.8
     else:
         lum = (a @ np.array([0.3, 0.59, 0.11]))[..., None]
         a = lum + (a - lum) * 0.62                      # desaturate

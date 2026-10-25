@@ -3,7 +3,7 @@
 const { content } = require('./content');
 const { COORDS, FLOORS, GROUND_UNITS, STREET_UNITS, FACTS } = require('./data');
 const journal = require('./journal');
-const { floorSvg, heroPath } = require('./plan');
+const { floorSvg } = require('./plan');
 const { esc, picture, frame, imgUrl, link, arrow, label, title, num, crumbs, crumbsLd, newsletter, fmtDate, layout, logoSvg } = require('./render');
 
 const mapUrl = `https://www.google.com/maps?q=${COORDS.lat},${COORDS.lng}`;
@@ -87,17 +87,35 @@ function home(lang, ctx) {
     .join('');
   const latest = journal.sorted().slice(0, 2);
 
+  const lights = h.lights.items
+    .map(
+      (it, i) => `<figure class="lights__slide" data-light="${i}">${picture(it.img, `${c.brand} · ${it.name}`, { eager: i === 0, sizes: '100vw' })}</figure>`,
+    )
+    .join('');
+  const lightsText = h.lights.items
+    .map((it, i) => `<li data-light-text="${i}" ${i ? '' : 'class="is-on"'}><span class="lights__time">${esc(it.time)}</span><span class="lights__name">${esc(it.name)}</span><span class="lights__text">${esc(it.text)}</span></li>`)
+    .join('');
+
   const body = `
 <section class="hero" data-hero>
-  <div class="hero__stage">
-    <svg class="hero__defs" aria-hidden="true"><defs><clipPath id="hero-clip" clipPathUnits="objectBoundingBox"><path data-hero-clip d="${heroPath(0, 1.6)}"/></clipPath></defs></svg>
-    <div class="hero__media" data-hero-media>${picture('court', lang === 'en' ? 'The open court of The Wave, looking up between the two curved wings.' : 'ساحة ذا ويف المفتوحة، نظرة إلى الأعلى بين الجناحين المنحنيين.', { eager: true, cls: 'hero__img' })}<span class="hero__shade"></span></div>
-    <svg class="hero__line" viewBox="0 0 1 1" preserveAspectRatio="none" aria-hidden="true"><path data-hero-line d="${heroPath(0, 1.6)}"/></svg>
-    <p class="label hero__meta" data-hero-meta>${esc(h.hero.meta)}</p>
-    <div class="hero__text">
-      <h1 class="title title--hero" data-hero-title><span>${esc(h.hero.line)}</span></h1>
+  <div class="wrap hero__head">
+    <p class="label" data-hero-kicker>${esc(h.hero.kicker)}</p>
+    <h1 class="title title--hero" data-hero-title><span class="hero__a">${esc(h.hero.a)}</span> <em class="hero__b">${esc(h.hero.b)}</em></h1>
+    <p class="label hero__meta" data-hero-meta><i></i>${esc(h.hero.meta)}</p>
+  </div>
+  <div class="hero__frame" data-hero-frame>
+    ${picture('day', lang === 'en' ? 'The Wave on North 90, New Cairo: curved white ribbon balconies over the plaza.' : 'ذا ويف على التسعين الشمالي، القاهرة الجديدة: شرفات شريطية بيضاء منحنية فوق الساحة.', { eager: true, cls: 'hero__img' })}
+  </div>
+</section>
+
+<section class="lights" data-lights>
+  <div class="lights__stage">
+    <div class="lights__slides">${lights}</div>
+    <div class="lights__ui">
+      <p class="label">${esc(h.lights.kicker)}</p>
+      <ol class="lights__list">${lightsText}</ol>
+      <div class="lights__bar" aria-hidden="true"><i data-lights-bar></i></div>
     </div>
-    <a class="hero__cue label" href="#statement" data-hero-cue>${esc(h.hero.scroll)}<i></i></a>
   </div>
 </section>
 
@@ -133,7 +151,7 @@ function home(lang, ctx) {
     ${link(p(lang, '/leasing/'), h.lease.more, 'link--big')}
   </div>
 </section>`;
-  return layout({ lang, pathname: p(lang, '/'), title: h.title, description: h.description, body, image: 'court', seo: { image: 'court' }, ...ctx });
+  return layout({ lang, pathname: p(lang, '/'), title: h.title, description: h.description, body, image: 'day', seo: { image: 'day' }, ...ctx });
 }
 
 /* ---------- the building ---------- */
