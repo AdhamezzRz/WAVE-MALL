@@ -14,7 +14,7 @@ npm run package    # builds release/the-wave-website.zip for Hostinger
 
 | English | Arabic | What |
 | --- | --- | --- |
-| `/` | `/ar/` | Preloader, the building in the morning, then sunset to night (17:30 / 19:30 / 22:00), figures, scenes, plan, place, journal |
+| `/` | `/ar/` | Preloader (the wordmark draws itself and settles into the header), full-screen hero that opens through the building's plan and moves from morning to golden hour to night, figures, scenes, plan, place, journal |
 | `/the-wave/` | `/ar/the-wave/` | The building, gallery, interactive floor directory (R to B2), the mark |
 | `/experience/` | `/ar/experience/` | A day from 09:00 to 21:00, what you will find |
 | `/leasing/` | `/ar/leasing/` | Plaza and street-level unit schedules linked to the plan, enquiry form |
@@ -25,7 +25,7 @@ npm run package    # builds release/the-wave-website.zip for Hostinger
 
 Also `/sitemap.xml`, `/robots.txt`, `/journal/feed.xml`, `/healthz`, and `POST /api/enquiry`, `/api/contact`, `/api/subscribe`.
 
-The navigation behaves like a lift: the header shows the floor you are on (R at the top of a page, B2 at the bottom) and the menu lists pages as floors.
+The header shows the floor you are on like a lift (R at the top of a page, B2 at the bottom). The menu lists the pages beside a photograph of each place, which changes as you hover.
 
 ## Deploy on Hostinger (Node.js web app)
 
@@ -66,4 +66,4 @@ The app reads `PORT` from the environment (Hostinger sets it) and trusts one pro
 
 ## Brand
 
-White (`#fbfaf6`) ground with forest `#283833` ink; forest is used as the highlight (leasing band, menu, active floor). Sea glass and cocoa appear only inside photographs.
+White (`#fbfaf6`) ground with forest `#283833` ink; forest is used as the highlight (leasing band, active floor). Type: Bodoni Moda for display, Montserrat (the identity's typeface) for the header and menu, Archivo for labels, IBM Plex Sans Arabic for Arabic. Sea glass and cocoa appear only inside photographs.

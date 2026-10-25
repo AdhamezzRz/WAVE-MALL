@@ -21,7 +21,10 @@ const content = {
       ['/visit/', 'Visit'],
       ['/contact/', 'Contact'],
     ],
-    menu: { open: 'Menu', close: 'Close', write: 'Write to us', follow: 'Follow' },
+    menu: {
+      open: 'Menu', close: 'Close', write: 'Write to us', follow: 'Follow', find: 'Find us',
+      notes: ['More than a destination', 'Two wings, one court', 'From morning to night', 'A place for your brand', 'Stories from North 90', 'North 90, First Sector', 'Write to us'],
+    },
     floorNames: { R: 'Roof', 4: 'Fourth', 3: 'Third', 2: 'Second', 1: 'First', G: 'Plaza', B1: 'Lower ground', B2: 'Parking' },
     unit: 'm²',
     skip: 'Skip to content',
@@ -36,13 +39,21 @@ const content = {
       rights: 'The Wave, New Cairo',
       note: 'Images are photographs and design renders for illustration. Areas are indicative.',
       top: 'Back to top',
+      powered: 'Powered by',
     },
     crumbs: { home: 'Home' },
 
     home: {
       title: 'The Wave, New Cairo | More than a destination',
       description: 'The Wave is a new destination on North 90, New Cairo: two curved wings around an open court, plaza shops with their own terraces, dining and long evenings. Opening soon.',
-      hero: { kicker: 'North 90 · New Cairo', a: 'More than', b: 'a destination.', meta: 'Opening soon', scroll: 'Scroll' },
+      hero: {
+        kicker: 'North 90 · New Cairo', a: 'More than', b: 'a destination.', meta: 'Opening soon', scroll: 'Scroll',
+        slides: [
+          { img: 'morning', time: '09:00', name: 'Morning', alt: 'The Wave on North 90 in the morning: white ribbon balconies under the rooftop sign.' },
+          { img: 'golden', time: '17:30', name: 'Golden hour', alt: 'The Wave at golden hour, the terraces lit and the sign catching the sun.' },
+          { img: 'night', time: '22:00', name: 'Night', alt: 'The Wave at night, every floor a line of warm light under the lit sign.' },
+        ],
+      },
       lights: {
         kicker: 'One building, from sunset to night',
         items: [
@@ -151,7 +162,10 @@ const content = {
       ['/ar/visit/', 'الزيارة'],
       ['/ar/contact/', 'تواصل'],
     ],
-    menu: { open: 'القائمة', close: 'إغلاق', write: 'اكتب إلينا', follow: 'تابعونا' },
+    menu: {
+      open: 'القائمة', close: 'إغلاق', write: 'اكتب إلينا', follow: 'تابعونا', find: 'العنوان',
+      notes: ['أكثر من وجهة', 'جناحان وساحة واحدة', 'من الصباح حتى الليل', 'مكان لعلامتك', 'حكايات من التسعين الشمالي', 'التسعين الشمالي، القطاع الأول', 'تواصل معنا'],
+    },
     floorNames: { R: 'السطح', 4: 'الرابع', 3: 'الثالث', 2: 'الثاني', 1: 'الأول', G: 'الساحة', B1: 'الأرضي السفلي', B2: 'المواقف' },
     unit: 'م²',
     skip: 'انتقل إلى المحتوى',
@@ -166,13 +180,21 @@ const content = {
       rights: 'ذا ويف، القاهرة الجديدة',
       note: 'الصور فوتوغرافية وتصاميم توضيحية. المساحات استرشادية.',
       top: 'العودة للأعلى',
+      powered: 'بدعم من',
     },
     crumbs: { home: 'الرئيسية' },
 
     home: {
       title: 'ذا ويف، القاهرة الجديدة | أكثر من وجهة',
       description: 'ذا ويف وجهة جديدة على التسعين الشمالي بالقاهرة الجديدة: جناحان منحنيان حول ساحة مفتوحة، ومحلات على الساحة بتراسات خاصة، ومطاعم وأمسيات طويلة. قريباً.',
-      hero: { kicker: 'التسعين الشمالي · القاهرة الجديدة', a: 'أكثر من', b: 'وجهة.', meta: 'قريباً', scroll: 'مرر' },
+      hero: {
+        kicker: 'التسعين الشمالي · القاهرة الجديدة', a: 'أكثر من', b: 'وجهة.', meta: 'قريباً', scroll: 'مرر',
+        slides: [
+          { img: 'morning', time: '09:00', name: 'الصباح', alt: 'ذا ويف على التسعين الشمالي صباحاً: شرفات بيضاء تحت اللافتة على السطح.' },
+          { img: 'golden', time: '17:30', name: 'الساعة الذهبية', alt: 'ذا ويف في الساعة الذهبية، التراسات مضاءة واللافتة في ضوء الشمس.' },
+          { img: 'night', time: '22:00', name: 'الليل', alt: 'ذا ويف ليلاً، كل طابق خط من الضوء الدافئ تحت اللافتة المضاءة.' },
+        ],
+      },
       lights: {
         kicker: 'مبنى واحد، من الغروب إلى الليل',
         items: [

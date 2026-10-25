@@ -84,8 +84,8 @@ function newsletter(c, id = 'f') {
 </form>`;
 }
 
-// Navigation doubles as an elevator panel: each page sits on a floor.
-const NAV_FLOORS = ['R', '4', '3', '2', '1', 'G', 'B1'];
+// One photograph per page for the menu; it changes as you hover the list.
+const MENU_IMG = ['morning', 'aerial', 'plaza', 'axis', 'sculpture', 'north90', 'golden'];
 
 function header(c, pathname) {
   const home = c.lang === 'en' ? '/' : '/ar/';
@@ -95,27 +95,33 @@ function header(c, pathname) {
   const [, ...pages] = c.nav;
   const main = pages.slice(0, -1);
   const contact = pages[pages.length - 1];
+  const m = c.menu;
+  const active = Math.max(0, c.nav.findIndex(([href]) => isCurrent(href)));
   return `
 <header class="top" data-top>
   <a class="top__brand" href="${home}" aria-label="${esc(c.brand)}">${logoSvg()}</a>
   <nav class="top__nav" aria-label="Main">${main.map(([href, l]) => `<a href="${href}" ${cur(href)}>${esc(l)}</a>`).join('')}</nav>
   <div class="top__right">
     <a class="top__link" href="${contact[0]}" ${cur(contact[0])}>${esc(contact[1])}</a>
-    <a class="top__link" href="${other}" hreflang="${c.otherLang}" lang="${c.otherLang}" data-full-nav>${esc(c.otherLabel)}</a>
+    <a class="top__link top__lang" href="${other}" hreflang="${c.otherLang}" lang="${c.otherLang}" data-full-nav>${esc(c.otherLabel)}</a>
     <span class="lift" aria-hidden="true"><span class="lift__arrow" data-lift-dir></span><span class="lift__floor" data-lift>R</span></span>
-    <button class="top__menu" type="button" aria-expanded="false" aria-controls="menu" data-menu-toggle><span data-open="${esc(c.menu.open)}" data-close="${esc(c.menu.close)}">${esc(c.menu.open)}</span></button>
+    <button class="top__menu" type="button" aria-expanded="false" aria-controls="menu" data-menu-toggle><span class="top__menu-label" data-open="${esc(m.open)}" data-close="${esc(m.close)}">${esc(m.open)}</span><i class="burger" aria-hidden="true"><b></b><b></b></i></button>
   </div>
 </header>
 <aside class="rail" aria-hidden="true" data-rail>${FLOORS.map((f) => `<span data-floor="${f.id}">${f.id}</span>`).join('')}</aside>
 <div class="menu" id="menu" data-menu aria-hidden="true">
-  <div class="menu__inner">
-    <nav class="menu__nav" aria-label="${esc(c.menu.open)}">
-      ${c.nav.map(([href, l], i) => `<a href="${href}" ${cur(href)}><i>${NAV_FLOORS[i]}</i><span>${esc(l)}</span></a>`).join('')}
+  <div class="menu__media" aria-hidden="true">
+    ${MENU_IMG.map((img, i) => `<img data-menu-img="${i}" data-src="/img/${img}-1080.webp" alt=""${i === active ? ' class="is-on"' : ''}>`).join('')}
+  </div>
+  <div class="menu__body">
+    <nav class="menu__nav" aria-label="${esc(m.open)}">
+      ${c.nav.map(([href, l], i) => `<a href="${href}" ${cur(href)} data-menu-item="${i}"><i>${String(i + 1).padStart(2, '0')}</i><span class="menu__name"><span>${esc(l)}</span></span><small>${esc(m.notes[i])}</small></a>`).join('')}
     </nav>
     <div class="menu__foot">
-      <div><p class="label">${esc(c.menu.write)}</p><a href="mailto:${c.footer.email}">${esc(c.footer.email)}</a></div>
-      <div><p class="label">${esc(c.menu.follow)}</p><a href="https://www.instagram.com/thewavemall" target="_blank" rel="noopener">${esc(c.footer.instagram)}</a></div>
-      <div><a href="${other}" hreflang="${c.otherLang}" lang="${c.otherLang}" data-full-nav>${esc(c.otherLabel)}</a></div>
+      <div><p class="label">${esc(m.find)}</p><p>${esc(c.footer.address)}</p></div>
+      <div><p class="label">${esc(m.write)}</p><a href="mailto:${c.footer.email}">${esc(c.footer.email)}</a></div>
+      <div><p class="label">${esc(m.follow)}</p><a href="https://www.instagram.com/thewavemall" target="_blank" rel="noopener">${esc(c.footer.instagram)}</a></div>
+      <div class="menu__lang"><a href="${other}" hreflang="${c.otherLang}" lang="${c.otherLang}" data-full-nav>${esc(c.otherLabel)}</a></div>
     </div>
   </div>
 </div>`;
@@ -142,6 +148,7 @@ function footer(c) {
   <div class="wrap foot__legal">
     <p>© ${new Date().getFullYear()} ${esc(f.rights)}${f.legal.map(([href, l]) => ` · <a href="${href}">${esc(l)}</a>`).join('')}</p>
     <p>${esc(f.note)}</p>
+    <p class="foot__credit">${esc(f.powered)} <a href="https://najmarketing.co" target="_blank" rel="noopener">Najmarketing.co</a></p>
     <button type="button" data-top-btn>${esc(f.top)}</button>
   </div>
 </footer>`;
@@ -203,6 +210,7 @@ ${seo.published ? `<meta property="article:published_time" content="${seo.publis
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="/fonts/BodoniModa-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/Archivo-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/Montserrat-var.woff2" as="font" type="font/woff2" crossorigin>
 ${lang === 'ar' ? '<link rel="preload" href="/fonts/PlexArabic-400.woff2" as="font" type="font/woff2" crossorigin>' : ''}
 ${image ? `<link rel="preload" as="image" href="/img/${image}-1080.webp" imagesrcset="${srcset(image)}" imagesizes="100vw">` : ''}
 <link rel="stylesheet" href="/css/site.css?v=${ASSET_V.css}">
@@ -211,8 +219,15 @@ ${image ? `<link rel="preload" as="image" href="/img/${image}-1080.webp" imagesr
 </head>
 <body>
 <div class="pre" data-pre aria-hidden="true">
-  <svg class="pre__mark" viewBox="163 97 207 128"><path pathLength="1" d="${LOGO.AV}"/></svg>
-  <p class="pre__count"><span data-pre-count>00</span></p>
+  <div class="pre__bg" data-pre-bg></div>
+  <div class="pre__stage">
+    <div class="pre__logo" data-pre-logo>
+      <svg class="pre__lines" viewBox="${LOGO_VB}">${['T', 'H', 'E2', 'W', 'AV', 'E'].map((k) => `<path pathLength="1" d="${LOGO[k]}"/>`).join('')}</svg>
+      <svg class="pre__fill" viewBox="${LOGO_VB}" fill="currentColor">${['T', 'H', 'E2', 'W', 'AV', 'E'].map((k) => `<path d="${LOGO[k]}"/>`).join('')}</svg>
+    </div>
+    <span class="pre__rule"><i data-pre-rule></i></span>
+    <p class="pre__place" data-pre-place>${esc(c.home.hero.kicker)}</p>
+  </div>
 </div>
 <a class="skip" href="#main">${esc(c.skip)}</a>
 ${header(c, pathname)}

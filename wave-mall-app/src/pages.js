@@ -89,13 +89,18 @@ function home(lang, ctx) {
 
   const body = `
 <section class="hero" data-hero>
-  <div class="wrap hero__head">
-    <p class="label" data-hero-kicker>${esc(h.hero.kicker)}</p>
-    <h1 class="title title--hero" data-hero-title><span class="hero__a">${esc(h.hero.a)}</span> <em class="hero__b">${esc(h.hero.b)}</em></h1>
-    <p class="label hero__meta" data-hero-meta><i></i>${esc(h.hero.meta)}</p>
+  <div class="hero__media" data-hero-frame>
+    ${h.hero.slides.map((sl, i) => `<figure class="hero__slide${i ? '' : ' is-on'}" data-hero-slide>${picture(sl.img, sl.alt, { eager: !i, cls: 'hero__img' })}</figure>`).join('')}
+    <svg class="hero__window" data-hero-window viewBox="0 0 1 1" preserveAspectRatio="none" aria-hidden="true"><path fill-rule="evenodd" d="M0 0H1V1H0Z"/></svg>
   </div>
-  <div class="hero__frame" data-hero-frame>
-    ${picture('morning', lang === 'en' ? 'The Wave on North 90, New Cairo, in the morning: white ribbon balconies and the rooftop sign.' : 'ذا ويف على التسعين الشمالي صباحاً: شرفات بيضاء واللافتة على السطح.', { eager: true, cls: 'hero__img' })}
+  <div class="wrap hero__content">
+    <p class="label hero__kicker" data-hero-kicker>${esc(h.hero.kicker)}</p>
+    <h1 class="title title--hero" data-hero-title><span class="hero__a">${esc(h.hero.a)}</span> <em class="hero__b">${esc(h.hero.b)}</em></h1>
+    <div class="hero__foot">
+      <p class="label hero__meta" data-hero-meta><i></i>${esc(h.hero.meta)}</p>
+      <ol class="hero__times" data-hero-times>${h.hero.slides.map((sl, i) => `<li${i ? '' : ' class="is-on"'}><b>${esc(sl.time)}</b><span>${esc(sl.name)}</span><i><u></u></i></li>`).join('')}</ol>
+      <a class="label hero__scroll" href="#statement" data-hero-scroll><span>${esc(h.hero.scroll)}</span><i></i></a>
+    </div>
   </div>
 </section>
 
