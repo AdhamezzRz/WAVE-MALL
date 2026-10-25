@@ -30,24 +30,50 @@
   };
   const lock = (on) => { if (lenis) on ? lenis.stop() : lenis.start(); D.body.style.overflow = on ? 'hidden' : ''; };
 
-  /* header + dock follow the scroll */
+  /* header follows the scroll; menu overlay */
   const top = $('[data-top]');
-  const dock = $('[data-dock]');
+  const menu = $('[data-menu]');
+  const menuBtn = $('[data-menu-toggle]');
   const main = $('#main');
   let heroBottom = 0;
+  let menuOpen = false;
   function measureHero() { const h = $('[data-hero]', main); heroBottom = h ? h.offsetTop + h.offsetHeight : 0; }
   ScrollTrigger.create({
     start: 0,
     end: 'max',
     onUpdate(self) {
       const y = self.scroll();
-      if (top) {
+      if (top && !menuOpen) {
         top.classList.toggle('on-hero', y < heroBottom - 80);
         top.classList.toggle('is-tint', y > heroBottom - 40);
       }
-      if (dock) dock.classList.toggle('is-away', self.direction === 1 && y > 240 && y < self.end - 80);
     },
   });
+  function setMenu(open) {
+    if (!menu || open === menuOpen) return;
+    menuOpen = open;
+    menuBtn.setAttribute('aria-expanded', String(open));
+    const lbl = $('span', menuBtn);
+    lbl.textContent = open ? lbl.dataset.close : lbl.dataset.open;
+    top.classList.toggle('is-menu', open);
+    menu.setAttribute('aria-hidden', String(!open));
+    lock(open);
+    const spans = $$('.menu__nav a span', menu);
+    const side = $('.menu__side', menu);
+    if (open) {
+      menu.classList.add('is-open');
+      gsap.timeline()
+        .to(menu, { opacity: 1, duration: 0.7, ease: 'power2.out' }, 0)
+        .to(spans, { opacity: 1, y: 0, duration: 1.2, stagger: 0.06, ease: 'power3.out' }, 0.15)
+        .to(side, { opacity: 1, duration: 1, ease: 'power2.out' }, 0.5);
+    } else {
+      gsap.timeline({ onComplete() { menu.classList.remove('is-open'); gsap.set(spans, { opacity: 0, y: 20 }); gsap.set(side, { opacity: 0 }); if (top) top.classList.toggle('on-hero', (lenis ? lenis.scroll : W.scrollY) < heroBottom - 80); } })
+        .to([spans, side], { opacity: 0, duration: 0.35, ease: 'power2.in' }, 0)
+        .to(menu, { opacity: 0, duration: 0.5, ease: 'power2.inOut' }, 0.1);
+    }
+  }
+  if (menuBtn) menuBtn.addEventListener('click', () => setMenu(!menuOpen));
+  D.addEventListener('keydown', (e) => { if (e.key === 'Escape' && menuOpen) setMenu(false); });
 
   /* the thread: one line stitched through the page, drawn as you read */
   const thread = $('[data-thread]');
@@ -138,41 +164,52 @@
       gsap.fromTo(pins, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 1.4, stagger: 0.14, delay: 0.6, scrollTrigger: { trigger: pins[0].closest('.map'), start: 'top 80%', once: true } });
     },
 
-    form(scope) {
-      const form = $('[data-enquiry]', scope);
-      if (!form) return;
-      const status = $('[data-form-status]', form);
-      const btn = $('button[type=submit]', form);
-      const say = (msg, ok) => {
-        status.hidden = false;
-        status.textContent = msg;
-        status.className = 'status ' + (ok ? 'status--ok' : 'status--err');
-        status.setAttribute('tabindex', '-1');
-        status.focus();
-      };
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        $$('[data-field]', form).forEach((f) => f.classList.remove('is-invalid'));
-        if (!form.checkValidity()) {
-          $$('input, textarea', form).forEach((i) => { if (!i.checkValidity() && i.closest('[data-field]')) i.closest('[data-field]').classList.add('is-invalid'); });
-          say(form.dataset.fail, false);
-          return;
-        }
-        const label = $('span', btn);
-        const orig = label.textContent;
-        btn.disabled = true;
-        label.textContent = form.dataset.sending;
-        try {
-          const res = await fetch(form.action, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(Object.fromEntries(new FormData(form))) });
-          const data = await res.json().catch(() => ({}));
-          if (res.ok && data.ok) { say(form.dataset.ok, true); form.reset(); }
-          else {
-            (data.errors || []).forEach((n) => { const i = form.elements[n]; if (i && i.closest('[data-field]')) i.closest('[data-field]').classList.add('is-invalid'); });
+    forms(scope) {
+      $$('form[data-form]', scope).forEach((form) => {
+        const status = $('[data-form-status]', form);
+        const btn = $('button[type=submit]', form);
+        const say = (msg, ok) => {
+          status.hidden = false;
+          status.textContent = msg;
+          status.className = 'status ' + (ok ? 'status--ok' : 'status--err');
+          status.setAttribute('tabindex', '-1');
+          status.focus({ preventScroll: true });
+        };
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          $$('[data-field]', form).forEach((f) => f.classList.remove('is-invalid'));
+          if (!form.checkValidity()) {
+            $$('input, textarea, select', form).forEach((i) => { const f = i.closest('[data-field]'); if (!i.checkValidity() && f) f.classList.add('is-invalid'); });
             say(form.dataset.fail, false);
+            return;
           }
-        } catch (err) { say(form.dataset.fail, false); }
-        btn.disabled = false;
-        label.textContent = orig;
+          const label = $('span', btn);
+          const orig = label.textContent;
+          btn.disabled = true;
+          label.textContent = form.dataset.sending;
+          try {
+            const res = await fetch(form.action, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(Object.fromEntries(new FormData(form))) });
+            const data = await res.json().catch(() => ({}));
+            if (res.ok && data.ok) { say(form.dataset.ok, true); form.reset(); }
+            else {
+              (data.errors || []).forEach((n) => { const i = form.elements[n]; const f = i && i.closest('[data-field]'); if (f) f.classList.add('is-invalid'); });
+              say(form.dataset.fail, false);
+            }
+          } catch (err) { say(form.dataset.fail, false); }
+          btn.disabled = false;
+          label.textContent = orig;
+        });
+      });
+    },
+
+    copy(scope) {
+      $$('[data-copy]', scope).forEach((b) => {
+        const orig = b.textContent;
+        b.addEventListener('click', async () => {
+          try { await navigator.clipboard.writeText(b.dataset.copy); } catch (err) { /* fall through */ }
+          b.textContent = b.dataset.copied;
+          setTimeout(() => { b.textContent = orig; }, 1600);
+        });
       });
     },
   };
@@ -222,6 +259,7 @@
   async function navigate(href, push) {
     if (moving) return;
     moving = true;
+    if (menuOpen) setMenu(false);
     const fetching = fetch(href).then((r) => { if (!r.ok && r.status !== 404) throw new Error(r.status); return r.text(); });
     await gsap.to(main, { opacity: 0, y: -10, duration: 0.5, ease: 'power2.in' });
     let html;
@@ -238,7 +276,7 @@
     if (d1 && d2) d1.setAttribute('content', d2.getAttribute('content'));
     if (push) history.pushState({ wave: true }, '', href);
     const pathname = new URL(href, location.href).pathname;
-    $$('.top__nav a, .dock a').forEach((a) => (a.getAttribute('href') === pathname ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current')));
+    $$('.top__nav a, .top__contact, .menu__nav a').forEach((a) => { const h = a.getAttribute('href'); const home = root.lang === 'ar' ? '/ar/' : '/'; const cur = h === home ? pathname === home : pathname.startsWith(h); cur ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'); });
     const lang = D.querySelector('.top__lang');
     const lang2 = doc.querySelector('.top__lang');
     if (lang && lang2) lang.setAttribute('href', lang2.getAttribute('href'));
@@ -260,6 +298,7 @@
     if (url.origin !== location.origin) return;
     if (url.pathname === location.pathname) {
       e.preventDefault();
+      if (menuOpen) setMenu(false);
       const t = url.hash && $(url.hash);
       scrollTo(t || 0);
       return;
@@ -272,6 +311,13 @@
   });
   W.addEventListener('popstate', () => { if (!RM && !STATIC) navigate(location.href, false); else location.reload(); });
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+
+  const topBtn = $('[data-top-btn]');
+  if (topBtn) topBtn.addEventListener('click', () => scrollTo(0, { duration: 1.8 }));
+
+  // Forms outside <main> (the footer newsletter) are wired once.
+  const foot = $('.foot');
+  if (foot) { modules.forms(foot); }
 
   D.fonts.ready.then(boot);
   W.addEventListener('load', () => { buildThread(); ScrollTrigger.refresh(); });

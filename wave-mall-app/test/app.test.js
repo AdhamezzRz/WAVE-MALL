@@ -68,12 +68,47 @@ test('enquiry validation', () => {
   assert.deepEqual(validate({ name: 'a', brand: 'b', email: 'a@b.co', category: 'bogus' }).errors, ['category']);
 });
 
+test('journal: posts, feed, structured data, sitemap lastmod', async () => {
+  const idx = await (await fetch(base + '/journal/')).text();
+  assert.match(idx, /"@type":"Blog"/);
+  const res = await fetch(base + '/ar/journal/designed-to-flow/');
+  assert.equal(res.status, 200);
+  const html = await res.text();
+  assert.match(html, /"@type":"BlogPosting"/);
+  assert.match(html, /property="og:type" content="article"/);
+  assert.match(html, /<link rel="canonical" href="https:\/\/thewavemall.com\/ar\/journal\/designed-to-flow\/">/);
+  assert.match(html, /<h2>/);
+  assert.equal((await fetch(base + '/journal/not-a-post/')).status, 404);
+  const feed = await fetch(base + '/journal/feed.xml');
+  assert.match(feed.headers.get('content-type'), /rss/);
+  assert.match(await feed.text(), /<item><title>The story behind our mark<\/title>/);
+  const sm = await (await fetch(base + '/sitemap.xml')).text();
+  assert.match(sm, /<loc>https:\/\/thewavemall.com\/journal\/after-dark\/<\/loc><lastmod>2026-09-10<\/lastmod>/);
+  assert.match(sm, /\/ar\/contact\//);
+});
+
+test('contact and subscribe APIs', async () => {
+  const json = { 'Content-Type': 'application/json', Accept: 'application/json' };
+  let res = await fetch(base + '/api/contact', { method: 'POST', headers: json, body: JSON.stringify({ name: 'Mona', email: 'mona@example.com', subject: 'press', message: 'Hello' }) });
+  assert.deepEqual(await res.json(), { ok: true });
+  assert.equal(sent.at(-1).kind, 'contact');
+  res = await fetch(base + '/api/contact', { method: 'POST', headers: json, body: JSON.stringify({ name: 'Mona', email: 'mona@example.com', subject: 'nope', message: '' }) });
+  assert.equal(res.status, 422);
+  assert.deepEqual((await res.json()).errors, ['subject', 'message']);
+  res = await fetch(base + '/api/subscribe', { method: 'POST', headers: json, body: JSON.stringify({ email: 'mona@example.com', lang: 'ar' }) });
+  assert.deepEqual(await res.json(), { ok: true });
+  assert.deepEqual(sent.at(-1), { kind: 'subscribe', email: 'mona@example.com', lang: 'ar' });
+  res = await fetch(base + '/api/subscribe', { method: 'POST', redirect: 'manual', headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'text/html' }, body: 'email=bad' });
+  assert.equal(res.status, 303);
+  assert.equal(res.headers.get('location'), '/journal/?sent=0');
+});
+
 test('enquiry API: json, honeypot, form redirect', async () => {
   const json = { 'Content-Type': 'application/json', Accept: 'application/json' };
   let res = await fetch(base + '/api/enquiry', { method: 'POST', headers: json, body: JSON.stringify({ name: 'Mona', brand: 'Atelier', email: 'mona@example.com', category: 'fashion' }) });
   assert.equal(res.status, 200);
   assert.deepEqual(await res.json(), { ok: true });
-  assert.equal(sent.length, 1);
+  assert.equal(sent.filter((v) => v.kind === 'leasing').length, 1);
 
   res = await fetch(base + '/api/enquiry', { method: 'POST', headers: json, body: JSON.stringify({ name: '', email: 'x' }) });
   assert.equal(res.status, 422);
@@ -81,9 +116,9 @@ test('enquiry API: json, honeypot, form redirect', async () => {
 
   res = await fetch(base + '/api/enquiry', { method: 'POST', headers: json, body: JSON.stringify({ website: 'spam', name: 'x' }) });
   assert.equal(res.status, 200);
-  assert.equal(sent.length, 1, 'honeypot submissions are not delivered');
+  assert.equal(sent.filter((v) => v.kind === 'leasing').length, 1, 'honeypot submissions are not delivered');
 
   res = await fetch(base + '/api/enquiry', { method: 'POST', redirect: 'manual', headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'text/html' }, body: 'name=Mona&brand=Atelier&email=mona%40example.com&category=fnb&lang=ar' });
   assert.equal(res.status, 303);
-  assert.equal(res.headers.get('location'), '/ar/leasing/?sent=1#enquire');
+  assert.equal(res.headers.get('location'), '/ar/leasing/?sent=1');
 });
