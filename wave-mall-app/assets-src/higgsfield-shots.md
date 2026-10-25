@@ -25,3 +25,11 @@ The leaf sculpture is replaced everywhere by the A-V ligature of the mark in for
 patinated bronze on a travertine plinth on the stair landing (assets-src/ligature.jpg,
 media c1ad7249-7f40-4978-8a4b-105f10bbacc8). Images that were not the building itself
 (court, abstract ribbon, boutique, cafe, steps, lounge) are removed from the site.
+
+## Round 4: the identity wordmark on the rooftop sign
+
+Higgsfield could not draw the A–V ligature exactly, so each sign view was edited to leave
+the steel frame empty (`hf/frames/`). `scripts/mount-sign.py` then mounts the wordmark from
+`src/logo-paths.json` on the frame, sized to the frame in each view, with sunlit returns by
+day and a warm internal glow at dusk and night. `night.webp` replaces the client's
+reference photograph, which carried generic lettering.

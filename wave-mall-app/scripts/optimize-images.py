@@ -18,7 +18,7 @@ POSTS = ROOT / "wave-posts" / "visuals"
 IMAGES = {
     # The Wave: the client's night photograph and Higgsfield photographs built from it and from
     # the presentation renders. The rooftop frame sign is the only logo on the building.
-    "night": (SRC / "reference-night.webp", False),
+    "night": (SRC / "hf/night.webp", False),
     "morning": (SRC / "hf/morning.webp", False),
     "golden": (SRC / "hf/golden.webp", False),
     "plaza": (SRC / "hf/plaza.webp", False),

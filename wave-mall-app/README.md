@@ -62,7 +62,7 @@ The app reads `PORT` from the environment (Hostinger sets it) and trusts one pro
 - Pages and sections: `src/pages.js`; shell, head, header, footer: `src/render.js`.
 - Styles: `public/css/site.css`. Motion and navigation: `public/js/site.js`.
 - Logo: `src/logo-paths.json` (vector paths pulled from the identity PDF), rendered inline so every letter can animate.
-- Images: `assets-src/reference-night.webp` is the client's night photograph; `assets-src/hf/` are Higgsfield photographs built from it and from the presentation renders (morning, golden hour, plaza, corner, tower, court, details). The rooftop frame sign is the only logo on the building. Rebuild with `python3 scripts/optimize-images.py`.
+- Images: `assets-src/reference-night.webp` is the client's night photograph; `assets-src/hf/` are Higgsfield photographs built from it and from the presentation renders (morning, golden hour, plaza, corner, tower, court, details). The rooftop frame sign is the only logo on the building, and it is the exact identity wordmark: Higgsfield produced each view with the steel frame empty (`assets-src/hf/frames/`), then `scripts/mount-sign.py` mounts the vector logo on the frame (daylight letters or lit at night). Rebuild with `python3 scripts/optimize-images.py`.
 
 ## Brand
 
