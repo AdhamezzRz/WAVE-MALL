@@ -14,3 +14,8 @@ Model: gpt_image_2_5, quality high, 2k.
 4. corner-day: corner render as a real photo, morning, no facade sign, rooftop sign visible if in view. 16:9
 5. vertical-night: 9:16 crop-like view of the sign and lit ribbons for mobile hero. 9:16
 6. court: inside the open court looking up between the wings, daylight. 4:5
+
+## Round 2 (25 Oct 2026): full set of angles, from the architect's renders
+aerial-day, aerial-night (sign on the FRONT wing roof above the open centre), corner-dusk,
+axis (up the central stair), stone (portal block), lounge (front-wing terrace), north90
+(full length at dusk), sculpture (the leaf on the stair), shopfronts (plaza terraces).

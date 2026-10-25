@@ -161,7 +161,7 @@ function building(lang, ctx) {
   const [g1, g2, g3, g4] = b.gallery;
   const body = `
 ${opener(c.nav[1][1], b.hero, null)}
-<section class="wide">${frame('corner', g3.cap, { cls: 'frame--wide', cap: g3.cap })}</section>
+<section class="wide">${frame(g3.img, g3.cap, { cls: 'frame--wide', cap: g3.cap })}</section>
 <section class="statement"><div class="wrap"><p class="statement__text" data-rise>${esc(b.intro)}</p></div></section>
 <section class="gallery"><div class="wrap gallery__grid">
   ${frame(g1.img, g1.cap, { cls: 'gallery__a', cap: g1.cap, sizes: '(min-width: 900px) 45vw, 100vw' })}
@@ -177,7 +177,7 @@ ${directory(lang)}
 </section>
 <section class="cta cta--sand"><div class="wrap cta__grid">${label(c.home.lease.kicker)}<p class="cta__text" data-rise>${esc(c.home.lease.text)}</p>${link(p(lang, '/leasing/'), c.home.lease.more, 'link--big')}</div></section>`;
   const jsonld = [crumbsLd([[p(lang, '/'), c.crumbs.home], [p(lang, '/the-wave/'), c.nav[1][1]]], base(ctx))];
-  return layout({ lang, pathname: p(lang, '/the-wave/'), title: b.title, description: b.description, body, image: 'corner', seo: { image: 'corner', jsonld }, ...ctx });
+  return layout({ lang, pathname: p(lang, '/the-wave/'), title: b.title, description: b.description, body, image: 'aerial', seo: { image: 'aerial', jsonld }, ...ctx });
 }
 
 /* ---------- experience ---------- */
@@ -221,6 +221,7 @@ function leasing(lang, ctx) {
   const body = `
 ${opener(c.nav[3][1], L.hero, L.intro)}
 <section class="figs figs--3"><div class="wrap"><ul class="figs__list">${why}</ul></div></section>
+<section class="wide wide--pad">${frame('axis', lang === 'en' ? 'The plaza stair and shopfronts' : 'درج الساحة والواجهات', { cls: 'frame--wide', cap: lang === 'en' ? 'The plaza stair and shopfronts' : 'درج الساحة والواجهات' })}</section>
 <section class="schedule" data-schedule>
   <div class="wrap">
     <div class="tabs" role="tablist">
@@ -266,6 +267,7 @@ function visit(lang, ctx) {
 ${opener(c.nav[5][1], v.hero, v.intro)}
 <section class="map"><div class="wrap"><div class="map__frame" data-wipe><div class="frame__clip">${picture('map', v.mapAlt, { sizes: '100vw' })}</div><div class="map__pins" data-pins>${pins}</div></div>
 <div class="map__foot"><address class="label">${esc(v.address)}</address>${link(mapUrl, v.button, '', 'target="_blank" rel="noopener"')}</div></div></section>
+<section class="wide">${frame('north90', c.building.gallery[3].cap, { cls: 'frame--wide', cap: c.building.gallery[3].cap })}</section>
 <section class="rows"><div class="wrap rows__list">${rows}</div></section>`;
   const jsonld = [crumbsLd([[p(lang, '/'), c.crumbs.home], [p(lang, '/visit/'), c.nav[5][1]]], base(ctx))];
   return layout({ lang, pathname: p(lang, '/visit/'), title: v.title, description: v.description, body, seo: { image: 'plaza', jsonld }, ...ctx });

@@ -101,7 +101,7 @@ Ground-floor shopfronts open directly onto a plaza of terraces and shallow steps
   {
     slug: 'a-day-at-the-wave',
     date: '2026-10-05',
-    img: 'terrace',
+    img: 'axis',
     tag: { en: 'Lifestyle', ar: 'أسلوب الحياة' },
     en: {
       title: 'A day at The Wave',
@@ -153,7 +153,7 @@ After dark the balconies become lines of light. Dinner on the terrace, dessert o
   {
     slug: 'north-90-a-short-guide',
     date: '2026-09-26',
-    img: 'map',
+    img: 'north90',
     tag: { en: 'Neighbourhood', ar: 'الحي' },
     en: {
       title: 'North 90, a short guide',

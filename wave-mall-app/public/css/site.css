@@ -185,6 +185,7 @@ html.js [data-hero-kicker], html.js [data-hero-meta] { clip-path: inset(0 100% 0
 .frame figcaption { margin-top: .9rem; }
 .frame--wide .frame__clip { aspect-ratio: 16 / 8; }
 .wide { padding-inline: var(--gut); max-width: var(--wrap); margin-inline: auto; }
+.wide--pad, .map + .wide { padding-bottom: clamp(4rem, 10vh, 7rem); }
 
 /* ---------- sections ---------- */
 .opener { padding-top: calc(var(--top-h) + clamp(4rem, 16vh, 12rem)); padding-bottom: clamp(3rem, 9vh, 7rem); }
