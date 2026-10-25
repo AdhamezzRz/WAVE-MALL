@@ -66,4 +66,4 @@ The app reads `PORT` from the environment (Hostinger sets it) and trusts one pro
 
 ## Brand
 
-White (`#fbfaf6`) ground with forest `#283833` ink; forest is used as the highlight (leasing band, active floor). Type: Bodoni Moda for display, Montserrat (the identity's typeface) for the header and menu, Archivo for labels, IBM Plex Sans Arabic for Arabic. Sea glass and cocoa appear only inside photographs.
+White (`#fbfaf6`) ground with forest `#283833` ink; forest is used as the highlight (leasing band, active floor). Type: Bodoni Moda for display, Montserrat (the identity's typeface) for the header and menu, Archivo for labels, Amiri (a high-contrast Naskh, the Arabic partner of the Didone) for Arabic headlines and Almarai for Arabic text. Sea glass and cocoa appear only inside photographs.

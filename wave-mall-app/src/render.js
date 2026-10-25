@@ -211,7 +211,7 @@ ${seo.published ? `<meta property="article:published_time" content="${seo.publis
 <link rel="preload" href="/fonts/BodoniModa-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/Archivo-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/Montserrat-var.woff2" as="font" type="font/woff2" crossorigin>
-${lang === 'ar' ? '<link rel="preload" href="/fonts/PlexArabic-400.woff2" as="font" type="font/woff2" crossorigin>' : ''}
+${lang === 'ar' ? '<link rel="preload" href="/fonts/Amiri-400.woff2" as="font" type="font/woff2" crossorigin>\n<link rel="preload" href="/fonts/Almarai-300.woff2" as="font" type="font/woff2" crossorigin>' : ''}
 ${image ? `<link rel="preload" as="image" href="/img/${image}-1080.webp" imagesrcset="${srcset(image)}" imagesizes="100vw">` : ''}
 <link rel="stylesheet" href="/css/site.css?v=${ASSET_V.css}">
 <script nonce="${nonce}">document.documentElement.classList.add('js');</script>

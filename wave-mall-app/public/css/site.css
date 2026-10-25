@@ -1,15 +1,18 @@
 /* The Wave, New Cairo.
    White ground, forest ink and highlights, the Didone of the mark for display, Archivo (wide) for labels,
    Montserrat (the identity's typeface) for the header and menu.
+   Arabic: Amiri, a high-contrast Naskh, for display (the partner of the Didone); Almarai for text.
    The building's hourglass plan is the one recurring shape. No fades: masks, wipes and lines. */
 
 @font-face { font-family: 'Bodoni Moda'; font-weight: 400 700; font-display: swap; src: url(/fonts/BodoniModa-normal.woff2) format('woff2'); }
 @font-face { font-family: 'Bodoni Moda'; font-style: italic; font-weight: 400 700; font-display: swap; src: url(/fonts/BodoniModa-italic.woff2) format('woff2'); }
 @font-face { font-family: 'Archivo'; font-weight: 100 900; font-stretch: 62% 125%; font-display: swap; src: url(/fonts/Archivo-var.woff2) format('woff2'); }
 @font-face { font-family: 'Montserrat'; font-weight: 100 900; font-display: swap; src: url(/fonts/Montserrat-var.woff2) format('woff2'); }
-@font-face { font-family: 'Plex Arabic'; font-weight: 300; font-display: swap; src: url(/fonts/PlexArabic-300.woff2) format('woff2'); }
-@font-face { font-family: 'Plex Arabic'; font-weight: 400; font-display: swap; src: url(/fonts/PlexArabic-400.woff2) format('woff2'); }
-@font-face { font-family: 'Plex Arabic'; font-weight: 500; font-display: swap; src: url(/fonts/PlexArabic-500.woff2) format('woff2'); }
+@font-face { font-family: 'Amiri'; font-weight: 400; font-display: swap; src: url(/fonts/Amiri-400.woff2) format('woff2'); }
+@font-face { font-family: 'Amiri'; font-weight: 700; font-display: swap; src: url(/fonts/Amiri-700.woff2) format('woff2'); }
+@font-face { font-family: 'Almarai'; font-weight: 300; font-display: swap; src: url(/fonts/Almarai-300.woff2) format('woff2'); }
+@font-face { font-family: 'Almarai'; font-weight: 400; font-display: swap; src: url(/fonts/Almarai-400.woff2) format('woff2'); }
+@font-face { font-family: 'Almarai'; font-weight: 700; font-display: swap; src: url(/fonts/Almarai-700.woff2) format('woff2'); }
 
 :root {
   --forest: #283833;
@@ -32,6 +35,8 @@
   --serif: 'Bodoni Moda', 'Didot', Georgia, serif;
   --sans: 'Archivo', system-ui, sans-serif;
   --nav: 'Montserrat', system-ui, sans-serif;
+  --ar-display: 'Amiri', 'Times New Roman', serif;
+  --ar-text: 'Almarai', system-ui, sans-serif;
   --gut: clamp(20px, 5.5vw, 96px);
   --wrap: 1600px;
   --top-h: 76px;
@@ -86,9 +91,12 @@ address { font-style: normal; }
 .btn .arrow { width: 1.4em; height: 1.4em; }
 .btn[disabled] { pointer-events: none; opacity: .5; }
 
-html[lang='ar'] body, html[lang='ar'] .lead, html[lang='ar'] .label, html[lang='ar'] .link, html[lang='ar'] .btn { font-family: 'Plex Arabic', var(--sans); letter-spacing: 0; }
-html[lang='ar'] .label { font-size: .8rem; }
-html[lang='ar'] .title, html[lang='ar'] .statement__text, html[lang='ar'] .cta__text, html[lang='ar'] .card__title, html[lang='ar'] .prose, html[lang='ar'] .menu__nav span, html[lang='ar'] .hour__text, html[lang='ar'] .scene h3, html[lang='ar'] .fig__text, html[lang='ar'] .foot__line { font-family: 'Plex Arabic', var(--sans); font-weight: 300; letter-spacing: 0; font-style: normal; }
+html[lang='ar'] body, html[lang='ar'] .lead, html[lang='ar'] .label, html[lang='ar'] .link, html[lang='ar'] .btn, html[lang='ar'] .fig__text { font-family: var(--ar-text); letter-spacing: 0; }
+html[lang='ar'] .label { font-size: .78rem; font-weight: 400; }
+html[lang='ar'] .lead, html[lang='ar'] .fig__text { font-weight: 300; line-height: 1.85; }
+html[lang='ar'] .title, html[lang='ar'] .statement__text, html[lang='ar'] .cta__text, html[lang='ar'] .card__title, html[lang='ar'] .scene h3, html[lang='ar'] .foot__line, html[lang='ar'] .nf__floor, html[lang='ar'] .hour__text, html[lang='ar'] .list__items li, html[lang='ar'] .faq summary, html[lang='ar'] .dir__btn b, html[lang='ar'] .prose h2, html[lang='ar'] .prose blockquote { font-family: var(--ar-display); font-weight: 400; letter-spacing: 0; font-style: normal; line-height: 1.35; }
+html[lang='ar'] .fig__num, html[lang='ar'] .dir__big { font-family: var(--ar-display); letter-spacing: 0; }
+html[lang='ar'] .prose { font-family: var(--ar-display); font-size: clamp(1.2rem, 1.45vw, 1.38rem); line-height: 2; }
 html[lang='ar'] .title em { font-style: normal; color: var(--ink-70); }
 
 /* ---------- header ---------- */
@@ -115,7 +123,7 @@ html.is-pre .top__brand { visibility: hidden; }
 .top__menu:hover .burger b:last-child { width: 100%; }
 .top__menu[aria-expanded='true'] .burger b:first-child { transform: translateY(3px) rotate(45deg); }
 .top__menu[aria-expanded='true'] .burger b:last-child { width: 100%; transform: translateY(-3px) rotate(-45deg); }
-html[lang='ar'] .top__nav a, html[lang='ar'] .top__link, html[lang='ar'] .top__menu { font-family: 'Plex Arabic', var(--sans); font-weight: 400; letter-spacing: 0; font-size: .86rem; }
+html[lang='ar'] .top__nav a, html[lang='ar'] .top__link, html[lang='ar'] .top__menu { font-family: var(--ar-text); font-weight: 400; letter-spacing: 0; font-size: .84rem; }
 html[lang='ar'] .top__lang { font-family: var(--nav); font-size: .7rem; letter-spacing: .16em; }
 
 /* the lift display: current floor */
@@ -156,8 +164,8 @@ html[lang='ar'] .top__lang { font-family: var(--nav); font-size: .7rem; letter-s
 .menu__foot a { border-bottom: 1px solid var(--rule); transition: border-color .6s var(--ease); }
 .menu__foot a:hover { border-color: currentColor; }
 .menu__lang { align-self: end; }
-html[lang='ar'] .menu__nav small, html[lang='ar'] .menu__name span { font-family: 'Plex Arabic', var(--sans); letter-spacing: 0; }
-html[lang='ar'] .menu__name span { font-weight: 300; }
+html[lang='ar'] .menu__nav small { font-family: var(--ar-text); letter-spacing: 0; }
+html[lang='ar'] .menu__name span { font-family: var(--ar-display); font-weight: 400; letter-spacing: 0; line-height: 1.3; }
 html[lang='ar'] .menu__nav small { font-size: .75rem; text-transform: none; }
 
 /* ---------- curtain (page change) ---------- */
@@ -176,7 +184,7 @@ html.js .pre { display: grid; }
 .pre__rule { display: block; width: clamp(110px, 12vw, 160px); height: 1px; background: rgb(40 56 51 / .14); overflow: hidden; }
 .pre__rule i { display: block; height: 100%; background: currentColor; transform: scaleX(0); }
 .pre__place { font: 500 .6rem/1 var(--nav); letter-spacing: .32em; text-transform: uppercase; color: var(--ink-70); clip-path: inset(0 0 100% 0); }
-html[lang='ar'] .pre__place { font-family: 'Plex Arabic', var(--sans); letter-spacing: 0; font-size: .8rem; }
+html[lang='ar'] .pre__place { font-family: var(--ar-text); letter-spacing: 0; font-size: .8rem; }
 
 /* ---------- hero: the building from morning to night ---------- */
 .hero { position: relative; height: 100svh; min-height: 580px; overflow: hidden; color: var(--paper); background: var(--forest); }
@@ -205,8 +213,8 @@ html.js .hero__window { display: block; }
 .hero__times i { display: block; height: 1px; margin-top: .3rem; background: rgb(251 250 246 / .25); }
 .hero__times u { display: block; height: 100%; background: var(--paper); transform: scaleX(0); transform-origin: left; }
 [dir='rtl'] .hero__times u { transform-origin: right; }
-html[lang='ar'] .hero__times span, html[lang='ar'] .hero__kicker { font-family: 'Plex Arabic', var(--sans); letter-spacing: 0; text-transform: none; font-size: .78rem; }
-html[lang='ar'] .title--hero { font-family: 'Plex Arabic', var(--sans); font-weight: 300; letter-spacing: 0; }
+html[lang='ar'] .hero__times span, html[lang='ar'] .hero__kicker { font-family: var(--ar-text); letter-spacing: 0; text-transform: none; font-size: .78rem; }
+html[lang='ar'] .title--hero { font-family: var(--ar-display); font-weight: 400; letter-spacing: 0; line-height: 1.2; }
 html[lang='ar'] .title--hero em { color: rgb(251 250 246 / .78); }
 .hero__scroll { display: none; align-items: center; gap: .9rem; color: var(--paper); font-family: var(--nav); font-weight: 500; }
 .hero__scroll i { position: relative; width: 1px; height: 2.4rem; overflow: hidden; background: rgb(251 250 246 / .3); }
@@ -385,7 +393,7 @@ html.js [data-hero-kicker], html.js .hero__foot { clip-path: inset(0 100% 0 0); 
 .form__foot { display: flex; flex-wrap: wrap; align-items: center; gap: 1.4rem 2rem; }
 .status { font: 300 .95rem/1.5 var(--sans); padding: 1em 1.2em; border: 1px solid var(--rule); }
 .status--err { border-color: var(--seaglass); }
-html[lang='ar'] .field input, html[lang='ar'] .field textarea, html[lang='ar'] .field select { font-family: 'Plex Arabic', var(--sans); font-weight: 300; }
+html[lang='ar'] .field input, html[lang='ar'] .field textarea, html[lang='ar'] .field select { font-family: var(--ar-text); font-weight: 300; }
 
 /* ---------- visit ---------- */
 .map { padding-bottom: clamp(4rem, 10vh, 7rem); }
