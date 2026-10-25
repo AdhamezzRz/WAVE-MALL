@@ -19,3 +19,9 @@ Model: gpt_image_2_5, quality high, 2k.
 aerial-day, aerial-night (sign on the FRONT wing roof above the open centre), corner-dusk,
 axis (up the central stair), stone (portal block), lounge (front-wing terrace), north90
 (full length at dusk), sculpture (the leaf on the stair), shopfronts (plaza terraces).
+
+## Round 3 (25 Oct 2026)
+The leaf sculpture is replaced everywhere by the A-V ligature of the mark in forest-green
+patinated bronze on a travertine plinth on the stair landing (assets-src/ligature.jpg,
+media c1ad7249-7f40-4978-8a4b-105f10bbacc8). Images that were not the building itself
+(court, abstract ribbon, boutique, cafe, steps, lounge) are removed from the site.

@@ -87,15 +87,6 @@ function home(lang, ctx) {
     .join('');
   const latest = journal.sorted().slice(0, 2);
 
-  const lights = h.lights.items
-    .map(
-      (it, i) => `<figure class="lights__slide" data-light="${i}">${picture(it.img, `${c.brand} · ${it.name}`, { eager: i === 0, sizes: '100vw' })}</figure>`,
-    )
-    .join('');
-  const lightsText = h.lights.items
-    .map((it, i) => `<li data-light-text="${i}" ${i ? '' : 'class="is-on"'}><span class="lights__time">${esc(it.time)}</span><span class="lights__name">${esc(it.name)}</span><span class="lights__text">${esc(it.text)}</span></li>`)
-    .join('');
-
   const body = `
 <section class="hero" data-hero>
   <div class="wrap hero__head">
@@ -108,16 +99,7 @@ function home(lang, ctx) {
   </div>
 </section>
 
-<section class="lights" data-lights>
-  <div class="lights__stage">
-    <div class="lights__slides">${lights}</div>
-    <div class="lights__ui">
-      <p class="label">${esc(h.lights.kicker)}</p>
-      <ol class="lights__list">${lightsText}</ol>
-      <div class="lights__bar" aria-hidden="true"><i data-lights-bar></i></div>
-    </div>
-  </div>
-</section>
+
 
 <section class="statement" id="statement"><div class="wrap"><p class="statement__text" data-rise>${esc(h.statement)}</p></div></section>
 
@@ -200,7 +182,7 @@ ${opener(c.nav[2][1], e.hero, null)}
 <section class="hours"><div class="wrap">${chapters}</div></section>
 <section class="list"><div class="wrap list__grid">${label(e.list.title)}<ol class="list__items">${list}</ol><p class="label list__note">${esc(e.note)}</p></div></section>`;
   const jsonld = [crumbsLd([[p(lang, '/'), c.crumbs.home], [p(lang, '/experience/'), c.nav[2][1]]], base(ctx))];
-  return layout({ lang, pathname: p(lang, '/experience/'), title: e.title, description: e.description, body, image: null, seo: { image: 'terrace', jsonld }, ...ctx });
+  return layout({ lang, pathname: p(lang, '/experience/'), title: e.title, description: e.description, body, image: null, seo: { image: 'axis', jsonld }, ...ctx });
 }
 
 /* ---------- leasing ---------- */
@@ -253,7 +235,7 @@ ${opener(c.nav[3][1], L.hero, L.intro)}
   </div>
 </section>`;
   const jsonld = [crumbsLd([[p(lang, '/'), c.crumbs.home], [p(lang, '/leasing/'), c.nav[3][1]]], base(ctx))];
-  return layout({ lang, pathname: p(lang, '/leasing/'), title: L.title, description: L.description, body, seo: { image: 'boutique', jsonld }, ...ctx });
+  return layout({ lang, pathname: p(lang, '/leasing/'), title: L.title, description: L.description, body, seo: { image: 'shopfronts', jsonld }, ...ctx });
 }
 
 /* ---------- visit ---------- */

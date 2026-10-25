@@ -60,8 +60,8 @@ const content = {
       ],
       scenes: [
         { img: 'shopfronts', name: 'Shop', text: 'Sixteen shopfronts on the plaza, each with its own terrace.' },
-        { img: 'lounge', name: 'Dine', text: 'The lounge terrace, looking over the plaza at sunset.' },
-        { img: 'sculpture', name: 'Stay', text: 'The leaf on the stair, at the heart of the plaza.' },
+        { img: 'plaza', name: 'Dine', text: 'Cafés under the sails, the stair lit up at dusk.' },
+        { img: 'sculpture', name: 'Stay', text: 'Our mark in bronze, at the heart of the plaza stair.' },
       ],
       directory: { kicker: 'Floor by floor', title: 'From the parking to the roof.', more: 'Explore the building' },
       place: { kicker: 'North 90, First Sector', text: 'Between the two Teseen roads. Banks, offices and two hospitals next door; the monorail a short walk away.', more: 'Plan your visit' },
@@ -75,7 +75,7 @@ const content = {
       hero: { a: 'Two wings,', b: 'one court.' },
       intro: 'The plan is an hourglass: two wings that curve towards each other around an open court. Every floor is edged by a ribbon balcony that follows the curve.',
       gallery: [
-        { img: 'court', cap: 'Inside the court' },
+        { img: 'sculpture', cap: 'Our mark in bronze on the plaza stair' },
         { img: 'tower', cap: 'The rooftop sign at night' },
         { img: 'aerial', cap: 'The Wave from above' },
         { img: 'north90', cap: 'The full length of North 90 at dusk' },
@@ -90,8 +90,8 @@ const content = {
       hero: { a: 'Slow mornings,', b: 'golden evenings.' },
       chapters: [
         { img: 'axis', time: '09:00', name: 'Morning', text: 'Coffee under the sails on the plaza, before the city gets loud.' },
-        { img: 'boutique', time: '12:00', name: 'Midday', text: 'Fashion, beauty and the things you keep, in rooms built around stone and light.' },
-        { img: 'lounge', time: '17:00', name: 'Golden hour', text: 'The plaza steps face west. This is the hour the building was drawn for.' },
+        { img: 'shopfronts', time: '12:00', name: 'Midday', text: 'Fashion, beauty and the things you keep, in rooms built around stone and light.' },
+        { img: 'golden', time: '17:00', name: 'Golden hour', text: 'The plaza steps face west. This is the hour the building was drawn for.' },
         { img: 'aerialnight', time: '21:00', name: 'Evening', text: 'Dinner on the terraces while the ribbons glow.' },
       ],
       note: 'The opening line-up will be announced in the Journal.',
@@ -190,8 +190,8 @@ const content = {
       ],
       scenes: [
         { img: 'shopfronts', name: 'تسوّق', text: 'ستة عشر محلاً على الساحة، لكل منها تراسه.' },
-        { img: 'lounge', name: 'تناول', text: 'تراس الاستراحة المطل على الساحة وقت الغروب.' },
-        { img: 'sculpture', name: 'ابقَ', text: 'الورقة على الدرج، في قلب الساحة.' },
+        { img: 'plaza', name: 'تناول', text: 'مقاهٍ تحت المظلات، والدرج مضاء عند الغسق.' },
+        { img: 'sculpture', name: 'ابقَ', text: 'شعارنا من البرونز، في قلب درج الساحة.' },
       ],
       directory: { kicker: 'طابقاً طابقاً', title: 'من المواقف إلى السطح.', more: 'استكشف المبنى' },
       place: { kicker: 'التسعين الشمالي، القطاع الأول', text: 'بين طريقي التسعين. بنوك ومكاتب ومستشفيان بجوارنا، والمونوريل على بُعد خطوات.', more: 'خطط لزيارتك' },
@@ -205,7 +205,7 @@ const content = {
       hero: { a: 'جناحان،', b: 'وساحة واحدة.' },
       intro: 'المخطط على شكل ساعة رملية: جناحان ينحنيان نحو بعضهما حول ساحة مفتوحة. وكل طابق تحده شرفة شريطية تتبع المنحنى.',
       gallery: [
-        { img: 'court', cap: 'داخل الساحة' },
+        { img: 'sculpture', cap: 'شعارنا من البرونز على درج الساحة' },
         { img: 'tower', cap: 'اللافتة على السطح ليلاً' },
         { img: 'aerial', cap: 'ذا ويف من الأعلى' },
         { img: 'north90', cap: 'الواجهة على التسعين الشمالي عند الغسق' },
@@ -220,8 +220,8 @@ const content = {
       hero: { a: 'صباحات هادئة،', b: 'وأمسيات ذهبية.' },
       chapters: [
         { img: 'axis', time: '09:00', name: 'الصباح', text: 'قهوة تحت المظلات في الساحة، قبل أن تعلو المدينة.' },
-        { img: 'boutique', time: '12:00', name: 'الظهيرة', text: 'الموضة والجمال والأشياء التي تحتفظ بها، في غرف بُنيت حول الحجر والضوء.' },
-        { img: 'lounge', time: '17:00', name: 'الساعة الذهبية', text: 'درج الساحة يواجه الغرب. هذه هي الساعة التي رُسم المبنى من أجلها.' },
+        { img: 'shopfronts', time: '12:00', name: 'الظهيرة', text: 'الموضة والجمال والأشياء التي تحتفظ بها، في غرف بُنيت حول الحجر والضوء.' },
+        { img: 'golden', time: '17:00', name: 'الساعة الذهبية', text: 'درج الساحة يواجه الغرب. هذه هي الساعة التي رُسم المبنى من أجلها.' },
         { img: 'aerialnight', time: '21:00', name: 'المساء', text: 'عشاء على التراسات بينما تتوهج الشرائط.' },
       ],
       note: 'تُعلن قائمة الافتتاح في المدونة.',

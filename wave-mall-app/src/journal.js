@@ -7,7 +7,7 @@ const posts = [
   {
     slug: 'the-story-behind-our-mark',
     date: '2026-10-20',
-    img: 'ribbon',
+    img: 'sculpture',
     tag: { en: 'Identity', ar: 'الهوية' },
     en: {
       title: 'The story behind our mark',
@@ -53,7 +53,7 @@ Repeat the A–V ligature, offset every second row, and you get a pattern that r
   {
     slug: 'designed-to-flow',
     date: '2026-10-12',
-    img: 'court',
+    img: 'cornerdusk',
     tag: { en: 'Architecture', ar: 'العمارة' },
     en: {
       title: 'Designed to flow',
@@ -197,7 +197,7 @@ The East Nile monorail runs along South 90, with the Air Force Hospital station 
   {
     slug: 'the-autumn-edit',
     date: '2026-09-18',
-    img: 'steps',
+    img: 'shopfronts',
     tag: { en: 'Style', ar: 'الأناقة' },
     en: {
       title: 'The Autumn Edit, Vol. 01',

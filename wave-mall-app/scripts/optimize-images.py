@@ -22,24 +22,15 @@ IMAGES = {
     "morning": (SRC / "hf/morning.webp", False),
     "golden": (SRC / "hf/golden.webp", False),
     "plaza": (SRC / "hf/plaza.webp", False),
-    "corner": (SRC / "hf/corner-day.webp", False),
     "tower": (SRC / "hf/night-vertical.webp", False),
-    "court": (SRC / "hf/court.webp", False),
     "aerial": (SRC / "hf/aerial-day.webp", False),
     "aerialnight": (SRC / "hf/aerial-night.webp", False),
     "cornerdusk": (SRC / "hf/corner-dusk.webp", False),
     "axis": (SRC / "hf/axis.webp", False),
-    "stone": (SRC / "hf/stone.webp", False),
-    "lounge": (SRC / "hf/lounge.webp", False),
     "north90": (SRC / "hf/north90.webp", False),
     "sculpture": (SRC / "hf/sculpture.webp", False),
     "shopfronts": (SRC / "hf/shopfronts.webp", False),
     "map": (SRC / "map.webp", "map"),
-    # details and life on the plaza
-    "ribbon": (SRC / "hf/ribbon.webp", False),
-    "boutique": (SRC / "hf/boutique.webp", False),
-    "steps": (SRC / "hf/steps.webp", False),
-    "terrace": (POSTS / "terrace-cafe.png", False),
 }
 WIDTHS = (640, 1080, 1600, 2400)
 
