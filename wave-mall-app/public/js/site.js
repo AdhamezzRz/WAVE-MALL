@@ -517,6 +517,8 @@
     outTl.eventCallback('onComplete', () => { navigating = false; });
   }
 
+  // Static exports (no server) set data-static on <html>: plain navigation, no fetch-and-swap.
+  const STATIC = root.hasAttribute('data-static');
   D.addEventListener('click', (e) => {
     const a = e.target.closest('a[href]');
     if (!a) return;
@@ -535,11 +537,11 @@
     if (url.pathname.startsWith('/api/')) return;
     const toAr = url.pathname === '/ar' || url.pathname.startsWith('/ar/');
     if (toAr !== (root.lang === 'ar')) return;
-    if (RM || !curtain) return;
+    if (RM || !curtain || STATIC) return;
     e.preventDefault();
     navigate(url.href, true);
   });
-  W.addEventListener('popstate', () => { if (!RM && curtain) navigate(location.href, false); else location.reload(); });
+  W.addEventListener('popstate', () => { if (!RM && curtain && !STATIC) navigate(location.href, false); else location.reload(); });
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
   const topBtn = $('[data-top]');
