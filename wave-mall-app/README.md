@@ -14,7 +14,7 @@ npm run package    # builds release/the-wave-website.zip for Hostinger
 
 | English | Arabic | What |
 | --- | --- | --- |
-| `/` | `/ar/` | Preloader, the building by day, one building in three lights (17:30 / 19:00 / 21:00), figures, scenes, plan, place, journal |
+| `/` | `/ar/` | Preloader, the building in the morning, then sunset to night (17:30 / 19:30 / 22:00), figures, scenes, plan, place, journal |
 | `/the-wave/` | `/ar/the-wave/` | The building, gallery, interactive floor directory (R to B2), the mark |
 | `/experience/` | `/ar/experience/` | A day from 09:00 to 21:00, what you will find |
 | `/leasing/` | `/ar/leasing/` | Plaza and street-level unit schedules linked to the plan, enquiry form |
@@ -62,7 +62,7 @@ The app reads `PORT` from the environment (Hostinger sets it) and trusts one pro
 - Pages and sections: `src/pages.js`; shell, head, header, footer: `src/render.js`.
 - Styles: `public/css/site.css`. Motion and navigation: `public/js/site.js`.
 - Logo: `src/logo-paths.json` (vector paths pulled from the identity PDF), rendered inline so every letter can animate.
-- Images: `assets-src/day|golden|night.webp` are the photoreal mockups of the real building (from the client's site photos) and `assets-src/render-*.webp` the presentation renders, all with the official wordmark mounted by `python3 scripts/sign.py`; `assets-src/hf/` are photographs generated with Higgsfield for this site; `assets-src/*.webp` are the client's renders (placeholder signage removed, warm-graded by the script); a few come from `../wave-posts/visuals/`. Rebuild with `python3 scripts/optimize-images.py`.
+- Images: `assets-src/reference-night.webp` is the client's night photograph; `assets-src/hf/` are Higgsfield photographs built from it and from the presentation renders (morning, golden hour, plaza, corner, tower, court, details). The rooftop frame sign is the only logo on the building. Rebuild with `python3 scripts/optimize-images.py`.
 
 ## Brand
 

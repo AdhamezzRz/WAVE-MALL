@@ -16,20 +16,23 @@ POSTS = ROOT / "wave-posts" / "visuals"
 
 # name: (source, grade the render?)
 IMAGES = {
-    # the client's photograph: the rooftop sign is the only logo on the building
+    # The Wave: the client's night photograph and Higgsfield photographs built from it and from
+    # the presentation renders. The rooftop frame sign is the only logo on the building.
     "night": (SRC / "reference-night.webp", False),
-    # the presentation renders, placeholder signage removed (no logo on the facade)
-    "aerial": (SRC / "render-aerial.webp", True),
-    "corner": (SRC / "render-dusk.webp", True),
-    "facade": (SRC / "render-day.webp", True),
+    "morning": (SRC / "hf/morning.webp", False),
+    "golden": (SRC / "hf/golden.webp", False),
+    "plaza": (SRC / "hf/plaza.webp", False),
+    "corner": (SRC / "hf/corner-day.webp", False),
+    "tower": (SRC / "hf/night-vertical.webp", False),
+    "court": (SRC / "hf/court.webp", False),
     "map": (SRC / "map.webp", "map"),
-    # details and life on the plaza (Higgsfield)
+    # details and life on the plaza
     "ribbon": (SRC / "hf/ribbon.webp", False),
     "boutique": (SRC / "hf/boutique.webp", False),
     "steps": (SRC / "hf/steps.webp", False),
     "terrace": (POSTS / "terrace-cafe.png", False),
 }
-WIDTHS = (640, 1080, 1600, 2200)
+WIDTHS = (640, 1080, 1600, 2400)
 
 
 def grade(im, mode):

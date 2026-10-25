@@ -1,4 +1,4 @@
-# Higgsfield shot list (run when the account's daily limit lifts)
+# Higgsfield shot list (generated 25 Oct 2026; kept for reshoots)
 
 Rule: the only logo on the building is the rooftop frame sign, exactly as in
 `reference-night.webp` (THE WAVE in the official serif, on an open steel frame on

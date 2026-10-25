@@ -53,7 +53,7 @@ Repeat the A–V ligature, offset every second row, and you get a pattern that r
   {
     slug: 'designed-to-flow',
     date: '2026-10-12',
-    img: 'aerial',
+    img: 'court',
     tag: { en: 'Architecture', ar: 'العمارة' },
     en: {
       title: 'Designed to flow',
@@ -241,7 +241,7 @@ Our own green, the deep palm forest of the identity, shows up this season as a b
   {
     slug: 'after-dark',
     date: '2026-09-10',
-    img: 'night',
+    img: 'tower',
     tag: { en: 'Evenings', ar: 'الأمسيات' },
     en: {
       title: 'After dark, The Wave glows',

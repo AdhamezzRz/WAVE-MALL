@@ -104,7 +104,7 @@ function home(lang, ctx) {
     <p class="label hero__meta" data-hero-meta><i></i>${esc(h.hero.meta)}</p>
   </div>
   <div class="hero__frame" data-hero-frame>
-    ${picture('night', lang === 'en' ? 'The Wave on North 90, New Cairo, at night: lit ribbon balconies and the rooftop sign.' : 'ذا ويف على التسعين الشمالي ليلاً: شرفات مضاءة واللافتة على السطح.', { eager: true, cls: 'hero__img' })}
+    ${picture('morning', lang === 'en' ? 'The Wave on North 90, New Cairo, in the morning: white ribbon balconies and the rooftop sign.' : 'ذا ويف على التسعين الشمالي صباحاً: شرفات بيضاء واللافتة على السطح.', { eager: true, cls: 'hero__img' })}
   </div>
 </section>
 
@@ -151,7 +151,7 @@ function home(lang, ctx) {
     ${link(p(lang, '/leasing/'), h.lease.more, 'link--big')}
   </div>
 </section>`;
-  return layout({ lang, pathname: p(lang, '/'), title: h.title, description: h.description, body, image: 'night', seo: { image: 'night' }, ...ctx });
+  return layout({ lang, pathname: p(lang, '/'), title: h.title, description: h.description, body, image: 'morning', seo: { image: 'morning' }, ...ctx });
 }
 
 /* ---------- the building ---------- */
@@ -268,7 +268,7 @@ ${opener(c.nav[5][1], v.hero, v.intro)}
 <div class="map__foot"><address class="label">${esc(v.address)}</address>${link(mapUrl, v.button, '', 'target="_blank" rel="noopener"')}</div></div></section>
 <section class="rows"><div class="wrap rows__list">${rows}</div></section>`;
   const jsonld = [crumbsLd([[p(lang, '/'), c.crumbs.home], [p(lang, '/visit/'), c.nav[5][1]]], base(ctx))];
-  return layout({ lang, pathname: p(lang, '/visit/'), title: v.title, description: v.description, body, seo: { image: 'aerial', jsonld }, ...ctx });
+  return layout({ lang, pathname: p(lang, '/visit/'), title: v.title, description: v.description, body, seo: { image: 'plaza', jsonld }, ...ctx });
 }
 
 /* ---------- journal ---------- */
