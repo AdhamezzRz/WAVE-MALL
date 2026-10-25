@@ -44,11 +44,11 @@ const content = {
       description: 'The Wave is a new destination on North 90, New Cairo: two curved wings around an open court, plaza shops with their own terraces, dining and long evenings. Opening soon.',
       hero: { kicker: 'North 90 · New Cairo', a: 'More than', b: 'a destination.', meta: 'Opening soon', scroll: 'Scroll' },
       lights: {
-        kicker: 'One building, three lights',
+        kicker: 'One building, from day to evening',
         items: [
-          { img: 'golden', time: '17:30', name: 'Golden hour', text: 'The curves catch the last of the sun.' },
-          { img: 'aerial', time: '19:00', name: 'Dusk', text: 'The plaza fills as the lights come on.' },
-          { img: 'night', time: '21:00', name: 'Night', text: 'Every floor becomes a line of light.' },
+          { img: 'facade', time: '11:00', name: 'Day', text: 'White ribbons against a clear sky.' },
+          { img: 'corner', time: '18:30', name: 'Dusk', text: 'The corner on North 90 as the lights come on.' },
+          { img: 'aerial', time: '20:00', name: 'Evening', text: 'The plaza fills under the sails.' },
         ],
       },
       statement: 'Two curved wings around an open court, on the busiest block in New Cairo.',
@@ -75,7 +75,7 @@ const content = {
       hero: { a: 'Two wings,', b: 'one court.' },
       intro: 'The plan is an hourglass: two wings that curve towards each other around an open court. Every floor is edged by a ribbon balcony that follows the curve.',
       gallery: [
-        { img: 'golden', cap: 'The North 90 façade at golden hour' },
+        { img: 'night', cap: 'The North 90 façade at night' },
         { img: 'ribbon', cap: 'The ribbon, after sunset' },
         { img: 'corner', cap: 'The corner at dusk · design render' },
         { img: 'aerial', cap: 'The plaza from above · design render' },
@@ -174,11 +174,11 @@ const content = {
       description: 'ذا ويف وجهة جديدة على التسعين الشمالي بالقاهرة الجديدة: جناحان منحنيان حول ساحة مفتوحة، ومحلات على الساحة بتراسات خاصة، ومطاعم وأمسيات طويلة. قريباً.',
       hero: { kicker: 'التسعين الشمالي · القاهرة الجديدة', a: 'أكثر من', b: 'وجهة.', meta: 'قريباً', scroll: 'مرر' },
       lights: {
-        kicker: 'مبنى واحد، ثلاثة أضواء',
+        kicker: 'مبنى واحد، من النهار إلى المساء',
         items: [
-          { img: 'golden', time: '17:30', name: 'الساعة الذهبية', text: 'المنحنيات تلتقط آخر الشمس.' },
-          { img: 'aerial', time: '19:00', name: 'الغسق', text: 'الساحة تمتلئ مع إضاءة الأنوار.' },
-          { img: 'night', time: '21:00', name: 'الليل', text: 'كل طابق يصبح خطاً من الضوء.' },
+          { img: 'facade', time: '11:00', name: 'النهار', text: 'شرائط بيضاء أمام سماء صافية.' },
+          { img: 'corner', time: '18:30', name: 'الغسق', text: 'الزاوية على التسعين الشمالي مع إضاءة الأنوار.' },
+          { img: 'aerial', time: '20:00', name: 'المساء', text: 'الساحة تمتلئ تحت المظلات.' },
         ],
       },
       statement: 'جناحان منحنيان حول ساحة مفتوحة، في أكثر كتل القاهرة الجديدة حركة.',
@@ -205,7 +205,7 @@ const content = {
       hero: { a: 'جناحان،', b: 'وساحة واحدة.' },
       intro: 'المخطط على شكل ساعة رملية: جناحان ينحنيان نحو بعضهما حول ساحة مفتوحة. وكل طابق تحده شرفة شريطية تتبع المنحنى.',
       gallery: [
-        { img: 'golden', cap: 'واجهة التسعين الشمالي وقت الغروب' },
+        { img: 'night', cap: 'واجهة التسعين الشمالي ليلاً' },
         { img: 'ribbon', cap: 'الشريط بعد الغروب' },
         { img: 'corner', cap: 'الزاوية عند الغسق · تصميم توضيحي' },
         { img: 'aerial', cap: 'الساحة من الأعلى · تصميم توضيحي' },

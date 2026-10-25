@@ -16,14 +16,12 @@ POSTS = ROOT / "wave-posts" / "visuals"
 
 # name: (source, grade the render?)
 IMAGES = {
-    # the actual building (mockups from the client's site photos, official wordmark mounted by sign.py)
-    "day": (SRC / "day.webp", False),
-    "golden": (SRC / "golden.webp", False),
-    "night": (SRC / "night.webp", False),
-    # the presentation renders, official wordmark in place of the placeholder
-    "aerial": (SRC / "render-aerial.webp", False),
-    "corner": (SRC / "render-dusk.webp", False),
-    "facade": (SRC / "render-day.webp", False),
+    # the client's photograph: the rooftop sign is the only logo on the building
+    "night": (SRC / "reference-night.webp", False),
+    # the presentation renders, placeholder signage removed (no logo on the facade)
+    "aerial": (SRC / "render-aerial.webp", True),
+    "corner": (SRC / "render-dusk.webp", True),
+    "facade": (SRC / "render-day.webp", True),
     "map": (SRC / "map.webp", "map"),
     # details and life on the plaza (Higgsfield)
     "ribbon": (SRC / "hf/ribbon.webp", False),

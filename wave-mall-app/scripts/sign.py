@@ -10,7 +10,8 @@ from PIL import Image, ImageFilter, ImageChops
 
 APP = Path(__file__).resolve().parents[1]
 SRC = APP.parent / "wave-mall-mockups/real-building/wave-only"
-LOGO = Image.open(APP / "assets-src/logo-white.png").split()[3]
+_LOGO_PNG = APP / "assets-src/logo-white.png"
+LOGO = Image.open(_LOGO_PNG).split()[3] if _LOGO_PNG.exists() else None
 
 def box_blur(a, r):
     for ax in (0, 1):
@@ -44,7 +45,7 @@ def row_fill(rgb, mask):
             out[y, m, c] = np.interp(xs[m], xs[~m], rgb[y, ~m, c])
     return out
 
-def place(name, letters, thresh, colour, angle=0.0, height=1.15, glow=0, glow_colour=None, relief=0, pad=60, dy=0, grain=0.01):
+def place(name, letters, thresh, colour, angle=0.0, height=1.15, glow=0, glow_colour=None, relief=0, pad=60, dy=0, grain=0.01, clone=0):
     im = Image.open(name if Path(name).is_absolute() else SRC / name).convert("RGB")
     x0, y0, x1, y1 = letters
     X0, Y0, X1, Y1 = x0 - pad, y0 - pad, x1 + pad, y1 + pad
@@ -63,10 +64,20 @@ def place(name, letters, thresh, colour, angle=0.0, height=1.15, glow=0, glow_co
     inner[ch // 2 - rh // 2: ch // 2 + rh // 2, cw // 2 - rw // 2: cw // 2 + rw // 2] = True
     m = inner & (lum > thresh)
     m = np.asarray(Image.fromarray((m * 255).astype(np.uint8)).filter(ImageFilter.MaxFilter(7)).filter(ImageFilter.MaxFilter(5))) > 0
-    filled = row_fill(a, m)
-    # soften the filled area slightly so it reads as continuous material
-    soft = np.stack([box_blur(box_blur(filled[..., c], 2), 2) for c in range(3)], -1)
-    filled = np.where(m[..., None], soft, filled)
+    if clone:
+        # clone stamp along the band: the cladding runs horizontally in this frame,
+        # so take real texture from beside the sign and match its tone to the row fill
+        cols = np.nonzero(m.any(0))[0]
+        span = cols.max() - cols.min() + 16
+        src = np.roll(a, -span * clone, axis=1)
+        base_fill = row_fill(a, m)
+        lo = np.stack([box_blur(box_blur(src[..., c], 6), 6) for c in range(3)], -1)
+        lo_t = np.stack([box_blur(box_blur(base_fill[..., c], 6), 6) for c in range(3)], -1)
+        filled = np.where(m[..., None], src - lo + lo_t, a)
+    else:
+        filled = row_fill(a, m)
+        soft = np.stack([box_blur(box_blur(filled[..., c], 2), 2) for c in range(3)], -1)
+        filled = np.where(m[..., None], soft, filled)
     back = Image.fromarray(np.clip(filled, 0, 255).astype(np.uint8)).rotate(angle, resample=Image.BICUBIC, expand=True)
     # crop back to the region size and paste, using a feathered mask of the inpainted area only
     bx = (back.width - reg.width) // 2
@@ -78,6 +89,8 @@ def place(name, letters, thresh, colour, angle=0.0, height=1.15, glow=0, glow_co
     base = im.copy()
     base.paste(reg, (X0, Y0))
 
+    if colour is None:
+        return base
     # the wordmark
     lh = int(bh * height / max(math.cos(math.radians(angle)), 0.5) * 0.85)
     lw = int(LOGO.width * lh / LOGO.height)
@@ -107,9 +120,9 @@ def place(name, letters, thresh, colour, angle=0.0, height=1.15, glow=0, glow_co
 if __name__ == "__main__":
     pres = APP / "assets-src/presentation"
     out = APP / "assets-src"
-    # Presentation renders: the "LOGO" placeholders replaced by the official wordmark.
-    place(str(pres / "render-dusk.png"), (1028, 356, 1100, 392), 120, (246, 244, 236), glow=2, glow_colour=(255, 236, 200), height=1.45, pad=14, grain=0.006).save(out / "render-dusk.webp", quality=95)
-    place(str(pres / "render-aerial.webp"), (1700, 400, 1845, 472), 112, (244, 242, 236), angle=-5, glow=3, glow_colour=(255, 236, 200), height=1.05, pad=20, grain=0.006).save(out / "render-aerial.webp", quality=95)
-    # the day render has no placeholder: mount the mark on the white canopy band in the gold of the trim
-    place(str(pres / "render-day.png"), (478, 214, 556, 252), 999, (196, 160, 82), angle=3, relief=1, height=1.0, pad=8, grain=0.004).save(out / "render-day.webp", quality=95)
+    # The only logo on the building is the rooftop frame sign (assets-src/reference-night.webp).
+    # Every other image has its facade signage removed.
+    place(str(pres / "render-dusk.png"), (1028, 356, 1100, 392), 120, None, pad=14).save(out / "render-dusk.webp", quality=95)
+    place(str(pres / "render-aerial.webp"), (1700, 400, 1845, 472), 112, None, angle=-5, pad=20).save(out / "render-aerial.webp", quality=95)
+    Image.open(pres / "render-day.png").convert("RGB").save(out / "render-day.webp", quality=95)
     print("ok")

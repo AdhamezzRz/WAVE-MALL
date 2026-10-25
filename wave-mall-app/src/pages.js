@@ -104,7 +104,7 @@ function home(lang, ctx) {
     <p class="label hero__meta" data-hero-meta><i></i>${esc(h.hero.meta)}</p>
   </div>
   <div class="hero__frame" data-hero-frame>
-    ${picture('day', lang === 'en' ? 'The Wave on North 90, New Cairo: curved white ribbon balconies over the plaza.' : 'ذا ويف على التسعين الشمالي، القاهرة الجديدة: شرفات شريطية بيضاء منحنية فوق الساحة.', { eager: true, cls: 'hero__img' })}
+    ${picture('night', lang === 'en' ? 'The Wave on North 90, New Cairo, at night: lit ribbon balconies and the rooftop sign.' : 'ذا ويف على التسعين الشمالي ليلاً: شرفات مضاءة واللافتة على السطح.', { eager: true, cls: 'hero__img' })}
   </div>
 </section>
 
@@ -151,7 +151,7 @@ function home(lang, ctx) {
     ${link(p(lang, '/leasing/'), h.lease.more, 'link--big')}
   </div>
 </section>`;
-  return layout({ lang, pathname: p(lang, '/'), title: h.title, description: h.description, body, image: 'day', seo: { image: 'day' }, ...ctx });
+  return layout({ lang, pathname: p(lang, '/'), title: h.title, description: h.description, body, image: 'night', seo: { image: 'night' }, ...ctx });
 }
 
 /* ---------- the building ---------- */
