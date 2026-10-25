@@ -15,7 +15,7 @@ function validate(body = {}) {
     brand: clean(body.brand, 160),
     email: clean(body.email, 200),
     phone: clean(body.phone, 40),
-    category: clean(body.category, 20),
+    category: clean(body.category, 20) || 'other',
     size: clean(body.size, 4),
     message: clean(body.message, 2000),
     lang: body.lang === 'ar' ? 'ar' : 'en',

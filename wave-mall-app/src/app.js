@@ -15,8 +15,7 @@ const DAY = 24 * 60 * 60 * 1000;
 const ROUTES = [
   ['/', 'home'],
   ['/the-wave/', 'story'],
-  ['/experience/', 'experience'],
-  ['/location/', 'location'],
+  ['/visit/', 'visit'],
   ['/leasing/', 'leasing'],
 ];
 
@@ -61,6 +60,9 @@ function createApp({ env = process.env, mail = deliver } = {}) {
     app.get(`/ar${route}`, (req, res) => html(res, pages[name]('ar', ctx(req, res))));
   }
   app.get(['/ar', '/en', '/en/'], (req, res) => res.redirect(301, req.path.startsWith('/ar') ? '/ar/' : '/'));
+  // Earlier structure of the site.
+  app.get(['/location', '/location/', '/ar/location', '/ar/location/'], (req, res) => res.redirect(301, req.path.startsWith('/ar') ? '/ar/visit/' : '/visit/'));
+  app.get(['/experience', '/experience/', '/ar/experience', '/ar/experience/'], (req, res) => res.redirect(301, req.path.startsWith('/ar') ? '/ar/' : '/'));
 
   app.get('/robots.txt', (req, res) => res.type('text/plain').send(`User-agent: *\nAllow: /\n\nSitemap: ${siteUrl(req)}/sitemap.xml\n`));
   app.get('/sitemap.xml', (req, res) => {

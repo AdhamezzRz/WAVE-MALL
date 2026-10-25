@@ -47,6 +47,9 @@ test('sitemap, robots, health and 404', async () => {
   assert.match(sm, /<loc>https:\/\/thewavemall.com\/ar\/leasing\/<\/loc>/);
   assert.match(await (await fetch(base + '/robots.txt')).text(), /Sitemap: https:\/\/thewavemall.com\/sitemap.xml/);
   assert.deepEqual(await (await fetch(base + '/healthz')).json(), { ok: true });
+  const old = await fetch(base + '/ar/location/', { redirect: 'manual' });
+  assert.equal(old.status, 301);
+  assert.equal(old.headers.get('location'), '/ar/visit/');
   const nf = await fetch(base + '/ar/nothing-here');
   assert.equal(nf.status, 404);
   assert.match(await nf.text(), /dir="rtl"/);
@@ -54,13 +57,15 @@ test('sitemap, robots, health and 404', async () => {
 
 test('enquiry validation', () => {
   assert.equal(validate({}).ok, false);
-  assert.deepEqual(validate({}).errors, ['name', 'brand', 'email', 'category']);
-  const ok = validate({ name: ' Mona ', brand: 'Atelier', email: 'mona@example.com', category: 'fnb', size: 'm', lang: 'ar', message: 'x'.repeat(5000) });
+  assert.deepEqual(validate({}).errors, ['name', 'brand', 'email']);
+  const ok = validate({ name: ' Mona ', brand: 'Atelier', email: 'mona@example.com', lang: 'ar', message: 'x'.repeat(5000) });
+  assert.equal(ok.value.category, 'other');
   assert.equal(ok.ok, true);
   assert.equal(ok.value.name, 'Mona');
   assert.equal(ok.value.message.length, 2000);
   assert.equal(ok.value.lang, 'ar');
-  assert.equal(validate({ name: 'a', brand: 'b', email: 'nope', category: 'fnb' }).errors[0], 'email');
+  assert.equal(validate({ name: 'a', brand: 'b', email: 'nope' }).errors[0], 'email');
+  assert.deepEqual(validate({ name: 'a', brand: 'b', email: 'a@b.co', category: 'bogus' }).errors, ['category']);
 });
 
 test('enquiry API: json, honeypot, form redirect', async () => {
@@ -72,7 +77,7 @@ test('enquiry API: json, honeypot, form redirect', async () => {
 
   res = await fetch(base + '/api/enquiry', { method: 'POST', headers: json, body: JSON.stringify({ name: '', email: 'x' }) });
   assert.equal(res.status, 422);
-  assert.deepEqual((await res.json()).errors, ['name', 'brand', 'email', 'category']);
+  assert.deepEqual((await res.json()).errors, ['name', 'brand', 'email']);
 
   res = await fetch(base + '/api/enquiry', { method: 'POST', headers: json, body: JSON.stringify({ website: 'spam', name: 'x' }) });
   assert.equal(res.status, 200);
