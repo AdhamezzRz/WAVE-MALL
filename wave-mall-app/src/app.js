@@ -10,6 +10,7 @@ const pages = require('./pages');
 const journal = require('./journal');
 const { content } = require('./content');
 const { validate, validateContact, validateSubscribe, deliver } = require('./enquiry');
+const { mount: mountAdmin } = require('./admin');
 
 const PUBLIC = path.join(__dirname, '..', 'public');
 const DAY = 24 * 60 * 60 * 1000;
@@ -82,7 +83,7 @@ function createApp({ env = process.env, mail = deliver } = {}) {
   app.get(['/location', '/location/', '/ar/location', '/ar/location/'], (req, res) => res.redirect(301, req.path.startsWith('/ar') ? '/ar/visit/' : '/visit/'));
   app.get(['/blog', '/blog/', '/ar/blog', '/ar/blog/'], (req, res) => res.redirect(301, req.path.startsWith('/ar') ? '/ar/journal/' : '/journal/'));
 
-  app.get('/robots.txt', (req, res) => res.type('text/plain').send(`User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: ${siteUrl(req)}/sitemap.xml\n`));
+  app.get('/robots.txt', (req, res) => res.type('text/plain').send(`User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /admin/\n\nSitemap: ${siteUrl(req)}/sitemap.xml\n`));
   app.get('/sitemap.xml', (req, res) => {
     const b = siteUrl(req);
     const today = new Date().toISOString().slice(0, 10);
@@ -99,6 +100,9 @@ function createApp({ env = process.env, mail = deliver } = {}) {
     res.type('application/xml').send(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls.join('\n')}\n</urlset>\n`);
   });
 
+  // The leasing office (sales ERP) lives at /admin, behind its own sign-in.
+  const admin = mountAdmin(app, { env });
+
   const limiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 8, standardHeaders: true, legacyHeaders: false, handler: (req, res) => respond(req, res, 429, 'error') });
   const parsers = [limiter, express.json({ limit: '16kb' }), express.urlencoded({ extended: false, limit: '16kb' })];
 
@@ -107,12 +111,19 @@ function createApp({ env = process.env, mail = deliver } = {}) {
     if (body.website) return respond(req, res, 200, 'ok', {}, body.lang, back); // honeypot: pretend success
     const result = validator(body);
     if (!result.ok) return respond(req, res, 422, 'error', { errors: result.errors }, body.lang, back);
+    // Saved in the leasing office first; the email is a courtesy copy, so a mail failure is not the visitor's problem once it is saved.
+    let saved = false;
+    try {
+      saved = admin.record(result.value);
+    } catch (err) {
+      console.error(`[${result.value.kind}] could not save to the leasing office:`, err.message);
+    }
     try {
       await mail(result.value, env, console);
       return respond(req, res, 200, 'ok', {}, result.value.lang, back);
     } catch (err) {
       console.error(`[${result.value.kind}] delivery failed:`, err.message);
-      return respond(req, res, 502, 'error', {}, result.value.lang, back);
+      return saved ? respond(req, res, 200, 'ok', {}, result.value.lang, back) : respond(req, res, 502, 'error', {}, result.value.lang, back);
     }
   };
   app.post('/api/enquiry', ...parsers, handle(validate, '/leasing/'));

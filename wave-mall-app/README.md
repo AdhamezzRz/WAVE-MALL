@@ -31,7 +31,7 @@ The header shows the floor you are on like a lift (R at the top of a page, B2 at
 
 1. Push this folder to a GitHub or **gitlab.com** repository (Hostinger connects to either; self-managed GitLab is not supported).
 2. hPanel → Websites → Add website → **Node.js** → Import Git repository → connect the account and pick the repo and branch.
-3. Build settings: framework **Express**, root directory `wave-mall-app` (or `/` if the folder is the repo root), build command empty, output directory empty, **entry file `server.js`**, Node 22.
+3. Build settings: framework **Express**, root directory `wave-mall-app` (or `/` if the folder is the repo root), build command empty, output directory empty, **entry file `server.js`**, Node 22 (22.13 or newer: the leasing office uses Node's built-in SQLite).
 4. Environment variables (optional, for the enquiry email): see below. Without SMTP settings, enquiries are written to the app's runtime log.
 5. Deploy. Every push to the connected branch triggers a new build. Hostinger creates the Git webhook itself; if auto-deploys stop, check the repo's Settings → Webhooks.
 
@@ -50,6 +50,35 @@ The app reads `PORT` from the environment (Hostinger sets it) and trusts one pro
 | `SMTP_PASS`   | Mailbox password                                            |
 | `MAIL_FROM`   | From address (defaults to `SMTP_USER`)                      |
 | `LEASING_TO`  | Where enquiries go (defaults to `SMTP_USER`)                |
+| `DATA_DIR`    | Folder for the leasing office database (default `./data`). **Set this on Hostinger** to a folder outside the app, e.g. `/home/<user>/wave-data`, so redeploys never touch it |
+| `ADMIN_DB`    | Full path to the database file instead of `DATA_DIR` (tests use `:memory:`) |
+
+## Leasing office (`/admin`)
+
+A sales ERP for the leasing team, built into the same app. It is private (`noindex`, blocked in `robots.txt`, every page behind a sign-in) and stores everything in one SQLite file.
+
+**First run:** open `https://thewavemall.com/admin`. With no accounts yet it asks you to create the first administrator. Then go to **Settings** to set list rates, deal rules and document details, and **Team & targets** to invite the team (each invite shows a one-time temporary password). **Settings → Sample data** fills the office with a realistic month of fictional brands, deals, leases and invoices so you can try every screen; one click removes it again.
+
+| Module | What it does |
+| --- | --- |
+| Dashboard | Occupancy, committed space, weighted pipeline, new leads, signed this month and overdue rent; pipeline funnel, lead sources, the plaza plan by status, what's coming up, your tasks, what needs attention, latest activity |
+| Inbox | Every form sent on the website. Leasing enquiries open a lead automatically (brand, contact, wanted size); contact messages can be turned into a lead or archived |
+| Leads | Filters and saved views (mine, hot, closing, overdue, stale), a 0–100 lead score, stage stepper, activity timeline, units that fit with one-click holds, lost reasons |
+| Pipeline | Kanban by stage with drag and drop, value and probability per column, per-agent view |
+| Calendar & tasks | Month view of viewings, meetings, calls and tasks; quick scheduling; overdue / today / upcoming task lists |
+| Offers | Unit picker with a live deal calculator (rent, terrace, service, escalation, rent-free, deposit, key money, effective rate, discount against list). Offers below the allowed discount go to a manager for approval. Branded proposal ready to print or save as PDF |
+| Leases | Created from an accepted offer; activation leases the units and generates the invoice schedule (monthly, quarterly or yearly in advance) plus deposit and key money |
+| Billing | Due, overdue and upcoming invoices, payments (full or partial), extra charges, receivables aging, who is behind, printable invoices |
+| Units & plan | Both levels drawn from the real floor plans and coloured by status; holds with expiry, list rates per unit, history |
+| Brands | Brand directory with contacts, their leads and leases |
+| Reports | Occupancy by level, rent roll, WALE, forecast, tenant mix, why deals are lost, team against monthly targets, lead sources and conversion, aging, upcoming expiries; CSV exports |
+| Team, subscribers, settings, audit log | Roles, targets, newsletter list, rates and rules, one-click backup, and a record of who did what |
+
+**Roles:** *Viewer* reads everything; *Agent* works leads, activities, holds and offers; *Manager* also approves offers, writes leases, takes payments and sets targets; *Administrator* also manages the team and settings.
+
+**Security:** passwords are hashed with scrypt, sessions live in the database (12 hours idle), every form carries a CSRF token, sign-in is rate-limited, and the audit log keeps sign-ins and every change.
+
+**Backups:** Settings → Backup downloads a consistent copy of the database. Keep one off the server every week. To restore, stop the app and put the file back as `leasing.db` in `DATA_DIR`.
 
 ## GitLab
 

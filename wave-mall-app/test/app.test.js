@@ -10,7 +10,7 @@ let base;
 const sent = [];
 
 before(async () => {
-  const app = createApp({ env: { SITE_URL: 'https://thewavemall.com' }, mail: async (v) => { sent.push(v); return { delivered: true }; } });
+  const app = createApp({ env: { SITE_URL: 'https://thewavemall.com', ADMIN_DB: ':memory:' }, mail: async (v) => { sent.push(v); return { delivered: true }; } });
   server = app.listen(0);
   await new Promise((r) => server.once('listening', r));
   base = `http://127.0.0.1:${server.address().port}`;
