@@ -356,3 +356,31 @@
   $$('[data-autosubmit]').forEach((el) => el.addEventListener('change', () => el.form?.requestSubmit()));
   $$('select[data-nav]').forEach((s) => s.addEventListener('change', () => { if (s.value) location.href = s.value; }));
 })();
+
+/* ---------- HR: live net pay on a draft payroll (routes/hr.js) ----------
+   Each row carries basic, allowances, the employee insurance share and the daily rate; typing
+   overtime, bonus, unpaid days, deductions or tax updates that row's net before saving. */
+(() => {
+  'use strict';
+  const form = document.querySelector('[data-payroll]');
+  if (!form) return;
+  const fmt = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
+  const val = (row, name) => {
+    const el = row.querySelector(`input[name^="${name}_"]`);
+    const n = parseFloat(el && el.value);
+    return Number.isFinite(n) && n > 0 ? n : 0;
+  };
+  const calc = (row) => {
+    const d = row.dataset;
+    const net = (+d.basic || 0) + (+d.allow || 0) + val(row, 'overtime') + val(row, 'bonus') - val(row, 'deductions') - (+d.daily || 0) * val(row, 'unpaid_days') - (+d.ins || 0) - val(row, 'tax');
+    const out = row.querySelector('[data-net]');
+    if (out) {
+      out.textContent = fmt.format(Math.round(net));
+      out.classList.toggle('late', net < 0);
+    }
+  };
+  form.addEventListener('input', (e) => {
+    const row = e.target.closest('[data-payrow]');
+    if (row) calc(row);
+  });
+})();

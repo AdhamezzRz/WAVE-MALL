@@ -143,17 +143,17 @@ module.exports = function office(router, h) {
     const table = ui.table(
       [
         { label: tr('Person'), render: (u) => `<span class="who"><span class="avatar avatar--sm">${ui.esc(ui.initials(u.name))}</span><span><b>${ui.esc(u.name)}</b>${u.title ? `<small class="sub">${ui.esc(tx(u.title))}</small>` : ''}<small class="sub ltr">${ui.esc(u.email)}</small></span></span>` },
-        { label: tr('Role'), render: (u) => ui.badge(u.role, M.ROLES[u.role]) },
+        { label: tr('Role'), render: (u) => `${ui.badge(u.role, M.ROLES[u.role])}${u.role === 'admin' || u.hr ? ` ${ui.badge('hr', tr('HR access'), 'sand')}` : ''}` },
         { label: tr('Open deals'), num: true, render: (u) => ui.n0(stats(u).open) },
         { label: tr('report|Signed'), num: true, render: (u) => ui.n0(stats(u).won) },
         { label: tr('Last sign-in'), render: (u) => (u.last_login_at ? ui.rel(u.last_login_at) : tr('Never')) },
         { label: tr('Status'), render: (u) => (u.active ? ui.badge('active', tr('user|Active')) : ui.badge('void', tr('user|Disabled'))) },
-        ...(isAdmin ? [{ label: '', render: (u) => (u.id === req.user.id ? `<span class="muted">${tr('You')}</span>` : `<details class="pop"><summary class="btn btn--ghost btn--xs">${tr('Manage')}</summary>${ui.form(`/admin/team/${u.id}`, csrf, `${ui.select('role', tr('Role'), M.ROLES, u.role)}<label class="check"><input type="checkbox" name="active" value="1" ${u.active ? 'checked' : ''}> ${tr('Can sign in')}</label><label class="check"><input type="checkbox" name="reset" value="1"> ${tr('Reset password')}</label>${ui.btn(tr('Save'), { cls: 'btn--primary btn--sm' })}`, { cls: 'stack' })}</details>`) }] : []),
+        ...(isAdmin ? [{ label: '', render: (u) => (u.id === req.user.id ? `<span class="muted">${tr('You')}</span>` : `<details class="pop"><summary class="btn btn--ghost btn--xs">${tr('Manage')}</summary>${ui.form(`/admin/team/${u.id}`, csrf, `${ui.select('role', tr('Role'), M.ROLES, u.role)}<label class="check"><input type="checkbox" name="hr" value="1" ${u.hr ? 'checked' : ''}> ${tr('HR access (staff, pay, leave)')}</label><label class="check"><input type="checkbox" name="active" value="1" ${u.active ? 'checked' : ''}> ${tr('Can sign in')}</label><label class="check"><input type="checkbox" name="reset" value="1"> ${tr('Reset password')}</label>${ui.btn(tr('Save'), { cls: 'btn--primary btn--sm' })}`, { cls: 'stack' })}</details>`) }] : []),
       ],
       users,
     );
     const invite = isAdmin
-      ? ui.card(tr('Add someone'), ui.form('/admin/team', csrf, `<div class="fields">${ui.input('name', tr('Name'), '', { required: true })}${ui.input('email', tr('Email'), '', { type: 'email', required: true })}${ui.select('role', tr('Role'), M.ROLES, 'agent')}${ui.input('title', tr('Job title'), '', { placeholder: tr('e.g. Leasing executive') })}</div><p class="muted">${tr('A password is generated and shown to you once, to pass on securely.')}</p>${ui.btn(tr('Add to the team'), { cls: 'btn--primary' })}`, { cls: 'stack' }), { sub: tr('<b>Agents</b> work their leads and offers. <b>Managers</b> approve discounts, sign leases and record payments. <b>Viewers</b> can only look.') })
+      ? ui.card(tr('Add someone'), ui.form('/admin/team', csrf, `<div class="fields">${ui.input('name', tr('Name'), '', { required: true })}${ui.input('email', tr('Email'), '', { type: 'email', required: true })}${ui.select('role', tr('Role'), M.ROLES, 'agent')}${ui.input('title', tr('Job title'), '', { placeholder: tr('e.g. Leasing executive') })}</div><label class="check"><input type="checkbox" name="hr" value="1"> ${tr('HR access (staff, pay, leave)')}</label><p class="muted">${tr('A password is generated and shown to you once, to pass on securely.')}</p>${ui.btn(tr('Add to the team'), { cls: 'btn--primary' })}`, { cls: 'stack' }), { sub: tr('<b>Agents</b> work their leads and offers. <b>Managers</b> approve discounts, sign leases and record payments. <b>Viewers</b> can only look.') + ` ${tr('<b>HR access</b> opens the People section (salaries, leave, employee files); administrators always have it.')}` })
       : '';
     const agents = users.filter((u) => u.active && u.role !== 'viewer');
     const targets = h.can(req, 'manager')
@@ -172,8 +172,10 @@ module.exports = function office(router, h) {
     if (!name || !EMAIL_RE.test(email)) return h.back(req, res, '/admin/team', 'error', tr('Enter a name and a valid email.'));
     if (db.get('SELECT id FROM users WHERE email = ?', email)) return h.back(req, res, '/admin/team', 'error', tr('Someone already uses that email.'));
     const password = auth.token(9);
-    const r = db.run('INSERT INTO users (name, email, role, title, password_hash, created_at) VALUES (?, ?, ?, ?, ?, ?)', name, email, role, h.str(req.body.title, 120) || null, hashPassword(password), M.now());
+    const hrAccess = req.body.hr ? 1 : 0;
+    const r = db.run('INSERT INTO users (name, email, role, title, password_hash, hr, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)', name, email, role, h.str(req.body.title, 120) || null, hashPassword(password), hrAccess, M.now());
     h.log(req, 'Added a team member', 'user', Number(r.lastInsertRowid), `${name}, role: ${ROLE_EN[role]}`);
+    if (hrAccess) h.log(req, 'Granted HR access', 'user', Number(r.lastInsertRowid), name);
     h.back(req, res, '/admin/team', 'ok', tr('{name} added. Their temporary password is {password} (shown once). They can change it under Your account.', { name, password }));
   });
 
@@ -194,7 +196,9 @@ module.exports = function office(router, h) {
     const role = M.ROLES[req.body.role] ? req.body.role : u.role;
     const active = req.body.active ? 1 : 0;
     if (u.role === 'admin' && (role !== 'admin' || !active) && db.value("SELECT COUNT(*) FROM users WHERE role = 'admin' AND active = 1") <= 1) return h.back(req, res, '/admin/team', 'error', tr('Keep at least one active administrator.'));
-    db.run('UPDATE users SET role = ?, active = ? WHERE id = ?', role, active, u.id);
+    const hrAccess = req.body.hr ? 1 : 0;
+    db.run('UPDATE users SET role = ?, active = ?, hr = ? WHERE id = ?', role, active, hrAccess, u.id);
+    if (hrAccess !== (u.hr ? 1 : 0)) h.log(req, hrAccess ? 'Granted HR access' : 'Removed HR access', 'user', u.id, u.name);
     let msg = tr('{name} updated.', { name: u.name });
     if (!active || req.body.reset) db.run('DELETE FROM sessions WHERE user_id = ?', u.id);
     if (req.body.reset) {
@@ -241,6 +245,17 @@ ${ui.card(tr('Opening news list'), ui.table([{ label: tr('Email'), render: (s) =
     ${ui.input('vat_pct', tr('VAT on invoices (%)'), s.vat_pct, { type: 'number', min: 0, max: 30, step: '0.5', hint: tr('Shown on printed invoices. 0 to leave it off.') })}
     ${ui.input('currency', tr('Currency'), s.currency, { required: true, hint: tr('A three-letter code, e.g. EGP.'), attrs: { maxlength: 3 } })}
   </div>`)}
+  <section id="people">${ui.card(tr('People & payroll'), `<div class="fields">
+    ${ui.input('si_employee_pct', tr('Social insurance, employee share (%)'), s.si_employee_pct, { type: 'number', min: 0, max: 50, step: '0.01' })}
+    ${ui.input('si_employer_pct', tr('Social insurance, employer share (%)'), s.si_employer_pct, { type: 'number', min: 0, max: 50, step: '0.01' })}
+    ${ui.input('si_min_wage', tr('Minimum insured wage ({cur})', { cur }), s.si_min_wage, { type: 'number', min: 0, step: 1 })}
+    ${ui.input('si_max_wage', tr('Maximum insured wage ({cur})', { cur }), s.si_max_wage, { type: 'number', min: 0, step: 1 })}
+    ${ui.input('annual_leave_days', tr('Annual leave (days)'), s.annual_leave_days, { type: 'number', min: 0, max: 60, hint: tr('30 days apply automatically after ten years of service or from age 50.') })}
+    ${ui.input('work_days_month', tr('Working days a month'), s.work_days_month, { type: 'number', min: 1, max: 31, hint: tr('Used for the daily rate of unpaid leave.') })}
+  </div><p class="muted small">${tr('Egyptian social-insurance shares and the insured-wage limits are revised each January. Check them against the latest decree before running January payroll.')}</p>`)}</section>
+  ${ui.card(tr('Document vault'), `<div class="fields">
+    ${ui.input('doc_warn_days', tr('Warn before a document expires (days)'), s.doc_warn_days, { type: 'number', min: 1, max: 365 })}
+  </div>`)}
   ${ui.card(tr('On proposals and invoices'), `<div class="fields">
     ${ui.input('legal_name', tr('Company name'), s.legal_name, { required: true })}
     ${ui.input('company', tr('Display name'), s.company)}
@@ -259,9 +274,20 @@ ${ui.card(tr('Opening news list'), ui.table([{ label: tr('Email'), render: (s) =
     h.page(req, res, { title: tr('Settings'), active: '/admin/settings', body });
   });
 
-  const KEYS = ['rate_plaza', 'rate_street', 'rate_terrace_share', 'service_m2', 'default_term_years', 'default_escalation', 'default_deposit_months', 'max_discount_pct', 'offer_valid_days', 'hold_days', 'vat_pct', 'currency', 'legal_name', 'company', 'address', 'leasing_email', 'leasing_phone'];
+  // numbers that must stay within sensible limits; anything else keeps its saved value
+  const NUM_KEYS = { si_employee_pct: [0, 50], si_employer_pct: [0, 50], si_min_wage: [0, 1e7], si_max_wage: [0, 1e7], annual_leave_days: [0, 60], work_days_month: [1, 31], doc_warn_days: [1, 365] };
+  const KEYS = [...Object.keys(NUM_KEYS), 'rate_plaza', 'rate_street', 'rate_terrace_share', 'service_m2', 'default_term_years', 'default_escalation', 'default_deposit_months', 'max_discount_pct', 'offer_valid_days', 'hold_days', 'vat_pct', 'currency', 'legal_name', 'company', 'address', 'leasing_email', 'leasing_phone'];
   router.post('/settings', R('admin'), (req, res) => {
-    for (const k of KEYS) if (req.body[k] !== undefined) db.setSetting(k, k === 'currency' ? h.str(req.body[k], 3).toUpperCase() || 'EGP' : h.str(req.body[k], 300));
+    for (const k of KEYS) {
+      if (req.body[k] === undefined) continue;
+      if (NUM_KEYS[k]) {
+        const n = h.numv(req.body[k]);
+        if (n !== null && n >= NUM_KEYS[k][0] && n <= NUM_KEYS[k][1]) db.setSetting(k, String(n));
+        continue;
+      }
+      db.setSetting(k, k === 'currency' ? h.str(req.body[k], 3).toUpperCase() || 'EGP' : h.str(req.body[k], 300));
+    }
+    if (Number(db.setting('si_min_wage')) > Number(db.setting('si_max_wage'))) db.setSetting('si_max_wage', db.setting('si_min_wage'));
     ui.setCurrency(db.setting('currency'));
     for (const l of db.all(`SELECT * FROM leads WHERE stage IN (${M.OPEN_STAGES.map((s) => `'${s}'`).join(',')}) AND id NOT IN (SELECT lead_id FROM offers)`)) db.run('UPDATE leads SET value_est = ? WHERE id = ?', M.estimateValue(db, l), l.id);
     h.log(req, 'Updated settings', 'settings');

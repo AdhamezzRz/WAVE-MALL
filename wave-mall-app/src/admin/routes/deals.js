@@ -348,7 +348,7 @@ module.exports = function deals(router, h) {
   router.get('/leases', (req, res) => {
     const st = M.LEASE_STATUS[req.query.status] ? req.query.status : '';
     const rows = db.all(`SELECT s.*, b.name brand_name FROM leases s JOIN brands b ON b.id = s.brand_id ${st ? 'WHERE s.status = ?' : ''} ORDER BY s.status = 'active' DESC, s.start_date DESC`, ...(st ? [st] : []))
-      .map((s) => ({ ...s, units: M.leaseUnits(db, s.id), annual: s.status === 'active' ? M.currentAnnualRent(db, s) : null, next: db.get("SELECT due_date, total FROM invoices WHERE lease_id = ? AND status IN ('open','partial') ORDER BY due_date LIMIT 1", s.id) }));
+      .map((s) => ({ ...s, signed: !!db.value("SELECT COUNT(*) FROM documents WHERE entity = 'lease' AND entity_id = ? AND kind = 'lease_contract' AND archived = 0", s.id), units: M.leaseUnits(db, s.id), annual: s.status === 'active' ? M.currentAnnualRent(db, s) : null, next: db.get("SELECT due_date, total FROM invoices WHERE lease_id = ? AND status IN ('open','partial') ORDER BY due_date LIMIT 1", s.id) }));
     const tabs = [['', tr('All')], ...Object.entries(M.LEASE_STATUS)].map(([k, l]) => `<a class="tab${st === k ? ' is-on' : ''}" href="/admin/leases${k ? `?status=${k}` : ''}">${l}</a>`).join('');
     const table = ui.table(
       [
@@ -358,6 +358,7 @@ module.exports = function deals(router, h) {
         { label: tr('Term'), render: (s) => `${ui.date(s.start_date)} – ${ui.date(s.end_date)}` },
         { label: tr('Annual rent now'), num: true, render: (s) => (s.annual !== null ? ui.money(s.annual, { compact: true }) : '—') },
         { label: tr('Next invoice'), render: (s) => (s.next ? `<span class="${s.next.due_date < M.today() ? 'late' : ''}">${ui.date(s.next.due_date)}<small class="sub">${ui.money(s.next.total, { compact: true })}</small></span>` : '—') },
+        { label: tr('Signed copy'), render: (s) => (s.signed ? `<span class="paper is-ok">${ui.icon('check')}${ui.esc(tr('rec|On file'))}</span>` : `<span class="paper is-missing">${ui.esc(tr('rec|Missing'))}</span>`) },
         { label: tr('Status'), render: (s) => ui.badge(s.status, M.LEASE_STATUS[s.status]) },
       ],
       rows,
@@ -435,6 +436,13 @@ module.exports = function deals(router, h) {
     const paid = inv.reduce((a, i) => a + i.paid, 0);
     const overdue = inv.filter((i) => ['open', 'partial'].includes(i.status) && i.due_date < t).reduce((a, i) => a + i.total - i.paid, 0);
     const csrf = req.session.csrf;
+    const leaseDocs = h.docs(req, 'lease', s.id);
+    const signed = leaseDocs.some((d) => d.kind === 'lease_contract');
+    const docPanel = ui.docPanel({
+      docs: leaseDocs, entity: 'lease', entityId: s.id, csrf, canUpload: h.can(req, 'agent'), canDelete: h.can(req, 'manager'), canConfidential: h.canHR(req),
+      required: ['lease_contract'], warnDays: Number(db.setting('doc_warn_days')) || 30,
+      sub: ui.esc(signed ? tr('The signed lease is on file.') : tr('Upload the signed lease, addenda, the handover report and any bank guarantee.')),
+    });
     const actions = [];
     if (s.status === 'draft' && h.can(req, 'manager')) actions.push(ui.form(`/admin/leases/${s.id}/activate`, csrf, ui.btn(tr('Activate lease'), { cls: 'btn--primary', ic: 'check', attrs: { 'data-confirm': tr('Activate? The units become leased and the invoices are created.') } })));
     if (s.status === 'active' && h.can(req, 'manager')) actions.push(`<details class="pop"><summary class="btn btn--ghost">${tr('End lease')}</summary>${ui.form(`/admin/leases/${s.id}/end`, csrf, `${ui.select('how', tr('How'), { ended: tr('Ended (term complete)'), terminated: tr('Terminated early') }, 'terminated')}${ui.input('date', tr('Last day'), t, { type: 'date' })}${ui.btn(tr('End lease'), { cls: 'btn--danger btn--sm', attrs: { 'data-confirm': tr('End this lease? Future invoices are voided and the units become available.') } })}`, { cls: 'stack' })}</details>`);
@@ -470,11 +478,12 @@ module.exports = function deals(router, h) {
       <div><dt>${tr('Deposit')}</dt><dd>${ui.money(s.deposit)}</dd></div>
       ${s.key_money ? `<div><dt>${tr('Key money')}</dt><dd>${ui.money(s.key_money)}</dd></div>` : ''}
       <div><dt>${tr('Signed on')}</dt><dd>${ui.date(s.signed_at)}</dd></div>
+      <div><dt>${tr('Signed copy')}</dt><dd>${signed ? `<span class="paper is-ok">${ui.icon('check')}${ui.esc(tr('rec|On file'))}</span>` : `<a class="paper is-missing" href="#documents">${ui.esc(tr('Missing: upload the signed lease'))}</a>`}</dd></div>
       ${s.offer_id ? `<div><dt>${tr('From offer')}</dt><dd><a href="/admin/offers/${s.offer_id}">${tr('View offer')}</a></dd></div>` : ''}
       ${s.lead_id ? `<div><dt>${tr('Lead')}</dt><dd><a href="/admin/leads/${s.lead_id}">${ui.esc(s.lead_title || tr('View lead'))}</a></dd></div>` : ''}
     </dl>${s.notes ? `<blockquote class="quote quote--sm">${ui.esc(tx(s.notes))}</blockquote>` : ''}`;
     const body = `<div class="kpis kpis--5">${kpis}</div>
-<div class="grid grid--side"><div class="stack">${ui.card(tr('Invoices'), invTable, { sub: tn(inv.length, '{n} invoice', '{n} invoices') })}${ui.card(tr('Rent schedule'), scheduleTable(sc))}</div><div class="stack">${ui.card(tr('Lease'), facts)}${ui.card(tr('Units'), `${units.map((u) => `<p><a href="/admin/units/${u.id}"><b>${ui.esc(u.code)}</b></a> · ${u.terrace_m2 ? tr('deal|{a} + {b} terrace', { a: ui.m2(u.indoor_m2), b: ui.m2(u.terrace_m2) }) : ui.m2(u.indoor_m2)} ${ui.unitBadge(u.status)}</p>`).join('')}`)}</div></div>`;
+<div class="grid grid--side"><div class="stack">${ui.card(tr('Invoices'), invTable, { sub: tn(inv.length, '{n} invoice', '{n} invoices') })}${ui.card(tr('Rent schedule'), scheduleTable(sc))}</div><div class="stack">${ui.card(tr('Lease'), facts)}<div id="documents">${docPanel}</div>${ui.card(tr('Units'), `${units.map((u) => `<p><a href="/admin/units/${u.id}"><b>${ui.esc(u.code)}</b></a> · ${u.terrace_m2 ? tr('deal|{a} + {b} terrace', { a: ui.m2(u.indoor_m2), b: ui.m2(u.terrace_m2) }) : ui.m2(u.indoor_m2)} ${ui.unitBadge(u.status)}</p>`).join('')}`)}</div></div>`;
     h.page(req, res, { title: `${s.brand_name}`, crumbs: [['/admin/leases', tr('Leases')], [null, s.ref]], active: '/admin/leases', body, actions: `<div class="row">${actions.join('')}</div>` });
   });
 

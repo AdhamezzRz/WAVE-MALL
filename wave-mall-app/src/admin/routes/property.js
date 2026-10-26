@@ -3,6 +3,7 @@
 // Property: units (on the plan and in a table, with pricing and holds) and brands with their contacts.
 
 const { t: tr, tn, tx, isAr } = require('../i18n');
+const T = require('../tenancy');
 
 // Brand positioning, stored as a key.
 const TIERS = { luxury: 'Luxury', premium: 'Premium', mid: 'Mid-market', value: 'Value' };
@@ -117,11 +118,15 @@ module.exports = function property(router, h) {
     const offersList = offers.length ? `<ul class="list">${offers.map((o) => `<li><a href="/admin/offers/${o.id}"><span class="what"><b>${ui.esc(o.ref)} · ${ui.esc(o.lead_title)}</b><small>${ui.esc(tr('{rate}/m²', { rate: ui.money(o.rent_m2) }))} · ${ui.date(o.created_at)}</small></span>${ui.badge(o.status, M.OFFER_STATUS[o.status])}</a></li>`).join('')}</ul>` : `<p class="muted pad">${tr('No offers on this unit yet.')}</p>`;
     const interestList = interest.length ? `<ul class="list">${interest.map((l) => `<li><a href="/admin/leads/${l.id}"><span class="what"><b>${ui.esc(l.title)}</b><small>${ui.esc(l.owner_name || tr('Unassigned'))} · ${l.probability}%</small></span>${ui.stageBadge(l.stage)}</a></li>`).join('')}</ul>` : `<p class="muted pad">${tr('No open lead has picked this unit.')}</p>`;
     const hist = history.length ? `<ul class="feed">${history.map((a) => `<li><span class="avatar avatar--sm">${ui.esc(ui.initials(a.user_name || tr('System')))}</span><p><b>${ui.esc(a.user_name || tr('System'))}</b> ${ui.esc(isAr() ? tx(a.action) : a.action.toLowerCase())} ${a.detail ? `<span>${ui.esc(tx(a.detail))}</span>` : ''}</p><time>${ui.rel(a.created_at)}</time></li>`).join('')}</ul>` : `<p class="muted pad">${tr('No changes yet.')}</p>`;
+    const unitDocs = ui.docPanel({
+      docs: h.docs(req, 'unit', u.id), entity: 'unit', entityId: u.id, csrf, canUpload: h.can(req, 'agent'), canDelete: h.can(req, 'manager'), canConfidential: h.canHR(req),
+      title: tr('Unit documents'), warnDays: Number(db.setting('doc_warn_days')) || 30, sub: ui.esc(tr('Fit-out drawings, handover reports and permits for this unit.')),
+    });
     const plan = ['plaza', 'street'].includes(u.zone) ? ui.card(tr('Where it is'), ui.plan(db.all('SELECT * FROM units'), u.zone === 'plaza' ? 'G' : 'B1').replace(`data-code="${u.code}"`, `data-code="${u.code}" data-focus`)) : '';
     const body = `<div class="kpis kpis--4">${kpis}</div>
 <div class="grid grid--side">
-  <div class="stack">${plan}${ui.card(tr('Leads interested'), interestList)}${ui.card(tr('Offers'), offersList)}${ui.card(tr('History'), hist)}</div>
-  <div class="stack">${holdBox}${lease ? ui.card(tr('Lease'), `<p><a href="/admin/leases/${lease.id}"><b>${ui.esc(lease.brand_name)}</b></a> · ${ui.badge(lease.status, M.LEASE_STATUS[lease.status])}</p><p class="muted">${ui.date(lease.start_date)} – ${ui.date(lease.end_date)}</p>`) : ''}${edit}${u.notes && !edit ? ui.card(tr('Notes'), `<p>${ui.esc(tx(u.notes))}</p>`) : ''}</div>
+  <div class="stack">${plan}${unitDocs}${ui.card(tr('Leads interested'), interestList)}${ui.card(tr('Offers'), offersList)}${ui.card(tr('History'), hist)}</div>
+  <div class="stack">${holdBox}${lease ? ui.card(tr('Lease'), `<p><a href="/admin/leases/${lease.id}"><b>${ui.esc(lease.brand_name)}</b></a> · ${ui.badge(lease.status, M.LEASE_STATUS[lease.status])}</p><p class="muted">${ui.date(lease.start_date)} – ${ui.date(lease.end_date)}</p><p>${ui.btn(tr('Open tenant file'), { href: `/admin/tenants/${lease.brand_id}`, cls: 'btn--ghost btn--sm', ic: 'tenant' })}</p>`) : ''}${edit}${u.notes && !edit ? ui.card(tr('Notes'), `<p>${ui.esc(tx(u.notes))}</p>`) : ''}</div>
 </div>`;
     h.page(req, res, { title: tr('Unit {code}', { code: u.code }), crumbs: [['/admin/units', tr('Units')], [null, u.code]], active: '/admin/units', body });
   });
@@ -239,7 +244,14 @@ module.exports = function property(router, h) {
     const leaseList = leases.length ? `<ul class="list">${leases.map((s) => `<li><a href="/admin/leases/${s.id}"><span class="what"><b>${ui.esc(s.ref)} · ${ui.esc(s.units.map((u) => u.code).join(', '))}</b><small>${ui.date(s.start_date)} – ${ui.date(s.end_date)}</small></span>${ui.badge(s.status, M.LEASE_STATUS[s.status])}</a></li>`).join('')}</ul>` : `<p class="muted pad">${tr('Not a tenant yet.')}</p>`;
     const info = `<dl class="dl"><div><dt>${tr('Category')}</dt><dd>${ui.esc(M.CATEGORIES[b.category])}</dd></div><div><dt>${tr('Origin')}</dt><dd>${ui.esc(tx(b.origin) || '—')}</dd></div><div><dt>${tr('Positioning')}</dt><dd>${ui.esc(tiers()[b.tier] || '—')}</dd></div><div><dt>${tr('Stores in Egypt')}</dt><dd>${b.stores ?? '—'}</dd></div><div><dt>${tr('Website')}</dt><dd>${b.website ? `<a class="ltr" href="${ui.esc(b.website)}" target="_blank" rel="noopener">${ui.esc(b.website.replace(/^https?:\/\//, ''))}</a>` : '—'}</dd></div><div><dt>${tr('Instagram')}</dt><dd><span class="ltr">${ui.esc(b.instagram || '—')}</span></dd></div></dl>${b.notes ? `<blockquote class="quote quote--sm">${ui.esc(tx(b.notes))}</blockquote>` : ''}`;
     const edit = can ? `<details class="pop pop--inline"><summary class="btn btn--ghost btn--sm">${tr('Edit')}</summary>${ui.form(`/admin/brands/${b.id}`, csrf, `${brandFields(b)}${ui.btn(tr('Save'), { cls: 'btn--primary btn--sm' })}`, { cls: 'stack' })}</details>` : '';
-    const body = `<div class="grid grid--side"><div class="stack">${ui.card(tr('Leads'), leadList, { action: can ? ui.btn(tr('o|New lead'), { href: `/admin/leads/new?brand=${b.id}`, cls: 'btn--ghost btn--sm', ic: 'plus' }) : '' })}${ui.card(tr('Leases'), leaseList)}</div><div class="stack">${ui.card(tr('Contacts'), contactList, { action: addContact })}${ui.card(tr('brand|About'), info, { action: edit })}</div></div>`;
+    let banner = '';
+    if (T.isTenant(db, b.id)) {
+      const x = T.tenant(db, b, { warnDays: Number(db.setting('doc_warn_days')) || 30 });
+      const c = x.compliance;
+      const tone = c.expired ? 'rose' : c.score >= 1 ? 'ok' : c.score >= 0.6 ? 'amber' : 'rose';
+      banner = `<a class="tbanner" href="/admin/tenants/${b.id}">${ui.icon('tenant')}<div><b>${ui.esc(tr('ten|Tenant file'))}</b><small>${ui.esc(tr('{done} of {total} on file', { done: c.done, total: c.total }))}${c.expired ? ` · ${ui.esc(tn(c.expired, '{n} document expired', '{n} documents expired'))}` : ''}${c.missing ? ` · ${ui.esc(tn(c.missing, '{n} document missing', '{n} documents missing'))}` : ''}</small></div><span class="tbanner__pct">${Math.round(c.score * 100)}%</span>${ui.meter(c.score, tone)}<span class="btn btn--primary btn--sm">${ui.esc(tr('Open tenant file'))}</span></a>`;
+    }
+    const body = `${banner}<div class="grid grid--side"><div class="stack">${ui.card(tr('Leads'), leadList, { action: can ? ui.btn(tr('o|New lead'), { href: `/admin/leads/new?brand=${b.id}`, cls: 'btn--ghost btn--sm', ic: 'plus' }) : '' })}${ui.card(tr('Leases'), leaseList)}</div><div class="stack">${ui.card(tr('Contacts'), contactList, { action: addContact })}${ui.card(tr('brand|About'), info, { action: edit })}</div></div>`;
     h.page(req, res, { title: b.name, crumbs: [['/admin/brands', tr('Brands')], [null, b.name]], active: '/admin/brands', body });
   });
 
@@ -257,12 +269,12 @@ module.exports = function property(router, h) {
     const b = db.get('SELECT * FROM brands WHERE id = ?', req.params.id);
     if (!b) return next();
     const name = h.str(req.body.name, 120);
-    if (!name) return h.back(req, res, `/admin/brands/${b.id}`, 'error', tr('Name the contact.'));
+    if (!name) return h.back(req, res, h.safeBack(req, `/admin/brands/${b.id}`), 'error', tr('Name the contact.'));
     const primary = req.body.primary ? 1 : db.value('SELECT COUNT(*) FROM contacts WHERE brand_id = ?', b.id) ? 0 : 1;
     if (primary) db.run('UPDATE contacts SET primary_contact = 0 WHERE brand_id = ?', b.id);
     db.run('INSERT INTO contacts (brand_id, name, title, email, phone, primary_contact, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)', b.id, name, h.str(req.body.title, 120) || null, h.str(req.body.email, 200) || null, h.str(req.body.phone, 40) || null, primary, M.now());
     h.log(req, 'Added a contact', 'brand', b.id, `${name} · ${b.name}`);
-    h.back(req, res, `/admin/brands/${b.id}`, 'ok', tr('Contact added.'));
+    h.back(req, res, h.safeBack(req, `/admin/brands/${b.id}`), 'ok', tr('Contact added.'));
   });
 
   router.post('/contacts/:id/delete', R('manager'), (req, res) => {
@@ -272,6 +284,6 @@ module.exports = function property(router, h) {
       db.run('DELETE FROM contacts WHERE id = ?', c.id);
       h.log(req, 'Removed a contact', 'brand', c.brand_id, c.name);
     }
-    h.back(req, res, c ? `/admin/brands/${c.brand_id}` : '/admin/brands', 'ok', tr('Contact removed.'));
+    h.back(req, res, h.safeBack(req, c ? `/admin/brands/${c.brand_id}` : '/admin/brands'), 'ok', tr('Contact removed.'));
   });
 };

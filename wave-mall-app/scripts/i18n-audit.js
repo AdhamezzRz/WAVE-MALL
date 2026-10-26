@@ -17,7 +17,7 @@ const ONLY = args.only ? String(args.only).split(',') : null;
 const MAX = Number(args.max) || 700;
 
 // Latin words that are fine in Arabic UI: product names, file formats, codes.
-const OK_WORDS = new Set(['CSV', 'PDF', 'WALE', 'VAT', 'ID', 'The', 'Wave', 'K', 'English', 'EGP']);
+const OK_WORDS = new Set(['CSV', 'PDF', 'WALE', 'VAT', 'ID', 'The', 'Wave', 'K', 'English', 'EGP', 'JPG', 'PNG', 'WebP', 'Word', 'Excel', 'docx', 'xlsx', 'IBAN', 'EG']);
 
 async function audit({ quiet = false } = {}) {
   const app = createApp({ env: { SITE_URL: 'https://thewavemall.com', ADMIN_DB: ':memory:' }, mail: async () => ({ delivered: true }) });
@@ -52,12 +52,20 @@ async function audit({ quiet = false } = {}) {
     if (db) {
       for (const r of db.all('SELECT name, email, phone FROM users')) Object.values(r).forEach(add);
       for (const r of db.all('SELECT name, website, instagram FROM brands')) Object.values(r).forEach(add);
+      // tenant files: legal and store details as typed, and document titles and file names
+      for (const r of db.all('SELECT legal_name, cr_number, tax_id, vat_number, legal_address, signatory_name, signatory_id, bank_name, iban, store_manager, store_phone, store_email, trading_hours, emergency_name, emergency_phone, insurance_policy FROM brands')) Object.values(r).forEach(add);
+      for (const r of db.all('SELECT title, file_name FROM documents')) Object.values(r).forEach(add);
       for (const r of db.all('SELECT name, email, phone FROM contacts')) Object.values(r).forEach(add);
       for (const r of db.all('SELECT ref, title, message FROM leads')) Object.values(r).forEach(add);
       for (const r of db.all('SELECT name, email, phone, brand, subject, body FROM messages')) Object.values(r).forEach(add);
       for (const r of db.all('SELECT email FROM subscribers')) Object.values(r).forEach(add);
       for (const r of db.all('SELECT ref FROM offers UNION SELECT ref FROM leases UNION SELECT ref FROM invoices')) Object.values(r).forEach(add);
       for (const r of db.all('SELECT code FROM units')) Object.values(r).forEach(add);
+      // contracts register and document vault: company names, their contacts, file names
+      for (const r of db.all('SELECT ref, counterparty, contact_name, contact_phone, contact_email FROM contracts')) Object.values(r).forEach(add);
+      for (const r of db.all('SELECT ref, file_name FROM documents')) Object.values(r).forEach(add);
+      // HR: what is typed about a person (names, contact details, bank and insurance numbers)
+      for (const r of db.all('SELECT code, name, email, phone, address, emergency_name, emergency_phone, bank_name, iban, insurance_no, national_id FROM employees')) Object.values(r).forEach(add);
       for (const r of db.all('SELECT value FROM settings')) Object.values(r).forEach(add);
       add(db.file);
     }

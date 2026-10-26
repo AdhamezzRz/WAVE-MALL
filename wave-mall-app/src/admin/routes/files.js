@@ -99,6 +99,9 @@ module.exports = function files(router, h) {
     });
     store.release(db, d.stored);
     h.log(req, 'Deleted a document', 'document', d.id, d.title);
-    h.back(req, res, h.safeBack(req, '/admin/documents'), 'ok', tr('Document deleted.'));
+    // from the document's own page, go to the version that is current now (or the vault)
+    const back = h.safeBack(req, '/admin/documents');
+    const own = new RegExp(`^/admin/documents/${d.id}(?:[?#].*)?$`).test(back);
+    h.back(req, res, own ? (d.replaces_id ? `/admin/documents/${d.replaces_id}` : '/admin/documents') : back, 'ok', tr('Document deleted.'));
   });
 };

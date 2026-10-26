@@ -9,7 +9,7 @@ const crypto = require('node:crypto');
 const LOGO = require('../logo-paths.json');
 const { floorSvg } = require('../plan');
 const M = require('./model');
-const { t, tn, isAr, lang, dir } = require('./i18n');
+const { t, tn, tx, isAr, lang, dir } = require('./i18n');
 
 const PUBLIC = path.join(__dirname, '..', '..', 'public');
 const v = (f) => crypto.createHash('sha1').update(fs.readFileSync(path.join(PUBLIC, f))).digest('hex').slice(0, 8);
@@ -291,7 +291,7 @@ function textarea(name, label, value = '', { rows = 4, cls = '', placeholder } =
 }
 
 // ---------- documents ----------
-const KB = (n) => (n >= 1048576 ? `${fmt1.format(n / 1048576)} MB` : `${Math.max(1, Math.round(n / 1024))} KB`);
+const KB = (n) => (n >= 1048576 ? `${fmt1.format(n / 1048576)} ${isAr() ? 'ميجابايت' : 'MB'}` : `${Math.max(1, Math.round(n / 1024))} ${isAr() ? 'كيلوبايت' : 'KB'}`);
 // Expiry as a badge: expired, expiring within warnDays, or valid.
 function expiry(iso, { warnDays = 30 } = {}) {
   if (!iso) return '';
@@ -313,13 +313,13 @@ function docPanel({ docs, entity, entityId = null, csrf, canUpload = false, canD
   const rows = docs.length
     ? `<ul class="doclist">${docs.map((d) => `<li>
         ${fileIcon(d.mime)}
-        <div class="doclist__what"><a href="/admin/documents/${d.id}/file" target="_blank" rel="noopener"><b>${esc(d.title)}</b></a>
+        <div class="doclist__what"><a href="/admin/documents/${d.id}/file" target="_blank" rel="noopener"><b>${esc(tx(d.title))}</b></a>
           <small>${esc(M.DOC_KINDS[d.kind] || d.kind)} · ${KB(d.size)} · ${date(d.created_at)}${d.uploader ? ` · ${esc(d.uploader)}` : ''}${d.version > 1 ? ` · ${esc(t('version {n}', { n: d.version }))}` : ''}${d.confidential ? ` · ${icon('shield')}${esc(t('Confidential'))}` : ''}</small></div>
         <div class="doclist__end">${expiry(d.expires_on, { warnDays })}
           <a class="iconbtn" href="/admin/documents/${d.id}" title="${esc(t('Details'))}" aria-label="${esc(t('Details'))}">${icon('file')}</a>
           <a class="iconbtn" href="/admin/documents/${d.id}/file?download=1" title="${esc(t('Download'))}" aria-label="${esc(t('Download'))}">${icon('dl')}</a>
           ${canUpload ? `<button type="button" class="iconbtn" data-replace="${d.id}" title="${esc(t('Upload a new version'))}" aria-label="${esc(t('Upload a new version'))}">${icon('upload')}</button>` : ''}
-          ${canDelete ? form(`/admin/documents/${d.id}/delete`, csrf, `<button class="iconbtn" title="${esc(t('Delete'))}" aria-label="${esc(t('Delete'))}" data-confirm="${esc(t('Delete {name}? This cannot be undone.', { name: d.title }))}">×</button>`) : ''}
+          ${canDelete ? form(`/admin/documents/${d.id}/delete`, csrf, `<button class="iconbtn" title="${esc(t('Delete'))}" aria-label="${esc(t('Delete'))}" data-confirm="${esc(t('Delete {name}? This cannot be undone.', { name: tx(d.title) }))}">×</button>`) : ''}
         </div></li>`).join('')}</ul>`
     : `<p class="muted pad">${esc(t('No documents yet.'))}</p>`;
   const base = `/admin/documents/upload?entity=${encodeURIComponent(entity)}${entity === 'office' ? '' : `&entity_id=${encodeURIComponent(entityId)}`}`;

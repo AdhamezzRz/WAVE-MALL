@@ -140,6 +140,16 @@ function privateRoutes(router, h) {
       ...d.approvals.map((o) => `<li><a href="/admin/offers/${o.id}"><span class="dot dot--amber"></span><span class="what"><b>${ui.esc(tr('dash|Offer {ref} needs approval', { ref: o.ref }))}</b><small>${ui.esc(o.lead_title)} · ${ui.esc(tr('dash|{rate}/m² is below the allowed discount', { rate: ui.money(o.rent_m2) }))}</small></span></a></li>`),
       ...d.holds.map((u) => `<li><a href="/admin/units/${u.id}"><span class="dot dot--amber"></span><span class="what"><b>${ui.esc(tr('dash|Hold on {code} ends {when}', { code: u.code, when: ui.rel(u.hold_until) }))}</b><small>${ui.esc(u.lead_title || '')}</small></span></a></li>`),
       d.overdue.n ? `<li><a href="/admin/billing?status=overdue"><span class="dot dot--rose"></span><span class="what"><b>${ui.esc(tn(d.overdue.n, 'dash|{n} invoice overdue', 'dash|{n} invoices overdue'))}</b><small>${ui.esc(tr('dash|{amount} outstanding', { amount: ui.money(d.overdue.amount) }))}</small></span></a></li>` : '',
+      // the document vault and the contracts register (routes/records.js)
+      ...(() => {
+        if (!h.records) return [];
+        const a = h.records.docAlerts(req);
+        return [
+          a.expired ? `<li><a href="/admin/documents?status=expired"><span class="dot dot--rose"></span><span class="what"><b>${ui.esc(tn(a.expired, 'dash|{n} document has expired', 'dash|{n} documents have expired'))}</b><small>${ui.esc(tr('dash|Renew or replace them in the vault'))}</small></span></a></li>` : '',
+          a.expiring ? `<li><a href="/admin/documents?status=expiring"><span class="dot dot--amber"></span><span class="what"><b>${ui.esc(tn(a.expiring, 'dash|{n} document expires soon', 'dash|{n} documents expire soon'))}</b><small>${ui.esc(tr('dash|Within {n} days', { n: Number(db.setting('doc_warn_days')) || 30 }))}</small></span></a></li>` : '',
+          ...h.records.renewalsDue().slice(0, 3).map((c) => `<li><a href="/admin/contracts/${c.id}"><span class="dot dot--amber"></span><span class="what"><b>${ui.esc(tr('dash|Renewal due: {name}', { name: c.counterparty }))}</b><small>${ui.esc(c.ref)} · ${ui.esc(c.end_date < M.today() ? tr('dash|ended {when}', { when: ui.rel(c.end_date) }) : tr('dash|ends {when}', { when: ui.rel(c.end_date) }))}</small></span></a></li>`),
+        ];
+      })(),
       d.inbox ? `<li><a href="/admin/inbox"><span class="dot dot--sea"></span><span class="what"><b>${ui.esc(tn(d.inbox, 'dash|{n} new message from the website', 'dash|{n} new messages from the website'))}</b><small>${ui.esc(tr('Reply within a working day'))}</small></span></a></li>` : '',
     ].join('');
     const feed = d.feed.length
@@ -182,6 +192,8 @@ function privateRoutes(router, h) {
       ...db.all('SELECT o.id, o.ref, o.status, l.title FROM offers o JOIN leads l ON l.id = o.lead_id WHERE o.ref LIKE ? OR l.title LIKE ? LIMIT 4', like, like).map((r) => ({ type: tr('search|Offer'), label: r.ref, sub: `${r.title} · ${M.OFFER_STATUS[r.status]}`, href: `/admin/offers/${r.id}` })),
       ...db.all('SELECT l.id, l.ref, l.status, b.name FROM leases l JOIN brands b ON b.id = l.brand_id WHERE l.ref LIKE ? OR b.name LIKE ? LIMIT 4', like, like).map((r) => ({ type: tr('search|Lease'), label: r.ref, sub: `${r.name} · ${M.LEASE_STATUS[r.status]}`, href: `/admin/leases/${r.id}` })),
       ...db.all('SELECT id, ref, status FROM invoices WHERE ref LIKE ? LIMIT 3', like).map((r) => ({ type: tr('search|Invoice'), label: r.ref, sub: M.INVOICE_STATUS[r.status], href: `/admin/invoices/${r.id}` })),
+      ...db.all('SELECT id, ref, title, counterparty FROM contracts WHERE ref LIKE ? OR title LIKE ? OR counterparty LIKE ? LIMIT 4', like, like, like).map((r) => ({ type: tr('search|Contract'), label: tx(r.title), sub: `${r.ref} · ${r.counterparty}`, href: `/admin/contracts/${r.id}` })),
+      ...db.all(`SELECT id, ref, title, kind FROM documents WHERE archived = 0 AND (ref LIKE ? OR title LIKE ? OR file_name LIKE ?)${h.canHR(req) ? '' : " AND confidential = 0 AND entity != 'employee'"} LIMIT 5`, like, like, like).map((r) => ({ type: tr('search|Document'), label: tx(r.title), sub: `${r.ref} · ${M.DOC_KINDS[r.kind] || r.kind}`, href: `/admin/documents/${r.id}` })),
     ];
     res.json(out);
   });
