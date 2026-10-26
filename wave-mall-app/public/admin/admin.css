@@ -582,3 +582,5 @@ input, select, textarea { min-width: 0; max-width: 100%; }
   .doc__t th, .doc__t td { padding: 8px 6px; }
   .doc__head { flex-wrap: wrap; gap: 16px; }
 }
+.pick { grid-template-areas: 'x b' 'x s' 'x e' 'x t'; }
+.pick .badge { grid-area: t; justify-self: start; margin-top: 6px; }

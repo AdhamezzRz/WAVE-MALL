@@ -90,7 +90,7 @@ module.exports = function deals(router, h) {
               <div><dt>Effective rate / m²</dt><dd data-o="eff">—</dd></div>
               <div><dt>Against list</dt><dd data-o="disc">—</dd></div>
             </dl>
-            <p class="alert alert--warn" data-o="approval" hidden>Below the allowed discount: a sales manager will need to approve this offer.</p>
+            <p class="alert alert--warn" data-o="approval" hidden>${h.can(req, 'manager') ? 'Below the allowed discount. As a manager, your offer needs no further approval.' : 'Below the allowed discount: a sales manager will need to approve this offer.'}</p>
             <div class="calc__years" data-o="years"></div>
             ${ui.btn(o.id ? 'Save offer' : 'Create offer', { cls: 'btn--primary btn--block' })}
           </div>
