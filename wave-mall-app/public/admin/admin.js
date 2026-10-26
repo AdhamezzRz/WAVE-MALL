@@ -15,6 +15,10 @@
     year: ['Year {n}', 'السنة {n}'],
     free: ['{n} mo free', '{n} شهر مجاني'],
     offline: ['No connection. Try again.', 'لا يوجد اتصال. حاول مرة أخرى.'],
+    uploading: ['Uploading… {p}%', 'جارٍ الرفع… {p}%'],
+    uploaded: ['Uploaded. Refreshing…', 'تم الرفع. جارٍ التحديث…'],
+    uploadFail: ['Upload failed. Try again.', 'تعذّر الرفع. حاول مرة أخرى.'],
+    tooBig: ['That file is larger than 25 MB.', 'حجم الملف أكبر من 25 ميجابايت.'],
   };
   const tr = (k, p = {}) => STR[k][AR ? 1 : 0].replace(/\{(\w+)\}/g, (m, x) => (p[x] ?? m));
   // Arabic counted months: شهر واحد مجاني، شهران مجانيان، 3 أشهر مجانية، 12 شهرًا مجانيًا
@@ -268,6 +272,84 @@
     offer.addEventListener('change', calc);
     calc();
   }
+
+  // ---------- document uploads (routes/files.js) ----------
+  // The file is sent as the request body with its details in the query string, so no form encoding
+  // is needed and a progress bar can follow it.
+  const MAX = 25 * 1024 * 1024;
+  function send(url, file, { onProgress } = {}) {
+    return new Promise((resolve, reject) => {
+      const x = new XMLHttpRequest();
+      x.open('POST', url);
+      x.setRequestHeader('X-CSRF', csrf);
+      x.setRequestHeader('X-File-Name', encodeURIComponent(file.name));
+      x.setRequestHeader('Accept', 'application/json');
+      x.setRequestHeader('Content-Type', 'application/octet-stream');
+      x.upload.onprogress = (e) => e.lengthComputable && onProgress && onProgress(Math.round((e.loaded / e.total) * 100));
+      x.onload = () => {
+        let j = {};
+        try { j = JSON.parse(x.responseText); } catch { /* not JSON */ }
+        if (x.status < 300 && j.ok) resolve(j);
+        else reject(new Error(j.error || tr('uploadFail')));
+      };
+      x.onerror = () => reject(new Error(tr('offline')));
+      x.send(file);
+    });
+  }
+  $$('[data-upload]').forEach((f) => {
+    const input = $('input[type=file]', f);
+    const drop = $('.drop', f);
+    const msg = $('[data-upload-msg]', f);
+    const bar = $('.drop__bar', f);
+    const say = (text, bad) => { msg.hidden = !text; msg.textContent = text || ''; msg.classList.toggle('is-bad', !!bad); };
+    const go = async (file) => {
+      if (!file) return;
+      if (file.size > MAX) return say(tr('tooBig'), true);
+      const q = new URLSearchParams();
+      for (const el of f.elements) if (el.name && el.type !== 'file' && (el.type !== 'checkbox' || el.checked) && el.value) q.set(el.name, el.value);
+      f.classList.add('is-busy');
+      bar.hidden = false;
+      try {
+        await send(`${f.dataset.upload}&${q}`, file, { onProgress: (p) => { say(tr('uploading', { p })); $('b', bar).style.width = `${p}%`; } });
+        say(tr('uploaded'));
+        location.reload();
+      } catch (err) {
+        f.classList.remove('is-busy');
+        bar.hidden = true;
+        say(err.message, true);
+      }
+    };
+    input.addEventListener('change', () => go(input.files[0]));
+    ['dragenter', 'dragover'].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add('is-over'); }));
+    ['dragleave', 'drop'].forEach((ev) => drop.addEventListener(ev, () => drop.classList.remove('is-over')));
+    drop.addEventListener('drop', (e) => { e.preventDefault(); go(e.dataTransfer.files[0]); });
+    f.addEventListener('submit', (e) => e.preventDefault());
+  });
+  // "Upload a new version" on a document row: same record, replaces the old file (kept in history).
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-replace]');
+    if (!b) return;
+    const panel = b.closest('.docs');
+    const base = panel && $('[data-upload]', panel);
+    if (!base) return;
+    const pick = document.createElement('input');
+    pick.type = 'file';
+    pick.accept = $('input[type=file]', base).accept;
+    pick.onchange = async () => {
+      const file = pick.files[0];
+      if (!file) return;
+      if (file.size > MAX) return toast(tr('tooBig'), 'error');
+      b.disabled = true;
+      try {
+        await send(`${base.dataset.upload}&replaces=${encodeURIComponent(b.dataset.replace)}`, file, { onProgress: (p) => { b.title = tr('uploading', { p }); } });
+        location.reload();
+      } catch (err) {
+        b.disabled = false;
+        toast(err.message, 'error');
+      }
+    };
+    pick.click();
+  });
 
   // ---------- small conveniences ----------
   // Select-all for lists with checkboxes, and auto-submit filters.

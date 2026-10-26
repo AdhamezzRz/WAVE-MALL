@@ -14,8 +14,10 @@ const M = require('./model');
 function mount(app, { env = process.env } = {}) {
   const db = dbm.open(env);
   ui.setCurrency(db.setting('currency'));
+  owner(db, env);
 
   const h = helpers(db);
+  h.files = require('./files').store(env);
   const router = express.Router();
   router.use((req, res, next) => {
     res.set('X-Robots-Tag', 'noindex, nofollow');
@@ -43,6 +45,15 @@ function mount(app, { env = process.env } = {}) {
   require('./routes/deals')(router, h);
   require('./routes/property')(router, h);
   require('./routes/office')(router, h);
+  require('./routes/files')(router, h);
+  for (const mod of ['records', 'tenants', 'hr']) {
+    try {
+      require.resolve(`./routes/${mod}`);
+    } catch {
+      continue;
+    }
+    require(`./routes/${mod}`)(router, h);
+  }
 
   app.use('/admin', express.static(path.join(__dirname, '..', '..', 'public', 'admin'), { index: false, redirect: false, maxAge: '365d', immutable: true }));
   app.use('/admin', router);
@@ -56,6 +67,9 @@ function helpers(db) {
     approvals: auth.allowed(user, 'manager') ? db.value("SELECT COUNT(*) FROM offers WHERE status = 'pending'") : 0,
     tasks: db.value("SELECT COUNT(*) FROM activities WHERE user_id = ? AND done_at IS NULL AND due_at IS NOT NULL AND due_at < ? AND type NOT IN ('viewing','meeting')", user.id, M.addDays(M.today(), 1)),
     overdue: db.value("SELECT COUNT(*) FROM invoices WHERE status IN ('open','partial') AND due_date < ?", M.today()),
+    docs: db.value(`SELECT COUNT(*) FROM documents WHERE archived = 0 AND expires_on IS NOT NULL AND expires_on <= ? ${user.role === 'admin' || user.hr ? '' : "AND confidential = 0 AND entity != 'employee'"}`, M.addDays(M.today(), Number(db.setting('doc_warn_days')) || 30)),
+    renewals: db.value("SELECT COUNT(*) FROM contracts WHERE status = 'active' AND end_date IS NOT NULL AND date(end_date, '-' || notice_days || ' days') <= ?", M.today()),
+    leave: user.role === 'admin' || user.hr ? db.value("SELECT COUNT(*) FROM leave_requests WHERE status = 'pending'") : 0,
   });
   const h = {
     db, ui, M, auth,
@@ -69,6 +83,22 @@ function helpers(db) {
       res.redirect(303, url);
     },
     can: (req, min) => auth.allowed(req.user, min),
+    R: (min) => auth.requireRole(min),
+    // HR: administrators, and anyone given HR access on the Team page
+    canHR: (req) => !!req.user && (req.user.role === 'admin' || !!req.user.hr),
+    RH: (req, res, next) => (req.user && (req.user.role === 'admin' || req.user.hr) ? next() : auth.denied(req, res)),
+    // where a form posted from, if it was an admin page; else the fallback
+    safeBack: (req, fallback) => {
+      const ref = String(req.get('referer') || '');
+      const m = ref.match(/^https?:\/\/[^/]+(\/admin(?:[/?#].*)?)$/);
+      return m && !m[1].startsWith('//') ? m[1].replace(/#.*$/, '') : fallback;
+    },
+    // the current documents filed against a record, as this person may see them
+    docs: (req, entity, id) => db.all(
+      `SELECT d.*, u.name uploader FROM documents d LEFT JOIN users u ON u.id = d.uploaded_by
+       WHERE d.entity = ? AND d.entity_id IS ? AND d.archived = 0 ${h.canHR(req) ? '' : "AND d.confidential = 0 AND d.entity != 'employee'"} ORDER BY d.kind, d.created_at DESC`,
+      entity, entity === 'office' ? null : Number(id),
+    ),
     log: (req, action, entity, id, detail) => db.audit(req.user, action, entity, id, detail, req.ip),
     str: (v, max = 500) => String(v ?? '').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '').trim().slice(0, max),
     int: (v) => (v === '' || v === undefined || v === null || Number.isNaN(Number(v)) ? null : Math.round(Number(v))),
@@ -90,6 +120,28 @@ function helpers(db) {
     users: () => db.all('SELECT id, name, role FROM users WHERE active = 1 ORDER BY name'),
   };
   return h;
+}
+
+// A first account from the environment, so the owner can sign in without the setup page:
+// OWNER_EMAIL and OWNER_PASSWORD (and optionally OWNER_NAME). Created once as an administrator
+// with HR access; set OWNER_RESET=1 to reset that account's password to OWNER_PASSWORD.
+function owner(db, env) {
+  const email = String(env.OWNER_EMAIL || '').trim();
+  const password = String(env.OWNER_PASSWORD || '');
+  if (!email || !password) return;
+  if (password.length < 10) {
+    console.warn('[admin] OWNER_PASSWORD must be at least 10 characters; owner account not created.');
+    return;
+  }
+  const u = db.get('SELECT id FROM users WHERE email = ? COLLATE NOCASE', email);
+  if (!u) {
+    const r = db.run("INSERT INTO users (name, email, role, password_hash, hr, created_at) VALUES (?, ?, 'admin', ?, 1, ?)", String(env.OWNER_NAME || 'Owner').slice(0, 120), email, dbm.hashPassword(password), M.now());
+    db.audit(null, 'Owner account created', 'user', Number(r.lastInsertRowid), email);
+  } else if (env.OWNER_RESET === '1') {
+    db.run("UPDATE users SET password_hash = ?, active = 1, role = 'admin', hr = 1 WHERE id = ?", dbm.hashPassword(password), u.id);
+    db.run('DELETE FROM sessions WHERE user_id = ?', u.id);
+    db.audit(null, 'Owner password reset', 'user', u.id, email);
+  }
 }
 
 // Website forms: every submission lands in the inbox; leasing enquiries also open a lead.

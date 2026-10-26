@@ -42,8 +42,25 @@ const LEADS = [
   ['Sands & Co.', 'fashion', 'website', 'lost', 2, [150, 200], null, 70, ['Yasmine Adly', 'Buyer'], 'mid'],
 ];
 
-function load(db, admin) {
+// Sample data for the newer modules lives beside this file (demo-records.js, demo-tenants.js, demo-hr.js).
+// Each exports load(db, admin, { files }) and clear(db, { files }).
+const EXTRAS = ['demo-tenants', 'demo-records', 'demo-hr'];
+const extras = () => EXTRAS.flatMap((m) => {
+  try {
+    return [require(`./${m}`)];
+  } catch (err) {
+    if (err.code === 'MODULE_NOT_FOUND' && String(err.message).includes(m)) return [];
+    throw err;
+  }
+});
+
+function load(db, admin, opts = {}) {
   if (db.value('SELECT COUNT(*) FROM leads WHERE demo = 1')) return;
+  loadSales(db, admin);
+  for (const x of extras()) x.load(db, admin, opts);
+}
+
+function loadSales(db, admin) {
   const T = M.today();
   // Past moments land in office hours (09:00–17:30 UTC+3) so the calendar reads like a real week.
   const ago = (d) => {
@@ -188,7 +205,13 @@ function load(db, admin) {
   });
 }
 
-function clear(db) {
+function clear(db, opts = {}) {
+  for (const x of extras().reverse()) x.clear(db, opts);
+  // any sample document left, and its file once nothing else uses it
+  const docs = db.all('SELECT id, stored FROM documents WHERE demo = 1');
+  db.run('UPDATE documents SET replaces_id = NULL WHERE replaces_id IN (SELECT id FROM documents WHERE demo = 1)');
+  db.run('DELETE FROM documents WHERE demo = 1');
+  if (opts.files) for (const d of docs) opts.files.release(db, d.stored);
   db.tx(() => {
     const leaseIds = db.all('SELECT id FROM leases WHERE demo = 1').map((r) => r.id);
     for (const id of leaseIds) {

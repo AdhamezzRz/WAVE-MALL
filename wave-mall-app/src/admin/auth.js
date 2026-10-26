@@ -66,7 +66,7 @@ function load(db) {
     if (t) {
       const s = db.get('SELECT * FROM sessions WHERE id = ?', sha(t));
       if (s && s.expires_at > now()) {
-        const user = db.get('SELECT id, name, email, role, title, phone, active, lang FROM users WHERE id = ?', s.user_id);
+        const user = db.get('SELECT id, name, email, role, title, phone, active, lang, hr FROM users WHERE id = ?', s.user_id);
         if (user && user.active) {
           req.user = user;
           req.session = s;
@@ -89,6 +89,12 @@ function requireUser(req, res, next) {
 }
 
 const allowed = (user, min) => !!user && RANK[user.role] >= RANK[min];
+// The answer when someone may not do something: JSON for scripts, a message and a way back for pages.
+function denied(req, res) {
+  if (req.accepts(['html', 'json']) === 'json' && req.method !== 'GET') return res.status(403).json({ ok: false, error: t('Your role does not allow that.') });
+  flash(req, res, 'error', t('Your role does not allow that.'));
+  return res.redirect(303, req.get('referer') && String(req.get('referer')).includes('/admin') && !String(req.get('referer')).endsWith(req.originalUrl) ? req.get('referer') : '/admin');
+}
 function requireRole(min) {
   return (req, res, next) => {
     if (allowed(req.user, min)) return next();
@@ -157,4 +163,4 @@ function setLanguage(db, req, res, l) {
   return v;
 }
 
-module.exports = { language, setLanguage, cookies, setCookie, startSession, endSession, load, requireUser, requireRole, allowed, csrf, flash, takeFlash, loginToken, checkLoginToken, RANK, token };
+module.exports = { denied, language, setLanguage, cookies, setCookie, startSession, endSession, load, requireUser, requireRole, allowed, csrf, flash, takeFlash, loginToken, checkLoginToken, RANK, token };

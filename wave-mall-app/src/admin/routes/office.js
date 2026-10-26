@@ -276,12 +276,12 @@ ${ui.card(tr('Opening news list'), ui.table([{ label: tr('Email'), render: (s) =
   });
 
   router.post('/settings/demo', R('admin'), (req, res) => {
-    demo.load(db, req.user);
+    demo.load(db, req.user, { files: h.files });
     h.log(req, 'Loaded sample data', 'settings');
     h.back(req, res, '/admin', 'ok', tr('Sample data loaded. Explore freely, then clear it in Settings.'));
   });
   router.post('/settings/demo/clear', R('admin'), (req, res) => {
-    demo.clear(db);
+    demo.clear(db, { files: h.files });
     h.log(req, 'Cleared sample data', 'settings');
     h.back(req, res, '/admin/settings', 'ok', tr('Sample data cleared.'));
   });

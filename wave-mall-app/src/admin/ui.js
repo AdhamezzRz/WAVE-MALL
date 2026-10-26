@@ -115,6 +115,15 @@ const I = {
   phone: 'M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2',
   dl: 'M12 4v12M7 11l5 5 5-5M5 20h14',
   globe: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18',
+  folder: 'M3 6h6l2 2h10v11H3z',
+  contract: 'M7 3h7l5 5v13H7zM14 3v5h5M10 17c1.5-2 2.5-2 3 0s1.5 2 3 0',
+  tenant: 'M4 10h16v10H4zM3 10l2-6h14l2 6M9 20v-5h6v5',
+  people: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6M3 20a6 6 0 0 1 12 0M16 11a3 3 0 1 0 0-6M17 14a6 6 0 0 1 4 6',
+  leave: 'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4M9 15l6 0',
+  wallet: 'M3 7h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H3zM3 7l12-4 2 4M17 13h2',
+  upload: 'M12 16V4M7 9l5-5 5 5M5 20h14',
+  file: 'M7 3h7l5 5v13H7zM14 3v5h5',
+  shield: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z',
 };
 // Icons that point somewhere are mirrored in Arabic (see .ic--dir in admin.css).
 const DIRECTIONAL = new Set(['arrow', 'out']);
@@ -126,8 +135,10 @@ const mark = (cls = '') => `<svg class="mark ${cls}" viewBox="163 97 207 128" ar
 const NAV = [
   ['Overview', [['/admin', 'Dashboard', 'dash']]],
   ['Sales', [['/admin/inbox', 'Inbox', 'inbox', 'inbox'], ['/admin/leads', 'Leads', 'leads'], ['/admin/pipeline', 'Pipeline', 'pipe'], ['/admin/offers', 'Offers', 'offer', 'approvals'], ['/admin/calendar', 'Calendar & tasks', 'cal', 'tasks']]],
-  ['Property', [['/admin/units', 'Units & plan', 'unit'], ['/admin/brands', 'Brands', 'brand']]],
+  ['Property', [['/admin/units', 'Units & plan', 'unit'], ['/admin/brands', 'Brands', 'brand'], ['/admin/tenants', 'Tenant files', 'tenant']]],
   ['Revenue', [['/admin/leases', 'Leases', 'lease'], ['/admin/billing', 'Billing', 'bill', 'overdue']]],
+  ['Records', [['/admin/documents', 'Documents', 'folder', 'docs'], ['/admin/contracts', 'Contracts', 'contract', 'renewals']]],
+  ['People', [['/admin/hr', 'Employees', 'people', null, 'hr'], ['/admin/hr/leave', 'nav|Leave', 'leave', 'leave', 'hr'], ['/admin/hr/payroll', 'Payroll', 'wallet', null, 'hr']]],
   ['Insight', [['/admin/reports', 'Reports', 'report']]],
   ['Office', [['/admin/team', 'Team & targets', 'team'], ['/admin/subscribers', 'Subscribers', 'mail'], ['/admin/settings', 'Settings', 'gear', null, 'admin'], ['/admin/audit', 'Activity log', 'log', null, 'manager']]],
 ];
@@ -141,11 +152,14 @@ const langLink = (path) => `<a class="langbtn" href="${esc(path)}${path.includes
 const brandName = () => t('The Wave Leasing');
 
 function layout({ title, crumbs = [], active = '', body, user, csrf, nonce, flash, actions = '', counts = {}, wide = false, path = '' }) {
+  const allowedTo = (min) => !min || (min === 'hr' ? user.role === 'admin' || !!user.hr : RANK[user.role] >= RANK[min]);
+  // the most specific menu entry wins (/admin/hr/leave over /admin/hr)
+  const best = NAV.flatMap(([, items]) => items.map(([href]) => href)).filter((href) => (href === '/admin' ? active === '/admin' : active === href || active.startsWith(`${href}/`) || active.startsWith(`${href}?`))).sort((a, b) => b.length - a.length)[0];
   const nav = NAV.map(([group, items]) => {
     const links = items
-      .filter(([, , , , min]) => !min || RANK[user.role] >= RANK[min])
+      .filter(([, , , , min]) => allowedTo(min))
       .map(([href, label, ic, count]) => {
-        const on = href === '/admin' ? active === '/admin' : active.startsWith(href);
+        const on = href === best;
         const c = count && counts[count] ? `<b class="nav__count">${counts[count]}</b>` : '';
         return `<a href="${href}" class="nav__a${on ? ' is-on' : ''}"${on ? ' aria-current="page"' : ''}>${icon(ic)}<span>${esc(t(label))}</span>${c}</a>`;
       })
@@ -276,6 +290,56 @@ function textarea(name, label, value = '', { rows = 4, cls = '', placeholder } =
   return `<label class="f ${cls}"><span class="f__l">${esc(label)}</span><textarea ${attr({ name, rows, placeholder })}>${esc(value)}</textarea></label>`;
 }
 
+// ---------- documents ----------
+const KB = (n) => (n >= 1048576 ? `${fmt1.format(n / 1048576)} MB` : `${Math.max(1, Math.round(n / 1024))} KB`);
+// Expiry as a badge: expired, expiring within warnDays, or valid.
+function expiry(iso, { warnDays = 30 } = {}) {
+  if (!iso) return '';
+  const days = Math.round((Date.parse(`${iso.slice(0, 10)}T00:00:00Z`) - Date.parse(`${new Date().toISOString().slice(0, 10)}T00:00:00Z`)) / 86400000);
+  if (days < 0) return badge('expired', t('Expired {date}', { date: date(iso) }), 'rose');
+  if (days <= warnDays) return badge('soon', t('Expires {when}', { when: rel(iso) }), 'amber');
+  return badge('valid', t('Valid until {date}', { date: date(iso) }), 'mute');
+}
+const fileIcon = (mime) => `<span class="docic docic--${/pdf/.test(mime) ? 'pdf' : /image/.test(mime) ? 'img' : /sheet/.test(mime) ? 'xls' : 'doc'}">${/pdf/.test(mime) ? 'PDF' : /image/.test(mime) ? 'IMG' : /sheet/.test(mime) ? 'XLS' : 'DOC'}</span>`;
+
+// The documents card for any record: a checklist of what is required, the files on record,
+// and an upload form (admin.js sends the file; see routes/files.js).
+function docPanel({ docs, entity, entityId = null, csrf, canUpload = false, canDelete = false, canConfidential = false, title = null, required = [], warnDays = 30, sub = '', cls = '' }) {
+  const kinds = M.DOC_GROUPS[entity] || ['other'];
+  const have = new Set(docs.filter((d) => !d.expires_on || d.expires_on >= new Date().toISOString().slice(0, 10)).map((d) => d.kind));
+  const check = required.length
+    ? `<ul class="checklist">${required.map((k) => `<li class="${have.has(k) ? 'is-ok' : 'is-missing'}">${icon(have.has(k) ? 'check' : 'log')}<span>${esc(M.DOC_KINDS[k])}</span></li>`).join('')}</ul>`
+    : '';
+  const rows = docs.length
+    ? `<ul class="doclist">${docs.map((d) => `<li>
+        ${fileIcon(d.mime)}
+        <div class="doclist__what"><a href="/admin/documents/${d.id}/file" target="_blank" rel="noopener"><b>${esc(d.title)}</b></a>
+          <small>${esc(M.DOC_KINDS[d.kind] || d.kind)} · ${KB(d.size)} · ${date(d.created_at)}${d.uploader ? ` · ${esc(d.uploader)}` : ''}${d.version > 1 ? ` · ${esc(t('version {n}', { n: d.version }))}` : ''}${d.confidential ? ` · ${icon('shield')}${esc(t('Confidential'))}` : ''}</small></div>
+        <div class="doclist__end">${expiry(d.expires_on, { warnDays })}
+          <a class="iconbtn" href="/admin/documents/${d.id}" title="${esc(t('Details'))}" aria-label="${esc(t('Details'))}">${icon('file')}</a>
+          <a class="iconbtn" href="/admin/documents/${d.id}/file?download=1" title="${esc(t('Download'))}" aria-label="${esc(t('Download'))}">${icon('dl')}</a>
+          ${canUpload ? `<button type="button" class="iconbtn" data-replace="${d.id}" title="${esc(t('Upload a new version'))}" aria-label="${esc(t('Upload a new version'))}">${icon('upload')}</button>` : ''}
+          ${canDelete ? form(`/admin/documents/${d.id}/delete`, csrf, `<button class="iconbtn" title="${esc(t('Delete'))}" aria-label="${esc(t('Delete'))}" data-confirm="${esc(t('Delete {name}? This cannot be undone.', { name: d.title }))}">×</button>`) : ''}
+        </div></li>`).join('')}</ul>`
+    : `<p class="muted pad">${esc(t('No documents yet.'))}</p>`;
+  const base = `/admin/documents/upload?entity=${encodeURIComponent(entity)}${entity === 'office' ? '' : `&entity_id=${encodeURIComponent(entityId)}`}`;
+  const up = canUpload
+    ? `<form class="upload" data-upload="${esc(base)}" novalidate>
+        <div class="fields">
+          ${select('kind', t('Type'), kinds.map((k) => [k, M.DOC_KINDS[k]]), kinds[0])}
+          ${input('title', t('Title'), '', { placeholder: t('e.g. Commercial register 2026') })}
+          ${input('issued_on', t('Issued'), '', { type: 'date' })}
+          ${input('expires_on', t('Expires'), '', { type: 'date' })}
+        </div>
+        ${canConfidential && entity !== 'employee' ? `<label class="check"><input type="checkbox" name="confidential" value="1"> ${esc(t('Confidential: HR and administrators only'))}</label>` : ''}
+        <label class="drop"><input type="file" name="file" accept=".pdf,.jpg,.jpeg,.png,.webp,.docx,.xlsx,application/pdf,image/*">${icon('upload')}<span data-drop-label>${esc(t('Drop a file here, or click to choose'))}</span><small>${esc(t('PDF, JPG, PNG, WebP, Word or Excel · up to 25 MB'))}</small><i class="drop__bar" hidden><b></b></i></label>
+        <p class="upload__msg" data-upload-msg hidden></p>
+      </form>`
+    : '';
+  const head = `${title ?? t('Documents')}`;
+  return card(head, `${check}${rows}${up ? `<details class="upload-box"${docs.length ? '' : ' open'}><summary>${icon('plus')}<span>${esc(t('Add a document'))}</span></summary>${up}</details>` : ''}`, { sub, cls: `docs ${cls}` });
+}
+
 // ---------- charts (SVG) ----------
 function bars(series, { key, label, h = 170, fmtv = n0, tone = 'forest', compare = null }) {
   const max = Math.max(1, ...series.map((x) => Math.max(x[key], compare ? x[compare] || 0 : 0)));
@@ -333,7 +397,7 @@ function plan(units, level, { link = true } = {}) {
 const planLegend = () => `<ul class="legend legend--row">${Object.entries(M.UNIT_STATUS).map(([k, l]) => `<li><i class="st-${k}"></i><span>${esc(l)}</span></li>`).join('')}</ul>`;
 
 module.exports = {
-  esc, attr, n0, money, local, m2, pct, date, dt, rel, initials, icon, logo, mark, setCurrency, curLabel, monthName, monthYear, weekdays, langLink, langForm, t, tn,
+  esc, attr, n0, money, local, m2, pct, date, dt, rel, initials, icon, logo, mark, setCurrency, docPanel, expiry, KB, fileIcon, curLabel, monthName, monthYear, weekdays, langLink, langForm, t, tn,
   layout, bare, badge, stageBadge, unitBadge, kpi, trend, card, table, empty, btn, hidden, form, input, select, textarea,
   bars, funnel, donut, meter, plan, planLegend, TONE, RANK,
 };

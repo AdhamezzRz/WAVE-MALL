@@ -40,6 +40,29 @@ const INVOICE_STATUS = labels({ open: 'invoice|Open', partial: 'invoice|Part pai
 const ACTIVITY_TYPES = labels({ note: 'activity|Note', call: 'activity|Call', email: 'activity|Email', whatsapp: 'activity|WhatsApp', meeting: 'activity|Meeting', viewing: 'activity|Viewing', task: 'activity|Task' });
 // Stored in English (leads.lost_reason); shown with tx().
 const LOST_REASONS = ['Price', 'Unit size', 'Location', 'Timing', 'Chose another mall', 'No response', 'Other'];
+// The document vault: what a document is, grouped by what it belongs to.
+const DOC_KINDS = labels({
+  commercial_register: 'Commercial register', tax_card: 'Tax card', vat_certificate: 'VAT certificate', signatory_id: 'Signatory ID',
+  power_of_attorney: 'Power of attorney', insurance: 'Insurance policy', trademark: 'Trademark registration', fitout_drawings: 'Fit-out drawings',
+  permit: 'Permit or licence', brand_profile: 'Brand profile',
+  lease_contract: 'Signed lease', addendum: 'Addendum', handover: 'Handover report', guarantee: 'Bank guarantee', notice: 'Notice or letter',
+  service_contract: 'Service contract',
+  employment_contract: 'Employment contract', national_id: 'National ID', cv: 'CV', certificate: 'Certificate', medical: 'Medical certificate', insurance_form: 'Social insurance form',
+  policy: 'Policy', licence: 'Mall licence',
+  other: 'doc|Other',
+});
+const DOC_GROUPS = {
+  brand: ['commercial_register', 'tax_card', 'vat_certificate', 'signatory_id', 'power_of_attorney', 'insurance', 'trademark', 'fitout_drawings', 'permit', 'brand_profile', 'other'],
+  lease: ['lease_contract', 'addendum', 'handover', 'guarantee', 'notice', 'other'],
+  contract: ['service_contract', 'addendum', 'insurance', 'guarantee', 'notice', 'other'],
+  employee: ['employment_contract', 'national_id', 'cv', 'certificate', 'medical', 'insurance_form', 'other'],
+  unit: ['fitout_drawings', 'handover', 'permit', 'other'],
+  office: ['policy', 'licence', 'insurance', 'permit', 'other'],
+};
+// What every tenant must have on file (plus a signed lease on each active lease).
+const TENANT_REQUIRED = ['commercial_register', 'tax_card', 'insurance', 'signatory_id'];
+const DOC_ENTITIES = labels({ brand: 'Brand', lease: 'Lease', contract: 'Contract', employee: 'Employee', unit: 'Unit', office: 'The mall' });
+
 const ROLES = labels({ admin: 'Administrator', manager: 'Sales manager', agent: 'Leasing agent', viewer: 'role|Viewer' });
 
 // ---------- dates ----------
@@ -314,7 +337,7 @@ function reports(db) {
 }
 
 module.exports = {
-  STAGES, OPEN_STAGES, stage, stageEn, CATEGORIES, SOURCES, ZONES, UNIT_STATUS, OFFER_STATUS, LEASE_STATUS, INVOICE_STATUS, ACTIVITY_TYPES, LOST_REASONS, ROLES,
+  STAGES, OPEN_STAGES, stage, stageEn, CATEGORIES, DOC_KINDS, DOC_GROUPS, TENANT_REQUIRED, DOC_ENTITIES, SOURCES, ZONES, UNIT_STATUS, OFFER_STATUS, LEASE_STATUS, INVOICE_STATUS, ACTIVITY_TYPES, LOST_REASONS, ROLES,
   addMonths, addDays, daysBetween, monthKey, num, listRates, monthly, schedule, needsApproval, invoicePlan, score, estimateValue,
   dashboard, reports, leaseUnits, offerUnits, leaseArea, currentAnnualRent, now, today,
 };

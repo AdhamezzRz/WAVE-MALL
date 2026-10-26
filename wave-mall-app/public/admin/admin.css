@@ -634,3 +634,43 @@ input, select, textarea { min-width: 0; max-width: 100%; }
   [dir="rtl"] .kpi__value { white-space: normal; font-size: 20px; line-height: 1.25; }
 }
 [dir="rtl"] .pick span { font-size: 11.5px; white-space: nowrap; }
+
+/* ---------- documents ---------- */
+.checklist { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.checklist li { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px 5px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+.checklist .ic { width: 14px; height: 14px; }
+.checklist .is-ok { background: rgb(61 122 90 / .12); color: var(--ok); }
+.checklist .is-missing { background: rgb(180 84 75 / .1); color: var(--rose); }
+.doclist > li { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+.doclist > li:last-child { border-bottom: 0; }
+.doclist__what { flex: 1; min-width: 0; }
+.doclist__what a { text-decoration: none; }
+.doclist__what a:hover b { text-decoration: underline; }
+.doclist__what b { display: block; font-weight: 600; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.doclist__what small { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+.doclist__what small .ic { width: 12px; height: 12px; }
+.doclist__end { display: flex; align-items: center; gap: 2px; flex: none; }
+.doclist__end .badge { margin-inline-end: 6px; }
+.doclist__end form { display: contents; }
+.docic { display: grid; place-items: center; width: 38px; height: 46px; border-radius: 4px; font: 700 9.5px/1 var(--sans); letter-spacing: .06em; color: #fff; flex: none; position: relative; clip-path: polygon(0 0, 72% 0, 100% 22%, 100% 100%, 0 100%); }
+.docic--pdf { background: #b4544b; } .docic--img { background: var(--sky); } .docic--xls { background: var(--ok); } .docic--doc { background: #3d6175; }
+.upload-box { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 12px; }
+.upload-box > summary { list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 13px; color: var(--forest); }
+.upload-box > summary::-webkit-details-marker { display: none; }
+.upload-box > summary .ic { width: 16px; height: 16px; }
+.upload { display: grid; gap: 12px; margin-top: 12px; }
+.drop { position: relative; display: grid; justify-items: center; gap: 6px; padding: 22px 16px; border: 1.5px dashed var(--line-2); border-radius: var(--r); background: var(--stone); text-align: center; cursor: pointer; transition: border-color .2s, background .2s; }
+.drop:hover, .drop.is-over { border-color: var(--forest); background: rgb(162 197 185 / .18); }
+.drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.drop .ic { width: 22px; height: 22px; color: var(--forest); }
+.drop span { font-weight: 600; font-size: 13px; }
+.drop small { font-size: 11.5px; color: var(--ink-3); }
+.drop__bar { display: block; width: 100%; height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
+.drop__bar b { display: block; height: 100%; width: 0; background: var(--forest); transition: width .2s; }
+.upload.is-busy .drop { pointer-events: none; opacity: .75; }
+.upload__msg { font-size: 12.5px; color: var(--ok); }
+.upload__msg.is-bad { color: var(--rose); }
+@media (max-width: 860px) {
+  .doclist > li { flex-wrap: wrap; }
+  .doclist__end { width: 100%; justify-content: flex-end; }
+}

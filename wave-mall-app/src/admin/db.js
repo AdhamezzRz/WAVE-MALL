@@ -126,6 +126,88 @@ const SCHEMA = [
   `,
   // 2: each person's language for the office (en or ar)
   `ALTER TABLE users ADD COLUMN lang TEXT;`,
+  // 3: tenant files, the document vault, the contracts register and HR
+  `
+  ALTER TABLE users ADD COLUMN hr INTEGER NOT NULL DEFAULT 0;
+
+  ALTER TABLE brands ADD COLUMN legal_name TEXT;
+  ALTER TABLE brands ADD COLUMN cr_number TEXT;
+  ALTER TABLE brands ADD COLUMN tax_id TEXT;
+  ALTER TABLE brands ADD COLUMN vat_number TEXT;
+  ALTER TABLE brands ADD COLUMN legal_address TEXT;
+  ALTER TABLE brands ADD COLUMN signatory_name TEXT;
+  ALTER TABLE brands ADD COLUMN signatory_title TEXT;
+  ALTER TABLE brands ADD COLUMN signatory_id TEXT;
+  ALTER TABLE brands ADD COLUMN bank_name TEXT;
+  ALTER TABLE brands ADD COLUMN iban TEXT;
+  ALTER TABLE brands ADD COLUMN store_manager TEXT;
+  ALTER TABLE brands ADD COLUMN store_phone TEXT;
+  ALTER TABLE brands ADD COLUMN store_email TEXT;
+  ALTER TABLE brands ADD COLUMN opening_date TEXT;
+  ALTER TABLE brands ADD COLUMN trading_hours TEXT;
+  ALTER TABLE brands ADD COLUMN emergency_name TEXT;
+  ALTER TABLE brands ADD COLUMN emergency_phone TEXT;
+  ALTER TABLE brands ADD COLUMN insurance_policy TEXT;
+  ALTER TABLE brands ADD COLUMN insurance_expiry TEXT;
+  ALTER TABLE brands ADD COLUMN updated_at TEXT;
+
+  CREATE TABLE documents (
+    id INTEGER PRIMARY KEY, ref TEXT NOT NULL UNIQUE,
+    entity TEXT NOT NULL, entity_id INTEGER, kind TEXT NOT NULL DEFAULT 'other', title TEXT NOT NULL,
+    file_name TEXT NOT NULL, mime TEXT NOT NULL, size INTEGER NOT NULL, sha256 TEXT NOT NULL, stored TEXT NOT NULL,
+    issued_on TEXT, expires_on TEXT, notes TEXT, confidential INTEGER NOT NULL DEFAULT 0,
+    version INTEGER NOT NULL DEFAULT 1, replaces_id INTEGER REFERENCES documents(id) ON DELETE SET NULL, archived INTEGER NOT NULL DEFAULT 0,
+    uploaded_by INTEGER REFERENCES users(id) ON DELETE SET NULL, demo INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL
+  );
+  CREATE INDEX documents_entity ON documents(entity, entity_id);
+  CREATE INDEX documents_expiry ON documents(expires_on);
+
+  CREATE TABLE contracts (
+    id INTEGER PRIMARY KEY, ref TEXT NOT NULL UNIQUE, title TEXT NOT NULL, counterparty TEXT NOT NULL,
+    kind TEXT NOT NULL DEFAULT 'service', status TEXT NOT NULL DEFAULT 'active',
+    start_date TEXT, end_date TEXT, notice_days INTEGER NOT NULL DEFAULT 60, auto_renew INTEGER NOT NULL DEFAULT 0,
+    value REAL NOT NULL DEFAULT 0, billing TEXT NOT NULL DEFAULT 'monthly',
+    owner_id INTEGER REFERENCES users(id) ON DELETE SET NULL, contact_name TEXT, contact_phone TEXT, contact_email TEXT, notes TEXT,
+    demo INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL, updated_at TEXT NOT NULL
+  );
+
+  CREATE TABLE departments (id INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE, head_id INTEGER, sort INTEGER NOT NULL DEFAULT 0, demo INTEGER NOT NULL DEFAULT 0);
+  CREATE TABLE employees (
+    id INTEGER PRIMARY KEY, code TEXT NOT NULL UNIQUE, name TEXT NOT NULL, name_ar TEXT,
+    national_id TEXT, birth_date TEXT, gender TEXT, nationality TEXT, marital_status TEXT,
+    phone TEXT, email TEXT, address TEXT,
+    department_id INTEGER REFERENCES departments(id) ON DELETE SET NULL, position TEXT,
+    manager_id INTEGER REFERENCES employees(id) ON DELETE SET NULL,
+    hire_date TEXT NOT NULL, employment_type TEXT NOT NULL DEFAULT 'full_time', contract_end TEXT, probation_end TEXT,
+    status TEXT NOT NULL DEFAULT 'active', ended_at TEXT, end_reason TEXT,
+    basic_salary REAL NOT NULL DEFAULT 0, allowances REAL NOT NULL DEFAULT 0,
+    insurance_no TEXT, insured_wage REAL, bank_name TEXT, iban TEXT,
+    emergency_name TEXT, emergency_phone TEXT, annual_leave_days INTEGER, shift TEXT, notes TEXT,
+    user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    demo INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL, updated_at TEXT NOT NULL
+  );
+  CREATE INDEX employees_dept ON employees(department_id);
+  CREATE TABLE leave_requests (
+    id INTEGER PRIMARY KEY, employee_id INTEGER NOT NULL REFERENCES employees(id) ON DELETE CASCADE,
+    type TEXT NOT NULL DEFAULT 'annual', start_date TEXT NOT NULL, end_date TEXT NOT NULL, days REAL NOT NULL,
+    reason TEXT, status TEXT NOT NULL DEFAULT 'pending', decided_by INTEGER REFERENCES users(id) ON DELETE SET NULL, decided_at TEXT, decision_note TEXT,
+    created_by INTEGER REFERENCES users(id) ON DELETE SET NULL, demo INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL
+  );
+  CREATE INDEX leave_employee ON leave_requests(employee_id);
+  CREATE TABLE payroll_runs (
+    id INTEGER PRIMARY KEY, period TEXT NOT NULL UNIQUE, status TEXT NOT NULL DEFAULT 'draft',
+    created_by INTEGER REFERENCES users(id) ON DELETE SET NULL, approved_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    approved_at TEXT, paid_at TEXT, notes TEXT, demo INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL
+  );
+  CREATE TABLE payroll_lines (
+    id INTEGER PRIMARY KEY, run_id INTEGER NOT NULL REFERENCES payroll_runs(id) ON DELETE CASCADE,
+    employee_id INTEGER NOT NULL REFERENCES employees(id) ON DELETE CASCADE,
+    basic REAL NOT NULL DEFAULT 0, allowances REAL NOT NULL DEFAULT 0, overtime REAL NOT NULL DEFAULT 0, bonus REAL NOT NULL DEFAULT 0,
+    deductions REAL NOT NULL DEFAULT 0, unpaid_days REAL NOT NULL DEFAULT 0, insurance_employee REAL NOT NULL DEFAULT 0,
+    insurance_employer REAL NOT NULL DEFAULT 0, tax REAL NOT NULL DEFAULT 0, net REAL NOT NULL DEFAULT 0, notes TEXT,
+    UNIQUE (run_id, employee_id)
+  );
+  `,
 ];
 
 const DEFAULT_SETTINGS = {
@@ -147,6 +229,15 @@ const DEFAULT_SETTINGS = {
   offer_valid_days: '21',
   hold_days: '7',
   vat_pct: '0',
+  // HR (Egypt): social insurance shares and the insurable wage limits change each January; edit in Settings
+  si_employee_pct: '11',
+  si_employer_pct: '18.75',
+  si_min_wage: '2300',
+  si_max_wage: '14500',
+  annual_leave_days: '21',
+  work_days_month: '26',
+  // the document vault warns this many days before a document expires
+  doc_warn_days: '30',
 };
 
 const now = () => new Date().toISOString();
