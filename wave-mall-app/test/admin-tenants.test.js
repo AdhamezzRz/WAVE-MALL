@@ -38,6 +38,7 @@ before(async () => {
   app = createApp({ env: { SITE_URL: 'https://thewavemall.com', ADMIN_DB: ':memory:' }, mail: async () => ({ delivered: true }) });
   server = app.listen(0);
   await new Promise((r) => server.once('listening', r));
+  await app.locals.admin.ready; // the office opens in the background on older Node (sql.js)
   base = `http://127.0.0.1:${server.address().port}`;
   const setup = await (await go('/admin/setup?lang=en')).text();
   await go('/admin/setup', form({ _token: setup.match(/name="_token" value="([^"]+)"/)[1], name: 'Admin', email: 'admin@thewave.test', password: 'long-enough-1' }));

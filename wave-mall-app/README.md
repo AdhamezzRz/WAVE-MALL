@@ -31,7 +31,7 @@ The header shows the floor you are on like a lift (R at the top of a page, B2 at
 
 1. Push this folder to a GitHub or **gitlab.com** repository (Hostinger connects to either; self-managed GitLab is not supported).
 2. hPanel → Websites → Add website → **Node.js** → Import Git repository → connect the account and pick the repo and branch.
-3. Build settings: framework **Express**, root directory `wave-mall-app` (or `/` if the folder is the repo root), build command empty, output directory empty, **entry file `server.js`**, Node 22 (22.13 or newer: the leasing office uses Node's built-in SQLite).
+3. Build settings: framework **Express**, root directory `wave-mall-app` (or `/` if the folder is the repo root), build command empty, output directory empty, **entry file `server.js`**, Node 22 or 24 recommended (20 and 18 also work: on Node 22.13+ the leasing office uses Node's built-in SQLite, on older versions the bundled sql.js engine, with nothing to build).
 4. Environment variables (optional, for the enquiry email): see below. Without SMTP settings, enquiries are written to the app's runtime log.
 5. Deploy. Every push to the connected branch triggers a new build. Hostinger creates the Git webhook itself; if auto-deploys stop, check the repo's Settings → Webhooks.
 
@@ -61,6 +61,8 @@ The app reads `PORT` from the environment (Hostinger sets it) and trusts one pro
 ## Leasing office (`/admin`)
 
 A sales ERP for the leasing team, built into the same app. It is private (`noindex`, blocked in `robots.txt`, every page behind a sign-in) and stores everything in one SQLite file.
+
+**If `/admin` says the office is not available:** the website keeps running whatever happens to the office, and that page shows the exact reason (usually a `DATA_DIR` that does not exist or is not writable: use a real folder in your home directory, e.g. `/home/u123456789/wave-data`, or remove the variable to keep the data inside the app folder). Fix it in the hosting panel and redeploy.
 
 **Owner account:** set `OWNER_EMAIL` and `OWNER_PASSWORD` in Hostinger (Websites → your site → Environment variables) and redeploy; the account is created on start-up and you can sign in at `/admin` right away. Change the password later under *Your account*.
 

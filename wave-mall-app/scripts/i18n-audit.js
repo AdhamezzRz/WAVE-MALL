@@ -23,6 +23,7 @@ async function audit({ quiet = false } = {}) {
   const app = createApp({ env: { SITE_URL: 'https://thewavemall.com', ADMIN_DB: ':memory:' }, mail: async () => ({ delivered: true }) });
   const server = app.listen(0);
   await new Promise((r) => server.once('listening', r));
+  await app.locals.admin.ready; // the office opens in the background on older Node (sql.js)
   const base = `http://127.0.0.1:${server.address().port}`;
   const jar = new Map();
   const go = async (path, opts = {}) => {

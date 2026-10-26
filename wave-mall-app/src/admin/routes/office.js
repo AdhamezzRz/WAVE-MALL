@@ -296,7 +296,7 @@ ${ui.card(tr('Opening news list'), ui.table([{ label: tr('Email'), render: (s) =
 
   router.get('/settings/backup', R('admin'), (req, res) => {
     const file = path.join(os.tmpdir(), `the-wave-leasing-${Date.now()}.db`);
-    db.raw.exec(`VACUUM INTO '${file.replace(/'/g, "''")}'`);
+    db.backup(file);
     h.log(req, 'Downloaded a backup', 'settings');
     res.download(file, `the-wave-leasing-${M.today()}.db`, () => fs.rm(file, { force: true }, () => {}));
   });

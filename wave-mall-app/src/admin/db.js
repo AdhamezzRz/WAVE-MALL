@@ -1,6 +1,7 @@
 'use strict';
 
-// The leasing office database: one SQLite file (Node's built-in node:sqlite, no native build).
+// The leasing office database: one SQLite file (Node's built-in node:sqlite on Node 22.13+,
+// otherwise sql.js; see sqlite.js — no native build either way).
 // The file lives in ADMIN_DB (a path, or ':memory:' for tests); by default in DATA_DIR or
 // ../data next to the app. On Hostinger set DATA_DIR to a folder outside the deployed app so
 // redeploys never touch it.
@@ -9,13 +10,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 
-// node:sqlite prints an "experimental" notice on load; keep the logs clean.
-const emit = process.emitWarning;
-process.emitWarning = function quiet(warning, ...rest) {
-  if (String((warning && warning.message) || warning).includes('SQLite is an experimental')) return undefined;
-  return emit.call(this, warning, ...rest);
-};
-const { DatabaseSync } = require('node:sqlite');
+const { engine } = require('./sqlite');
 
 const { GROUND_UNITS, STREET_UNITS } = require('../data');
 
@@ -243,6 +238,8 @@ const DEFAULT_SETTINGS = {
 const now = () => new Date().toISOString();
 const today = () => now().slice(0, 10);
 
+// Opens (and creates or upgrades) the database. Returns the api, or a promise of it when this
+// Node needs the WebAssembly engine.
 function open(env = process.env) {
   let file = env.ADMIN_DB;
   if (!file) {
@@ -250,7 +247,12 @@ function open(env = process.env) {
     fs.mkdirSync(dir, { recursive: true });
     file = path.join(dir, 'leasing.db');
   }
-  const db = new DatabaseSync(file);
+  const eng = engine(env);
+  const opened = eng.open(file);
+  return eng.sync ? ready(opened, file, eng.name) : opened.then((db) => ready(db, file, eng.name));
+}
+
+function ready(db, file, engineName) {
   db.exec('PRAGMA foreign_keys = ON; PRAGMA journal_mode = WAL; PRAGMA busy_timeout = 4000;');
   const version = db.prepare('PRAGMA user_version').get().user_version;
   for (let v = version; v < SCHEMA.length; v++) {
@@ -260,6 +262,7 @@ function open(env = process.env) {
     db.exec('COMMIT');
   }
   const api = wrap(db, file);
+  api.engine = engineName;
   seed(api);
   return api;
 }
@@ -316,6 +319,8 @@ function wrap(db, file) {
         user ? user.id : null, action, entity || null, entityId ?? null, detail ? String(detail).slice(0, 500) : null, ip || null, now(),
       );
     },
+    // a consistent copy of the whole database, written to dest
+    backup: (dest) => db.backupTo(dest),
     close: () => db.close(),
   };
   return api;

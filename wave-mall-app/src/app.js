@@ -10,7 +10,6 @@ const pages = require('./pages');
 const journal = require('./journal');
 const { content } = require('./content');
 const { validate, validateContact, validateSubscribe, deliver } = require('./enquiry');
-const { mount: mountAdmin } = require('./admin');
 
 const PUBLIC = path.join(__dirname, '..', 'public');
 const DAY = 24 * 60 * 60 * 1000;
@@ -100,8 +99,16 @@ function createApp({ env = process.env, mail = deliver } = {}) {
     res.type('application/xml').send(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls.join('\n')}\n</urlset>\n`);
   });
 
-  // The leasing office (sales ERP) lives at /admin, behind its own sign-in.
-  const admin = mountAdmin(app, { env });
+  // The leasing office (sales ERP) lives at /admin, behind its own sign-in. Whatever happens to it,
+  // the website must keep serving, so it is loaded inside a safety net.
+  let admin;
+  try {
+    admin = require('./admin').mount(app, { env });
+  } catch (err) {
+    console.error('[admin] The leasing office could not load; the website is unaffected.', err);
+    admin = { db: null, error: err, ready: Promise.resolve(), record: async () => false };
+    app.use('/admin', (req, res) => res.status(503).type('text').send(`The leasing office could not start: ${String(err.message || err).split('\n')[0]}`));
+  }
   app.locals.admin = admin;
 
   const limiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 8, standardHeaders: true, legacyHeaders: false, handler: (req, res) => respond(req, res, 429, 'error') });
@@ -115,7 +122,7 @@ function createApp({ env = process.env, mail = deliver } = {}) {
     // Saved in the leasing office first; the email is a courtesy copy, so a mail failure is not the visitor's problem once it is saved.
     let saved = false;
     try {
-      saved = admin.record(result.value);
+      saved = await admin.record(result.value);
     } catch (err) {
       console.error(`[${result.value.kind}] could not save to the leasing office:`, err.message);
     }

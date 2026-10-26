@@ -11,8 +11,62 @@ const auth = require('./auth');
 const ui = require('./ui');
 const M = require('./model');
 
+// Mounts the office at /admin. The database opens at once on Node 22.13+ (node:sqlite), or in the
+// background with sql.js on older Node; requests wait for it. If the office cannot start at all
+// (an unwritable DATA_DIR, say) the website keeps running and /admin explains what is wrong.
 function mount(app, { env = process.env } = {}) {
-  const db = dbm.open(env);
+  const office = { db: null, error: null, ready: null };
+  let router = null;
+  const boot = (db) => {
+    router = build(db, env);
+    office.db = db;
+  };
+  const fail = (err) => {
+    office.error = err;
+    console.error('[admin] The leasing office could not start; the website is unaffected.', err);
+  };
+  try {
+    const opened = dbm.open(env);
+    if (opened && typeof opened.then === 'function') office.ready = opened.then(boot).catch(fail);
+    else {
+      boot(opened);
+      office.ready = Promise.resolve();
+    }
+  } catch (err) {
+    fail(err);
+    office.ready = Promise.resolve();
+  }
+
+  app.use('/admin', express.static(path.join(__dirname, '..', '..', 'public', 'admin'), { index: false, redirect: false, maxAge: '365d', immutable: true }));
+  app.use('/admin', (req, res, next) => {
+    if (router) return router(req, res, next);
+    return office.ready.then(() => (router ? router(req, res, next) : unavailable(res, office.error)), next);
+  });
+  // Website forms: saved once the office is ready; false when it is not running.
+  office.record = async (value) => {
+    await office.ready;
+    if (!office.db) return false;
+    record(office.db, value);
+    return true;
+  };
+  return office;
+}
+
+// What /admin shows when the office could not start. The reason is shown so it can be fixed from
+// the hosting panel without reading server logs; no stack traces.
+function unavailable(res, err) {
+  const msg = String((err && err.message) || err || '').split('\n')[0];
+  const reason = err ? `${err.code && !msg.startsWith(err.code) ? `${err.code}: ` : ''}${msg}`.slice(0, 300) : 'Starting…';
+  const hint = err && /EACCES|EPERM|EROFS|ENOENT|ENOTDIR|EISDIR/.test(String(err.code || err.message))
+    ? 'The folder for the office\'s data cannot be created or written. Check DATA_DIR in the hosting panel: it must be a real folder your account can write to (for example /home/your-user/wave-data), or remove it to use the app folder.'
+    : 'Check the application logs in the hosting panel, then redeploy.';
+  const esc = (x) => String(x).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  res.status(503).set({ 'Retry-After': '30', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' }).type('html').send(`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Leasing office unavailable</title>
+<style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#283833;color:#e9e4d6;font:15px/1.6 system-ui,sans-serif}main{max-width:560px;padding:32px}h1{font:500 28px/1.2 Georgia,serif;margin:0 0 12px;color:#fbfaf6}code{display:block;margin:16px 0;padding:12px 14px;border-radius:6px;background:rgb(0 0 0/.25);color:#d1c9b3;white-space:pre-wrap;word-break:break-word}p{margin:0 0 10px}small{opacity:.7}</style>
+<main><h1>The leasing office is not available</h1><p>The website itself is running. The office at /admin could not start:</p><code>${esc(reason)}</code><p>${esc(hint)}</p><p dir="rtl" lang="ar">مكتب التأجير غير متاح حاليًا، والموقع نفسه يعمل بشكل طبيعي.</p><small>Node ${esc(process.version)}</small></main></html>`);
+}
+
+function build(db, env) {
   ui.setCurrency(db.setting('currency'));
   owner(db, env);
 
@@ -55,9 +109,7 @@ function mount(app, { env = process.env } = {}) {
     require(`./routes/${mod}`)(router, h);
   }
 
-  app.use('/admin', express.static(path.join(__dirname, '..', '..', 'public', 'admin'), { index: false, redirect: false, maxAge: '365d', immutable: true }));
-  app.use('/admin', router);
-  return { db, record: (value) => record(db, value) };
+  return router;
 }
 
 // Shared helpers handed to every route module.
