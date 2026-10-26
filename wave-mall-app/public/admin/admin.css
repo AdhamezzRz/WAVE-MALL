@@ -623,3 +623,13 @@ input, select, textarea { min-width: 0; max-width: 100%; }
   [dir="rtl"] .side { transform: translateX(100%); }
   [dir="rtl"] body.side-open .side { transform: none; }
 }
+/* Arabic amounts are longer ("32.4 مليون ج.م"): keep them on one line in the headline tiles */
+@media (min-width: 861px) { [dir="rtl"] .kpis:not([class*="kpis--"]) { grid-template-columns: repeat(auto-fit, minmax(185px, 1fr)); } }
+@media (max-width: 860px) { [dir="rtl"] .kpi__value { font-size: 21px; } }
+[dir="rtl"] .kpi__value { font-size: 25px; white-space: nowrap; }
+[dir="rtl"] .kcard__val { white-space: nowrap; }
+@media (max-width: 860px) {
+  .bar__title h1 { white-space: normal; overflow: visible; font-size: 21px; line-height: 1.25; }
+  [dir="rtl"] .bar__title h1 { font-size: 20px; }
+  [dir="rtl"] .kpi__value { white-space: normal; font-size: 20px; line-height: 1.25; }
+}

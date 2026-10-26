@@ -43,12 +43,17 @@ test('i18n: stored English system text reads in Arabic, typed text is left alone
 });
 
 test('i18n: Arabic numbers, money, areas and dates (Western digits)', () => {
+  const plain = (fn) => (...a) => fn(...a).replace(/\u200f/g, '');
+  const money = plain(ui.money);
+  const m2 = plain(ui.m2);
+  const date = plain(ui.date);
   i18n.run('ar', () => {
     ui.setCurrency('EGP');
-    assert.equal(ui.money(1234), '1,234 ج.م');
-    assert.match(ui.money(32400000, { compact: true }), /^32\.4\sمليون ج\.م$/);
-    assert.equal(ui.m2(210), '210 م²');
-    assert.equal(ui.date('2026-10-26'), '26 أكتوبر 2026');
+    assert.ok(ui.money(1234).startsWith('\u200f'), 'Arabic amounts start with a right-to-left mark');
+    assert.equal(money(1234), '1,234 ج.م');
+    assert.match(money(32400000, { compact: true }), /^32\.4\sمليون ج\.م$/);
+    assert.equal(m2(210), '210 م²');
+    assert.equal(date('2026-10-26'), '26 أكتوبر 2026');
     assert.equal(ui.monthYear('2026-10'), 'أكتوبر 2026');
     assert.equal(ui.rel(new Date().toISOString()), 'اليوم');
   });

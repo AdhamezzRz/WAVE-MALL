@@ -59,7 +59,7 @@ module.exports = {
   'stage|Negotiation': 'تفاوض',
   'stage|Reserved': 'محجوزة',
   'stage|Signed': 'تم التوقيع',
-  'stage|Lost': 'مفقودة',
+  'stage|Lost': 'خاسرة',
 
   // ---------- categories ----------
   'Fashion & accessories': 'أزياء وإكسسوارات',

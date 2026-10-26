@@ -126,7 +126,7 @@ module.exports = function office(router, h) {
     if (!make) return next();
     const [rows, raw] = make();
     const cols = raw.map(([k, l]) => [k, tr(`o|${l}`)]);
-    h.log(req, 'Exported', 'export', null, req.params.what);
+    h.log(req, 'Exported', 'export', null, EXPORT_LABELS[req.params.what] || req.params.what);
     res.set('Content-Disposition', `attachment; filename="the-wave-${req.params.what}-${M.today()}.csv"`).type('text/csv; charset=utf-8').send(csv(rows, cols));
   });
 
@@ -292,7 +292,7 @@ ${ui.card(tr('Opening news list'), ui.table([{ label: tr('Email'), render: (s) =
     const rows = db.all(`SELECT a.*, u.name user_name FROM audit a LEFT JOIN users u ON u.id = a.user_id ${who ? 'WHERE a.user_id = ?' : ''} ORDER BY a.id DESC LIMIT 400`, ...(who ? [who] : []));
     const link = (a) => ({ lead: `/admin/leads/${a.entity_id}`, offer: `/admin/offers/${a.entity_id}`, lease: `/admin/leases/${a.entity_id}`, unit: `/admin/units/${a.entity_id}`, brand: `/admin/brands/${a.entity_id}`, invoice: `/admin/invoices/${a.entity_id}` })[a.entity];
     const filter = `<form class="filters" method="get">${ui.select('user', tr('Person'), db.all('SELECT id, name FROM users ORDER BY name').map((u) => [u.id, u.name]), who, { blank: tr('o|Everyone'), cls: 'f--inline' })}${ui.btn(tr('o|Filter'), { cls: 'btn--ghost btn--sm' })}</form>`;
-    const detail = (a) => (a.entity === 'export' && EXPORT_LABELS[a.detail] ? tr(EXPORT_LABELS[a.detail]) : tx(a.detail));
+    const detail = (a) => (a.entity === 'export' && EXPORT_LABELS[a.detail] ? tr(EXPORT_LABELS[a.detail]) : a.entity === 'export' ? tr(a.detail) : tx(a.detail));
     const table = ui.table(
       [
         { label: tr('log|When'), render: (a) => ui.dt(a.created_at) },

@@ -9,14 +9,16 @@
     hint: ['Type a name, a reference or a unit code.', 'اكتب اسمًا أو رقمًا مرجعيًا أو رمز وحدة.'],
     none: ['Nothing matches “{q}”.', 'لا توجد نتائج لـ «{q}».'],
     moveFail: ['Could not move this lead.', 'تعذّر نقل هذه الفرصة.'],
-    moved: ['Moved to {s}.', 'نُقلت إلى {s}.'],
-    terrace: ['{n} terrace', 'تراس {n}'],
+    moved: ['Moved to {s}.', 'نُقلت إلى مرحلة «{s}».'],
+    terrace: ['{n} terrace', 'تراس {n} م²'],
     m2: ['m²', 'م²'],
     year: ['Year {n}', 'السنة {n}'],
     free: ['{n} mo free', '{n} شهر مجاني'],
     offline: ['No connection. Try again.', 'لا يوجد اتصال. حاول مرة أخرى.'],
   };
   const tr = (k, p = {}) => STR[k][AR ? 1 : 0].replace(/\{(\w+)\}/g, (m, x) => (p[x] ?? m));
+  // Arabic counted months: شهر واحد مجاني، شهران مجانيان، 3 أشهر مجانية، 12 شهرًا مجانيًا
+  const freeAr = (n) => (n === 1 ? 'شهر مجاني' : n === 2 ? 'شهران مجانيان' : n >= 3 && n <= 10 ? `${n} أشهر مجانية` : `${n} شهرًا مجانيًا`);
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
   // ---------- toast ----------
@@ -259,7 +261,7 @@
       out('approval').hidden = !(list && rent && rent < list * (1 - maxDisc / 100));
       const top = Math.max(...years.map((y) => y.r), 1);
       out('years').innerHTML = month
-        ? years.map((y) => `<p><span>${esc(tr('year', { n: y.y }))}</span><i style="width:${((y.r / top) * 100).toFixed(1)}%"></i><b>${fmt(y.r)}${y.free ? ` <small class="muted">· ${esc(tr('free', { n: y.free }))}</small>` : ''}</b></p>`).join('')
+        ? years.map((y) => `<p><span>${esc(tr('year', { n: y.y }))}</span><i style="width:${((y.r / top) * 100).toFixed(1)}%"></i><b>${fmt(y.r)}${y.free ? ` <small class="muted">· ${esc(AR ? freeAr(y.free) : tr('free', { n: y.free }))}</small>` : ''}</b></p>`).join('')
         : '';
     };
     offer.addEventListener('input', calc);

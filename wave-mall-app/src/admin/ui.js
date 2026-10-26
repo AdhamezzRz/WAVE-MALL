@@ -28,20 +28,24 @@ let CUR = 'EGP';
 const setCurrency = (c) => { CUR = c || 'EGP'; };
 const AR_CUR = { EGP: 'ج.م', USD: 'دولار', EUR: 'يورو', SAR: 'ر.س', AED: 'د.إ' };
 const curLabel = () => (isAr() ? AR_CUR[CUR] || CUR : CUR);
+// In Arabic, dates and amounts start with a right-to-left mark so a Latin name just before them
+// ("Salma Adel · 18 يونيو") cannot pull their digits into its left-to-right run.
+const RLM = '\u200f';
+const rtl = (x) => (isAr() && x !== '—' ? RLM + x : x);
 const n0 = (n) => (n === null || n === undefined || Number.isNaN(Number(n)) ? '—' : fmt.format(n));
 function money(n, { compact = false, cur = true } = {}) {
   if (n === null || n === undefined || Number.isNaN(Number(n))) return '—';
   let s;
   if (isAr()) {
     s = compact && Math.abs(n) >= 1e4 ? AR_COMPACT.format(n) : fmt.format(n);
-    return cur ? `${s} ${curLabel()}` : s;
+    return rtl(cur ? `${s} ${curLabel()}` : s);
   }
   if (compact && Math.abs(n) >= 1e6) s = `${fmt1.format(n / 1e6)}M`;
   else if (compact && Math.abs(n) >= 1e4) s = `${fmt1.format(n / 1e3)}K`;
   else s = fmt.format(n);
   return cur ? `${CUR} ${s}` : s;
 }
-const m2 = (n) => (n === null || n === undefined ? '—' : `${fmt.format(n)} ${isAr() ? 'م²' : 'm²'}`);
+const m2 = (n) => (n === null || n === undefined ? '—' : rtl(`${fmt.format(n)} ${isAr() ? 'م²' : 'm²'}`));
 const pct = (x, d = 0) => (x === null || x === undefined ? '—' : `${(x * 100).toFixed(d)}%`);
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const AR_MONTHS = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
@@ -56,7 +60,7 @@ const weekdays = () => (isAr() ? AR_DAYS : EN_DAYS);
 function date(iso) {
   if (!iso) return '—';
   const [y, m, d] = iso.slice(0, 10).split('-').map(Number);
-  return `${d} ${monthName(m)} ${y}`;
+  return rtl(`${d} ${monthName(m)} ${y}`);
 }
 // Stored moments are UTC ISO strings ending in Z; the office reads them in Cairo time.
 // Times typed into a form (no Z) are already local and shown as they are.

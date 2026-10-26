@@ -74,6 +74,8 @@ A sales ERP for the leasing team, built into the same app. It is private (`noind
 | Reports | Occupancy by level, rent roll, WALE, forecast, tenant mix, why deals are lost, team against monthly targets, lead sources and conversion, aging, upcoming expiries; CSV exports |
 | Team, subscribers, settings, audit log | Roles, targets, newsletter list, rates and rules, one-click backup, and a record of who did what |
 
+**English and Arabic:** every page, message, document and export works in both languages. Each person switches with the language button in the top bar (or on the sign-in page) and the office remembers their choice. Arabic pages are fully right to left, set in Almarai, with Arabic dates, months, money (ج.م) and plurals; digits stay Western, as on Egyptian leasing documents. Notes the system writes itself (timeline entries, the activity log, next steps, invoice notes) are stored once and shown in each reader's language, so an Arabic and an English colleague see the same records. Proposals and invoices print in either language from the switch on the document (`?doc=ar` / `?doc=en`). The Arabic text lives in `src/admin/i18n/`; `node scripts/i18n-audit.js` visits every page in Arabic and lists anything still in English (the test suite runs it too).
+
 **Roles:** *Viewer* reads everything; *Agent* works leads, activities, holds and offers; *Manager* also approves offers, writes leases, takes payments and sets targets; *Administrator* also manages the team and settings.
 
 **Security:** passwords are hashed with scrypt, sessions live in the database (12 hours idle), every form carries a CSRF token, sign-in is rate-limited, and the audit log keeps sign-ins and every change.
