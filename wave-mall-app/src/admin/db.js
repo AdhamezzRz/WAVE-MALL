@@ -124,6 +124,8 @@ const SCHEMA = [
   );
   CREATE INDEX audit_created ON audit(created_at);
   `,
+  // 2: each person's language for the office (en or ar)
+  `ALTER TABLE users ADD COLUMN lang TEXT;`,
 ];
 
 const DEFAULT_SETTINGS = {

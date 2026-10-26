@@ -25,12 +25,19 @@ function mount(app, { env = process.env } = {}) {
   router.use(express.urlencoded({ extended: false, limit: '256kb' }));
   router.use(express.json({ limit: '64kb' }));
   router.use(auth.load(db));
+  router.use(auth.language(db));
 
   const loginLimit = rateLimit({ windowMs: 15 * 60 * 1000, limit: 12, standardHeaders: true, legacyHeaders: false });
   require('./routes/core').public(router, h, { loginLimit });
 
   router.use(auth.requireUser);
   router.use(auth.csrf);
+  // the language switch in the top bar
+  router.post('/lang', (req, res) => {
+    auth.setLanguage(db, req, res, req.body.lang);
+    const back = String(req.body.back || '');
+    res.redirect(303, /^\/admin(\/|$|\?)/.test(back) && !back.startsWith('//') ? back.replace(/([?&])lang=(en|ar)(&|$)/, '$1').replace(/[?&]$/, '') : '/admin');
+  });
   require('./routes/core').private(router, h);
   require('./routes/sales')(router, h);
   require('./routes/deals')(router, h);
@@ -54,7 +61,7 @@ function helpers(db) {
     db, ui, M, auth,
     page(req, res, opts) {
       ui.setCurrency(db.setting('currency'));
-      const html = ui.layout({ ...opts, user: req.user, csrf: req.session.csrf, nonce: res.locals.nonce, flash: auth.takeFlash(req, res), counts: counts(req.user) });
+      const html = ui.layout({ path: req.originalUrl, ...opts, user: req.user, csrf: req.session.csrf, nonce: res.locals.nonce, flash: auth.takeFlash(req, res), counts: counts(req.user) });
       res.type('html').send(html);
     },
     back(req, res, url, type, text) {

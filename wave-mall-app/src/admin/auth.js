@@ -5,10 +5,12 @@
 
 const crypto = require('node:crypto');
 const { now } = require('./db');
+const { t } = require('./i18n');
 
 const COOKIE = 'wv_sess';
 const FLASH = 'wv_flash';
 const LOGIN = 'wv_login';
+const LANG = 'wv_lang';
 const TTL = 12 * 60 * 60 * 1000; // 12 hours idle
 const RANK = { viewer: 0, agent: 1, manager: 2, admin: 3 };
 
@@ -64,7 +66,7 @@ function load(db) {
     if (t) {
       const s = db.get('SELECT * FROM sessions WHERE id = ?', sha(t));
       if (s && s.expires_at > now()) {
-        const user = db.get('SELECT id, name, email, role, title, phone, active FROM users WHERE id = ?', s.user_id);
+        const user = db.get('SELECT id, name, email, role, title, phone, active, lang FROM users WHERE id = ?', s.user_id);
         if (user && user.active) {
           req.user = user;
           req.session = s;
@@ -83,15 +85,15 @@ function load(db) {
 function requireUser(req, res, next) {
   if (req.user) return next();
   if (req.method === 'GET' && req.accepts(['html', 'json']) === 'html') return res.redirect(303, `/admin/login?next=${encodeURIComponent(req.originalUrl)}`);
-  return res.status(401).json({ ok: false, error: 'Sign in required' });
+  return res.status(401).json({ ok: false, error: t('Please sign in again.') });
 }
 
 const allowed = (user, min) => !!user && RANK[user.role] >= RANK[min];
 function requireRole(min) {
   return (req, res, next) => {
     if (allowed(req.user, min)) return next();
-    if (req.accepts(['html', 'json']) === 'json') return res.status(403).json({ ok: false, error: 'Not allowed' });
-    flash(req, res, 'error', 'Your role does not allow that.');
+    if (req.accepts(['html', 'json']) === 'json') return res.status(403).json({ ok: false, error: t('Your role does not allow that.') });
+    flash(req, res, 'error', t('Your role does not allow that.'));
     return res.redirect(303, req.get('referer') && String(req.get('referer')).includes('/admin') ? req.get('referer') : '/admin');
   };
 }
@@ -102,7 +104,8 @@ function csrf(req, res, next) {
   const sent = String((req.body && req.body._csrf) || req.get('x-csrf') || '');
   const want = req.session ? req.session.csrf : '';
   if (want && sent.length === want.length && crypto.timingSafeEqual(Buffer.from(sent), Buffer.from(want))) return next();
-  return res.status(403).type('text').send('This form has expired. Go back, reload the page and try again.');
+  if (req.accepts(['html', 'json']) === 'json' && !req.is('urlencoded')) return res.status(403).json({ ok: false, error: t('This page has expired. Reload it and try again.') });
+  return res.status(403).type('text').send(t('This form has expired. Go back, reload the page and try again.'));
 }
 
 // One-time messages after a redirect.
@@ -132,4 +135,26 @@ function checkLoginToken(req) {
   return a.length > 10 && a.length === b.length && crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b));
 }
 
-module.exports = { cookies, setCookie, startSession, endSession, load, requireUser, requireRole, allowed, csrf, flash, takeFlash, loginToken, checkLoginToken, RANK, token };
+// The office language: ?lang= (remembered), else the person's choice, else the browser cookie, else English.
+function language(db) {
+  return (req, res, next) => {
+    let l = null;
+    const q = String(req.query.lang || '');
+    if (req.method === 'GET' && (q === 'en' || q === 'ar')) {
+      l = q;
+      setCookie(req, res, LANG, q, { maxAge: 365 * 86400000 });
+      if (req.user && req.user.lang !== q) db.run('UPDATE users SET lang = ? WHERE id = ?', q, req.user.id);
+    }
+    l = l || (req.user && req.user.lang) || cookies(req)[LANG];
+    req.lang = l === 'ar' ? 'ar' : 'en';
+    require('./i18n').run(req.lang, next);
+  };
+}
+function setLanguage(db, req, res, l) {
+  const v = l === 'ar' ? 'ar' : 'en';
+  setCookie(req, res, LANG, v, { maxAge: 365 * 86400000 });
+  if (req.user) db.run('UPDATE users SET lang = ? WHERE id = ?', v, req.user.id);
+  return v;
+}
+
+module.exports = { language, setLanguage, cookies, setCookie, startSession, endSession, load, requireUser, requireRole, allowed, csrf, flash, takeFlash, loginToken, checkLoginToken, RANK, token };

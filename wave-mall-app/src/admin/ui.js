@@ -9,6 +9,7 @@ const crypto = require('node:crypto');
 const LOGO = require('../logo-paths.json');
 const { floorSvg } = require('../plan');
 const M = require('./model');
+const { t, tn, isAr, lang, dir } = require('./i18n');
 
 const PUBLIC = path.join(__dirname, '..', '..', 'public');
 const v = (f) => crypto.createHash('sha1').update(fs.readFileSync(path.join(PUBLIC, f))).digest('hex').slice(0, 8);
@@ -18,26 +19,44 @@ const esc = (s) => (s === null || s === undefined ? '' : String(s).replace(/[&<>
 const attr = (o) => Object.entries(o).filter(([, x]) => x !== false && x !== null && x !== undefined).map(([k, x]) => (x === true ? k : `${k}="${esc(x)}"`)).join(' ');
 
 // ---------- formatting ----------
+// Both languages use Western digits (as Egyptian leasing documents do); Arabic gets Arabic words,
+// month names, units and currency.
 const fmt = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
 const fmt1 = new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 });
+const AR_COMPACT = new Intl.NumberFormat('ar-EG-u-nu-latn', { notation: 'compact', maximumFractionDigits: 1 });
 let CUR = 'EGP';
 const setCurrency = (c) => { CUR = c || 'EGP'; };
+const AR_CUR = { EGP: 'ج.م', USD: 'دولار', EUR: 'يورو', SAR: 'ر.س', AED: 'د.إ' };
+const curLabel = () => (isAr() ? AR_CUR[CUR] || CUR : CUR);
 const n0 = (n) => (n === null || n === undefined || Number.isNaN(Number(n)) ? '—' : fmt.format(n));
 function money(n, { compact = false, cur = true } = {}) {
   if (n === null || n === undefined || Number.isNaN(Number(n))) return '—';
   let s;
+  if (isAr()) {
+    s = compact && Math.abs(n) >= 1e4 ? AR_COMPACT.format(n) : fmt.format(n);
+    return cur ? `${s} ${curLabel()}` : s;
+  }
   if (compact && Math.abs(n) >= 1e6) s = `${fmt1.format(n / 1e6)}M`;
   else if (compact && Math.abs(n) >= 1e4) s = `${fmt1.format(n / 1e3)}K`;
   else s = fmt.format(n);
   return cur ? `${CUR} ${s}` : s;
 }
-const m2 = (n) => (n === null || n === undefined ? '—' : `${fmt.format(n)} m²`);
+const m2 = (n) => (n === null || n === undefined ? '—' : `${fmt.format(n)} ${isAr() ? 'م²' : 'm²'}`);
 const pct = (x, d = 0) => (x === null || x === undefined ? '—' : `${(x * 100).toFixed(d)}%`);
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const AR_MONTHS = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+// Month name for a 1-based month number, in the current language.
+const monthName = (m, { short = true } = {}) => (isAr() ? AR_MONTHS[m - 1] : short ? MONTHS[m - 1] : new Date(Date.UTC(2000, m - 1, 1)).toLocaleString('en-GB', { month: 'long', timeZone: 'UTC' }));
+// "October 2026" / "أكتوبر 2026" for a YYYY-MM key.
+const monthYear = (key) => `${monthName(Number(key.slice(5, 7)), { short: false })} ${key.slice(0, 4)}`;
+const AR_DAYS = ['الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت', 'الأحد'];
+const EN_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+// Weekday names starting Monday.
+const weekdays = () => (isAr() ? AR_DAYS : EN_DAYS);
 function date(iso) {
   if (!iso) return '—';
   const [y, m, d] = iso.slice(0, 10).split('-').map(Number);
-  return `${d} ${MONTHS[m - 1]} ${y}`;
+  return `${d} ${monthName(m)} ${y}`;
 }
 // Stored moments are UTC ISO strings ending in Z; the office reads them in Cairo time.
 // Times typed into a form (no Z) are already local and shown as they are.
@@ -50,18 +69,20 @@ function local(iso) {
 function dt(iso) {
   if (!iso) return '—';
   iso = local(iso);
-  const t = iso.length > 10 ? iso.slice(11, 16) : '';
-  return t && t !== '00:00' ? `${date(iso)}, ${t}` : date(iso);
+  const hm = iso.length > 10 ? iso.slice(11, 16) : '';
+  return hm && hm !== '00:00' ? `${date(iso)}${isAr() ? '، ' : ', '}${hm}` : date(iso);
 }
+const AR_REL = new Intl.RelativeTimeFormat('ar-EG-u-nu-latn', { numeric: 'auto' });
 function rel(iso) {
   if (!iso) return '';
   const d = Math.round((Date.parse(iso.length === 10 ? `${iso}T00:00:00Z` : iso) - Date.now()) / 86400000);
+  if (isAr()) return AR_REL.format(d, 'day');
   if (d === 0) return 'today';
   if (d === 1) return 'tomorrow';
   if (d === -1) return 'yesterday';
   return d > 0 ? `in ${d} days` : `${-d} days ago`;
 }
-const initials = (name) => String(name || '?').split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+const initials = (name) => String(name || '?').trim().split(/\s+/).map((w) => w[0]).slice(0, 2).join(isAr() && /[\u0600-\u06ff]/.test(name) ? ' ' : '').toUpperCase();
 
 // ---------- icons (24px line) ----------
 const I = {
@@ -89,8 +110,11 @@ const I = {
   arrow: 'M5 12h14M13 6l6 6-6 6',
   phone: 'M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2',
   dl: 'M12 4v12M7 11l5 5 5-5M5 20h14',
+  globe: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18',
 };
-const icon = (k, cls = '') => `<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true"><path d="${I[k]}"/></svg>`;
+// Icons that point somewhere are mirrored in Arabic (see .ic--dir in admin.css).
+const DIRECTIONAL = new Set(['arrow', 'out']);
+const icon = (k, cls = '') => `<svg class="ic${DIRECTIONAL.has(k) ? ' ic--dir' : ''} ${cls}" viewBox="0 0 24 24" aria-hidden="true"><path d="${I[k]}"/></svg>`;
 const logo = (cls = '') => `<svg class="logo ${cls}" viewBox="0 0 490 225.2" aria-label="The Wave">${['T', 'H', 'E2', 'W', 'AV', 'E'].map((k) => `<path d="${LOGO[k]}"/>`).join('')}</svg>`;
 const mark = (cls = '') => `<svg class="mark ${cls}" viewBox="163 97 207 128" aria-hidden="true"><path d="${LOGO.AV}"/></svg>`;
 
@@ -105,54 +129,62 @@ const NAV = [
 ];
 const RANK = { viewer: 0, agent: 1, manager: 2, admin: 3 };
 
-function layout({ title, crumbs = [], active = '', body, user, csrf, nonce, flash, actions = '', counts = {}, wide = false }) {
+// The language switch: a small form in the top bar (signed in) or a link (sign-in pages).
+const other = () => (isAr() ? 'en' : 'ar');
+const otherLabel = () => (isAr() ? 'English' : 'العربية');
+const langForm = (csrf, back = '') => `<form method="post" action="/admin/lang" class="langform"><input type="hidden" name="_csrf" value="${esc(csrf)}"><input type="hidden" name="lang" value="${other()}"><input type="hidden" name="back" value="${esc(back)}"><button type="submit" class="langbtn" lang="${other()}" title="${esc(t('Switch language'))}">${icon('globe')}<span>${otherLabel()}</span></button></form>`;
+const langLink = (path) => `<a class="langbtn" href="${esc(path)}${path.includes('?') ? '&' : '?'}lang=${other()}" lang="${other()}">${icon('globe')}<span>${otherLabel()}</span></a>`;
+const brandName = () => t('The Wave Leasing');
+
+function layout({ title, crumbs = [], active = '', body, user, csrf, nonce, flash, actions = '', counts = {}, wide = false, path = '' }) {
   const nav = NAV.map(([group, items]) => {
     const links = items
       .filter(([, , , , min]) => !min || RANK[user.role] >= RANK[min])
       .map(([href, label, ic, count]) => {
         const on = href === '/admin' ? active === '/admin' : active.startsWith(href);
         const c = count && counts[count] ? `<b class="nav__count">${counts[count]}</b>` : '';
-        return `<a href="${href}" class="nav__a${on ? ' is-on' : ''}"${on ? ' aria-current="page"' : ''}>${icon(ic)}<span>${label}</span>${c}</a>`;
+        return `<a href="${href}" class="nav__a${on ? ' is-on' : ''}"${on ? ' aria-current="page"' : ''}>${icon(ic)}<span>${esc(t(label))}</span>${c}</a>`;
       })
       .join('');
-    return links ? `<div class="nav__group"><p class="nav__label">${group}</p>${links}</div>` : '';
+    return links ? `<div class="nav__group"><p class="nav__label">${esc(t(group))}</p>${links}</div>` : '';
   }).join('');
   const crumb = crumbs.length ? `<p class="crumbs">${crumbs.map(([h, l]) => (h ? `<a href="${h}">${esc(l)}</a>` : `<span>${esc(l)}</span>`)).join('<i>/</i>')}</p>` : '';
   const toast = flash ? `<div class="toast toast--${esc(flash.type || 'ok')}" role="status" data-toast>${icon(flash.type === 'error' ? 'log' : 'check')}<span>${esc(flash.text)}</span></div>` : '';
   return `<!doctype html>
-<html lang="en">
+<html lang="${lang()}" dir="${dir()}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <meta name="csrf" content="${esc(csrf)}">
-<title>${esc(title)} · The Wave Leasing</title>
+<title>${esc(title)} · ${esc(brandName())}</title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/admin/admin.css?v=${ASSETS.css}">
 </head>
-<body class="adm">
+<body class="adm" data-lang="${lang()}">
 <aside class="side" id="side" data-side>
-  <a class="side__brand" href="/admin">${logo()}<span>Leasing office</span></a>
-  <nav class="nav" aria-label="Leasing office">${nav}</nav>
+  <a class="side__brand" href="/admin">${logo()}<span>${esc(t('Leasing office'))}</span></a>
+  <nav class="nav" aria-label="${esc(t('Leasing office'))}">${nav}</nav>
   <div class="side__me">
-    <span class="avatar">${esc(initials(user.name))}</span>
+    <a class="avatar" href="/admin/me" title="${esc(t('Your account'))}">${esc(initials(user.name))}</a>
     <div><b>${esc(user.name)}</b><small>${esc(M.ROLES[user.role])}</small></div>
-    <form method="post" action="/admin/logout"><input type="hidden" name="_csrf" value="${esc(csrf)}"><button type="submit" class="iconbtn" title="Sign out" aria-label="Sign out">${icon('out')}</button></form>
+    <form method="post" action="/admin/logout"><input type="hidden" name="_csrf" value="${esc(csrf)}"><button type="submit" class="iconbtn" title="${esc(t('Sign out'))}" aria-label="${esc(t('Sign out'))}">${icon('out')}</button></form>
   </div>
 </aside>
 <div class="main">
   <header class="bar">
-    <button type="button" class="iconbtn bar__menu" data-side-toggle aria-label="Menu">${icon('menu')}</button>
+    <button type="button" class="iconbtn bar__menu" data-side-toggle aria-label="${esc(t('Menu'))}">${icon('menu')}</button>
     <div class="bar__title">${crumb}<h1>${esc(title)}</h1></div>
-    <button type="button" class="search" data-cmdk-open>${icon('search')}<span>Search leads, brands, units…</span><kbd>⌘K</kbd></button>
+    <button type="button" class="search" data-cmdk-open>${icon('search')}<span>${esc(t('Search leads, brands, units…'))}</span><kbd>⌘K</kbd></button>
+    ${langForm(csrf, path)}
     <div class="bar__actions">${actions}</div>
   </header>
   ${toast}
   <main class="content${wide ? ' content--wide' : ''}" id="content">${body}</main>
 </div>
 <div class="cmdk" data-cmdk hidden>
-  <div class="cmdk__box" role="dialog" aria-label="Search">
-    <div class="cmdk__in">${icon('search')}<input type="search" placeholder="Search leads, brands, units, offers, leases…" autocomplete="off" data-cmdk-input></div>
+  <div class="cmdk__box" role="dialog" aria-label="${esc(t('Search'))}">
+    <div class="cmdk__in">${icon('search')}<input type="search" placeholder="${esc(t('Search leads, brands, units, offers, leases…'))}" autocomplete="off" data-cmdk-input></div>
     <div class="cmdk__list" data-cmdk-list></div>
   </div>
 </div>
@@ -164,16 +196,16 @@ function layout({ title, crumbs = [], active = '', body, user, csrf, nonce, flas
 // Sign-in, setup and print pages: no sidebar.
 function bare({ title, body, cls = '' }) {
   return `<!doctype html>
-<html lang="en">
+<html lang="${lang()}" dir="${dir()}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>${esc(title)} · The Wave Leasing</title>
+<title>${esc(title)} · ${esc(brandName())}</title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/admin/admin.css?v=${ASSETS.css}">
 </head>
-<body class="adm ${cls}">${body}<script src="/admin/admin.js?v=${ASSETS.js}" defer></script></body>
+<body class="adm ${cls}" data-lang="${lang()}">${body}<script src="/admin/admin.js?v=${ASSETS.js}" defer></script></body>
 </html>`;
 }
 
@@ -185,7 +217,7 @@ const TONE = {
   active: 'ok', ended: 'mute', terminated: 'rose', open: 'sky', partial: 'amber', paid: 'ok', void: 'mute', overdue: 'rose',
   admin: 'forest', manager: 'cocoa', agent: 'sea', viewer: 'mute',
 };
-const badge = (key, label, tone) => `<span class="badge badge--${tone || TONE[key] || 'mute'}">${esc(label || key)}</span>`;
+const badge = (key, label, tone) => `<span class="badge badge--${tone || TONE[key] || 'mute'}">${esc(label || t(key))}</span>`;
 const stageBadge = (s) => badge(s, M.stage(s).label);
 const unitBadge = (s) => badge(s === 'reserved' ? 'reserved_u' : s, M.UNIT_STATUS[s]);
 
@@ -195,17 +227,17 @@ function kpi({ label, value, sub = '', tone = '', href = '', bar = null }) {
   return href ? `<a class="kpi ${tone}" href="${href}">${inner}</a>` : `<div class="kpi ${tone}">${inner}</div>`;
 }
 const trend = (now, before) => {
-  if (!before) return now ? '<span class="up">new</span>' : '';
+  if (!before) return now ? `<span class="up">${esc(t('trend|new'))}</span>` : '';
   const d = (now - before) / before;
-  return `<span class="${d >= 0 ? 'up' : 'down'}">${d >= 0 ? '▲' : '▼'} ${Math.abs(d * 100).toFixed(0)}%</span> vs previous 30 days`;
+  return `<span class="${d >= 0 ? 'up' : 'down'}">${d >= 0 ? '▲' : '▼'} ${Math.abs(d * 100).toFixed(0)}%</span> ${esc(t('vs previous 30 days'))}`;
 };
 
 function card(title, body, { action = '', cls = '', sub = '' } = {}) {
   return `<section class="card ${cls}"><header class="card__head"><div><h2>${esc(title)}</h2>${sub ? `<p>${sub}</p>` : ''}</div>${action}</header><div class="card__body">${body}</div></section>`;
 }
 
-function table(cols, rows, { empty = 'Nothing here yet.', href = null, cls = '' } = {}) {
-  if (!rows.length) return `<div class="empty">${mark()}<p>${empty}</p></div>`;
+function table(cols, rows, { empty = null, href = null, cls = '' } = {}) {
+  if (!rows.length) return `<div class="empty">${mark()}<p>${empty ?? esc(t('Nothing here yet.'))}</p></div>`;
   const th = cols.map((c) => `<th${c.num ? ' class="num"' : ''}>${esc(c.label)}</th>`).join('');
   const tr = rows
     .map((r) => {
@@ -276,7 +308,7 @@ function donut(parts, { size = 150, label = '' } = {}) {
     })
     .join('');
   const legend = parts.map((p, i) => `<li><i class="t-${p.tone || tones[i % tones.length]}"></i><span>${esc(p.label)}</span><b>${p.display ?? n0(p.value)}</b></li>`).join('');
-  return `<div class="donut"><svg viewBox="0 0 140 140" width="${size}" height="${size}" role="img"><circle r="${R}" cx="70" cy="70" class="ring ring--bg"/><g transform="rotate(-90 70 70)">${rings}</g><text x="70" y="68" class="donut__v">${esc(label)}</text><text x="70" y="86" class="donut__s">total</text></svg><ul class="legend">${legend}</ul></div>`;
+  return `<div class="donut"><svg viewBox="0 0 140 140" width="${size}" height="${size}" role="img"><circle r="${R}" cx="70" cy="70" class="ring ring--bg"/><g transform="rotate(-90 70 70)">${rings}</g><text x="70" y="68" class="donut__v">${esc(label)}</text><text x="70" y="86" class="donut__s">${esc(t('chart|total'))}</text></svg><ul class="legend">${legend}</ul></div>`;
 }
 
 const meter = (x, tone = 'forest') => `<span class="meter"><i class="t-${tone}" style="width:${Math.max(0, Math.min(100, (x || 0) * 100)).toFixed(1)}%"></i></span>`;
@@ -289,15 +321,15 @@ function plan(units, level, { link = true } = {}) {
     const code = `${street ? 'S' : 'G'}${String(n).padStart(2, '0')}`;
     const u = by[code];
     if (!u) return all;
-    const tip = `${code} · ${M.UNIT_STATUS[u.status]} · ${n0(u.indoor_m2)} m² + ${n0(u.terrace_m2)} m² terrace`;
+    const tip = `${code} · ${M.UNIT_STATUS[u.status]} · ${t('plan|{a} + {b} terrace', { a: m2(u.indoor_m2), b: m2(u.terrace_m2) })}`;
     return `class="plan__unit${street ? ' plan__unit--street' : ''} st-${u.status}" data-unit="${n}" data-code="${code}"${link ? ` data-href="/admin/units/${u.id}"` : ''} data-tip="${esc(tip)}"`;
   });
   return `<div class="plan-wrap" data-plan>${svg}<div class="plan-tip" data-plan-tip hidden></div></div>`;
 }
-const planLegend = () => `<ul class="legend legend--row">${Object.entries(M.UNIT_STATUS).map(([k, l]) => `<li><i class="st-${k}"></i><span>${l}</span></li>`).join('')}</ul>`;
+const planLegend = () => `<ul class="legend legend--row">${Object.entries(M.UNIT_STATUS).map(([k, l]) => `<li><i class="st-${k}"></i><span>${esc(l)}</span></li>`).join('')}</ul>`;
 
 module.exports = {
-  esc, attr, n0, money, local, m2, pct, date, dt, rel, initials, icon, logo, mark, setCurrency,
+  esc, attr, n0, money, local, m2, pct, date, dt, rel, initials, icon, logo, mark, setCurrency, curLabel, monthName, monthYear, weekdays, langLink, langForm, t, tn,
   layout, bare, badge, stageBadge, unitBadge, kpi, trend, card, table, empty, btn, hidden, form, input, select, textarea,
   bars, funnel, donut, meter, plan, planLegend, TONE, RANK,
 };

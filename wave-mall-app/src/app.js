@@ -102,6 +102,7 @@ function createApp({ env = process.env, mail = deliver } = {}) {
 
   // The leasing office (sales ERP) lives at /admin, behind its own sign-in.
   const admin = mountAdmin(app, { env });
+  app.locals.admin = admin;
 
   const limiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 8, standardHeaders: true, legacyHeaders: false, handler: (req, res) => respond(req, res, 429, 'error') });
   const parsers = [limiter, express.json({ limit: '16kb' }), express.urlencoded({ extended: false, limit: '16kb' })];

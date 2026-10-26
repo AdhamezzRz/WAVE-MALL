@@ -4,35 +4,43 @@
 // behind the dashboard and reports. Rents are per m² per month; money is in the settings currency.
 
 const { now, today } = require('./db');
+const { t: tr, english } = require('./i18n');
+
+// Labels are stored in English and read through t(), so they follow the reader's language.
+const labels = (o) => new Proxy(o, { get: (obj, k) => (typeof k === 'string' && Object.hasOwn(obj, k) ? tr(obj[k]) : obj[k]) });
+const st = (id, en, p) => ({ id, en, p, get label() { return tr(en); } });
 
 const STAGES = [
-  { id: 'new', label: 'New', p: 10 },
-  { id: 'contacted', label: 'Contacted', p: 20 },
-  { id: 'viewing', label: 'Viewing', p: 35 },
-  { id: 'proposal', label: 'Proposal', p: 50 },
-  { id: 'negotiation', label: 'Negotiation', p: 70 },
-  { id: 'reserved', label: 'Reserved', p: 90 },
-  { id: 'won', label: 'Signed', p: 100 },
-  { id: 'lost', label: 'Lost', p: 0 },
+  st('new', 'stage|New', 10),
+  st('contacted', 'stage|Contacted', 20),
+  st('viewing', 'stage|Viewing', 35),
+  st('proposal', 'stage|Proposal', 50),
+  st('negotiation', 'stage|Negotiation', 70),
+  st('reserved', 'stage|Reserved', 90),
+  st('won', 'stage|Signed', 100),
+  st('lost', 'stage|Lost', 0),
 ];
 const OPEN_STAGES = STAGES.filter((s) => !['won', 'lost'].includes(s.id)).map((s) => s.id);
 const stage = (id) => STAGES.find((s) => s.id === id) || STAGES[0];
+// The English stage name, for text the system stores (shown later with tx()).
+const stageEn = (id) => english(stage(id).en);
 
-const CATEGORIES = {
+const CATEGORIES = labels({
   fashion: 'Fashion & accessories', fnb: 'Food & beverage', beauty: 'Beauty & wellness', leisure: 'Leisure & entertainment',
-  services: 'Services & clinics', home: 'Home & lifestyle', health: 'Health & pharmacy', other: 'Other',
-};
-const SOURCES = {
-  website: 'Website', referral: 'Referral', broker: 'Broker', walk_in: 'Walk-in', social: 'Social media', event: 'Event', direct: 'Direct outreach', phone: 'Phone',
-};
-const ZONES = { plaza: 'Plaza level', street: 'Street level', upper: 'Upper floors', kiosk: 'Kiosk' };
-const UNIT_STATUS = { available: 'Available', hold: 'On hold', reserved: 'Reserved', leased: 'Leased', blocked: 'Blocked' };
-const OFFER_STATUS = { draft: 'Draft', pending: 'Awaiting approval', approved: 'Approved', sent: 'Sent', accepted: 'Accepted', rejected: 'Rejected', expired: 'Expired' };
-const LEASE_STATUS = { draft: 'Draft', active: 'Active', ended: 'Ended', terminated: 'Terminated' };
-const INVOICE_STATUS = { open: 'Open', partial: 'Part paid', paid: 'Paid', void: 'Void' };
-const ACTIVITY_TYPES = { note: 'Note', call: 'Call', email: 'Email', whatsapp: 'WhatsApp', meeting: 'Meeting', viewing: 'Viewing', task: 'Task' };
+  services: 'Services & clinics', home: 'Home & lifestyle', health: 'Health & pharmacy', other: 'category|Other',
+});
+const SOURCES = labels({
+  website: 'Website', referral: 'Referral', broker: 'Broker', walk_in: 'Walk-in', social: 'Social media', event: 'Event', direct: 'Direct outreach', phone: 'source|Phone',
+});
+const ZONES = labels({ plaza: 'Plaza level', street: 'Street level', upper: 'Upper floors', kiosk: 'Kiosk' });
+const UNIT_STATUS = labels({ available: 'unit|Available', hold: 'unit|On hold', reserved: 'unit|Reserved', leased: 'unit|Leased', blocked: 'unit|Blocked' });
+const OFFER_STATUS = labels({ draft: 'offer|Draft', pending: 'offer|Awaiting approval', approved: 'offer|Approved', sent: 'offer|Sent', accepted: 'offer|Accepted', rejected: 'offer|Rejected', expired: 'offer|Expired' });
+const LEASE_STATUS = labels({ draft: 'lease|Draft', active: 'lease|Active', ended: 'lease|Ended', terminated: 'lease|Terminated' });
+const INVOICE_STATUS = labels({ open: 'invoice|Open', partial: 'invoice|Part paid', paid: 'invoice|Paid', void: 'invoice|Void' });
+const ACTIVITY_TYPES = labels({ note: 'activity|Note', call: 'activity|Call', email: 'activity|Email', whatsapp: 'activity|WhatsApp', meeting: 'activity|Meeting', viewing: 'activity|Viewing', task: 'activity|Task' });
+// Stored in English (leads.lost_reason); shown with tx().
 const LOST_REASONS = ['Price', 'Unit size', 'Location', 'Timing', 'Chose another mall', 'No response', 'Other'];
-const ROLES = { admin: 'Administrator', manager: 'Sales manager', agent: 'Leasing agent', viewer: 'Viewer' };
+const ROLES = labels({ admin: 'Administrator', manager: 'Sales manager', agent: 'Leasing agent', viewer: 'role|Viewer' });
 
 // ---------- dates ----------
 const pad = (n) => String(n).padStart(2, '0');
@@ -189,7 +197,8 @@ function dashboard(db, user) {
     const leases = db.all("SELECT id FROM leases WHERE status != 'terminated' AND substr(COALESCE(signed_at, created_at), 1, 7) = ?", key);
     months.push({
       key,
-      label: d.toLocaleString('en-GB', { month: 'short', timeZone: 'UTC' }),
+      month: d.getUTCMonth() + 1,
+      get label() { return require('./ui').monthName(this.month); },
       leads: db.value('SELECT COUNT(*) FROM leads WHERE substr(created_at, 1, 7) = ?', key),
       signed: leases.reduce((s, l) => s + leaseArea(db, l.id), 0),
     });
@@ -288,8 +297,8 @@ function reports(db) {
 
   const open = db.all("SELECT due_date, total - paid outstanding FROM invoices WHERE status IN ('open','partial')");
   const aging = [
-    { label: '1–30 days', test: (d) => d >= 1 && d <= 30 },
-    { label: '31–60 days', test: (d) => d > 30 && d <= 60 }, { label: '61–90 days', test: (d) => d > 60 && d <= 90 }, { label: 'Over 90 days', test: (d) => d > 90 },
+    { label: tr('1–30 days'), test: (d) => d >= 1 && d <= 30 },
+    { label: tr('31–60 days'), test: (d) => d > 30 && d <= 60 }, { label: tr('61–90 days'), test: (d) => d > 60 && d <= 90 }, { label: tr('Over 90 days'), test: (d) => d > 90 },
   ].map((b) => {
     const rows = open.filter((r) => b.test(daysBetween(r.due_date, t)));
     return { label: b.label, count: rows.length, amount: rows.reduce((s, r) => s + r.outstanding, 0) };
@@ -305,7 +314,7 @@ function reports(db) {
 }
 
 module.exports = {
-  STAGES, OPEN_STAGES, stage, CATEGORIES, SOURCES, ZONES, UNIT_STATUS, OFFER_STATUS, LEASE_STATUS, INVOICE_STATUS, ACTIVITY_TYPES, LOST_REASONS, ROLES,
+  STAGES, OPEN_STAGES, stage, stageEn, CATEGORIES, SOURCES, ZONES, UNIT_STATUS, OFFER_STATUS, LEASE_STATUS, INVOICE_STATUS, ACTIVITY_TYPES, LOST_REASONS, ROLES,
   addMonths, addDays, daysBetween, monthKey, num, listRates, monthly, schedule, needsApproval, invoicePlan, score, estimateValue,
   dashboard, reports, leaseUnits, offerUnits, leaseArea, currentAnnualRent, now, today,
 };

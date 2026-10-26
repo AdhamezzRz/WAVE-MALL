@@ -4,6 +4,19 @@
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const csrf = $('meta[name=csrf]')?.content || '';
+  const AR = document.body.dataset.lang === 'ar';
+  const STR = {
+    hint: ['Type a name, a reference or a unit code.', 'اكتب اسمًا أو رقمًا مرجعيًا أو رمز وحدة.'],
+    none: ['Nothing matches “{q}”.', 'لا توجد نتائج لـ «{q}».'],
+    moveFail: ['Could not move this lead.', 'تعذّر نقل هذه الفرصة.'],
+    moved: ['Moved to {s}.', 'نُقلت إلى {s}.'],
+    terrace: ['{n} terrace', 'تراس {n}'],
+    m2: ['m²', 'م²'],
+    year: ['Year {n}', 'السنة {n}'],
+    free: ['{n} mo free', '{n} شهر مجاني'],
+    offline: ['No connection. Try again.', 'لا يوجد اتصال. حاول مرة أخرى.'],
+  };
+  const tr = (k, p = {}) => STR[k][AR ? 1 : 0].replace(/\{(\w+)\}/g, (m, x) => (p[x] ?? m));
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
   // ---------- toast ----------
@@ -64,12 +77,12 @@
     let on = 0;
     let timer;
     let seq = 0;
-    const open = () => { box.hidden = false; input.value = ''; list.innerHTML = '<p>Type a name, a reference or a unit code.</p>'; setTimeout(() => input.focus(), 10); };
+    const open = () => { box.hidden = false; input.value = ''; list.innerHTML = `<p>${esc(tr('hint'))}</p>`; setTimeout(() => input.focus(), 10); };
     const close = () => { box.hidden = true; };
     const paint = () => {
       list.innerHTML = items.length
         ? items.map((r, i) => `<a href="${esc(r.href)}" class="${i === on ? 'is-on' : ''}"><span>${esc(r.type)}</span><b>${esc(r.label)}</b><small>${esc(r.sub || '')}</small></a>`).join('')
-        : `<p>Nothing matches “${esc(input.value)}”.</p>`;
+        : `<p>${esc(tr('none', { q: input.value }))}</p>`;
     };
     $$('[data-cmdk-open]').forEach((b) => b.addEventListener('click', open));
     document.addEventListener('keydown', (e) => {
@@ -81,7 +94,7 @@
     input.addEventListener('input', () => {
       clearTimeout(timer);
       const q = input.value.trim();
-      if (!q) { items = []; list.innerHTML = '<p>Type a name, a reference or a unit code.</p>'; return; }
+      if (!q) { items = []; list.innerHTML = `<p>${esc(tr('hint'))}</p>`; return; }
       timer = setTimeout(async () => {
         const mine = ++seq;
         try {
@@ -154,9 +167,10 @@
           body: JSON.stringify({ stage }),
         });
         const j = await r.json().catch(() => ({}));
-        if (!r.ok || !j.ok) throw new Error(j.error || 'Could not move this lead.');
-        toast(`Moved to ${j.label}.`);
+        if (!r.ok || !j.ok) throw new Error(j.error || tr('moveFail'));
+        toast(tr('moved', { s: j.label }));
       } catch (err) {
+        if (err instanceof TypeError) err = new Error(tr('offline'));
         back.prepend(card);
         recount();
         toast(err.message, 'error');
@@ -197,7 +211,7 @@
     const cur = offer.dataset.cur || 'EGP';
     const maxDisc = Number(offer.dataset.maxDiscount) || 0;
     const fmt = (n) => (Number.isFinite(n) ? Math.round(n).toLocaleString('en-US') : '—');
-    const money = (n) => (Number.isFinite(n) && n ? `${cur} ${fmt(n)}` : '—');
+    const money = (n) => (Number.isFinite(n) && n ? (AR ? `${fmt(n)} ${cur}` : `${cur} ${fmt(n)}`) : '—');
     const val = (k) => {
       const el = $(`[data-calc="${k}"]`, offer);
       const n = parseFloat(el?.value);
@@ -232,20 +246,20 @@
       const list = lists.length ? Math.max(...lists) : 0;
       const disc = list && rent ? (rent / list - 1) * 100 : null;
 
-      out('area').textContent = indoor ? `${fmt(indoor)} m²${terraceA ? ` + ${fmt(terraceA)} terrace` : ''}` : '—';
+      out('area').textContent = indoor ? `${fmt(indoor)} ${tr('m2')}${terraceA ? ` + ${tr('terrace', { n: fmt(terraceA) })}` : ''}` : '—';
       out('month').textContent = money(month);
       out('annual').textContent = money(month * 12);
       out('service').textContent = money(serviceY);
       out('deposit').textContent = money(month * val('deposit'));
       out('total').textContent = money(total);
-      out('eff').textContent = eff ? `${cur} ${eff.toFixed(0)}` : '—';
+      out('eff').textContent = eff ? money(eff) : '—';
       const d = out('disc');
       d.textContent = disc === null ? '—' : `${disc > 0 ? '+' : ''}${disc.toFixed(1)}%`;
       d.className = disc === null ? '' : disc < -0.05 ? 'down' : 'up';
       out('approval').hidden = !(list && rent && rent < list * (1 - maxDisc / 100));
       const top = Math.max(...years.map((y) => y.r), 1);
       out('years').innerHTML = month
-        ? years.map((y) => `<p><span>Year ${y.y}</span><i style="width:${((y.r / top) * 100).toFixed(1)}%"></i><b>${fmt(y.r)}${y.free ? ` <small class="muted">· ${y.free} mo free</small>` : ''}</b></p>`).join('')
+        ? years.map((y) => `<p><span>${esc(tr('year', { n: y.y }))}</span><i style="width:${((y.r / top) * 100).toFixed(1)}%"></i><b>${fmt(y.r)}${y.free ? ` <small class="muted">· ${esc(tr('free', { n: y.free }))}</small>` : ''}</b></p>`).join('')
         : '';
     };
     offer.addEventListener('input', calc);
