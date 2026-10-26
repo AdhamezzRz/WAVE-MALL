@@ -51,11 +51,18 @@ The app reads `PORT` from the environment (Hostinger sets it) and trusts one pro
 | `MAIL_FROM`   | From address (defaults to `SMTP_USER`)                      |
 | `LEASING_TO`  | Where enquiries go (defaults to `SMTP_USER`)                |
 | `DATA_DIR`    | Folder for the leasing office database (default `./data`). **Set this on Hostinger** to a folder outside the app, e.g. `/home/<user>/wave-data`, so redeploys never touch it |
+| `OWNER_EMAIL` | The owner's sign-in for the leasing office, e.g. `owner@thewavemallcairo.com`. Created on start-up as an administrator with HR access (only if no account has that email yet) |
+| `OWNER_PASSWORD` | That account's password (10+ characters). Keep it only in Hostinger's environment variables, never in the code |
+| `OWNER_NAME`  | Optional display name for that account (default "Owner") |
+| `OWNER_RESET` | Set to `1` for one deploy to reset the owner's password to `OWNER_PASSWORD` (and sign them out everywhere); remove it afterwards |
+| `ADMIN_FILES` | Optional folder for uploaded documents (default `DATA_DIR/files`) |
 | `ADMIN_DB`    | Full path to the database file instead of `DATA_DIR` (tests use `:memory:`) |
 
 ## Leasing office (`/admin`)
 
 A sales ERP for the leasing team, built into the same app. It is private (`noindex`, blocked in `robots.txt`, every page behind a sign-in) and stores everything in one SQLite file.
+
+**Owner account:** set `OWNER_EMAIL` and `OWNER_PASSWORD` in Hostinger (Websites → your site → Environment variables) and redeploy; the account is created on start-up and you can sign in at `/admin` right away. Change the password later under *Your account*.
 
 **First run:** open `https://thewavemall.com/admin`. With no accounts yet it asks you to create the first administrator. Then go to **Settings** to set list rates, deal rules and document details, and **Team & targets** to invite the team (each invite shows a one-time temporary password). **Settings → Sample data** fills the office with a realistic month of fictional brands, deals, leases and invoices so you can try every screen; one click removes it again.
 
