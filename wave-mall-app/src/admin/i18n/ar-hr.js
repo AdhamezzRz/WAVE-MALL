@@ -375,4 +375,5 @@ module.exports = {
   'National ID copy': 'صورة بطاقة الرقم القومي',
   'Social insurance form 1': 'استمارة التأمينات رقم 1',
   'Engineering syndicate card': 'كارنيه نقابة المهندسين',
+  'hr|Staff': 'الموظفون',
 };

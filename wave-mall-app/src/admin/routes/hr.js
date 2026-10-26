@@ -491,7 +491,7 @@ module.exports = function hr(router, h) {
       [
         { label: tr('hr|Department'), render: (d) => `<b>${esc(deptName(d.name))}</b>` },
         { label: tr('hr|Head'), render: (d) => (d.head ? `<a href="/admin/hr/employees/${d.head.id}">${esc(nm(d.head))}</a>` : '—') },
-        { label: tr('People'), num: true, render: (d) => `<a href="/admin/hr?dept=${d.id}">${d.n}</a>` },
+        { label: tr('hr|Staff'), num: true, render: (d) => `<a href="/admin/hr?dept=${d.id}">${d.n}</a>` },
         { label: '', render: (d) => `<details class="pop"><summary class="btn btn--ghost btn--xs">${esc(tr('Edit'))}</summary>${ui.form(`/admin/hr/departments/${d.id}`, csrf, `${ui.input('name', tr('Name'), deptName(d.name), { required: true })}${ui.select('head_id', tr('hr|Head'), heads, d.head_id, { blank: tr('hr|No one') })}${ui.input('sort', tr('hr|Order'), d.sort, { type: 'number' })}${ui.btn(esc(tr('Save')), { cls: 'btn--primary btn--sm' })}`, { cls: 'stack' })}${d.n ? '' : ui.form(`/admin/hr/departments/${d.id}/delete`, csrf, ui.btn(esc(tr('Delete')), { cls: 'btn--ghost btn--xs', attrs: { 'data-confirm': tr('Delete {name}?', { name: deptName(d.name) }) } }))}</details>` },
       ],
       rows, { empty: esc(tr('No departments yet.')) },
@@ -700,7 +700,7 @@ ${ui.card(tr('Balances {year}', { year: year() }), balTable, { sub: esc(tr('Annu
       [
         { label: tr('hr|Month'), render: (r) => `<b>${esc(ui.monthYear(r.period))}</b>` },
         { label: tr('Status'), render: (r) => ui.badge(r.status === 'paid' ? 'paid' : r.status === 'approved' ? 'approved' : 'draft', lbl(RUN_STATUS, r.status)) },
-        { label: tr('People'), num: true, render: (r) => r.lines.length },
+        { label: tr('hr|Staff'), num: true, render: (r) => r.lines.length },
         { label: tr('hr|Gross'), num: true, render: (r) => money(r.tot.gross) },
         { label: tr('hr|Net'), num: true, render: (r) => `<b>${money(r.tot.net)}</b>` },
         { label: tr('hr|Cost to the mall'), num: true, render: (r) => money(r.tot.gross + r.tot.insR) },
