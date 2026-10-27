@@ -4,7 +4,7 @@ The feed opens with one picture split across three posts, "Where every line lead
 
 - A hand draws back the velvet curtain and reveals the real Wave at golden hour: the building and the rooftop THE WAVE sign are from our photograph of the mall, with the sky set to the brand mint.
 - One fine line starts at her fingertip, passes behind the rooftop sign and ends at a small caption in the sky: EVERY LINE / LEADS SOMEWHERE.
-- A version with no text and no line is in .
+- A version with no text and no line is in the `silent` folder.
 
 Above the panorama sit the nine single posts, as a 3×3 grid.
 
