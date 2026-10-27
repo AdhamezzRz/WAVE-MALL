@@ -1,9 +1,8 @@
 # The Wave · Instagram grid v4 (12 posts, with the opening panorama)
 
-The feed opens with one picture split across three posts, "Where every line leads somewhere."
+The feed opens with one picture split across three posts: the real Wave at golden hour, edge to edge. The building and the rooftop THE WAVE sign are from our photograph of the mall, with the sky set to the brand mint.
 
-- A hand draws back the velvet curtain and reveals the real Wave at golden hour: the building and the rooftop THE WAVE sign are from our photograph of the mall, with the sky set to the brand mint.
-- One fine line starts at her fingertip, passes behind the rooftop sign and ends at a small caption in the sky: EVERY LINE / LEADS SOMEWHERE.
+- One fine line enters from the left, passes behind the rooftop sign and ends at a small caption in the sky: EVERY LINE / LEADS SOMEWHERE.
 - A version with no text and no line is in the `silent` folder.
 
 Above the panorama sit the nine single posts, as a 3×3 grid.
@@ -27,7 +26,7 @@ Above the panorama sit the nine single posts, as a 3×3 grid.
 
 1. **post-01 · right:** EVERY LINE / LEADS SOMEWHERE (small, widely spaced capitals)
 2. **post-02 · middle:** no text (the real rooftop sign)
-3. **post-03 · left:** no text (the curtain and the hand)
+3. **post-03 · left:** no text (the left wing of the building)
 4. **post-04 · the light is on:** THE LIGHT / IS ON, / *every evening.* · NORTH 90 · NEW CAIRO
 5. **The woman:** no text
 6. **Bags:** EVERYTHING YOU NEED, / *and more.* · THE WAVE
@@ -69,4 +68,4 @@ Hashtags on every post: `#TheWave #TheWaveMall #NewCairo #North90`
 - `posting-order.png`: the profile numbered in posting order
 - `the-wave-grid-hero.jpg`: the campaign image
 
-The panorama is our real golden-hour photograph of The Wave (sky changed to mint, rooftop wordmark from the vector logo), with the velvet curtain and hand made with Higgsfield and laid over it. The caption and the line were set by hand, so the type is exact. The follower numbers on the profile are placeholders.
+The panorama is our real golden-hour photograph of The Wave (sky changed to mint, rooftop wordmark from the vector logo). The caption and the line were set by hand, so the type is exact. The follower numbers on the profile are placeholders.
