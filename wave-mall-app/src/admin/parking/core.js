@@ -112,6 +112,104 @@ const SCHEMA = `
   );
 `;
 
+// The second step: the floor plan's bays, company accounts, bookings, valet, violations, incidents,
+// the cash safe, alerts, e-receipts and the gates' offline queue.
+const SCHEMA2 = `
+  ALTER TABLE pk_sessions ADD COLUMN extra REAL NOT NULL DEFAULT 0;
+  ALTER TABLE pk_sessions ADD COLUMN bay_id INTEGER;
+  ALTER TABLE pk_sessions ADD COLUMN booking_id INTEGER;
+  ALTER TABLE pk_sessions ADD COLUMN account_id INTEGER;
+  ALTER TABLE pk_permits ADD COLUMN account_id INTEGER;
+  ALTER TABLE pk_permits ADD COLUMN source TEXT NOT NULL DEFAULT 'office';
+  ALTER TABLE pk_permits ADD COLUMN access_token TEXT;
+  ALTER TABLE pk_permits ADD COLUMN plate_changes INTEGER NOT NULL DEFAULT 0;
+  ALTER TABLE pk_plans ADD COLUMN online INTEGER NOT NULL DEFAULT 0;
+  ALTER TABLE pk_plans ADD COLUMN max_active INTEGER;
+  ALTER TABLE pk_plans ADD COLUMN description TEXT;
+  ALTER TABLE pk_plans ADD COLUMN description_ar TEXT;
+  ALTER TABLE pk_tills ADD COLUMN drops REAL NOT NULL DEFAULT 0;
+  ALTER TABLE pk_tills ADD COLUMN denominations TEXT;
+  CREATE TABLE pk_bays (
+    id INTEGER PRIMARY KEY, zone_id INTEGER NOT NULL REFERENCES pk_zones(id) ON DELETE CASCADE, code TEXT NOT NULL UNIQUE, section TEXT,
+    x REAL NOT NULL, y REAL NOT NULL, w REAL NOT NULL, h REAL NOT NULL, kind TEXT NOT NULL DEFAULT 'general',
+    sensor TEXT, state TEXT, state_at TEXT, plate TEXT, active INTEGER NOT NULL DEFAULT 1, demo INTEGER NOT NULL DEFAULT 0
+  );
+  CREATE INDEX pk_bays_zone ON pk_bays(zone_id);
+  CREATE TABLE pk_accounts (
+    id INTEGER PRIMARY KEY, ref TEXT NOT NULL UNIQUE, name TEXT NOT NULL, brand_id INTEGER REFERENCES brands(id) ON DELETE SET NULL,
+    contact_name TEXT, phone TEXT, email TEXT, tax_id TEXT, address TEXT, mode TEXT NOT NULL DEFAULT 'fixed',
+    price REAL NOT NULL DEFAULT 0, discount REAL NOT NULL DEFAULT 0, cap REAL, terms_days INTEGER NOT NULL DEFAULT 15,
+    next_bill_on TEXT, status TEXT NOT NULL DEFAULT 'active', notes TEXT, demo INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL, updated_at TEXT NOT NULL
+  );
+  CREATE TABLE pk_account_charges (
+    id INTEGER PRIMARY KEY, account_id INTEGER NOT NULL REFERENCES pk_accounts(id) ON DELETE CASCADE, session_id INTEGER REFERENCES pk_sessions(id) ON DELETE SET NULL,
+    plate TEXT, minutes INTEGER, amount REAL NOT NULL, at TEXT NOT NULL, invoice_id INTEGER REFERENCES invoices(id) ON DELETE SET NULL, demo INTEGER NOT NULL DEFAULT 0
+  );
+  CREATE INDEX pk_account_charges_account ON pk_account_charges(account_id, at);
+  CREATE TABLE pk_bookings (
+    id INTEGER PRIMARY KEY, ref TEXT NOT NULL UNIQUE, code TEXT NOT NULL UNIQUE, plate TEXT, plate_key TEXT, name TEXT NOT NULL, phone TEXT, email TEXT,
+    zone_id INTEGER REFERENCES pk_zones(id) ON DELETE SET NULL, bay_id INTEGER REFERENCES pk_bays(id) ON DELETE SET NULL,
+    starts_at TEXT NOT NULL, ends_at TEXT NOT NULL, price REAL NOT NULL DEFAULT 0, status TEXT NOT NULL DEFAULT 'pending',
+    session_id INTEGER REFERENCES pk_sessions(id) ON DELETE SET NULL, invoice_id INTEGER REFERENCES invoices(id) ON DELETE SET NULL,
+    source TEXT NOT NULL DEFAULT 'office', note TEXT, user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    demo INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL, updated_at TEXT NOT NULL
+  );
+  CREATE INDEX pk_bookings_plate ON pk_bookings(plate_key, status);
+  CREATE INDEX pk_bookings_time ON pk_bookings(starts_at);
+  CREATE TABLE pk_valet (
+    id INTEGER PRIMARY KEY, ref TEXT NOT NULL UNIQUE, tag INTEGER NOT NULL, session_id INTEGER REFERENCES pk_sessions(id) ON DELETE SET NULL,
+    plate TEXT, plate_key TEXT, name TEXT, phone TEXT, bay_id INTEGER REFERENCES pk_bays(id) ON DELETE SET NULL, place TEXT,
+    condition TEXT, notes TEXT, fee REAL NOT NULL DEFAULT 0, status TEXT NOT NULL DEFAULT 'received', token_hash TEXT, token TEXT,
+    received_at TEXT NOT NULL, parked_at TEXT, requested_at TEXT, ready_at TEXT, delivered_at TEXT,
+    received_by INTEGER REFERENCES users(id) ON DELETE SET NULL, runner_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    delivered_by INTEGER REFERENCES users(id) ON DELETE SET NULL, demo INTEGER NOT NULL DEFAULT 0
+  );
+  CREATE INDEX pk_valet_status ON pk_valet(status);
+  CREATE TABLE pk_violation_types (
+    id INTEGER PRIMARY KEY, code TEXT NOT NULL UNIQUE, name TEXT NOT NULL, name_ar TEXT, fine REAL NOT NULL DEFAULT 0, active INTEGER NOT NULL DEFAULT 1
+  );
+  CREATE TABLE pk_violations (
+    id INTEGER PRIMARY KEY, ref TEXT NOT NULL UNIQUE, type_id INTEGER REFERENCES pk_violation_types(id) ON DELETE SET NULL,
+    plate TEXT, plate_key TEXT, session_id INTEGER REFERENCES pk_sessions(id) ON DELETE SET NULL, charged_session_id INTEGER REFERENCES pk_sessions(id) ON DELETE SET NULL,
+    bay_id INTEGER REFERENCES pk_bays(id) ON DELETE SET NULL, place TEXT, note TEXT, fine REAL NOT NULL DEFAULT 0,
+    status TEXT NOT NULL DEFAULT 'charged', resolution TEXT, user_id INTEGER REFERENCES users(id) ON DELETE SET NULL, at TEXT NOT NULL,
+    resolved_at TEXT, resolved_by INTEGER REFERENCES users(id) ON DELETE SET NULL, demo INTEGER NOT NULL DEFAULT 0
+  );
+  CREATE INDEX pk_violations_plate ON pk_violations(plate_key, status);
+  CREATE TABLE pk_incidents (
+    id INTEGER PRIMARY KEY, ref TEXT NOT NULL UNIQUE, kind TEXT NOT NULL, title TEXT NOT NULL, at TEXT NOT NULL,
+    zone_id INTEGER REFERENCES pk_zones(id) ON DELETE SET NULL, bay_id INTEGER REFERENCES pk_bays(id) ON DELETE SET NULL, place TEXT,
+    plates TEXT, session_id INTEGER REFERENCES pk_sessions(id) ON DELETE SET NULL, reporter_name TEXT, reporter_phone TEXT,
+    description TEXT, status TEXT NOT NULL DEFAULT 'open', assigned_to INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    resolution TEXT, claim_ref TEXT, value REAL, item TEXT, stored_at TEXT, returned_to TEXT, returned_at TEXT,
+    user_id INTEGER REFERENCES users(id) ON DELETE SET NULL, demo INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL, updated_at TEXT NOT NULL
+  );
+  CREATE TABLE pk_incident_notes (
+    id INTEGER PRIMARY KEY, incident_id INTEGER NOT NULL REFERENCES pk_incidents(id) ON DELETE CASCADE, body TEXT NOT NULL,
+    status_to TEXT, user_id INTEGER REFERENCES users(id) ON DELETE SET NULL, at TEXT NOT NULL
+  );
+  CREATE TABLE pk_safe (
+    id INTEGER PRIMARY KEY, ref TEXT NOT NULL UNIQUE, kind TEXT NOT NULL, amount REAL NOT NULL, till_id INTEGER REFERENCES pk_tills(id) ON DELETE SET NULL,
+    user_id INTEGER REFERENCES users(id) ON DELETE SET NULL, witness TEXT, bag TEXT, carrier TEXT, reference TEXT, note TEXT,
+    status TEXT NOT NULL DEFAULT 'done', confirmed_amount REAL, confirmed_at TEXT, at TEXT NOT NULL, demo INTEGER NOT NULL DEFAULT 0
+  );
+  CREATE INDEX pk_safe_at ON pk_safe(at);
+  CREATE TABLE pk_alerts (
+    id INTEGER PRIMARY KEY, kind TEXT NOT NULL, level TEXT NOT NULL DEFAULT 'warn', title TEXT NOT NULL, detail TEXT, key TEXT UNIQUE,
+    lane_id INTEGER REFERENCES pk_lanes(id) ON DELETE SET NULL, session_id INTEGER REFERENCES pk_sessions(id) ON DELETE SET NULL,
+    at TEXT NOT NULL, acked_at TEXT, acked_by INTEGER REFERENCES users(id) ON DELETE SET NULL, demo INTEGER NOT NULL DEFAULT 0
+  );
+  CREATE TABLE pk_ereceipts (
+    id INTEGER PRIMARY KEY, payment_id INTEGER NOT NULL REFERENCES pk_payments(id) ON DELETE CASCADE, kind TEXT NOT NULL DEFAULT 's',
+    number TEXT NOT NULL UNIQUE, uuid TEXT, previous_uuid TEXT, reference_uuid TEXT, document TEXT, status TEXT NOT NULL DEFAULT 'prepared',
+    submission_uuid TEXT, errors TEXT, issued_at TEXT NOT NULL, submitted_at TEXT, checked_at TEXT, demo INTEGER NOT NULL DEFAULT 0,
+    UNIQUE (payment_id, kind)
+  );
+  CREATE TABLE pk_edge_events (
+    id TEXT PRIMARY KEY, device TEXT, payload TEXT, result TEXT, at TEXT NOT NULL
+  );
+`;
+
 // Settings (db settings, prk_*) and their defaults.
 const DEFAULTS = {
   prk_val_minutes: '0', // free time a validation gives; 0 = the whole visit
@@ -123,6 +221,10 @@ const DEFAULTS = {
   prk_suspend_days: '30', // suspend a subscription when its invoice is this many days late
   prk_overstay_hours: '24', // flag cars parked longer than this
   prk_repeat_min: '3', // the same plate read again within this many minutes is the same arrival
+  prk_valet_fee: '100', // valet, per visit
+  prk_valet_parking: '0', // 0: the valet fee includes parking; 1: parking is charged as well
+  prk_booking_hold_min: '30', // a booked space is held this long after the booking starts
+  prk_booking_early_min: '60', // a booked car may arrive this early
 };
 
 const HOLDERS = ['tenant', 'staff', 'vip', 'individual'];
@@ -183,6 +285,7 @@ function readCredential(raw) {
 
 function parking(db, h = {}) {
   db.ensure('parking-1', SCHEMA);
+  db.ensure('parking-2', SCHEMA2);
   const events = h.events || { emit() {}, on() {} };
   const S = (k) => {
     const v = db.setting(k);
@@ -278,20 +381,40 @@ function parking(db, h = {}) {
 
   // ---------- what a visit owes ----------
   const validationsOf = (s) => db.all("SELECT * FROM pk_validations WHERE session_id = ? AND status = 'ok' ORDER BY at", s.id);
+  // What a visit owes. Parking by the tariff (minus validations and a booking's prepaid time) plus
+  // extras (the valet fee, fines), which validations never cancel. Subscribers, company cars and
+  // (by default) valet cars pay no hourly parking. Just paid: the way to the exit is free.
+  const PERMIT_KINDS = ['subscriber', 'tenant', 'staff', 'vip', 'company'];
+  const bookingOf = (s) => (s.booking_id ? db.get('SELECT * FROM pk_bookings WHERE id = ?', s.booking_id) : null);
   function quoteOf(s, at = now()) {
     const vals = validationsOf(s);
     const whole = vals.some((v) => v.whole);
     const free = vals.reduce((t, v) => t + (v.whole ? 0 : v.minutes), 0);
     const end = s.status === 'inside' ? at : s.exit_at || at;
-    if (s.kind !== 'visitor') return { minutes: T.minutesBetween(s.entry_at, end), gross: 0, free: 0, net: 0, paid: s.paid, due: 0, inExitWindow: false, whole, freeMin: free, validations: vals, tariff: null };
+    const minutes = T.minutesBetween(s.entry_at, end);
+    const extra = r2(s.extra || 0);
+    const noParking = s.permit_id || PERMIT_KINDS.includes(s.kind) || (s.kind === 'valet' && !N('prk_valet_parking'));
     const t = tariffOf(s);
-    const q = T.quote(t, { entry_at: s.entry_at, at: end, free_min: free, whole, paid: s.paid, paid_at: s.paid_at, lost: !!s.lost });
-    return { ...q, whole, freeMin: free, validations: vals, tariff: t };
+    const booking = s.kind === 'booking' ? bookingOf(s) : null;
+    // a booking covers the time from arrival to its end
+    const covered = booking ? T.minutesBetween(s.entry_at, booking.ends_at) : 0;
+    const parking = (when) => (noParking ? { minutes: T.minutesBetween(s.entry_at, when), gross: 0, free: 0, net: 0 }
+      : T.quote(t, { entry_at: s.entry_at, at: when, free_min: free + covered, whole, paid: 0, lost: !!s.lost }));
+    const q = parking(end);
+    const exitMin = Number((t || T.DEFAULT).exit_min) || 0;
+    const inExitWindow = !!s.paid_at && s.paid > 0 && Date.parse(end) - Date.parse(s.paid_at) <= exitMin * 60000;
+    // in the exit window the parking is what it was when they paid; extras added since are still due
+    const owed = (inExitWindow ? parking(s.paid_at).net : q.net) + extra;
+    const due = r2(Math.max(0, owed - (s.paid || 0)));
+    return {
+      minutes, gross: r2(q.gross + extra), free: r2(q.free), net: r2(q.net + extra), parking: r2(q.net), extra, paid: r2(s.paid || 0), due,
+      inExitWindow: inExitWindow && due <= 0, whole, freeMin: free, covered, validations: vals, tariff: noParking ? null : t, booking,
+    };
   }
 
   // ---------- entry ----------
   // Returns { open, reason, session, kind, message } — message is what the gate's display says.
-  function entry({ lane = null, plate = '', card = '', via = null, at = now(), user = null, photo = null, demo = 0, force = false } = {}) {
+  function entry({ lane = null, plate = '', card = '', via = null, at = now(), user = null, photo = null, demo = 0, force = false, code: given = null } = {}) {
     const L = laneBy(lane);
     const key = plateKey(plate);
     const ck = cardKey(card);
@@ -301,7 +424,11 @@ function parking(db, h = {}) {
       log('deny', { lane: L, plate: shown, credential: ck, decision: 'closed', reason, via: how, user, photo, at, demo });
       return { open: false, reason };
     };
-    if (key && blocked(key)) return deny('blocked');
+    // force: the car is already in (a gate that worked offline); a blocked plate is still logged
+    if (key && blocked(key)) {
+      if (!force) return deny('blocked');
+      log('alarm', { lane: L, plate: shown, credential: ck, decision: 'open', reason: 'blocked', via: how, at, demo });
+    }
     return db.tx(() => {
       // the same car read twice, or a car that left without an exit read
       const before = (ck && db.get("SELECT * FROM pk_sessions WHERE card_uid = ? AND status = 'inside' ORDER BY id DESC LIMIT 1", ck))
@@ -314,21 +441,45 @@ function parking(db, h = {}) {
       const permit = permitFor({ plate: key, card: ck }, at);
       let kind = 'visitor';
       let permitId = null;
+      let accountId = null;
       let note = null;
+      let booking = null;
       if (permit) {
         const inUse = db.value("SELECT COUNT(*) FROM pk_sessions WHERE permit_id = ? AND status = 'inside'", permit.id);
-        if (inUse < permit.cars) { kind = permit.holder === 'individual' ? 'subscriber' : permit.holder; permitId = permit.id; } else note = `Subscription ${permit.ref} already has ${permit.cars} car(s) inside: parked as a visitor.`;
+        const account = permit.account_id ? db.get("SELECT * FROM pk_accounts WHERE id = ? AND status = 'active'", permit.account_id) : null;
+        if (permit.account_id && !account) note = `The company account of subscription ${permit.ref} is not active: parked as a visitor.`;
+        else if (inUse < permit.cars) {
+          kind = account ? 'company' : permit.holder === 'individual' ? 'subscriber' : permit.holder;
+          permitId = permit.id;
+          accountId = account ? account.id : null;
+        } else note = `Subscription ${permit.ref} already has ${permit.cars} car(s) inside: parked as a visitor.`;
+      }
+      // a booked space: from a little before it starts until it ends
+      if (kind === 'visitor' && key) {
+        const early = new Date(Date.parse(at) + N('prk_booking_early_min') * 60000).toISOString();
+        booking = db.get("SELECT * FROM pk_bookings WHERE plate_key = ? AND status = 'confirmed' AND starts_at <= ? AND ends_at > ? ORDER BY starts_at LIMIT 1", key, early, at);
+        if (booking) kind = 'booking';
       }
       if (kind === 'visitor' && !force && N('prk_block_full') && occupancy().full) return deny('full');
-      let code = newCode();
-      while (byCode(code)) code = newCode();
+      // a ticket printed by a gate while offline keeps its code
+      const g = String(given || '').toUpperCase().replace(/[^0-9A-Z]/g, '');
+      let code = /^[23456789ABCDEFGHJKLMNPQRSTUVWXYZ]{8}$/.test(g) && !byCode(g) ? g : newCode();
+      if (code !== g) while (byCode(code)) code = newCode();
       const tariff = tariffAt(at);
       const id = Number(db.run(
-        `INSERT INTO pk_sessions (ref, code, kind, plate, plate_key, card_uid, permit_id, zone_id, tariff_id, entry_at, entry_lane_id, entry_via, status, note, photo_url, user_id, demo, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'inside', ?, ?, ?, ?, ?, ?)`,
-        db.nextRef('pk_sessions', 'PK', 6, true), code, kind, shown || null, key || null, ck || null, permitId,
-        permit && permit.zone_id ? permit.zone_id : zoneFor(L), tariff.id, at, L ? L.id : null, how, note, photo, user ? user.id : null, demo ? 1 : 0, at, at,
+        `INSERT INTO pk_sessions (ref, code, kind, plate, plate_key, card_uid, permit_id, account_id, booking_id, bay_id, zone_id, tariff_id, entry_at, entry_lane_id, entry_via, status, note, photo_url, user_id, demo, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'inside', ?, ?, ?, ?, ?, ?)`,
+        db.nextRef('pk_sessions', 'PK', 6, true), code, kind, shown || null, key || null, ck || null, permitId, accountId, booking ? booking.id : null, booking ? booking.bay_id : null,
+        booking && booking.zone_id ? booking.zone_id : permit && permit.zone_id ? permit.zone_id : zoneFor(L), tariff.id, at, L ? L.id : null, how, note, photo, user ? user.id : null, demo ? 1 : 0, at, at,
       ).lastInsertRowid);
+      if (booking) db.run("UPDATE pk_bookings SET status = 'arrived', session_id = ?, updated_at = ? WHERE id = ?", id, at, booking.id);
+      // fines left unpaid on an earlier visit come back with the car
+      if (key) {
+        for (const v of db.all("SELECT * FROM pk_violations WHERE plate_key = ? AND status = 'unpaid'", key)) {
+          db.run("UPDATE pk_violations SET status = 'charged', charged_session_id = ? WHERE id = ?", id, v.id);
+          db.run('UPDATE pk_sessions SET extra = extra + ? WHERE id = ?', v.fine, id);
+        }
+      }
       const s = sessionBy(id);
       log('entry', { lane: L, plate: shown, credential: ck || code, decision: 'open', reason: kind, session: s, via: how, user, photo, at, demo });
       bump('entries', at, demo);
@@ -378,11 +529,34 @@ function parking(db, h = {}) {
           db.run('UPDATE pk_validations SET value = ? WHERE id = ?', value, v.id);
         });
       }
+      // a company car: its time goes on the company's account
+      if (s.account_id) {
+        const a = db.get('SELECT * FROM pk_accounts WHERE id = ?', s.account_id);
+        if (a && a.mode === 'usage') {
+          const t = tariffOf(s);
+          let amount = r2(T.cost(t, q.minutes) * (1 - (Number(a.discount) || 0) / 100));
+          if (a.cap) {
+            const month = cairo(new Date(at)).date.slice(0, 7);
+            const used = db.value('SELECT COALESCE(SUM(amount), 0) FROM pk_account_charges WHERE account_id = ? AND substr(at, 1, 7) = ?', a.id, month);
+            amount = r2(Math.max(0, Math.min(amount, a.cap - used)));
+          }
+          if (amount > 0) db.run('INSERT INTO pk_account_charges (account_id, session_id, plate, minutes, amount, at, demo) VALUES (?, ?, ?, ?, ?, ?, ?)', a.id, s.id, s.plate, q.minutes, amount, at, s.demo);
+        }
+      }
+      if (s.booking_id) db.run("UPDATE pk_bookings SET status = 'completed', updated_at = ? WHERE id = ? AND status = 'arrived'", at, s.booking_id);
+      // fines on this visit: paid with it, or written off with the barrier opened by hand
+      db.run('UPDATE pk_violations SET status = ?, resolved_at = ? WHERE charged_session_id = ? AND status = \'charged\'', written_off > 0 ? 'waived' : 'paid', at, s.id);
       bump('exits', at, demo || s.demo);
       const out = sessionBy(s.id);
       events.emit('parking.exit', { session: out });
       return out;
     });
+  }
+
+  // An extra charge on a visit inside (a valet fee, a fine): due at the exit, never validated away.
+  function addExtra(s, amount) {
+    db.run('UPDATE pk_sessions SET extra = MAX(0, extra + ?), updated_at = ? WHERE id = ?', r2(amount), now(), s.id);
+    return sessionBy(s.id);
   }
 
   // ---------- payments ----------
@@ -460,15 +634,38 @@ function parking(db, h = {}) {
     return v;
   }
 
+  // ---------- the cash safe: every movement of cash in or out ----------
+  function safe(kind, amount, { till = null, user = null, witness = null, bag = null, carrier = null, reference = null, note = null, status = 'done', at = now(), demo = 0 } = {}) {
+    const id = Number(db.run('INSERT INTO pk_safe (ref, kind, amount, till_id, user_id, witness, bag, carrier, reference, note, status, at, demo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      db.nextRef('pk_safe', 'SF', 5, true), kind, r2(amount), till, user ? user.id : null, witness, bag, carrier, reference, note, status, at, demo ? 1 : 0).lastInsertRowid);
+    return db.get('SELECT * FROM pk_safe WHERE id = ?', id);
+  }
+  const safeBalance = () => r2(db.value("SELECT COALESCE(SUM(amount), 0) FROM pk_safe WHERE status != 'void'"));
+  // Cash taken out of a drawer during a shift into the safe.
+  function drop(till, { amount, user = null, witness = null, at = now() } = {}) {
+    if (!till || till.status !== 'open') throw fail('prk|This till is closed.');
+    const amt = r2(amount);
+    if (!(amt > 0)) throw fail('prk|Enter the amount.');
+    if (amt > tillTotals(till).expectedCash) throw fail('prk|The drawer does not have that much cash.');
+    return db.tx(() => {
+      db.run('UPDATE pk_tills SET drops = drops + ? WHERE id = ?', amt, till.id);
+      return safe('drop', amt, { till: till.id, user, witness, at, demo: till.demo });
+    });
+  }
+
   // ---------- tills (a cashier's shift, or a pay machine's day) ----------
   const tillBy = (id) => db.get('SELECT * FROM pk_tills WHERE id = ?', id);
   const openTillOf = (userId) => db.get("SELECT * FROM pk_tills WHERE status = 'open' AND kind = 'booth' AND user_id = ? ORDER BY id DESC LIMIT 1", userId);
   function openTill({ user, name = 'Exit booth', float = 0, at = now(), demo = 0 } = {}) {
     if (!user) throw fail('prk|Sign in to open a till.');
     if (openTillOf(user.id)) throw fail('prk|You already have an open till.');
-    const id = Number(db.run('INSERT INTO pk_tills (ref, name, kind, user_id, opened_at, float, status, demo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      db.nextRef('pk_tills', 'TL', 5, true), String(name).slice(0, 60), 'booth', user.id, at, r2(Math.max(0, float)), 'open', demo ? 1 : 0).lastInsertRowid);
-    return tillBy(id);
+    return db.tx(() => {
+      const id = Number(db.run('INSERT INTO pk_tills (ref, name, kind, user_id, opened_at, float, status, demo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        db.nextRef('pk_tills', 'TL', 5, true), String(name).slice(0, 60), 'booth', user.id, at, r2(Math.max(0, float)), 'open', demo ? 1 : 0).lastInsertRowid);
+      // the starting cash comes out of the safe
+      if (float > 0) safe('float', -r2(float), { till: id, user, at, demo });
+      return tillBy(id);
+    });
   }
   // a pay machine's till for the day (opened by itself, closed by the nightly job)
   function machineTill(device, at = now()) {
@@ -484,7 +681,7 @@ function parking(db, h = {}) {
     const rows = db.all("SELECT method, COUNT(*) n, SUM(amount) total FROM pk_payments WHERE till_id = ? AND status = 'ok' GROUP BY method", till.id);
     const by = Object.fromEntries(rows.map((r) => [r.method, { n: r.n, total: r2(r.total) }]));
     const total = r2(rows.reduce((t, r) => t + r.total, 0));
-    return { by, total, count: rows.reduce((t, r) => t + r.n, 0), expectedCash: r2((till.float || 0) + ((by.cash && by.cash.total) || 0)) };
+    return { by, total, count: rows.reduce((t, r) => t + r.n, 0), drops: r2(till.drops || 0), expectedCash: r2((till.float || 0) + ((by.cash && by.cash.total) || 0) - (till.drops || 0)) };
   }
   // Closing a till: cash counted against what the system expects, and the takings into the books
   // (one invoice for the shift, paid by each method; a cash difference as its own entry).
@@ -509,6 +706,8 @@ function parking(db, h = {}) {
       }
       db.run("UPDATE pk_tills SET status = 'closed', closed_at = ?, closed_by = ?, counted = ?, expected_cash = ?, totals = ?, difference = ?, invoice_id = ?, note = ? WHERE id = ?",
         at, user ? user.id : null, countedCash, tot.expectedCash, JSON.stringify(tot.by), diff, invoiceId, note, till.id);
+      // the counted cash goes into the safe
+      if (countedCash > 0) safe('till', countedCash, { till: till.id, user, at, demo: till.demo });
       // over or short: into the books as cash differences
       if (diff && h.ledger && typeof h.ledger.post === 'function') {
         try {
@@ -568,7 +767,7 @@ function parking(db, h = {}) {
     return db.get('SELECT * FROM pk_permits WHERE id = ?', nid);
   }
   function setPermitStatus(p, status, reason = null) {
-    if (!['active', 'suspended', 'cancelled', 'expired'].includes(status)) throw fail('prk|Unknown status.');
+    if (!['active', 'suspended', 'cancelled', 'expired', 'pending'].includes(status)) throw fail('prk|Unknown status.');
     db.run('UPDATE pk_permits SET status = ?, status_reason = ?, updated_at = ? WHERE id = ?', status, reason, now(), p.id);
     return db.get('SELECT * FROM pk_permits WHERE id = ?', p.id);
   }
@@ -577,7 +776,7 @@ function parking(db, h = {}) {
     const B = billing();
     if (!B) return 0;
     let n = 0;
-    for (const p of db.all("SELECT * FROM pk_permits WHERE status IN ('active','suspended') AND price > 0 AND next_bill_on IS NOT NULL AND next_bill_on <= ?", today)) {
+    for (const p of db.all("SELECT * FROM pk_permits WHERE status IN ('active','suspended') AND price > 0 AND account_id IS NULL AND source != 'pending' AND next_bill_on IS NOT NULL AND next_bill_on <= ?", today)) {
       db.tx(() => {
         let next = p.next_bill_on;
         let ends = p.ends_on;
@@ -679,6 +878,7 @@ function parking(db, h = {}) {
     if (!p) return;
     db.run("UPDATE pk_payments SET status = 'refunded' WHERE id = ?", p.id);
     db.run('UPDATE pk_sessions SET paid = MAX(0, paid - ?), updated_at = ? WHERE id = ?', p.amount, now(), p.session_id);
+    events.emit('parking.refunded', { payment: db.get('SELECT * FROM pk_payments WHERE id = ?', p.id) });
   });
   // checkouts started and never finished: their invoices are voided
   function sweepOnline(hours = 3) {
@@ -712,12 +912,12 @@ function parking(db, h = {}) {
   }
 
   return {
-    SCHEMA, DEFAULTS, HOLDERS, METHODS, S, N,
+    SCHEMA, SCHEMA2, DEFAULTS, HOLDERS, METHODS, PERMIT_KINDS, S, N, fail, bookingOf, addExtra,
     plateKey, plateShow, cardKey, codeShow, readCredential, newCode,
     zones, capacity, occupancy, laneBy, tariffAt, tariffOf, insideCount,
     sessionBy, byCode, findInside, permitFor, blocked, quoteOf, validationsOf,
     entry, exit, close, pay, markLost, ruleFor, validate, unvalidate,
-    tillBy, openTillOf, openTill, machineTill, tillTotals, closeTill,
+    tillBy, openTillOf, openTill, machineTill, tillTotals, closeTill, safe, safeBalance, drop,
     savePermit, setPermitStatus, billPermits, reviewPermits, billValidations, payOnline, sweepOnline,
     log, message, addMonths, addDays, platesOf,
   };

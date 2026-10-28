@@ -17,6 +17,68 @@
     }, every);
   }
 
+  // ---------- the live floor plan ----------
+  const floor = $('[data-floor]');
+  if (floor) {
+    const base = floor.dataset.floorBase;
+    floor.addEventListener('click', (e) => {
+      const g = e.target.closest('[data-bay]');
+      if (g) location.href = `${base}&bay=${encodeURIComponent(g.dataset.bay)}`;
+    });
+    floor.addEventListener('keydown', (e) => {
+      const g = e.target.closest('[data-bay]');
+      if (g && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); location.href = `${base}&bay=${encodeURIComponent(g.dataset.bay)}`; }
+    });
+    const refresh = async () => {
+      if (document.visibilityState !== 'visible') return;
+      try {
+        const r = await fetch(floor.dataset.floor, { headers: { accept: 'application/json' }, credentials: 'same-origin' });
+        if (!r.ok) return;
+        const d = await r.json();
+        if (!d.ok) return;
+        for (const [code, state, est, viol, tip] of d.bays) {
+          const g = floor.querySelector(`[data-bay="${code}"]`);
+          if (!g) continue;
+          g.classList.remove('s-free', 's-taken', 's-held', 's-off');
+          g.classList.add(`s-${state}`);
+          g.classList.toggle('is-est', !!est);
+          g.classList.toggle('has-violation', !!viol);
+          g.setAttribute('aria-label', tip);
+          const t = g.querySelector('title');
+          if (t) t.textContent = tip;
+          // a car appears or leaves
+          const car = g.querySelector('.pkf-car');
+          if (state === 'taken' && !car) {
+            const box = g.querySelector('rect');
+            const c = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            c.setAttribute('class', 'pkf-car');
+            c.setAttribute('x', Number(box.getAttribute('x')) + 3);
+            c.setAttribute('y', Number(box.getAttribute('y')) + 6);
+            c.setAttribute('width', Number(box.getAttribute('width')) - 6);
+            c.setAttribute('height', Number(box.getAttribute('height')) - 13);
+            c.setAttribute('rx', 4);
+            box.after(c);
+          } else if (state !== 'taken' && car) car.remove();
+        }
+        for (const [k, v] of Object.entries(d.counts || {})) {
+          const el = $(`[data-count="${k}"]`);
+          if (el) el.textContent = Number(v).toLocaleString('en-US');
+        }
+      } catch { /* next time */ }
+    };
+    setInterval(refresh, 15000);
+  }
+
+  // ---------- counting a drawer by note ----------
+  const dens = $('[data-dens]');
+  if (dens) {
+    const total = $('[data-den-total]');
+    dens.addEventListener('input', () => {
+      const sum = $$('[data-den]', dens).reduce((t, el) => t + Number(el.dataset.den) * (Number(el.value) || 0), 0);
+      if (total) total.value = sum ? (Math.round(sum * 100) / 100).toString() : '';
+    });
+  }
+
   // what kind of thing was read: a ticket (URL or ABCD-2345), a card number, or a plate
   const kindOf = (v) => (/\/parking\/t\/|^[2-9A-HJ-NP-Z]{4}-?[2-9A-HJ-NP-Z]{4}$/i.test(v) ? 'qr' : /^[0-9A-F:\s-]{8,32}$/i.test(v) && /\d/.test(v) ? 'nfc' : 'plate');
 

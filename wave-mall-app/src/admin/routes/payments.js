@@ -202,7 +202,7 @@ module.exports = function payments(router, h) {
         const r = h.billing.recordPayment({
           invoice_id: cur.invoice_id, amount: cur.amount, date: M.today(), method: PAY_METHOD[cur.method],
           reference: `${provider === 'sandbox' ? 'Sandbox' : 'Paymob'} ${txnId}`, provider, provider_ref: String(txnId),
-          note: cur.source === 'link' ? 'Paid online through a payment link' : cur.source === 'parking' ? 'Paid online for parking' : 'Paid online through the tenant portal', demo: cur.demo,
+          note: cur.source === 'link' ? 'Paid online through a payment link' : String(cur.source).startsWith('parking') ? 'Paid online for parking' : 'Paid online through the tenant portal', demo: cur.demo,
         });
         payment = r.payment;
         if (payment.amount < cur.amount - 0.005) error = `Received ${cur.amount}; ${payment.amount} applied to the invoice. Refund or credit the rest.`;
@@ -413,7 +413,7 @@ ${refresh ? `<meta http-equiv="refresh" content="${ui.esc(refresh)}">` : ''}
       return payPage(req, res, { status: 404, title: tr('por|Payment'), body: `<section class="card paycard"><div class="card__body stack"><h1>${ui.esc(tr('por|We could not find this payment.'))}</h1><p class="muted">${ui.esc(tr('por|If money left your account, the leasing office will confirm it. Nothing is charged twice.'))}</p></div></section>` });
     }
     // parking: back to the visitor's ticket, which shows the result and the way out
-    if (i.source === 'parking' && h.parking && h.parking.afterPay) return res.redirect(303, h.parking.afterPay(i, req.lang));
+    if (String(i.source).startsWith('parking') && h.parking && h.parking.afterPay) return res.redirect(303, h.parking.afterPay(i, req.lang));
     const inv = invoiceBy(i.invoice_id);
     const p = i.payment_id ? db.get('SELECT * FROM payments WHERE id = ?', i.payment_id) : null;
     const portalLink = i.source === 'portal' ? `<a class="btn btn--primary btn--block" href="/portal/invoices/${i.invoice_id}">${ui.icon('arrow')}<span>${ui.esc(tr('por|Back to the portal'))}</span></a>` : '';

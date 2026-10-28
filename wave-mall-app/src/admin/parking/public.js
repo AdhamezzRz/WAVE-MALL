@@ -174,6 +174,8 @@ ${error ? `<p class="alert alert--error">${esc(error)}</p>` : ''}
   // ================= the gates =================
   const api = express.Router();
   h.public.use('/ingest/parking', api);
+  // the other parking parts add their own gate endpoints behind the same key (routes-floor, routes-edge)
+  h.parkingApi = api;
   const gateLimit = rateLimit({ windowMs: 60 * 1000, limit: 600, standardHeaders: true, legacyHeaders: false });
   const same = (a, b) => a.length === b.length && crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b));
   const hash = (s) => crypto.createHash('sha256').update(String(s)).digest('hex');

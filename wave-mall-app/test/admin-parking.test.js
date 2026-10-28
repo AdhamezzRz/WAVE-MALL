@@ -222,7 +222,8 @@ test('parking: the booth — a till, cash, letting a car out, opening by hand, c
   assert.equal(inv.kind, 'parking');
   assert.equal(inv.total, due);
   assert.equal(inv.status, 'paid');
-  h.ledger.sync();
+  // the invoice is dated by Cairo's day, which can be a day ahead of UTC around midnight
+  h.ledger.sync({ upTo: P.addDays(inv.due_date, 1) });
   const tb = h.ledger.trialBalance({ from: '2000-01-01', to: '2100-12-31' });
   assert.ok(tb.balanced, 'the books balance');
   assert.ok(h.ledger.balance(h.ledger.idOf('inc_parking')) !== 0, 'parking income is in the books');
@@ -323,7 +324,10 @@ test('parking: a visitor finds the car by plate and pays online from the phone',
 
 test('parking: every screen renders, in English and Arabic, and the sample data loads and clears', async () => {
   const pages = ['/admin/parking', '/admin/parking/booth', '/admin/parking/visits', '/admin/parking/visits?status=left', '/admin/parking/subscriptions', '/admin/parking/subscriptions/new', '/admin/parking/validations',
-    '/admin/parking/tills', '/admin/parking/reports', '/admin/parking/reports?p=90', '/admin/parking/setup'];
+    '/admin/parking/tills', '/admin/parking/reports', '/admin/parking/reports?p=90', '/admin/parking/setup',
+    '/admin/parking/floor', '/admin/parking/floor?level=B2', '/admin/parking/valet', '/admin/parking/bookings', '/admin/parking/companies', '/admin/parking/companies/new',
+    '/admin/parking/incidents', '/admin/parking/incidents/new', '/admin/parking/violations', '/admin/parking/violations/new', '/admin/parking/lost',
+    '/admin/parking/safe', '/admin/parking/ereceipts', '/admin/parking/watch', '/admin/parking/forecast', '/admin/parking/insight'];
   const v = db.value('SELECT id FROM pk_sessions ORDER BY id DESC LIMIT 1');
   pages.push(`/admin/parking/visits/${v}`, `/admin/parking/visits/${v}/ticket`, `/admin/parking/payments/${db.value('SELECT id FROM pk_payments LIMIT 1')}/receipt`, `/admin/parking/tills/${db.value('SELECT id FROM pk_tills LIMIT 1')}`);
   for (const lang of ['en', 'ar']) {
@@ -346,9 +350,28 @@ test('parking: every screen renders, in English and Arabic, and the sample data 
   assert.ok(db.value("SELECT COUNT(*) FROM pk_tills WHERE demo = 1 AND status = 'closed' AND invoice_id IS NOT NULL") > 10);
   for (const p of ['/admin/parking', '/admin/parking/reports', '/admin/parking/validations', '/admin/footfall', '/admin/integrations', '/parking']) assert.equal((await admin.go(p)).status, 200, p);
   assert.match(await (await admin.go('/admin/integrations')).text(), /Car park gates/);
+  // the second wave's sample data, and every screen with it, in both languages
+  for (const t of ['pk_valet', 'pk_bookings', 'pk_accounts', 'pk_account_charges', 'pk_violations', 'pk_incidents', 'pk_safe', 'pk_alerts', 'pk_ereceipts']) assert.ok(db.value(`SELECT COUNT(*) FROM ${t} WHERE demo = 1`) > 0, t);
+  assert.ok(db.value("SELECT COUNT(*) FROM pk_bays WHERE sensor LIKE 'demo:%'") > 20, 'sensors on the lower ground');
+  const first = (t) => db.value(`SELECT id FROM ${t} WHERE demo = 1 ORDER BY id LIMIT 1`);
+  const full = ['/admin/parking', '/admin/parking/floor', '/admin/parking/floor?level=B2', '/admin/parking/floor.json?level=B1', '/admin/parking/valet', `/admin/parking/valet/${first('pk_valet')}`, `/admin/parking/valet/${first('pk_valet')}/ticket`,
+    '/admin/parking/bookings', `/admin/parking/bookings/${first('pk_bookings')}`, '/admin/parking/companies', `/admin/parking/companies/${first('pk_accounts')}`, '/admin/parking/incidents', `/admin/parking/incidents/${first('pk_incidents')}`,
+    '/admin/parking/violations', `/admin/parking/violations/${first('pk_violations')}`, '/admin/parking/lost', '/admin/parking/safe', '/admin/parking/ereceipts', '/admin/parking/watch', '/admin/parking/forecast', '/admin/parking/insight',
+    '/admin/parking/subscriptions', '/admin/parking/tills', '/admin/parking/reports', '/admin/parking/setup', `/admin/parking/payments/${db.value('SELECT payment_id FROM pk_ereceipts WHERE demo = 1 AND uuid IS NOT NULL LIMIT 1')}/receipt`];
+  for (const lang of ['en', 'ar']) {
+    await admin.form('/admin/lang', { lang, back: '/admin' });
+    for (const p of full) {
+      const res = await admin.go(p);
+      assert.equal(res.status, 200, `${lang} ${p}`);
+      assert.doesNotMatch((await res.text()).replace(/<script[\s\S]*?<\/script>/g, ''), /undefined|NaN|\[object Object\]/, `${lang} ${p}`);
+    }
+  }
+  await admin.form('/admin/lang', { lang: 'en', back: '/admin' });
+  assert.match(await (await admin.go('/admin/parking/forecast')).text(), /Cars expected/);
   h.ledger.sync();
   assert.ok(h.ledger.trialBalance({ from: '2000-01-01', to: '2100-12-31' }).balanced, 'the books balance with the sample data');
   assert.equal((await admin.form('/admin/settings/demo/clear', {})).status, 303);
   assert.equal(db.value('SELECT COUNT(*) FROM pk_sessions WHERE demo = 1'), 0);
+  for (const t of ['pk_valet', 'pk_bookings', 'pk_accounts', 'pk_violations', 'pk_incidents', 'pk_safe', 'pk_alerts', 'pk_ereceipts']) assert.equal(db.value(`SELECT COUNT(*) FROM ${t} WHERE demo = 1`), 0, t);
   assert.equal(db.value('SELECT COUNT(*) FROM pk_zones'), 2, 'the real set-up stays');
 });

@@ -17,11 +17,11 @@ const { cairo, csvCell } = require('../ops-common');
 
 
 // labels ('prk|English' keys, translated when shown)
-const KIND = { visitor: 'prk|Visitor', subscriber: 'prk|Subscriber', tenant: 'prk|Tenant staff', staff: 'prk|Mall staff', vip: 'prk|VIP' };
-const KIND_TONE = { visitor: 'sea', subscriber: 'forest', tenant: 'cocoa', staff: 'sky', vip: 'amber' };
+const KIND = { visitor: 'prk|Visitor', subscriber: 'prk|Subscriber', tenant: 'prk|Tenant staff', staff: 'prk|Mall staff', vip: 'prk|VIP', company: 'prk|Company', booking: 'prk|Booking', valet: 'prk|Valet' };
+const KIND_TONE = { visitor: 'sea', subscriber: 'forest', tenant: 'cocoa', staff: 'sky', vip: 'amber', company: 'sand', booking: 'amber', valet: 'cocoa' };
 const STATUS = { inside: ['prk|Parked', 'ok'], left: ['prk|Left', 'mute'], void: ['prk|Cancelled', 'rose'] };
 const HOLDER = { tenant: 'prk|Tenant staff', staff: 'prk|Mall staff', vip: 'prk|VIP', individual: 'prk|Individual' };
-const P_STATUS = { active: ['prk|Active', 'ok'], suspended: ['prk|Suspended', 'amber'], cancelled: ['prk|Cancelled', 'mute'], expired: ['prk|Expired', 'mute'] };
+const P_STATUS = { active: ['prk|Active', 'ok'], pending: ['prk|Waiting for payment', 'sky'], suspended: ['prk|Suspended', 'amber'], cancelled: ['prk|Cancelled', 'mute'], expired: ['prk|Expired', 'mute'] };
 const METHOD = { cash: 'prk|Cash', card: 'prk|Card', wallet: 'prk|Mobile wallet', instapay: 'prk|InstaPay', online: 'prk|Online' };
 const ZONE_KIND = { general: 'prk|General', reserved: 'prk|Reserved', vip: 'prk|VIP', accessible: 'prk|Accessible', ev: 'prk|Electric cars', staff: 'prk|Staff' };
 const LANE_DIR = { in: 'prk|Entry', out: 'prk|Exit' };
@@ -38,6 +38,8 @@ const REASON = {
 };
 const VAL_MINUTES = [[0, 'prk|The whole visit'], [60, 'prk|1 hour'], [120, 'prk|2 hours'], [180, 'prk|3 hours'], [240, 'prk|4 hours'], [360, 'prk|6 hours']];
 const PERIODS = { 7: 'prk|Last 7 days', 30: 'prk|Last 30 days', 90: 'prk|Last 90 days' };
+// Egyptian banknotes and coins, for counting a drawer
+const DENOMS = [200, 100, 50, 20, 10, 5, 1, 0.5];
 
 module.exports = function parkingModule(router, h) {
   const { db, ui, M } = h;
@@ -75,11 +77,21 @@ module.exports = function parkingModule(router, h) {
   }
   const cairoDate = (iso) => cairo(new Date(iso)).date;
   const crumbs = (...rest) => [['/admin/parking', tr('nav|Parking')], ...rest];
+  // the module's tabs, and the pages each one covers (sub-pages light up their tab)
   const TABS = [
-    ['/admin/parking', 'prk|Live'], ['/admin/parking/booth', 'prk|Booth'], ['/admin/parking/visits', 'prk|Cars'], ['/admin/parking/subscriptions', 'prk|Subscriptions'],
-    ['/admin/parking/validations', 'prk|Validations'], ['/admin/parking/tills', 'prk|Tills'], ['/admin/parking/reports', 'prk|Reports'], ['/admin/parking/setup', 'prk|Set-up'],
+    ['/admin/parking', 'prk|Live'], ['/admin/parking/floor', 'prk|Floor'], ['/admin/parking/booth', 'prk|Booth'], ['/admin/parking/visits', 'prk|Cars'],
+    ['/admin/parking/valet', 'prk|Valet'], ['/admin/parking/bookings', 'prk|Bookings'], ['/admin/parking/subscriptions', 'prk|Subscriptions'], ['/admin/parking/companies', 'prk|Companies'],
+    ['/admin/parking/validations', 'prk|Validations'], ['/admin/parking/incidents', 'prk|Incidents'], ['/admin/parking/tills', 'prk|Cash'], ['/admin/parking/watch', 'prk|Watch'],
+    ['/admin/parking/reports', 'prk|Reports'], ['/admin/parking/setup', 'prk|Set-up'],
   ];
-  const tabs = (on) => `<nav class="tabs pk-tabs">${TABS.map(([href, l]) => `<a class="tab${on === href ? ' is-on' : ''}" href="${href}">${esc(tr(l))}</a>`).join('')}</nav>`;
+  const TAB_OF = { '/admin/parking/violations': '/admin/parking/incidents', '/admin/parking/lost': '/admin/parking/incidents', '/admin/parking/safe': '/admin/parking/tills', '/admin/parking/ereceipts': '/admin/parking/tills', '/admin/parking/forecast': '/admin/parking/reports', '/admin/parking/insight': '/admin/parking/reports' };
+  const tabs = (on) => {
+    const cur = TAB_OF[on] || on;
+    return `<nav class="tabs pk-tabs">${TABS.map(([href, l]) => `<a class="tab${cur === href ? ' is-on' : ''}" href="${href}">${esc(tr(l))}</a>`).join('')}</nav>`;
+  };
+  // second-level tabs inside a tab: [[href, label]]
+  // labels with a "|" are translated; others (level codes) are shown as they are
+  const subtabs = (on, list) => `<nav class="tabs tabs--sub">${list.map(([href, l]) => `<a class="tab${on === href ? ' is-on' : ''}" href="${href}">${esc(l.includes('|') ? tr(l) : l)}</a>`).join('')}</nav>`;
   const script = `<script src="/admin/parking.js?v=${ui.ASSETS.parking}" defer></script>`;
   const page = (req, res, opts) => h.page(req, res, { active: '/admin/parking', wide: true, ...opts, body: `${opts.body}${script}` });
   const back = (req, res, url, type, text) => h.back(req, res, url, type, text);
@@ -94,8 +106,9 @@ module.exports = function parkingModule(router, h) {
   const hasTable = (n) => !!db.get("SELECT name FROM sqlite_master WHERE type = 'table' AND name = ?", n);
 
   // the sidebar badge: cars parked far too long
+  // the sidebar badge: cars parked far too long, and valet customers waiting for their car
   const overstayCount = () => db.value("SELECT COUNT(*) FROM pk_sessions WHERE status = 'inside' AND kind = 'visitor' AND entry_at < ?", new Date(Date.now() - P.N('prk_overstay_hours') * 3600000).toISOString());
-  h.count('parking', () => overstayCount());
+  h.count('parking', () => overstayCount() + db.value("SELECT COUNT(*) FROM pk_valet WHERE status = 'requested'") + db.value("SELECT COUNT(*) FROM pk_alerts WHERE acked_at IS NULL AND level = 'alarm'"));
 
   // ---------- the live car park ----------
   router.get('/parking', (req, res) => {
@@ -172,20 +185,26 @@ ${ui.card(tr('prk|At the gates'), feedHtml, { action: ui.btn(esc(tr('prk|All car
     const till = agent ? P.openTillOf(req.user.id) : null;
     const backTo = from === 'booth' ? `?back=booth` : '';
     const vals = q.validations;
+    const extras = s.extra ? [
+      ...db.all("SELECT v.fine, t.name, t.name_ar FROM pk_violations v LEFT JOIN pk_violation_types t ON t.id = v.type_id WHERE v.charged_session_id = ? AND v.status = 'charged'", s.id).map((v) => [tr('prk|Fine: {what}', { what: isAr() && v.name_ar ? v.name_ar : tx(v.name || '') }), money(v.fine)]),
+      ...db.all("SELECT fee FROM pk_valet WHERE session_id = ? AND status != 'cancelled' AND fee > 0", s.id).map((v) => [tr('prk|Valet'), money(v.fee)]),
+    ] : [];
     const lines = [
-      [tr('prk|Price for {time}', { time: dur(q.minutes) }), money(q.gross)],
-      ...(q.free ? [[q.whole ? tr('prk|Validated: the whole visit is free') : tr('prk|Validated: {time} free', { time: dur(q.freeMin) }), `− ${money(q.free)}`]] : []),
+      ...(q.tariff ? [[tr('prk|Price for {time}', { time: dur(q.minutes) }), money(r2(q.gross - q.extra))]] : []),
+      ...(q.covered && q.tariff ? [[tr('prk|Booked: paid until {time}', { time: ui.local(q.booking.ends_at).slice(11, 16) }), '']] : []),
+      ...(q.free ? [[q.whole ? tr('prk|Validated: the whole visit is free') : q.freeMin ? tr('prk|Validated: {time} free', { time: dur(q.freeMin) }) : tr('prk|Booked time'), `− ${money(q.free)}`]] : []),
+      ...extras,
       ...(q.paid ? [[tr('prk|Paid'), `− ${money(q.paid)}`]] : []),
     ];
-    const breakdown = s.kind === 'visitor'
+    const breakdown = s.kind === 'visitor' || q.gross > 0 || s.kind === 'booking'
       ? `<dl class="pk-bill">${lines.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${v}</dd></div>`).join('')}<div class="pk-bill__due"><dt>${esc(q.inExitWindow ? tr('prk|Paid: free to leave for a few minutes') : tr('prk|To pay now'))}</dt><dd>${money(q.due)}</dd></div></dl>`
       : `<p class="alert alert--ok">${esc(tr('prk|Subscription: no charge.'))}</p>`;
-    const payBtns = s.status === 'inside' && s.kind === 'visitor' && q.due > 0 && agent
+    const payBtns = s.status === 'inside' && q.due > 0 && agent
       ? (till
         ? `<div class="pk-pay">${['cash', 'card', 'wallet', 'instapay'].map((m) => ui.form(`/admin/parking/visits/${s.id}/pay${backTo}`, csrf, `<input type="hidden" name="method" value="${m}"><input type="hidden" name="amount" value="${q.due}">${ui.btn(`${esc(tr(METHOD[m]))} <b>${ui.money(q.due, { cur: false })}</b>`, { cls: m === 'cash' ? 'btn--primary' : 'btn--ghost' })}`)).join('')}</div>`
         : `<p class="alert alert--warn">${esc(tr('prk|Open your till to take payments.'))} <a href="/admin/parking/booth">${esc(tr('prk|Open the till'))}</a></p>`)
       : '';
-    const letOut = s.status === 'inside' && agent && (q.due <= 0 || s.kind !== 'visitor')
+    const letOut = s.status === 'inside' && agent && q.due <= 0
       ? ui.form(`/admin/parking/visits/${s.id}/exit${backTo}`, csrf, ui.btn(esc(tr('prk|Open the barrier and close the visit')), { cls: 'btn--primary btn--block', ic: 'arrow' }))
       : '';
     const writeOff = s.status === 'inside' && mgr && q.due > 0
@@ -447,10 +466,12 @@ ${ui.card(tr('prk|At the gates'), feedHtml, { action: ui.btn(esc(tr('prk|All car
   <div><dt>${esc(tr('prk|Amount'))}</dt><dd><b>${money(p.amount)}</b></dd></div>
   ${vat ? `<div><dt>${esc(tr('prk|Includes VAT {pct}%', { pct: vatPct }))}</dt><dd>${money(vat)}</dd></div>` : ''}</dl>
   <p class="pk-ticket__help">${esc([s2.company_name, s2.tax_id ? `${tr('prk|Tax ID')} ${s2.tax_id}` : null].filter(Boolean).join(' · '))}</p>
+  ${(() => { const er = h.parking.ereceipt && h.parking.ereceipt.of(p.id); return er && er.uuid ? `${h.parking.ereceipt.qrSvg(er)}<p class="pk-ticket__help ltr">${esc(tr('prk|ETA e-receipt'))} ${esc(er.number)}</p>` : ''; })()}
 </article>`));
   });
 
   // ---------- tills ----------
+  const CASH_SUB = [['/admin/parking/tills', 'prk|Tills'], ['/admin/parking/safe', 'prk|Safe'], ['/admin/parking/ereceipts', 'prk|E-receipts']];
   router.get('/parking/tills', (req, res) => {
     const rows = db.all('SELECT t.*, u.name user_name FROM pk_tills t LEFT JOIN users u ON u.id = t.user_id ORDER BY t.status = \'open\' DESC, t.opened_at DESC LIMIT 120');
     const total = (t) => (t.status === 'open' ? P.tillTotals(t).total : Object.values(JSON.parse(t.totals || '{}')).reduce((s, x) => s + x.total, 0));
@@ -463,7 +484,7 @@ ${ui.card(tr('prk|At the gates'), feedHtml, { action: ui.btn(esc(tr('prk|All car
       { label: tr('prk|Taken'), num: true, render: (t) => money(total(t)) },
       { label: tr('prk|Cash count'), render: diffBadge },
     ], rows, { href: (t) => `/admin/parking/tills/${t.id}`, empty: esc(tr('prk|No tills yet. Open one at the booth.')) });
-    page(req, res, { title: tr('prk|Tills'), crumbs: crumbs([null, tr('prk|Tills')]), body: `${tabs('/admin/parking/tills')}${ui.card(tr('prk|Tills'), table, { sub: esc(tr('prk|A till is one cashier’s shift, or one pay machine’s day. Closing it counts the cash and sends the takings to the books.')) })}` });
+    page(req, res, { title: tr('prk|Tills'), crumbs: crumbs([null, tr('prk|Tills')]), body: `${tabs('/admin/parking/tills')}${subtabs('/admin/parking/tills', CASH_SUB)}${ui.card(tr('prk|Tills'), table, { sub: esc(tr('prk|A till is one cashier’s shift, or one pay machine’s day. Closing it counts the cash and sends the takings to the books.')) })}` });
   });
   router.get('/parking/tills/:id', (req, res, next) => {
     const t = P.tillBy(h.int(req.params.id));
@@ -479,7 +500,8 @@ ${ui.card(tr('prk|At the gates'), feedHtml, { action: ui.btn(esc(tr('prk|All car
       ${t.status === 'closed' ? `<div><dt>${esc(tr('prk|Cash counted'))}</dt><dd>${money(t.counted)}</dd></div><div><dt>${esc(tr('prk|Difference'))}</dt><dd>${t.difference ? `<b class="${t.difference < 0 ? 'late' : ''}">${money(t.difference)}</b>` : esc(tr('prk|None'))}</dd></div>
       <div><dt>${esc(tr('prk|Closed'))}</dt><dd>${esc(ui.dt(t.closed_at))}${t.closed_by ? ` · ${esc(userName(t.closed_by) || '')}` : ''}</dd></div>
       ${t.invoice_id ? `<div><dt>${esc(tr('prk|In the books'))}</dt><dd><a href="/admin/invoices/${t.invoice_id}/print">${esc(db.value('SELECT ref FROM invoices WHERE id = ?', t.invoice_id) || '')}</a></dd></div>` : ''}` : ''}</dl>`;
-    const close = canClose ? ui.card(tr('prk|Close the till'), ui.form(`/admin/parking/tills/${t.id}/close`, req.session.csrf, `<div class="fields">${ui.input('counted', tr('prk|Cash counted in the drawer'), '', { type: 'number', min: 0, step: '0.01', required: true })}${ui.input('note', tr('prk|Note'), '')}</div>${ui.btn(esc(tr('prk|Close and hand over')), { cls: 'btn--primary', attrs: { 'data-confirm': tr('prk|Close this till? No more payments can go into it.') } })}`, { cls: 'stack' }), { sub: esc(tr('prk|Count the cash, including the starting cash.')) }) : '';
+    const notes = DENOMS.map((d) => `<label class="pk-den"><span>${ui.n0(d)}</span><input type="number" min="0" step="1" name="den_${String(d).replace('.', '_')}" inputmode="numeric" aria-label="${esc(tr('prk|Notes of {n}', { n: d }))}" data-den="${d}"></label>`).join('');
+    const close = canClose ? ui.card(tr('prk|Close the till'), ui.form(`/admin/parking/tills/${t.id}/close`, req.session.csrf, `<p class="f__l">${esc(tr('prk|Count by note'))}</p><div class="pk-dens" data-dens>${notes}</div><div class="fields">${ui.input('counted', tr('prk|Cash counted in the drawer'), '', { type: 'number', min: 0, step: '0.01', required: true, hint: tr('prk|Filled in from the count above, or type the total.'), attrs: { 'data-den-total': true } })}${ui.input('note', tr('prk|Note'), '')}</div>${ui.btn(esc(tr('prk|Close and hand over')), { cls: 'btn--primary', attrs: { 'data-confirm': tr('prk|Close this till? No more payments can go into it.') } })}`, { cls: 'stack' }), { sub: esc(tr('prk|Count the cash, including the starting cash.')) }) : '';
     const table = ui.table([
       { label: tr('prk|Receipt'), render: (p) => `<a href="/admin/parking/payments/${p.id}/receipt" target="_blank">${esc(p.ref)}</a>` },
       { label: tr('prk|Plate'), render: (p) => `<bdi>${esc(p.plate || P.codeShow(p.code))}</bdi>` },
@@ -487,14 +509,19 @@ ${ui.card(tr('prk|At the gates'), feedHtml, { action: ui.btn(esc(tr('prk|All car
       { label: tr('prk|How'), render: (p) => esc(tr(METHOD[p.method] || p.method)) },
       { label: tr('prk|Amount'), num: true, render: (p) => money(p.amount) },
     ], pays, { empty: esc(tr('prk|No payments in this till.')) });
-    page(req, res, { title: `${tr('prk|Till')} ${t.ref}`, crumbs: crumbs(['/admin/parking/tills', tr('prk|Tills')], [null, t.ref]), body: `<div class="grid grid--side"><div class="stack">${ui.card(tr('prk|Payments'), table)}</div><div class="stack">${ui.card(tx(t.name), sum, { sub: t.status === 'open' ? ui.badge('open', tr('prk|Open'), 'sky') : ui.badge('closed', tr('prk|Closed'), 'mute') })}${close}</div></div>` });
+    const more = (h.parkingTillCards || []).map((card) => card(req, t)).join('');
+    page(req, res, { title: `${tr('prk|Till')} ${t.ref}`, crumbs: crumbs(['/admin/parking/tills', tr('prk|Tills')], [null, t.ref]), body: `<div class="grid grid--side"><div class="stack">${ui.card(tr('prk|Payments'), table)}</div><div class="stack">${ui.card(tx(t.name), sum, { sub: t.status === 'open' ? ui.badge('open', tr('prk|Open'), 'sky') : ui.badge('closed', tr('prk|Closed'), 'mute') })}${more}${close}</div></div>` });
   });
   router.post('/parking/tills/:id/close', RA, (req, res, next) => {
     const t = P.tillBy(h.int(req.params.id));
     if (!t) return next();
     if (t.user_id !== req.user.id && !h.can(req, 'manager')) return h.auth.denied(req, res);
-    const counted = h.numv(req.body.counted);
+    // the count by note, when given, is the total
+    const dens = Object.fromEntries(DENOMS.map((d) => [d, Math.max(0, h.int(req.body[`den_${String(d).replace('.', '_')}`]) || 0)]).filter(([, n]) => n > 0));
+    const byNote = Object.keys(dens).length ? r2(Object.entries(dens).reduce((sum, [d, n]) => sum + Number(d) * n, 0)) : null;
+    const counted = byNote ?? h.numv(req.body.counted);
     if (counted === null || counted < 0) return back(req, res, `/admin/parking/tills/${t.id}`, 'error', tr('prk|Enter the cash you counted.'));
+    if (byNote !== null) db.run('UPDATE pk_tills SET denominations = ? WHERE id = ?', JSON.stringify(dens), t.id);
     try {
       const c = P.closeTill(t, { counted, user: req.user, note: h.str(req.body.note, 300) || null });
       h.log(req, 'Closed a parking till', 'pk_till', t.id, `${t.ref} · difference ${c.difference}`);
@@ -766,7 +793,7 @@ ${ui.card(tr('prk|At the gates'), feedHtml, { action: ui.btn(esc(tr('prk|All car
       ui.kpi({ label: tr('prk|Given free by validations'), value: money(free) }),
     ].join('');
     const periodTabs = `<nav class="tabs">${Object.entries(PERIODS).map(([k, l]) => `<a class="tab${String(days) === k ? ' is-on' : ''}" href="/admin/parking/reports?p=${k}">${esc(tr(l))}</a>`).join('')}</nav>`;
-    const body = `${tabs('/admin/parking/reports')}${periodTabs}<div class="kpis kpis--4">${kpis}</div>
+    const body = `${tabs('/admin/parking/reports')}${subtabs('/admin/parking/reports', [['/admin/parking/reports', 'prk|Overview'], ['/admin/parking/forecast', 'prk|Forecast'], ['/admin/parking/insight', 'prk|Parking and sales']])}${periodTabs}<div class="kpis kpis--4">${kpis}</div>
 <div class="grid grid--side">${ui.card(tr('prk|Takings by day'), ui.bars(series, { key: 'money', label: 'label', h: 160, fmtv: (v) => (v >= 1000 ? `${(v / 1000).toFixed(1)}K` : ui.n0(v)) }))}${ui.card(tr('prk|How visitors paid'), methods.length ? ui.donut(methods, { label: ui.money(total, { compact: true, cur: false }) }) : `<p class="muted pad">${esc(tr('prk|No payments in this period.'))}</p>`)}</div>
 <div class="grid grid--side">${ui.card(tr('prk|Cars by day'), ui.bars(series, { key: 'cars', label: 'label', h: 160, tone: 'sea' }))}${ui.card(tr('prk|Who parks'), kinds.length ? ui.donut(kinds, { label: ui.n0(visits.length) }) : `<p class="muted pad">${esc(tr('prk|Not enough visits yet.'))}</p>`)}</div>
 <div class="grid grid--side">${ui.card(tr('prk|When cars arrive'), heatHtml, { sub: esc(tr('prk|Arrivals by weekday and hour')) })}${ui.card(tr('prk|How long visitors stay'), ui.bars(stays, { key: 'n', label: 'label', h: 150, tone: 'cocoa' }))}</div>`;
@@ -864,7 +891,7 @@ GET  ${s}/ingest/parking/status   (free spaces for the signs)`;
       <textarea class="ftf-code" dir="ltr" rows="14" readonly aria-label="${esc(tr('prk|Example requests'))}" data-select>${esc(sample)}</textarea>`;
     const body = `${tabs('/admin/parking/setup')}<div class="grid grid--side">
   <div class="stack">${ui.card(tr('prk|Levels'), `${zoneTable}${addZone}`, { sub: esc(tr('prk|{n} spaces in all', { n: ui.n0(P.capacity()) })) })}${priceCard}${eventCard}${planCard}</div>
-  <div class="stack">${ui.card(tr('prk|Gates'), `${laneTable}${addLane}`)}${rules}${blockCard}${ui.card(tr('prk|Connect the gates'), api)}</div>
+  <div class="stack">${ui.card(tr('prk|Gates'), `${laneTable}${addLane}`)}${rules}${(h.parkingSetupCards || []).map((card) => card(req)).join('')}${blockCard}${ui.card(tr('prk|Connect the gates'), api)}</div>
 </div>`;
     page(req, res, { title: tr('prk|Parking set-up'), crumbs: crumbs([null, tr('prk|Set-up')]), body });
   });
@@ -988,13 +1015,34 @@ GET  ${s}/ingest/parking/status   (free spaces for the signs)`;
   // ---------- shared with the rest of the office ----------
   h.parking = {
     ...P,
+    // where the visitor lands after an online checkout (a visit, a booking, a subscription)
     afterPay: (intent, lang) => {
       const inv = db.get('SELECT * FROM invoices WHERE id = ?', intent.invoice_id);
+      const q = `lang=${lang === 'ar' ? 'ar' : 'en'}&paid=${intent.status === 'paid' ? 1 : 0}`;
+      for (const r of h.parkingReturns || []) {
+        const to = inv && r(inv, q);
+        if (to) return to;
+      }
       const s = inv && inv.source === 'parking' ? P.sessionBy(inv.source_id) : null;
-      return s ? `/parking/t/${P.codeShow(s.code)}?lang=${lang === 'ar' ? 'ar' : 'en'}&paid=${intent.status === 'paid' ? 1 : 0}` : '/parking';
+      return s ? `/parking/t/${P.codeShow(s.code)}?${q}` : '/parking';
     },
   };
   require('../parking/public')(h, P);
+
+  // the newer parts of the module, each in its own file, sharing these pieces
+  const ctx = {
+    P, KIND, KIND_TONE, STATUS, METHOD, HOLDER, P_STATUS, VIA, REASON, VAL_MINUTES,
+    esc, tmap, dur, err, RM, RA, plate, kindBadge, statusBadge, pBadge, code, site, ticketUrl, money, minutesOf, today, dayStart, cairoDate,
+    crumbs, tabs, subtabs, page, back, fail, userName, brandName, zoneName, tenants, hasTable, visitPanel, scanBox,
+  };
+  for (const part of ['floor', 'valet', 'safety', 'cash', 'bookings', 'companies', 'watch', 'insight', 'ereceipt', 'edge']) {
+    try {
+      require.resolve(`../parking/routes-${part}`);
+    } catch {
+      continue;
+    }
+    require(`../parking/routes-${part}`)(router, h, ctx);
+  }
 
   // The mall's real car park, and starting prices, the first time the module runs (all editable in Set-up).
   function seed() {

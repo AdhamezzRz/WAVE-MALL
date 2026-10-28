@@ -1592,7 +1592,7 @@ button.fcheck:hover { border-color: var(--forest); }
 .acc-tabs .tab { white-space: nowrap; flex: none; }
 .tabs--sub { margin-bottom: 12px; }
 .tabs--sub .tab { font-size: 12.5px; padding: 5px 11px; border-color: var(--line); background: var(--white); }
-.tabs--sub .tab.is-on { border-color: var(--forest); }
+.tabs--sub .tab.is-on { border-color: var(--forest); color: var(--forest); font-weight: 600; }
 .acc-sync { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
 .acc-sync p { margin: 0; }
 .acc-amt { margin-inline-start: auto; font-variant-numeric: tabular-nums; white-space: nowrap; font-weight: 600; }
@@ -1789,3 +1789,97 @@ a.acc-rcard .card__body { display: none; }
   .pk-visit__tags { margin-inline-start: 0; }
 }
 /* ===================== end parking ===================== */
+
+/* ===================== parking floor plans (PRK 2) ===================== */
+.pkf-grid { grid-template-columns: minmax(0, 1fr) 320px; align-items: start; }
+.pkf-wrap { margin: -4px -6px 8px; border-radius: 12px; background: #f5f2ea; padding: 6px; overflow: hidden; }
+.pkf { display: block; width: 100%; height: auto; font-family: var(--sans); }
+.pkf-outline { fill: #ece7da; stroke: #b9b09b; stroke-width: 2; }
+.pkf-aisle { fill: #e2dccd; }
+.pkf-arrow { fill: none; stroke: #b6ad97; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.pkf-core { fill: #283833; }
+.pkf-core + .pkf-label { fill: #e9e4d6; }
+.pkf-ramp { fill: #d6cfbd; stroke: #b9b09b; stroke-dasharray: 5 4; }
+.pkf-shop { fill: #fff; stroke: #c9c1ad; }
+.pkf-label { font-size: 11px; font-weight: 600; fill: #6b6450; text-anchor: middle; letter-spacing: .04em; }
+.pkf-sec { font-size: 15px; font-weight: 700; fill: #9b927c; text-anchor: middle; letter-spacing: .1em; }
+.pkf-bay { cursor: pointer; outline: none; }
+.pkf-bay > rect:first-of-type { fill: #fff; stroke: #c9c1ad; stroke-width: 1; transition: fill .3s, stroke .3s; }
+.pkf-bay.s-free > rect:first-of-type { fill: #dff1e5; stroke: #7fb894; }
+.pkf-bay.s-taken > rect:first-of-type { fill: #fff; stroke: #9aa39e; }
+.pkf-bay.s-held > rect:first-of-type { fill: #fbe9c4; stroke: #c39136; }
+.pkf-bay.s-off > rect:first-of-type { fill: #e6e1d5; stroke: #c9c1ad; stroke-dasharray: 3 2; }
+.pkf-car { fill: #34463f; transition: opacity .3s; }
+.pkf-bay.is-est .pkf-car { fill: #7d8a84; opacity: .7; }
+.pkf-bay.k-vip.s-taken .pkf-car { fill: #8a6218; }
+.pkf-ico { font-size: 11px; text-anchor: middle; fill: #2f6656; font-weight: 700; pointer-events: none; }
+.pkf-bay.s-taken .pkf-ico { fill: #fff; }
+.pkf-bay.k-ev .pkf-ico { fill: #3d7a5a; }
+.pkf-bay.k-vip .pkf-ico { fill: #c39136; }
+.pkf-bay.k-accessible > rect:first-of-type { stroke: #3d6175; stroke-width: 1.5; }
+.pkf-viol { fill: #b4544b; stroke: #fff; stroke-width: 1.5; }
+.pkf-bay:hover > rect:first-of-type, .pkf-bay:focus > rect:first-of-type { stroke: #283833; stroke-width: 2; }
+.pkf-bay.is-sel > rect:first-of-type { stroke: #c39136; stroke-width: 3; }
+.pkf-legend { margin-top: 4px; flex-wrap: wrap; }
+.pkf-legend b { font-size: 12px; color: var(--sea-ink); min-width: 14px; text-align: center; }
+.pkf-sw { width: 16px; height: 12px; border-radius: 3px; border: 1px solid #9aa39e; display: inline-block; }
+.pkf-sw.s-free { background: #dff1e5; border-color: #7fb894; }
+.pkf-sw.s-taken { background: #34463f; border-color: #34463f; }
+.pkf-sw.s-taken.is-est { background: #7d8a84; opacity: .7; }
+.pkf-sw.s-held { background: #fbe9c4; border-color: #c39136; }
+.pkf-sw.s-off { background: #e6e1d5; border-style: dashed; }
+.pkf-sw--viol { width: 10px; height: 10px; border-radius: 50%; background: #b4544b; border-color: #b4544b; }
+@media (max-width: 1100px) { .pkf-grid { grid-template-columns: 1fr; } }
+@media (max-width: 860px) { .pkf-wrap { margin: 0 -14px 8px; border-radius: 0; overflow-x: auto; } .pkf { min-width: 760px; } }
+
+/* ---------- parking: valet board ---------- */
+.pkv-board { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 18px; }
+.pkv-col { background: var(--stone); border-radius: 10px; padding: 10px; min-height: 180px; display: flex; flex-direction: column; gap: 8px; }
+.pkv-col > header { display: flex; justify-content: space-between; align-items: center; padding: 2px 4px 6px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+.pkv-col > header span { min-width: 22px; height: 22px; border-radius: 11px; background: var(--white); text-align: center; font: 700 12px/22px var(--sans); color: var(--ink); }
+.pkv-col--requested { background: #fbf0dc; }
+.pkv-col--requested > header { color: #8a6218; }
+.pkv-col--ready { background: #e3f1e8; }
+.pkv-col--ready > header { color: var(--ok); }
+.pkv-card { display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--white); text-decoration: none; color: inherit; box-shadow: var(--shadow); transition: transform .2s, border-color .2s; }
+.pkv-card:hover { transform: translateY(-1px); border-color: var(--line-2); }
+.pkv-card .what { display: grid; min-width: 0; }
+.pkv-card .what small { color: var(--ink-3); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pkv-card.is-late { border-color: var(--rose); box-shadow: 0 0 0 2px rgb(180 84 75 / .15); }
+.pkv-tag { flex: none; display: inline-grid; place-items: center; min-width: 38px; height: 38px; padding: 0 6px; border-radius: 8px; background: var(--forest); color: var(--sand-2); font: 700 16px/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
+.pkv-tag--big { min-width: 72px; height: 72px; margin: 0; font-size: 34px; border-radius: 14px; }
+.pkv-cond { display: flex; flex-wrap: wrap; gap: 6px 16px; border: 0; padding: 0; margin: 0; }
+.pkv-cond legend { width: 100%; margin-bottom: 6px; }
+.pkv-times { list-style: none; margin: 12px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; }
+.pkv-times li { display: grid; gap: 2px; padding: 8px 10px; border-radius: 8px; background: var(--stone); }
+.pkv-times li b { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; }
+.pkv-times li span { font: 600 16px/1.2 var(--sans); }
+.pkv-state { margin: 0; padding: 14px 16px; border-radius: 10px; background: var(--stone); font: 500 18px/1.45 var(--serif); text-align: center; }
+.pkv-state--requested { background: #fbf0dc; color: #6e4e12; }
+.pkv-state--ready { background: #e3f1e8; color: var(--ok); font-weight: 600; }
+@media (max-width: 980px) { .pkv-board { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .pkv-board { grid-template-columns: 1fr; } }
+
+/* ---------- parking: bookings day ---------- */
+.pkb-day { display: grid; gap: 6px; overflow-x: auto; padding-bottom: 4px; }
+.pkb-row { display: grid; grid-template-columns: 74px minmax(560px, 1fr); align-items: center; gap: 10px; }
+.pkb-bay { font: 600 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--ink-2); }
+.pkb-track { position: relative; height: 34px; border-radius: 6px; background: repeating-linear-gradient(90deg, var(--stone) 0 calc(100% / 8 - 1px), var(--line) calc(100% / 8 - 1px) calc(100% / 8)); }
+.pkb-slot { position: absolute; top: 3px; bottom: 3px; display: flex; align-items: center; padding: 0 8px; border-radius: 5px; overflow: hidden; white-space: nowrap; font-size: 12px; font-weight: 600; text-decoration: none; background: var(--sea); color: var(--forest); border: 1px solid #86b0a2; }
+.pkb-slot:hover { filter: brightness(.96); }
+.pkb-slot--pending { background: #e5eef3; border-color: var(--sky); color: #2f5568; border-style: dashed; }
+.pkb-slot--arrived { background: var(--forest); color: var(--sand-2); border-color: var(--forest); }
+.pkb-slot--completed, .pkb-slot--cancelled { background: var(--stone); color: var(--ink-3); border-color: var(--line); }
+.pkb-slot--no_show { background: #f6e1de; color: var(--rose); border-color: #dca59f; text-decoration: line-through; }
+.pkb-row--hours .pkb-track { height: 18px; background: none; }
+.pkb-row--hours i { position: absolute; transform: translateX(-50%); font: 600 10.5px/18px var(--sans); font-style: normal; color: var(--ink-3); }
+[dir="rtl"] .pkb-row--hours i { transform: translateX(50%); }
+
+/* ---------- parking: insight, edge set-up, the visitors' pages ---------- */
+.pk-insight { margin: 14px 0 0; padding: 12px 14px; border-inline-start: 3px solid var(--cocoa); background: #f6efe7; border-radius: 0 8px 8px 0; font: 500 16px/1.45 var(--serif); color: var(--ink); }
+[dir="rtl"] .pk-insight { border-radius: 8px 0 0 8px; }
+.pk-steps { margin: 0 0 14px; padding-inline-start: 20px; display: grid; gap: 10px; color: var(--ink-2); }
+pre.pk-code { margin: 8px 0 0; padding: 10px 12px; border-radius: 8px; background: var(--forest); color: var(--sand-2); font-size: 12px; letter-spacing: 0; white-space: pre-wrap; word-break: break-all; }
+.pk-wrap { max-width: 560px; }
+.pkf-label--v { font-size: 10px; letter-spacing: .12em; }
+.pk-ticket__qr--eta { width: 30mm; height: 30mm; margin-top: 4mm; }

@@ -12,6 +12,7 @@ const M = require('./model');
 const T = require('./parking/tariff');
 const { parking, plateKey, plateShow } = require('./parking/core');
 const { cairo } = require('./ops-common');
+const extra = require('./demo-parking-extra');
 
 const DAYS = 30;
 const LETTERS = ['أ', 'ب', 'ج', 'د', 'ر', 'س', 'ص', 'ط', 'ع', 'ف', 'ق', 'ل', 'م', 'ن', 'ه', 'و', 'ي'];
@@ -281,6 +282,9 @@ function load(db, admin, opts = {}) {
     db.setSetting('prk_billed_month', lastMonth);
   });
 
+  // ---------- valet, bookings, companies, fines, incidents, the safe, alerts, e-receipts ----------
+  extra.load(db, admin, { h, P, r, plate });
+
   // ---------- the footfall module's hourly car-park counts, from the same visits ----------
   if (has(db, 'parking')) {
     const cap = P.capacity();
@@ -318,6 +322,7 @@ function load(db, admin, opts = {}) {
 
 function clear(db) {
   if (!has(db, 'pk_sessions')) return;
+  extra.clear(db);
   db.tx(() => {
     db.run('DELETE FROM pk_events WHERE demo = 1 OR session_id IN (SELECT id FROM pk_sessions WHERE demo = 1)');
     db.run('DELETE FROM pk_payments WHERE demo = 1 OR session_id IN (SELECT id FROM pk_sessions WHERE demo = 1)');

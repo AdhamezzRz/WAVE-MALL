@@ -17,7 +17,7 @@ const ONLY = args.only ? String(args.only).split(',') : null;
 const MAX = Number(args.max) || 4000;
 
 // Latin words that are fine in Arabic UI: product names, file formats, codes.
-const OK_WORDS = new Set(['CSV', 'PDF', 'WALE', 'VAT', 'ID', 'The', 'Wave', 'K', 'English', 'EGP', 'JPG', 'PNG', 'WebP', 'Word', 'Excel', 'docx', 'xlsx', 'IBAN', 'EG', 'NFC', 'QR', 'EGYPT']);
+const OK_WORDS = new Set(['CSV', 'PDF', 'WALE', 'VAT', 'ID', 'The', 'Wave', 'K', 'English', 'EGP', 'JPG', 'PNG', 'WebP', 'Word', 'Excel', 'docx', 'xlsx', 'IBAN', 'EG', 'NFC', 'QR', 'EGYPT', 'UUID', 'EGS', 'GS', 'Node', 'js']);
 
 async function audit({ quiet = false } = {}) {
   const app = createApp({ env: { SITE_URL: 'https://thewavemall.com', ADMIN_DB: ':memory:' }, mail: async () => ({ delivered: true }) });
@@ -84,6 +84,10 @@ async function audit({ quiet = false } = {}) {
     // parking: subscribers, cards, devices and receipt numbers as typed (ticket codes and references by pattern below; plates are Arabic)
     for (const r of safe('SELECT name, card_uid, phone, email FROM pk_permits UNION ALL SELECT device, NULL, NULL, NULL FROM pk_tills UNION ALL SELECT DISTINCT receipt_ref, NULL, NULL, NULL FROM pk_validations WHERE receipt_ref IS NOT NULL')) Object.values(r).forEach(add);
     for (const r of safe('SELECT code FROM pk_lanes UNION ALL SELECT code FROM pk_zones UNION ALL SELECT level FROM pk_zones UNION ALL SELECT code FROM pk_plans UNION ALL SELECT DISTINCT card_uid FROM pk_sessions WHERE card_uid IS NOT NULL')) Object.values(r).forEach(add);
+    // parking, second wave: guests, companies, valet customers, fines, incidents and lost property, the safe's bags, as typed
+    for (const r of safe(`SELECT name, phone, email, note FROM pk_bookings UNION ALL SELECT name, contact_name, address, notes FROM pk_accounts UNION ALL SELECT name, phone, notes, place FROM pk_valet
+      UNION ALL SELECT place, note, resolution, NULL FROM pk_violations UNION ALL SELECT title, place, description, resolution FROM pk_incidents UNION ALL SELECT reporter_name, claim_ref, item, stored_at FROM pk_incidents
+      UNION ALL SELECT returned_to, NULL, NULL, NULL FROM pk_incidents UNION ALL SELECT body, NULL, NULL, NULL FROM pk_incident_notes UNION ALL SELECT witness, bag, carrier, reference FROM pk_safe UNION ALL SELECT note, NULL, NULL, NULL FROM pk_safe`)) Object.values(r).forEach(add);
     if (db) for (const r of db.all('SELECT name FROM users UNION SELECT name FROM contacts UNION SELECT name FROM brands')) for (const w of String(r.name || '').split(/\s+/)) if (w.length > 2 && /[A-Za-z]/.test(w)) typed.add(w);
     const longTyped = [...typed].filter((v) => v.length > 30);
     const typedList = [...typed].sort((a, b) => b.length - a.length);
@@ -122,7 +126,7 @@ async function audit({ quiet = false } = {}) {
       }
       // visible text and the attributes people read
       let body = html.replace(/<script[\s\S]*?<\/script>/g, ' ').replace(/<style[\s\S]*?<\/style>/g, ' ').replace(/<head>[\s\S]*?<\/head>/, ' ');
-      body = body.replace(/<textarea[^>]*>[\s\S]*?<\/textarea>/g, ' ').replace(/<option value="(\d+)"[^>]*>[^<]*<\/option>/g, ' ');
+      body = body.replace(/<textarea[^>]*>[\s\S]*?<\/textarea>/g, ' ').replace(/<(pre|code)\b[^>]*>[\s\S]*?<\/\1>/g, ' ').replace(/<option value="(\d+)"[^>]*>[^<]*<\/option>/g, ' ');
       const attrs = [...body.matchAll(/\s(?:title|placeholder|aria-label|data-confirm|data-tip|alt)="([^"]*)"/g)].map((m) => m[1]);
       const texts = body.replace(/<[^>]+>/g, '\n').split('\n').concat(attrs).map((x) => decode(x).trim()).filter(Boolean);
       const left = [];
