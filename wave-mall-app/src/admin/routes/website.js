@@ -15,6 +15,7 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 const express = require('express');
 const { sniff } = require('../files');
+const { expand } = require('../paths');
 const { t: tr, tn, tx, isAr } = require('../i18n');
 
 const MAX_IMAGE = 8 * 1024 * 1024;
@@ -77,7 +78,7 @@ module.exports = function website(router, h) {
   const R = h.R;
   db.ensure('website-1', SCHEMA);
   // beside the document vault, not inside it: the vault holds only documents' files
-  const dir = (h.env && h.env.ADMIN_WEB_FILES) || `${h.files.dir.replace(/[\\/]+$/, '')}-web`;
+  const dir = (h.env && h.env.ADMIN_WEB_FILES && expand(h.env.ADMIN_WEB_FILES)) || `${h.files.dir.replace(/[\\/]+$/, '')}-web`;
   fs.mkdirSync(dir, { recursive: true });
   const T = () => M.today();
   // the public site's address, as visitors see it

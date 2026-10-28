@@ -69,7 +69,7 @@ function unavailable(res, err) {
   const msg = String((err && err.message) || err || '').split('\n')[0];
   const reason = err ? `${err.code && !msg.startsWith(err.code) ? `${err.code}: ` : ''}${msg}`.slice(0, 300) : 'Starting…';
   const hint = err && /EACCES|EPERM|EROFS|ENOENT|ENOTDIR|EISDIR/.test(String(err.code || err.message))
-    ? 'The folder for the office\'s data cannot be created or written. Check DATA_DIR in the hosting panel: it must be a real folder your account can write to (for example /home/your-user/wave-data), or remove it to use the app folder.'
+    ? 'The folder for the office\'s data cannot be created or written. Check DATA_DIR in the hosting panel: set it to ~/wave-data (a folder in your hosting account\'s home), or remove it to use the app folder.'
     : 'Check the application logs in the hosting panel, then redeploy.';
   const esc = (x) => String(x).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
   res.status(503).set({ 'Retry-After': '30', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' }).type('html').send(`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Leasing office unavailable</title>

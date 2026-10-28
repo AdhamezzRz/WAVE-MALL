@@ -9,6 +9,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const crypto = require('node:crypto');
+const { dataDir, expand } = require('./paths');
 
 const MAX_BYTES = 25 * 1024 * 1024;
 
@@ -42,10 +43,10 @@ function cleanName(name, ext) {
 }
 
 function store(env = process.env) {
-  let dir = env.ADMIN_FILES;
+  let dir = env.ADMIN_FILES && expand(env.ADMIN_FILES);
   if (!dir) {
     if (env.ADMIN_DB === ':memory:') dir = fs.mkdtempSync(path.join(os.tmpdir(), 'wave-files-'));
-    else dir = path.join(env.DATA_DIR || path.join(__dirname, '..', '..', 'data'), 'files');
+    else dir = path.join(dataDir(env), 'files');
   }
   fs.mkdirSync(dir, { recursive: true });
   return {

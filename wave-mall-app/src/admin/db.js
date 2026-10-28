@@ -6,11 +6,11 @@
 // ../data next to the app. On Hostinger set DATA_DIR to a folder outside the deployed app so
 // redeploys never touch it.
 
-const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 
 const { engine } = require('./sqlite');
+const { dataDir, expand } = require('./paths');
 
 const { GROUND_UNITS, STREET_UNITS } = require('../data');
 
@@ -277,12 +277,8 @@ const today = () => now().slice(0, 10);
 // Opens (and creates or upgrades) the database. Returns the api, or a promise of it when this
 // Node needs the WebAssembly engine.
 function open(env = process.env) {
-  let file = env.ADMIN_DB;
-  if (!file) {
-    const dir = env.DATA_DIR || path.join(__dirname, '..', '..', 'data');
-    fs.mkdirSync(dir, { recursive: true });
-    file = path.join(dir, 'leasing.db');
-  }
+  let file = env.ADMIN_DB && env.ADMIN_DB !== ':memory:' ? expand(env.ADMIN_DB) : env.ADMIN_DB;
+  if (!file) file = path.join(dataDir(env), 'leasing.db');
   const eng = engine(env);
   const opened = eng.open(file);
   return eng.sync ? ready(opened, file, eng.name) : opened.then((db) => ready(db, file, eng.name));

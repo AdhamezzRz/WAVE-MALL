@@ -50,7 +50,7 @@ The app reads `PORT` from the environment (Hostinger sets it) and trusts one pro
 | `SMTP_PASS`   | Mailbox password                                            |
 | `MAIL_FROM`   | From address (defaults to `SMTP_USER`)                      |
 | `LEASING_TO`  | Where enquiries go (defaults to `SMTP_USER`)                |
-| `DATA_DIR`    | Folder for the leasing office database (default `./data`). **Set this on Hostinger** to a folder outside the app, e.g. `/home/<user>/wave-data`, so redeploys never touch it |
+| `DATA_DIR`    | Folder for the leasing office database (default `./data`). **Set this on Hostinger** to `~/wave-data` (`~` is the hosting account's home folder), so redeploys never touch it. If the folder cannot be created, the same folder name in the account's home is used instead |
 | `OWNER_EMAIL` | The owner's sign-in for the leasing office, e.g. `owner@thewavemallcairo.com`. Created on start-up as an administrator with HR access (only if no account has that email yet) |
 | `OWNER_PASSWORD` | That account's password (10+ characters). Keep it only in Hostinger's environment variables, never in the code |
 | `OWNER_NAME`  | Optional display name for that account (default "Owner") |
@@ -74,7 +74,7 @@ Nothing above is needed to start: each integration shows *not connected* in **In
 
 A sales ERP for the leasing team, built into the same app. It is private (`noindex`, blocked in `robots.txt`, every page behind a sign-in) and stores everything in one SQLite file.
 
-**If `/admin` says the office is not available:** the website keeps running whatever happens to the office, and that page shows the exact reason (usually a `DATA_DIR` that does not exist or is not writable: use a real folder in your home directory, e.g. `/home/u123456789/wave-data`, or remove the variable to keep the data inside the app folder). Fix it in the hosting panel and redeploy.
+**If `/admin` says the office is not available:** the website keeps running whatever happens to the office, and that page shows the exact reason (usually a `DATA_DIR` that does not exist or is not writable: use `~/wave-data`, or remove the variable to keep the data inside the app folder). Fix it in the hosting panel and redeploy.
 
 **Owner account:** set `OWNER_EMAIL` and `OWNER_PASSWORD` in Hostinger (Websites → your site → Environment variables) and redeploy; the account is created on start-up and you can sign in at `/admin` right away. Change the password later under *Your account*.
 
