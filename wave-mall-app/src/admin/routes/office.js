@@ -246,7 +246,7 @@ ${ui.card(tr('Opening news list'), ui.table([{ label: tr('Email'), render: (s) =
     ${ui.input('max_discount_pct', tr('Agents may discount up to (%)'), s.max_discount_pct, { type: 'number', min: 0, max: 100, hint: tr('Deeper discounts go to a manager for approval.') })}
     ${ui.input('offer_valid_days', tr('Offers valid for (days)'), s.offer_valid_days, { type: 'number', min: 1 })}
     ${ui.input('hold_days', tr('Unit holds last (days)'), s.hold_days, { type: 'number', min: 1, max: 60 })}
-    ${ui.input('vat_pct', tr('VAT on invoices (%)'), s.vat_pct, { type: 'number', min: 0, max: 30, step: '0.5', hint: tr('Shown on printed invoices. 0 to leave it off.') })}
+    ${ui.input('vat_pct', tr('VAT on invoices (%)'), s.vat_pct, { type: 'number', min: 0, max: 30, step: '0.5', hint: tr('Added to new invoices (deposits excluded) and posted to the books. 0 to leave it off.') })}
     ${ui.input('currency', tr('Currency'), s.currency, { required: true, hint: tr('A three-letter code, e.g. EGP.'), attrs: { maxlength: 3 } })}
   </div>`)}
   <section id="people">${ui.card(tr('People & payroll'), `<div class="fields">

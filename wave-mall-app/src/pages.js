@@ -351,7 +351,7 @@ function contact(lang, ctx) {
   const jsonld = [
     { '@type': 'ContactPage', '@id': `${b}${p(lang, '/contact/')}#page`, url: `${b}${p(lang, '/contact/')}`, name: k.title, about: { '@id': `${b}/#org` } },
     { '@type': 'FAQPage', mainEntity: k.faq.items.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) },
-    crumbsLd([[p(lang, '/'), c.crumbs.home], [p(lang, '/contact/'), c.nav[6][1]]], b),
+    crumbsLd([[p(lang, '/'), c.crumbs.home], [p(lang, '/contact/'), c.nav.at(-1)[1]]], b),
   ];
   const body = `
 ${opener(null, k.hero, k.intro)}
@@ -397,4 +397,290 @@ function notFound(lang, ctx) {
   return layout({ lang, pathname: p(lang, '/404'), title: 'The Wave', description: c.notFound.title, body, seo: { noindex: true }, ...ctx });
 }
 
-module.exports = { home, story: building, experience, leasing, visit, journalIndex, journalPost, contact, legal, notFound, postUrl };
+/* ---------- the store directory, events and offers ----------
+   Content comes from the leasing office (src/admin/routes/website.js) through src/app.js; each page
+   gets plain data in both languages. When the office is not available the pages say "coming soon". */
+const shopUrl = (lang, slug) => p(lang, `/stores/${slug}/`);
+const eventUrl = (lang, slug) => p(lang, `/events/${slug}/`);
+const LOCALE = (lang) => (lang === 'ar' ? 'ar-EG' : 'en-GB'); // Arabic digits in Arabic, like the journal and the rest of the site
+const day = (iso, lang, opts = { day: 'numeric', month: 'long', year: 'numeric' }) => new Intl.DateTimeFormat(LOCALE(lang), { timeZone: 'UTC', ...opts }).format(new Date(`${iso}T00:00:00Z`));
+const days = (a, b, lang) => (!b || b === a ? day(a, lang) : new Intl.DateTimeFormat(LOCALE(lang), { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).formatRange(new Date(`${a}T00:00:00Z`), new Date(`${b}T00:00:00Z`)));
+const hours = (e) => (e.timeFrom ? `${e.timeFrom}${e.timeTo ? `–${e.timeTo}` : ''}` : '');
+const fill = (s, o) => String(s).replace(/\{(\w+)\}/g, (m, k) => (o[k] !== undefined ? o[k] : m));
+const paras = (text) => String(text || '').split(/\n{2,}/).map((x) => x.trim()).filter(Boolean).map((x) => `<p>${esc(x).replace(/\n/g, '<br>')}</p>`).join('');
+const storeCount = (lang, n) => {
+  const f = content[lang].shops.count;
+  if (lang === 'en') return fill(n === 1 ? f[0] : f[1], { n });
+  const x = n % 100;
+  return fill(n === 1 ? f[0] : n === 2 ? f[1] : x >= 3 && x <= 10 ? f[2] : f[3], { n });
+};
+const catName = (lang, k) => content[lang].shops.categories[k] || content[lang].shops.categories.other;
+const unitsLine = (lang, s) => {
+  const t = content[lang].shops;
+  if (!s.units.length) return '';
+  const lv = s.units[0].level === 'B1' ? 'B1' : 'G';
+  return `${t.levels[lv]} · ${s.units.map((u) => u.code).join(isAr(lang) ? '، ' : ', ')}`;
+};
+const isAr = (lang) => lang === 'ar';
+const img = (src, alt, cls = '', eager = false) => (src ? `<img class="${cls}" src="${esc(src)}" alt="${esc(alt)}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">` : '');
+const initials = (name) => esc(String(name).split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase());
+// The plan of a level with listed stores marked (is-shop) and, on a store's page, its own units (is-here).
+function shopPlan(lang, level, stores, { id, here = null } = {}) {
+  const c = content[lang];
+  const mine = new Map();
+  for (const s of stores) for (const u of s.units) if ((u.level === 'B1' ? 'B1' : 'G') === level && u.n) mine.set(u.n, s);
+  const svg = floorSvg(level, { id, label: `${c.floorNames[level]} · ${c.shops.plan.kicker}` })
+    .replace(/class="plan__unit( plan__unit--street)?" data-unit="(\d+)"/g, (all, street, n) => {
+      const s = mine.get(Number(n));
+      if (!s) return all;
+      const isHere = here && here.id === s.id;
+      return `class="plan__unit${street || ''} is-shop${isHere ? ' is-here' : ''}" data-unit="${n}" data-shop="${esc(s.slug)}"`;
+    });
+  return svg.replace('<svg class="plan"', `<svg class="plan plan--shops" data-level="${level}"`);
+}
+function shopCard(lang, s, { compact = false } = {}) {
+  const t = content[lang].shops;
+  const name = s.name[lang];
+  const keys = [s.name.en, s.name.ar, s.tagline[lang], catName(lang, s.category), ...s.units.map((u) => u.code)].join(' ').toLowerCase();
+  return `<li class="shop${compact ? ' shop--compact' : ''}" data-shop="${esc(s.slug)}" data-cat="${esc(s.category)}" data-keys="${esc(keys)}" data-units="${esc(s.units.map((u) => `${u.level === 'B1' ? 'B1' : 'G'}:${u.n}`).join(' '))}">
+  <a class="shop__link" href="${shopUrl(lang, s.slug)}">
+    <span class="shop__media">${s.cover ? img(s.cover, '', 'shop__cover') : '<span class="shop__cover shop__cover--blank"></span>'}
+      <span class="shop__logo">${s.logo ? img(s.logo, '') : `<b>${initials(name)}</b>`}</span>
+      ${s.openingSoon ? `<span class="shop__tag">${esc(t.soon)}</span>` : s.featured ? `<span class="shop__tag shop__tag--feat">${esc(t.featured)}</span>` : ''}</span>
+    <span class="shop__body"><span class="label">${esc(catName(lang, s.category))}${s.units.length ? ` · ${esc(s.units.map((u) => u.code).join(', '))}` : ''}</span>
+      <span class="shop__name">${esc(name)}</span>${s.tagline[lang] ? `<span class="shop__line">${esc(s.tagline[lang])}</span>` : ''}</span>
+  </a>
+</li>`;
+}
+function offerCards(lang, promos, { title: heading = null } = {}) {
+  if (!promos.length) return '';
+  const t = content[lang].shops;
+  const today = new Date().toISOString().slice(0, 10);
+  return `<section class="offers"><div class="wrap">
+  <div class="row-head">${label(heading || t.offers)}</div>
+  <ul class="offers__list">${promos.map((o) => `<li class="offer">
+    ${o.image ? `<span class="offer__media">${img(o.image, '')}</span>` : ''}
+    <div class="offer__body"><p class="label">${o.store ? `<a href="${shopUrl(lang, o.store.slug)}">${esc(o.store.name[lang])}</a> · ` : ''}${esc(fill(o.startsOn > today ? t.from : t.until, { date: day(o.startsOn > today ? o.startsOn : o.endsOn, lang) }))}</p>
+      <h3 class="offer__title">${esc(o.title[lang])}</h3>${o.details[lang] ? `<p class="offer__text">${esc(o.details[lang])}</p>` : ''}
+      ${o.link ? link(o.link, t.visit, '', 'target="_blank" rel="noopener"') : ''}</div>
+  </li>`).join('')}</ul>
+</div></section>`;
+}
+function eventRow(lang, e, { past = false } = {}) {
+  const ev = content[lang].events;
+  const d = new Date(`${e.startsOn}T00:00:00Z`);
+  const fmt = (o) => new Intl.DateTimeFormat(LOCALE(lang), { timeZone: 'UTC', ...o }).format(d);
+  return `<li class="ev${past ? ' ev--past' : ''}"><a class="ev__link" href="${eventUrl(lang, e.slug)}">
+    <span class="ev__date" aria-hidden="true"><b>${fmt({ day: 'numeric' })}</b><span>${esc(fmt({ month: 'short' }))}</span></span>
+    ${past ? '' : `<span class="ev__media">${e.cover ? img(e.cover, '') : '<span class="ev__blank"></span>'}</span>`}
+    <span class="ev__body"><span class="label">${esc(days(e.startsOn, e.endsOn, lang))}${hours(e) ? ` · ${esc(hours(e))}` : ''}${e.location[lang] ? ` · ${esc(e.location[lang])}` : ''}</span>
+      <span class="ev__title">${esc(e.title[lang])}</span>${!past && e.summary[lang] ? `<span class="ev__text">${esc(e.summary[lang])}</span>` : ''}
+      <span class="sr">${esc(ev.when)}: ${esc(days(e.startsOn, e.endsOn, lang))}</span></span>
+    ${arrow}
+  </a></li>`;
+}
+const subnav = (lang, on) => {
+  const t = content[lang].shops.tabs;
+  return `<nav class="subnav" aria-label="${esc(content[lang].shops.kicker)}"><div class="wrap">${[['stores', '/stores/'], ['events', '/events/']].map(([k, href]) => `<a href="${p(lang, href)}"${k === on ? ' aria-current="page"' : ''}>${esc(t[k])}</a>`).join('')}</div></nav>`;
+};
+const storeLd = (lang, s, b) => {
+  const url = `${b}${shopUrl(lang, s.slug)}`;
+  const m = String(s.hours).match(/^(\d{1,2}):(\d{2})\s*[–—-]\s*(\d{1,2}):(\d{2})$/);
+  const pad = (x) => String(x).padStart(2, '0');
+  return {
+    '@type': s.category === 'fnb' ? 'FoodEstablishment' : 'Store', '@id': `${url}#store`, name: s.name[lang], url,
+    ...(s.description[lang] || s.tagline[lang] ? { description: s.tagline[lang] || s.description[lang].slice(0, 300) } : {}),
+    ...(s.cover ? { image: `${b}${s.cover}` } : {}), ...(s.logo ? { logo: `${b}${s.logo}` } : {}),
+    ...(s.phone ? { telephone: s.phone } : {}),
+    ...(m ? { openingHours: `Mo-Su ${pad(m[1])}:${m[2]}-${pad(m[3])}:${m[4]}` } : {}),
+    address: { '@type': 'PostalAddress', streetAddress: 'North 90 Street, First Sector', addressLocality: 'New Cairo', addressCountry: 'EG' },
+    containedInPlace: { '@id': `${b}/#org` },
+    ...(s.instagram || s.website ? { sameAs: [s.instagram ? `https://www.instagram.com/${s.instagram}` : null, s.website].filter(Boolean) } : {}),
+  };
+};
+// Cairo's offset on a day (Egypt keeps summer time), for structured data and calendars.
+function cairoOffset(iso) {
+  try {
+    const part = new Intl.DateTimeFormat('en-US', { timeZone: 'Africa/Cairo', timeZoneName: 'longOffset' }).formatToParts(new Date(`${iso}T12:00:00Z`)).find((x) => x.type === 'timeZoneName');
+    const m = part && part.value.match(/GMT([+-]\d{2}):?(\d{2})?/);
+    return m ? `${m[1]}:${m[2] || '00'}` : '+02:00';
+  } catch {
+    return '+02:00';
+  }
+}
+const eventStart = (e) => (e.timeFrom ? `${e.startsOn}T${e.timeFrom}:00${cairoOffset(e.startsOn)}` : e.startsOn);
+const eventEnd = (e) => (e.timeTo ? `${e.endsOn}T${e.timeTo}:00${cairoOffset(e.endsOn)}` : e.endsOn);
+const eventLd = (lang, e, b) => ({
+  '@type': 'Event', '@id': `${b}${eventUrl(lang, e.slug)}#event`, name: e.title[lang], url: `${b}${eventUrl(lang, e.slug)}`,
+  startDate: eventStart(e), endDate: eventEnd(e), eventStatus: 'https://schema.org/EventScheduled', eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+  ...(e.summary[lang] ? { description: e.summary[lang] } : {}), ...(e.cover ? { image: [`${b}${e.cover}`] } : {}),
+  location: { '@type': 'Place', name: e.location[lang] ? `${e.location[lang]}, The Wave` : 'The Wave', address: { '@type': 'PostalAddress', streetAddress: 'North 90 Street, First Sector', addressLocality: 'New Cairo', addressCountry: 'EG' } },
+  organizer: { '@id': `${b}/#org` }, inLanguage: lang,
+});
+
+// The office is not available (or has nothing to show yet): a calm page, never an error.
+function shopsSoon(lang, ctx, which = 'stores') {
+  const c = content[lang];
+  const t = c.shops;
+  const body = `
+${opener(which === 'events' ? c.events.kicker : t.kicker, { a: t.soonPage.a, b: t.soonPage.b }, t.soonPage.text)}
+${subnav(lang, which)}
+<section class="shops shops--soon"><div class="wrap"><div class="shops__soon">${link(p(lang, '/leasing/'), t.empty.cta)}${link(p(lang, '/contact/'), c.nav.at(-1)[1])}</div></div></section>`;
+  return layout({ lang, pathname: p(lang, which === 'events' ? '/events/' : '/stores/'), title: which === 'events' ? c.events.title : t.title, description: which === 'events' ? c.events.description : t.description, body, seo: { image: 'shopfronts', noindex: true }, ...ctx });
+}
+
+function storesIndex(lang, ctx, data) {
+  const c = content[lang];
+  const t = c.shops;
+  const b = base(ctx);
+  const { stores, promos = [], events = [], intro = '', q = '', cat = '' } = data;
+  const cats = [...new Set(stores.map((s) => s.category))].sort((x, y) => Object.keys(t.categories).indexOf(x) - Object.keys(t.categories).indexOf(y));
+  const needle = String(q).trim().toLowerCase();
+  const shown = stores.filter((s) => (!cat || s.category === cat) && (!needle || [s.name.en, s.name.ar, s.tagline[lang], catName(lang, s.category), ...s.units.map((u) => u.code)].join(' ').toLowerCase().includes(needle)));
+  const levels = ['G', 'B1'].filter((lv) => stores.some((s) => s.units.some((u) => (u.level === 'B1' ? 'B1' : 'G') === lv)));
+  const chip = (k, l) => `<a class="chip" href="${p(lang, '/stores/')}${k ? `?cat=${k}` : ''}" data-cat="${k}"${(cat || '') === k ? ' aria-current="true"' : ''}>${esc(l)}</a>`;
+  const list = stores.length
+    ? `<form class="shops__bar" role="search" method="get" action="${p(lang, '/stores/')}" data-shops-form>
+    <label class="shops__search"><span class="sr">${esc(t.search)}</span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M16 16l4.5 4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg><input type="search" name="q" value="${esc(q)}" placeholder="${esc(t.search)}" autocomplete="off" data-shops-q>${cat ? `<input type="hidden" name="cat" value="${esc(cat)}">` : ''}<button class="sr" type="submit">${esc(t.searchButton)}</button></label>
+    <div class="chips" role="group" aria-label="${esc(t.kicker)}">${chip('', t.all)}${cats.map((k) => chip(k, catName(lang, k))).join('')}</div>
+    <p class="label shops__count" role="status" data-shops-count data-forms="${esc(JSON.stringify(t.count))}">${esc(storeCount(lang, shown.length))}</p>
+  </form>
+  <div class="shops__grid">
+    <ul class="shops__list" data-shops-list>${stores.map((s) => shopCard(lang, s).replace('<li class="shop', shown.includes(s) ? '<li class="shop' : '<li hidden class="shop')).join('')}</ul>
+    <aside class="shops__plan" aria-label="${esc(t.plan.kicker)}">
+      <p class="label">${esc(t.plan.kicker)}</p>
+      ${levels.map((lv) => `<figure class="shops__level"><figcaption class="label">${esc(t.levels[lv])}</figcaption>${shopPlan(lang, lv, stores, { id: `sp${lv}` })}</figure>`).join('')}
+      <p class="shops__hint">${esc(t.plan.hint)}</p>
+      ${link(p(lang, '/the-wave/#directory'), t.plan.all)}
+    </aside>
+  </div>
+  <div class="shops__none" data-shops-none${shown.length ? ' hidden' : ''}><p>${esc(t.none)}</p>${link(p(lang, '/stores/'), t.clear, '', 'data-shops-clear')}</div>`
+    : `<div class="shops__empty">${title(t.empty.a, t.empty.b, 'h2')}<p class="lead">${esc(t.empty.text)}</p>${link(p(lang, '/leasing/'), t.empty.cta)}</div>`;
+  const next = events.slice(0, 3);
+  const body = `
+${opener(t.kicker, t.hero, intro || t.intro)}
+${subnav(lang, 'stores')}
+<section class="shops" data-shops><div class="wrap">${list}</div></section>
+${offerCards(lang, promos)}
+${next.length ? `<section class="events events--teaser"><div class="wrap"><div class="row-head">${label(t.next)}${link(p(lang, '/events/'), t.allEvents)}</div><ul class="evlist">${next.map((e) => eventRow(lang, e)).join('')}</ul></div></section>` : ''}`;
+  const jsonld = [
+    crumbsLd([[p(lang, '/'), c.crumbs.home], [p(lang, '/stores/'), c.nav.at(-2)[1]]], b),
+    { '@type': 'ItemList', name: t.title, itemListElement: stores.map((s, i) => ({ '@type': 'ListItem', position: i + 1, url: `${b}${shopUrl(lang, s.slug)}`, name: s.name[lang] })) },
+  ];
+  return layout({ lang, pathname: p(lang, '/stores/'), title: t.title, description: t.description, body, seo: { image: 'shopfronts', jsonld, noindex: !!(q || cat) }, ...ctx });
+}
+
+function storePage(lang, ctx, s, { all = [], promos = [] } = {}) {
+  const c = content[lang];
+  const t = c.shops;
+  const b = base(ctx);
+  const name = s.name[lang];
+  const trail = [[p(lang, '/'), c.crumbs.home], [p(lang, '/stores/'), c.nav.at(-2)[1]], [shopUrl(lang, s.slug), name]];
+  const lv = s.units.length && s.units[0].level === 'B1' ? 'B1' : 'G';
+  const facts = [
+    s.units.length ? [t.where, `${esc(unitsLine(lang, s))}`] : null,
+    s.hours ? [t.hours, `<span dir="ltr">${esc(s.hours)}</span>`] : null,
+    s.phone ? [t.phone, `<a href="tel:${esc(s.phone.replace(/[^\d+]/g, ''))}" dir="ltr">${esc(s.phone)}</a>`] : null,
+    s.instagram ? [t.instagram, `<a href="https://www.instagram.com/${esc(s.instagram)}" target="_blank" rel="noopener" dir="ltr">@${esc(s.instagram)}</a>`] : null,
+    s.website ? [t.website, `<a href="${esc(s.website)}" target="_blank" rel="noopener" dir="ltr">${esc(s.website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, ''))}</a>`] : null,
+  ].filter(Boolean);
+  const more = all.filter((x) => x.id !== s.id && x.category === s.category).slice(0, 3);
+  const others = more.length ? more : all.filter((x) => x.id !== s.id).slice(0, 3);
+  const body = `
+<section class="opener opener--shop"><div class="wrap">
+  ${crumbs(trail)}
+  <div class="shophero">
+    <div class="shophero__text">
+      <p class="label" data-rise>${esc(catName(lang, s.category))}${s.openingSoon ? ` · <span class="shophero__soon">${esc(s.openingDate ? fill(t.opens, { date: day(s.openingDate, lang) }) : t.soon)}</span>` : ''}</p>
+      ${title(name, '', 'h1', 'title--xl shophero__name')}
+      ${s.tagline[lang] ? `<p class="lead" data-rise>${esc(s.tagline[lang])}</p>` : ''}
+    </div>
+    <div class="shophero__logo" data-rise>${s.logo ? img(s.logo, name) : `<b>${initials(name)}</b>`}</div>
+  </div>
+</div></section>
+${s.cover ? `<section class="wide"><figure class="frame frame--wide shophero__cover" data-wipe><div class="frame__clip">${img(s.cover, name, '', true)}</div></figure></section>` : ''}
+<section class="shopinfo"><div class="wrap shopinfo__grid">
+  <dl class="shopinfo__facts">${facts.map(([k, v]) => `<div><dt class="label">${esc(k)}</dt><dd>${v}</dd></div>`).join('')}</dl>
+  <div class="shopinfo__about">${s.description[lang] ? `<div class="prose">${paras(s.description[lang])}</div>` : ''}
+    ${s.units.length ? `<figure class="shopinfo__plan">${shopPlan(lang, lv, [s], { id: 'here', here: s })}<figcaption class="label">${esc(unitsLine(lang, s))}</figcaption></figure>${link(p(lang, '/the-wave/#directory'), t.plan.all)}` : ''}
+  </div>
+</div></section>
+${offerCards(lang, promos)}
+${others.length ? `<section class="shops shops--more"><div class="wrap"><div class="row-head">${label(more.length ? fill(t.more, { cat: catName(lang, s.category) }) : t.back)}${link(p(lang, '/stores/'), t.back)}</div><ul class="shops__list shops__list--3">${others.map((x) => shopCard(lang, x)).join('')}</ul></div></section>` : ''}`;
+  const jsonld = [crumbsLd(trail, b), storeLd(lang, s, b)];
+  const desc = s.tagline[lang] || s.description[lang].split('\n')[0] || t.description;
+  return layout({ lang, pathname: shopUrl(lang, s.slug), title: `${name} | ${t.title.split(' | ')[1] || 'The Wave'}`, description: desc.slice(0, 300), body, seo: { jsonld, ...(s.cover && !s.cover.endsWith('.svg') ? { imageUrl: s.cover } : { image: 'shopfronts' }) }, ...ctx });
+}
+
+function eventsIndex(lang, ctx, data) {
+  const c = content[lang];
+  const ev = c.events;
+  const b = base(ctx);
+  const { upcoming, past, intro = '' } = data;
+  const body = `
+${opener(ev.kicker, ev.hero, intro || ev.intro)}
+${subnav(lang, 'events')}
+<section class="events"><div class="wrap">
+  <div class="row-head">${label(ev.upcoming)}</div>
+  ${upcoming.length ? `<ul class="evlist">${upcoming.map((e) => eventRow(lang, e)).join('')}</ul>` : `<div class="events__none"><p class="lead">${esc(ev.none)}</p>${link(p(lang, '/journal/'), ev.subscribe)}</div>`}
+  ${past.length ? `<div class="row-head events__past">${label(ev.past)}</div><ul class="evlist evlist--past">${past.map((e) => eventRow(lang, e, { past: true })).join('')}</ul>` : ''}
+</div></section>`;
+  const jsonld = [
+    crumbsLd([[p(lang, '/'), c.crumbs.home], [p(lang, '/events/'), c.shops.tabs.events]], b),
+    ...upcoming.map((e) => eventLd(lang, e, b)),
+  ];
+  return layout({ lang, pathname: p(lang, '/events/'), title: ev.title, description: ev.description, body, seo: { image: 'plaza', jsonld }, ...ctx });
+}
+
+function eventPage(lang, ctx, e, { others = [] } = {}) {
+  const c = content[lang];
+  const ev = c.events;
+  const b = base(ctx);
+  const name = e.title[lang];
+  const trail = [[p(lang, '/'), c.crumbs.home], [p(lang, '/events/'), c.shops.tabs.events], [eventUrl(lang, e.slug), name]];
+  const over = e.endsOn < new Date().toISOString().slice(0, 10);
+  const body = `
+<section class="opener opener--event"><div class="wrap">
+  ${crumbs(trail)}
+  <p class="label" data-rise>${esc(days(e.startsOn, e.endsOn, lang))}${hours(e) ? ` · <span dir="ltr">${esc(hours(e))}</span>` : ''}</p>
+  ${title(name, '', 'h1', 'title--xl')}
+  ${e.summary[lang] ? `<p class="lead" data-rise>${esc(e.summary[lang])}</p>` : ''}
+</div></section>
+${e.cover ? `<section class="wide"><figure class="frame frame--wide" data-wipe><div class="frame__clip">${img(e.cover, name, '', true)}</div></figure></section>` : ''}
+<section class="shopinfo"><div class="wrap shopinfo__grid">
+  <dl class="shopinfo__facts">
+    <div><dt class="label">${esc(ev.when)}</dt><dd>${esc(days(e.startsOn, e.endsOn, lang))}</dd></div>
+    ${hours(e) ? `<div><dt class="label">${esc(ev.time)}</dt><dd dir="ltr">${esc(hours(e))}</dd></div>` : ''}
+    <div><dt class="label">${esc(ev.where)}</dt><dd>${esc(e.location[lang] || ev.free)}</dd></div>
+  </dl>
+  <div class="shopinfo__about">${e.description[lang] ? `<div class="prose">${paras(e.description[lang])}</div>` : ''}
+    ${over ? '' : `<div class="evactions">${e.rsvp ? `<a class="btn" href="${esc(e.rsvp)}" target="_blank" rel="noopener"><span>${esc(ev.rsvp)}</span>${arrow}</a>` : ''}${link(`${eventUrl(lang, e.slug)}calendar.ics`, ev.calendar, '', 'data-full-nav download')}</div>`}
+  </div>
+</div></section>
+${others.length ? `<section class="events events--teaser"><div class="wrap"><div class="row-head">${label(ev.upcoming)}${link(p(lang, '/events/'), ev.all)}</div><ul class="evlist">${others.map((x) => eventRow(lang, x)).join('')}</ul></div></section>` : ''}`;
+  const jsonld = [crumbsLd(trail, b), eventLd(lang, e, b)];
+  return layout({ lang, pathname: eventUrl(lang, e.slug), title: `${name} | ${ev.title.split(' | ')[1] || 'The Wave'}`, description: (e.summary[lang] || e.description[lang] || ev.description).slice(0, 300), body, seo: { jsonld, ...(e.cover && !e.cover.endsWith('.svg') ? { imageUrl: e.cover } : { image: 'plaza' }) }, ...ctx });
+}
+
+// An event for the visitor's calendar.
+function eventIcs(lang, e, siteUrl) {
+  const stamp = (date, time) => {
+    const d = new Date(`${date}T${time || '00:00'}:00${cairoOffset(date)}`);
+    return d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+  };
+  const allDay = !e.timeFrom;
+  const next = (iso) => new Date(Date.parse(`${iso}T00:00:00Z`) + 86400000).toISOString().slice(0, 10).replace(/-/g, '');
+  const line = (s) => String(s).replace(/\\/g, '\\\\').replace(/;/g, '\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n');
+  const url = `${(siteUrl || '').replace(/\/$/, '')}${eventUrl(lang, e.slug)}`;
+  return [
+    'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//The Wave//Events//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', 'BEGIN:VEVENT',
+    `UID:${e.slug}@thewavemall.com`, `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')}`,
+    allDay ? `DTSTART;VALUE=DATE:${e.startsOn.replace(/-/g, '')}` : `DTSTART:${stamp(e.startsOn, e.timeFrom)}`,
+    allDay ? `DTEND;VALUE=DATE:${next(e.endsOn)}` : `DTEND:${stamp(e.endsOn, e.timeTo || e.timeFrom)}`,
+    `SUMMARY:${line(e.title[lang])}`, `DESCRIPTION:${line(`${e.summary[lang] || ''}\n${url}`.trim())}`,
+    `LOCATION:${line(`${e.location[lang] ? `${e.location[lang]}, ` : ''}The Wave, North 90 Street, New Cairo`)}`, `URL:${url}`,
+    'END:VEVENT', 'END:VCALENDAR', '',
+  ].join('\r\n');
+}
+
+module.exports = { home, story: building, experience, leasing, visit, journalIndex, journalPost, contact, legal, notFound, postUrl, storesIndex, storePage, eventsIndex, eventPage, eventIcs, shopsSoon };

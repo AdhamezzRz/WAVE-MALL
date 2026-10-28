@@ -144,7 +144,7 @@ module.exports = function tenants(router, h) {
     h.page(req, res, {
       title: tr('Tenant files'), active: '/admin/tenants', wide: true,
       body: `<div class="kpis">${kpis}</div>${tabs}${all.length ? filters : ''}${main}`,
-      actions: ui.btn(tr('ten|Compliance CSV'), { href: '/admin/tenants/compliance.csv', cls: 'btn--ghost', ic: 'dl' }),
+      actions: `${h.portal ? ui.btn(tr('por|Tenant portal'), { href: '/admin/portal', cls: 'btn--ghost', ic: 'globe' }) : ''}${ui.btn(tr('ten|Compliance CSV'), { href: '/admin/tenants/compliance.csv', cls: 'btn--ghost', ic: 'dl' })}`,
     });
   });
 
@@ -336,6 +336,7 @@ module.exports = function tenants(router, h) {
     <div id="legal">${ui.card(tr('ten|Legal & registration'), legal, { action: legalForm })}</div>
     <div id="store">${ui.card(tr('ten|Store operations'), store, { action: storeForm })}</div>
     <div id="contacts">${ui.card(tr('Contacts'), contactList, { action: addContact })}</div>
+    ${(h.tenantCards || []).map((fn) => fn(req, b)).join('')}
     ${b.updated_at ? `<p class="muted small">${ui.esc(tr('File updated {when}', { when: ui.rel(b.updated_at) }))}</p>` : ''}
   </div>
 </div>`;

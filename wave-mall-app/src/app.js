@@ -61,6 +61,7 @@ function createApp({ env = process.env, mail = deliver } = {}) {
   const siteUrl = (req) => env.SITE_URL || `${req.protocol}://${req.get('host')}`;
   const ctx = (req, res) => ({ siteUrl: siteUrl(req), nonce: res.locals.nonce, status: statusOf(req) });
   const html = (res, body, code = 200) => res.status(code).set('Cache-Control', 'no-cache').type('html').send(body);
+  const office = () => officeOf(admin); // admin is set below, before any request arrives
   const render = (name, lang, req, res) => (typeof name === 'function' ? name(lang, ctx(req, res)) : pages[name](lang, ctx(req, res)));
 
   app.get('/healthz', (_req, res) => res.json({ ok: true }));
@@ -83,7 +84,7 @@ function createApp({ env = process.env, mail = deliver } = {}) {
   app.get(['/blog', '/blog/', '/ar/blog', '/ar/blog/'], (req, res) => res.redirect(301, req.path.startsWith('/ar') ? '/ar/journal/' : '/journal/'));
 
   app.get('/robots.txt', (req, res) => res.type('text/plain').send(`User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /admin/\n\nSitemap: ${siteUrl(req)}/sitemap.xml\n`));
-  app.get('/sitemap.xml', (req, res) => {
+  app.get('/sitemap.xml', async (req, res) => {
     const b = siteUrl(req);
     const today = new Date().toISOString().slice(0, 10);
     const entry = (route, lastmod, priority) => {
@@ -95,7 +96,19 @@ function createApp({ env = process.env, mail = deliver } = {}) {
     const urls = [
       ...ROUTES.flatMap(([route]) => entry(route, today, route === '/' ? '1.0' : '0.7')),
       ...journal.sorted().flatMap((post) => entry(`/journal/${post.slug}/`, post.date, '0.6')),
+      ...entry('/stores/', today, '0.8'),
+      ...entry('/events/', today, '0.6'),
     ];
+    // published stores and events, when the leasing office is running
+    const w = await office();
+    if (w) {
+      try {
+        const m = w.sitemap();
+        urls.push(...m.stores.flatMap((x) => entry(`/stores/${x.slug}/`, x.updated, '0.6')), ...m.events.flatMap((x) => entry(`/events/${x.slug}/`, x.updated, '0.5')));
+      } catch (err) {
+        console.error('[website] sitemap:', err.message);
+      }
+    }
     res.type('application/xml').send(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls.join('\n')}\n</urlset>\n`);
   });
 
@@ -110,6 +123,50 @@ function createApp({ env = process.env, mail = deliver } = {}) {
     app.use('/admin', (req, res) => res.status(503).type('text').send(`The leasing office could not start: ${String(err.message || err).split('\n')[0]}`));
   }
   app.locals.admin = admin;
+
+  // ---------- the store directory and events ----------
+  // Content comes from the leasing office (src/admin/routes/website.js). If the office is not
+  // available the pages say "coming soon"; they never fail.
+  const page = (fn) => async (req, res, next) => {
+    const lang = req.path === '/ar' || req.path.startsWith('/ar/') ? 'ar' : 'en';
+    const w = await office();
+    try {
+      return await fn(req, res, next, w, lang);
+    } catch (err) {
+      console.error('[website]', err);
+      return html(res, pages.shopsSoon(lang, ctx(req, res), req.path.includes('/events/') ? 'events' : 'stores'), 503);
+    }
+  };
+  for (const prefix of ['', '/ar']) {
+    app.get(`${prefix}/stores/`, page((req, res, next, w, lang) => {
+      if (!w) return html(res, pages.shopsSoon(lang, ctx(req, res), 'stores'));
+      const q = String(req.query.q || '').slice(0, 80);
+      const cat = /^[a-z]{2,12}$/.test(String(req.query.cat || '')) ? String(req.query.cat) : '';
+      const ev = w.events();
+      return html(res, pages.storesIndex(lang, ctx(req, res), { stores: w.stores(), promos: w.promos(), events: ev.upcoming, intro: w.intro(lang).stores, q, cat }));
+    }));
+    app.get(`${prefix}/stores/:slug/`, page((req, res, next, w, lang) => {
+      if (!w) return html(res, pages.shopsSoon(lang, ctx(req, res), 'stores'), 503);
+      const s = w.store(req.params.slug);
+      if (!s) return next();
+      return html(res, pages.storePage(lang, ctx(req, res), s, { all: w.stores(), promos: w.promos(s.brandId) }));
+    }));
+    app.get(`${prefix}/events/`, page((req, res, next, w, lang) => {
+      if (!w) return html(res, pages.shopsSoon(lang, ctx(req, res), 'events'));
+      return html(res, pages.eventsIndex(lang, ctx(req, res), { ...w.events(), intro: w.intro(lang).events }));
+    }));
+    app.get(`${prefix}/events/:slug/`, page((req, res, next, w, lang) => {
+      if (!w) return html(res, pages.shopsSoon(lang, ctx(req, res), 'events'), 503);
+      const e = w.event(req.params.slug);
+      if (!e) return next();
+      return html(res, pages.eventPage(lang, ctx(req, res), e, { others: w.events().upcoming.filter((x) => x.slug !== e.slug).slice(0, 3) }));
+    }));
+    app.get(`${prefix}/events/:slug/calendar.ics`, page((req, res, next, w, lang) => {
+      const e = w && w.event(req.params.slug);
+      if (!e) return next();
+      return res.set('Cache-Control', 'no-cache').type('text/calendar; charset=utf-8').attachment(`${e.slug}.ics`).send(pages.eventIcs(lang, e, siteUrl(req)));
+    }));
+  }
 
   const limiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 8, standardHeaders: true, legacyHeaders: false, handler: (req, res) => respond(req, res, 429, 'error') });
   const parsers = [limiter, express.json({ limit: '16kb' }), express.urlencoded({ extended: false, limit: '16kb' })];
@@ -173,6 +230,16 @@ function feed(lang, base) {
     })
     .join('\n');
   return `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>${esc(c.journal.title)}</title><link>${b}${prefix}/journal/</link><description>${esc(c.journal.description)}</description><language>${lang}</language><atom:link href="${b}${prefix}/journal/feed.xml" rel="self" type="application/rss+xml"/>\n${items}\n</channel></rss>\n`;
+}
+
+// The website side of the leasing office (h.website), once it is running; null otherwise.
+async function officeOf(admin) {
+  try {
+    await admin.ready;
+  } catch {
+    return null;
+  }
+  return !admin.error && admin.h && admin.h.website ? admin.h.website : null;
 }
 
 const statusOf = (req) => (req.query.sent === '1' ? 'ok' : req.query.sent === '0' ? 'error' : undefined);

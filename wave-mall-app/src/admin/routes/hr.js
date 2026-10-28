@@ -799,16 +799,21 @@ ${ui.card(tr('Balances {year}', { year: year() }), balTable, { sub: esc(tr('Annu
     db.tx(() => calcRun(req.run));
     db.run("UPDATE payroll_runs SET status = 'approved', approved_by = ?, approved_at = ? WHERE id = ?", req.user.id, M.now(), req.run.id);
     h.log(req, 'Approved a payroll', 'payroll', req.run.id, req.run.period);
+    // accounting posts the salary accrual
+    h.events.emit('payroll.approved', { run: db.get('SELECT * FROM payroll_runs WHERE id = ?', req.run.id), lines: db.all('SELECT * FROM payroll_lines WHERE run_id = ?', req.run.id), user: req.user });
     h.back(req, res, `/admin/hr/payroll/${req.run.id}`, 'ok', tr('Payroll approved and locked.'));
   });
   router.post('/hr/payroll/:id/paid', RH, runGuard(['approved']), (req, res) => {
     db.run("UPDATE payroll_runs SET status = 'paid', paid_at = ? WHERE id = ?", isDate(req.body.paid_at) ? req.body.paid_at : today(), req.run.id);
     h.log(req, 'Paid a payroll', 'payroll', req.run.id, req.run.period);
+    const paidRun = db.get('SELECT * FROM payroll_runs WHERE id = ?', req.run.id);
+    h.events.emit('payroll.paid', { run: paidRun, lines: db.all('SELECT * FROM payroll_lines WHERE run_id = ?', req.run.id), date: paidRun.paid_at, user: req.user });
     h.back(req, res, `/admin/hr/payroll/${req.run.id}`, 'ok', tr('Marked as paid.'));
   });
   router.post('/hr/payroll/:id/reopen', RH, h.R('admin'), runGuard(['approved']), (req, res) => {
     db.run("UPDATE payroll_runs SET status = 'draft', approved_by = NULL, approved_at = NULL WHERE id = ?", req.run.id);
     h.log(req, 'Reopened a payroll', 'payroll', req.run.id, req.run.period);
+    h.events.emit('payroll.reopened', { run: req.run, user: req.user });
     h.back(req, res, `/admin/hr/payroll/${req.run.id}`, 'ok', tr('Payroll reopened as a draft.'));
   });
   router.post('/hr/payroll/:id/delete', RH, runGuard(['draft']), (req, res) => {

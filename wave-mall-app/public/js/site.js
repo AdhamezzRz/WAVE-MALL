@@ -459,6 +459,74 @@
       });
     },
 
+    // the store directory: instant search and category filter (the server does the same without JS),
+    // and each store marked on the plan as you point at it
+    shops(scope) {
+      const box = $('[data-shops]', scope);
+      const list = box && $('[data-shops-list]', box);
+      if (!list) return;
+      const form = $('[data-shops-form]', box);
+      const q = $('[data-shops-q]', box);
+      const count = $('[data-shops-count]', box);
+      const none = $('[data-shops-none]', box);
+      const cards = $$('.shop', list);
+      const chips = $$('.chip', box);
+      const units = $$('.plan__unit.is-shop', box);
+      const forms = JSON.parse(count.dataset.forms || '[]');
+      const plural = (n) => {
+        if (forms.length === 2) return (n === 1 ? forms[0] : forms[1]).replace('{n}', n);
+        const x = n % 100;
+        return (n === 1 ? forms[0] : n === 2 ? forms[1] : x >= 3 && x <= 10 ? forms[2] : forms[3]).replace('{n}', n);
+      };
+      let cat = (chips.find((c) => c.hasAttribute('aria-current')) || { dataset: { cat: '' } }).dataset.cat;
+      const apply = () => {
+        const needle = q.value.trim().toLowerCase();
+        let n = 0;
+        cards.forEach((c) => {
+          const show = (!cat || c.dataset.cat === cat) && (!needle || c.dataset.keys.includes(needle));
+          c.hidden = !show;
+          if (show) n++;
+        });
+        const visible = new Set(cards.filter((c) => !c.hidden).map((c) => c.dataset.shop));
+        units.forEach((u) => u.classList.toggle('is-dim', !visible.has(u.dataset.shop)));
+        count.textContent = plural(n);
+        none.hidden = n > 0;
+        const url = new URL(location.href);
+        needle ? url.searchParams.set('q', q.value.trim()) : url.searchParams.delete('q');
+        cat ? url.searchParams.set('cat', cat) : url.searchParams.delete('cat');
+        history.replaceState(history.state, '', url);
+        ScrollTrigger.refresh();
+      };
+      chips.forEach((c) => c.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        cat = c.dataset.cat;
+        chips.forEach((x) => (x === c ? x.setAttribute('aria-current', 'true') : x.removeAttribute('aria-current')));
+        const hidden = $('input[name=cat]', form);
+        if (hidden) hidden.remove();
+        apply();
+      }));
+      q.addEventListener('input', apply);
+      form.addEventListener('submit', (e) => { e.preventDefault(); apply(); });
+      const clear = $('[data-shops-clear]', box);
+      if (clear) clear.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); q.value = ''; cat = ''; chips.forEach((x, i) => (i ? x.removeAttribute('aria-current') : x.setAttribute('aria-current', 'true'))); apply(); });
+      // pointing at a store marks its units; pointing at a unit marks its store; a unit opens its store
+      const mark = (slug) => {
+        units.forEach((u) => u.classList.toggle('is-on', u.dataset.shop === slug));
+        cards.forEach((c) => c.classList.toggle('is-on', c.dataset.shop === slug));
+      };
+      cards.forEach((c) => {
+        c.addEventListener('pointerenter', () => mark(c.dataset.shop));
+        c.addEventListener('pointerleave', () => mark(null));
+        c.addEventListener('focusin', () => mark(c.dataset.shop));
+      });
+      units.forEach((u) => {
+        u.addEventListener('pointerenter', () => mark(u.dataset.shop));
+        u.addEventListener('pointerleave', () => mark(null));
+        u.addEventListener('click', () => { const a = $(`.shop[data-shop="${u.dataset.shop}"] a`, list); if (a) a.click(); });
+      });
+    },
+
     copy(scope) {
       $$('[data-copy]', scope).forEach((b) => {
         const orig = b.textContent;

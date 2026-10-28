@@ -414,7 +414,7 @@ ${ui.card(tn(list.length, '{n} contract', '{n} contracts'), table)}`;
       : '';
     const alert = due && state === 'active' ? `<p class="alert alert--warn">${ui.esc(c.end_date < t ? tr('This contract ended {when}. Renew it, or mark it ended.', { when: ui.rel(c.end_date) }) : c.auto_renew ? tr('The notice date has passed: it will renew automatically on {date}.', { date: ui.date(M.addDays(c.end_date, 1)) }) : tr('Decide now: it ends {when} and needs {days} days notice.', { when: ui.rel(c.end_date), days: c.notice_days }))}</p>` : '';
     const body = `${alert}<div class="kpis kpis--4">${kpis}</div>
-<div class="grid grid--side"><div class="stack">${docs}${ui.card(tr('History'), hist)}</div><div class="stack">${ui.card(tr('Details'), facts)}${danger}</div></div>`;
+<div class="grid grid--side"><div class="stack">${docs}${h.opsPanels && h.opsPanels.contract ? h.opsPanels.contract(req, c.id) : ''}${ui.card(tr('History'), hist)}</div><div class="stack">${ui.card(tr('Details'), facts)}${danger}</div></div>`;
     h.page(req, res, { title: tx(c.title), crumbs: [['/admin/contracts', tr('Contracts')], [null, c.ref]], active: '/admin/contracts', body, actions: `<div class="row">${actions.join('')}</div>` });
   });
 

@@ -93,7 +93,7 @@ function newsletter(c, id = 'f') {
 }
 
 // One photograph per page for the menu; it changes as you hover the list.
-const MENU_IMG = ['morning', 'aerial', 'plaza', 'axis', 'sculpture', 'north90', 'golden'];
+const MENU_IMG = ['morning', 'aerial', 'plaza', 'axis', 'sculpture', 'north90', 'shopfronts', 'golden'];
 
 function header(c, pathname) {
   const home = c.lang === 'en' ? '/' : '/ar/';
@@ -167,7 +167,7 @@ function layout({ lang, pathname, title: pageTitle, description, body, siteUrl, 
   const base = (siteUrl || '').replace(/\/$/, '');
   const enPath = lang === 'en' ? pathname : pathname.replace(/^\/ar/, '') || '/';
   const arPath = lang === 'ar' ? pathname : `/ar${pathname === '/' ? '/' : pathname}`;
-  const ogImage = seo.image ? `${base}${imgUrl(seo.image)}` : `${base}/img/og-image.jpg?v=${OG_V}`;
+  const ogImage = seo.imageUrl ? `${base}${seo.imageUrl}` : seo.image ? `${base}${imgUrl(seo.image)}` : `${base}/img/og-image.jpg?v=${OG_V}`;
   const org = {
     '@type': 'ShoppingCenter',
     '@id': `${base}/#org`,
@@ -223,7 +223,7 @@ ${lang === 'ar' ? '<link rel="preload" href="/fonts/Almarai-300.woff2" as="font"
 ${image ? `<link rel="preload" as="image" href="${imgFile(image, 1080)}" imagesrcset="${srcset(image)}" imagesizes="100vw">` : ''}
 <link rel="stylesheet" href="/css/site.css?v=${ASSET_V.css}">
 <script nonce="${nonce}">document.documentElement.classList.add('js');</script>
-<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@graph': [org, site, ...(seo.jsonld || [])] })}</script>
+<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@graph': [org, site, ...(seo.jsonld || [])] }).replace(/</g, '\\u003c')}</script>
 </head>
 <body>
 <div class="pre" data-pre aria-hidden="true">

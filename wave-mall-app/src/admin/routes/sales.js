@@ -342,6 +342,7 @@ module.exports = function sales(router, h) {
   <div class="stack">${edit ? ui.card(tr('Log activity'), actForm) : ''}${ui.card(tr('Timeline'), timeline, { sub: ui.esc(`${tn(acts.length, 'lead|{n} entry', 'lead|{n} entries')} · ${tn(views, 'lead|{n} viewing', 'lead|{n} viewings')}`) })}</div>
   <div class="stack">
     ${ui.card(tr('Contact'), contact)}
+    ${(h.leadPanels || []).map((fn) => fn(req, l) || '').join('')}
     ${ui.card(tr('Details'), details, { action: edit ? ui.btn(ui.esc(tr('Edit')), { href: `/admin/leads/${l.id}/edit`, cls: 'btn--ghost btn--sm' }) : '' })}
     ${ui.card(tr('Offers & lease'), offerList, { action: edit ? ui.btn(ui.esc(tr('New offer')), { href: `/admin/offers/new?lead=${l.id}`, cls: 'btn--ghost btn--sm', ic: 'plus' }) : '' })}
     ${ui.card(tr('Units that fit'), matches)}

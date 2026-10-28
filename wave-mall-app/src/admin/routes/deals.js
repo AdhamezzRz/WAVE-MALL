@@ -191,6 +191,8 @@ module.exports = function deals(router, h) {
     if (o.status === 'accepted' && h.can(req, 'manager') && !db.value('SELECT COUNT(*) FROM leases WHERE offer_id = ?', o.id)) actions.push(ui.btn(tr('Create lease'), { href: `/admin/leases/new?offer=${o.id}`, cls: 'btn--primary', ic: 'lease' }));
     if (['draft', 'pending'].includes(o.status) && h.can(req, 'agent')) actions.push(ui.btn(tr('Edit'), { href: `/admin/offers/${o.id}/edit`, cls: 'btn--ghost' }));
     if (h.can(req, 'agent')) actions.push(ui.btn(tr('Revise'), { href: `/admin/offers/new?lead=${o.lead_id}&from=${o.id}`, cls: 'btn--ghost' }));
+    // other modules add actions and cards here (comms: email, WhatsApp, e-signature)
+    for (const fn of h.offerActions || []) actions.push(fn(req, o) || '');
     actions.push(ui.btn(tr('Proposal'), { href: `/admin/offers/${o.id}/print`, cls: 'btn--ghost', ic: 'print', attrs: { target: '_blank' } }));
 
     const banner = o.status === 'pending'
@@ -232,7 +234,7 @@ module.exports = function deals(router, h) {
     const body = `${banner}<div class="kpis kpis--5">${kpis}</div>
 <div class="grid grid--side">
   <div class="stack">${ui.card(tr('Rent schedule'), scheduleTable(sc), { sub: ui.esc(tr('{cur}, before VAT', { cur: ui.curLabel() })) })}${ui.card(tr('Units'), unitsTable)}</div>
-  <div class="stack">${ui.card(tr('Terms'), facts)}</div>
+  <div class="stack">${ui.card(tr('Terms'), facts)}${(h.offerPanels || []).map((fn) => fn(req, o) || '').join('')}</div>
 </div>`;
     h.page(req, res, { title: tr('Offer {ref}', { ref: o.ref }), crumbs: [['/admin/offers', tr('Offers')], [`/admin/leads/${o.lead_id}`, o.lead_title], [null, o.ref]], active: '/admin/offers', body, actions: `<div class="row">${actions.join('')}</div>` });
   });
@@ -281,14 +283,17 @@ module.exports = function deals(router, h) {
     db.run("UPDATE activities SET done_at = ? WHERE lead_id = ? AND type = 'task' AND done_at IS NULL AND subject LIKE 'Approve offer%'", M.now(), o.lead_id);
     db.run("INSERT INTO activities (lead_id, user_id, type, subject, due_at, created_at) VALUES (?, ?, 'task', ?, ?, ?)", o.lead_id, o.created_by, `Revise offer ${o.ref}: not approved at this rate`, M.today(), M.now());
   }));
-  router.post('/offers/:id/sent', R('agent'), transition(['draft', 'approved'], 'sent', 'agent', (req, o) => {
-    db.run('UPDATE offers SET sent_at = ? WHERE id = ?', M.now(), o.id);
+  // What happens when an offer is sent, accepted or declined, whoever does it (a person on this page,
+  // or the brand signing online through the comms module). Call inside db.tx; req needs .user and .ip
+  // (user.id may be null for actions taken by the brand).
+  const afterSent = (req, o) => {
+    db.run('UPDATE offers SET sent_at = COALESCE(sent_at, ?) WHERE id = ?', M.now(), o.id);
     const l = leadRow(o);
     if (M.stage(l.stage).p < 50) h.changeStage(req, l, 'proposal');
     db.run("INSERT INTO activities (lead_id, brand_id, user_id, type, subject, due_at, created_at) VALUES (?, ?, ?, 'call', ?, ?, ?)", o.lead_id, o.brand_id, req.user.id, `Follow up on offer ${o.ref}`, M.addDays(M.today(), 3), M.now());
     db.run('UPDATE leads SET next_step = ?, next_step_at = ? WHERE id = ?', `Follow up on offer ${o.ref}`, M.addDays(M.today(), 3), o.lead_id);
-  }));
-  router.post('/offers/:id/accepted', R('agent'), transition(['sent'], 'accepted', 'agent', (req, o) => {
+  };
+  const afterAccepted = (req, o) => {
     db.run('UPDATE offers SET decided_at = ? WHERE id = ?', M.now(), o.id);
     for (const u of M.offerUnits(db, o.id)) {
       if (u.status !== 'leased') db.run("UPDATE units SET status = 'reserved', hold_lead_id = ?, hold_until = NULL, updated_at = ? WHERE id = ?", o.lead_id, M.now(), u.id);
@@ -296,12 +301,32 @@ module.exports = function deals(router, h) {
     const l = leadRow(o);
     if (M.stage(l.stage).p < 90) h.changeStage(req, l, 'reserved');
     for (const other of db.all("SELECT id FROM offers WHERE lead_id = ? AND id != ? AND status IN ('draft','pending','approved','sent')", o.lead_id, o.id)) db.run("UPDATE offers SET status = 'expired' WHERE id = ?", other.id);
-  }));
-  router.post('/offers/:id/rejected', R('agent'), transition(['sent'], 'rejected', 'agent', (req, o) => {
+  };
+  const afterDeclined = (req, o) => {
     db.run('UPDATE offers SET decided_at = ? WHERE id = ?', M.now(), o.id);
     const l = leadRow(o);
     if (l.stage === 'proposal') h.changeStage(req, l, 'negotiation');
-  }));
+  };
+  // Moves an offer if it is in one of `from`; returns false (and changes nothing) otherwise.
+  const move = (o, from, to, after, req) => {
+    if (!from.includes(o.status)) return false;
+    db.tx(() => {
+      db.run('UPDATE offers SET status = ? WHERE id = ?', to, o.id);
+      if (after) after(req, o);
+    });
+    return true;
+  };
+  h.offers = {
+    of: offerOf,
+    markSent: (o, req) => move(o, ['draft', 'approved'], 'sent', afterSent, req),
+    accept: (o, req) => move(o, ['sent'], 'accepted', afterAccepted, req),
+    decline: (o, req) => move(o, ['sent'], 'rejected', afterDeclined, req),
+    // the proposal document (call inside i18n.run for its language); see the print route
+    proposal: (o, opts) => proposalDoc(o, opts),
+  };
+  router.post('/offers/:id/sent', R('agent'), transition(['draft', 'approved'], 'sent', 'agent', afterSent));
+  router.post('/offers/:id/accepted', R('agent'), transition(['sent'], 'accepted', 'agent', afterAccepted));
+  router.post('/offers/:id/rejected', R('agent'), transition(['sent'], 'rejected', 'agent', afterDeclined));
 
   // The proposal, printable and on brand.
   // The proposal, in the reader's language or ?doc=ar|en for the tenant's.
@@ -310,12 +335,21 @@ module.exports = function deals(router, h) {
     if (!o) return next();
     const lang = docLang(req);
     const html = i18n.run(lang, () => {
+      const bar = `<div class="doc__bar noprint"><button class="btn btn--primary" data-print>${ui.icon('print')}<span>${tr('Print or save as PDF')}</span></button><a class="btn btn--ghost" href="/admin/offers/${o.id}">${tr('Back')}</a>${docSwitch(`/admin/offers/${o.id}/print`, lang)}</div>`;
+      return ui.bare({ title: tr('Proposal {ref}', { ref: o.ref }), body: proposalDoc(o, { bar }), cls: 'print' });
+    });
+    res.type('html').send(html);
+  });
+
+  // The proposal document itself, in the current language. `bar` goes above it (buttons), `after`
+  // at the end inside the document (the e-signature certificate).
+  function proposalDoc(o, { bar = '', after = '' } = {}) {
       const s = db.settings();
       const units = M.offerUnits(db, o.id);
       const sc = M.schedule(terms(o), units);
       const fit = o.rent_free_months ? tr('{fit}; {free} rent-free', { fit: months(o.fitout_months), free: months(o.rent_free_months) }) : months(o.fitout_months);
-      const body = `<main class="doc">
-  <div class="doc__bar noprint"><button class="btn btn--primary" data-print>${ui.icon('print')}<span>${tr('Print or save as PDF')}</span></button><a class="btn btn--ghost" href="/admin/offers/${o.id}">${tr('Back')}</a>${docSwitch(`/admin/offers/${o.id}/print`, lang)}</div>
+      return `<main class="doc">
+  ${bar}
   <header class="doc__head">${ui.logo('doc__logo')}<div><p class="eyebrow">${tr('Leasing proposal')}</p><p class="doc__ref"><bdi>${ui.esc(o.ref)}</bdi> · ${ui.date(o.created_at)}</p></div></header>
   <section class="doc__to"><p class="eyebrow">${tr('Prepared for')}</p><h1>${ui.esc(o.brand_name || o.lead_title)}</h1>${o.contact_name ? `<p>${ui.esc(o.contact_name)}${o.contact_title ? `${isAr() ? '، ' : ', '}${ui.esc(tx(o.contact_title))}` : ''}</p>` : ''}</section>
   <p class="doc__intro">${tr('Thank you for considering The Wave. Two curved wings around an open court on North 90, New Cairo, with plaza shops that each come with a terrace of their own. We are pleased to propose the following.')}</p>
@@ -338,11 +372,9 @@ module.exports = function deals(router, h) {
   <p class="doc__small">${tr('Amounts in {cur}, exclusive of VAT and utilities. This proposal is valid until {date} and is subject to contract and to the landlord’s final approval.', { cur: ui.esc(ui.curLabel()), date: ui.date(o.valid_until) })}</p>
   <footer class="doc__sign"><div><span></span><p>${tr('For {name}', { name: ui.esc(tx(s.legal_name)) })}</p></div><div><span></span><p>${tr('For {name}', { name: ui.esc(o.brand_name || o.lead_title) })}</p></div></footer>
   <p class="doc__foot">${ui.esc(tx(s.address))} · ${ui.esc(s.leasing_email)}${s.leasing_phone ? ` · ${ui.esc(s.leasing_phone)}` : ''}</p>
+  ${after}
 </main>`;
-      return ui.bare({ title: tr('Proposal {ref}', { ref: o.ref }), body, cls: 'print' });
-    });
-    res.type('html').send(html);
-  });
+  }
 
   // ---------- leases ----------
   router.get('/leases', (req, res) => {
@@ -483,7 +515,7 @@ module.exports = function deals(router, h) {
       ${s.lead_id ? `<div><dt>${tr('Lead')}</dt><dd><a href="/admin/leads/${s.lead_id}">${ui.esc(s.lead_title || tr('View lead'))}</a></dd></div>` : ''}
     </dl>${s.notes ? `<blockquote class="quote quote--sm">${ui.esc(tx(s.notes))}</blockquote>` : ''}`;
     const body = `<div class="kpis kpis--5">${kpis}</div>
-<div class="grid grid--side"><div class="stack">${ui.card(tr('Invoices'), invTable, { sub: tn(inv.length, '{n} invoice', '{n} invoices') })}${ui.card(tr('Rent schedule'), scheduleTable(sc))}</div><div class="stack">${ui.card(tr('Lease'), facts)}<div id="documents">${docPanel}</div>${ui.card(tr('Units'), `${units.map((u) => `<p><a href="/admin/units/${u.id}"><b>${ui.esc(u.code)}</b></a> · ${u.terrace_m2 ? tr('deal|{a} + {b} terrace', { a: ui.m2(u.indoor_m2), b: ui.m2(u.terrace_m2) }) : ui.m2(u.indoor_m2)} ${ui.unitBadge(u.status)}</p>`).join('')}`)}</div></div>`;
+<div class="grid grid--side"><div class="stack">${ui.card(tr('Invoices'), invTable, { sub: tn(inv.length, '{n} invoice', '{n} invoices') })}${ui.card(tr('Rent schedule'), scheduleTable(sc))}</div><div class="stack">${ui.card(tr('Lease'), facts)}<div id="documents">${docPanel}</div>${ui.card(tr('Units'), `${units.map((u) => `<p><a href="/admin/units/${u.id}"><b>${ui.esc(u.code)}</b></a> · ${u.terrace_m2 ? tr('deal|{a} + {b} terrace', { a: ui.m2(u.indoor_m2), b: ui.m2(u.terrace_m2) }) : ui.m2(u.indoor_m2)} ${ui.unitBadge(u.status)}</p>`).join('')}`)}${(h.leaseCards || []).map((fn) => fn(req, s)).join('')}</div></div>`;
     h.page(req, res, { title: `${s.brand_name}`, crumbs: [['/admin/leases', tr('Leases')], [null, s.ref]], active: '/admin/leases', body, actions: `<div class="row">${actions.join('')}</div>` });
   });
 
@@ -606,12 +638,13 @@ module.exports = function deals(router, h) {
     <div><dt>${tr('invoice|For')}</dt><dd>${i.kind === 'rent' ? tr('Rent and service, {start} – {end}', { start: ui.date(i.period_start), end: ui.date(i.period_end) }) : ui.esc(tx(i.note) || KINDS()[i.kind] || i.kind)}</dd></div>
     <div><dt>${tr('Due')}</dt><dd class="${open && i.due_date < t ? 'late' : ''}">${ui.date(i.due_date)} · ${ui.rel(i.due_date)}</dd></div>
     <div><dt>${tr('Rent')}</dt><dd>${ui.money(i.rent)}</dd></div><div><dt>${tr('Service')}</dt><dd>${ui.money(i.service)}</dd></div>${i.other ? `<div><dt>${tr('Other')}</dt><dd>${ui.money(i.other)}</dd></div>` : ''}
+    ${i.vat ? `<div><dt>${tr('acc|VAT')}</dt><dd>${ui.money(i.vat)}</dd></div>` : ''}
     <div><dt>${tr('Total')}</dt><dd><b>${ui.money(i.total)}</b></dd></div>
     <div><dt>${tr('Paid')}</dt><dd>${ui.money(i.paid)}${paidAt ? ` · ${paidAt}` : ''}</dd></div>
     <div><dt>${tr('Status')}</dt><dd>${open && i.due_date < t ? ui.badge('overdue', tr('invoice|Overdue')) : ui.badge(i.status, M.INVOICE_STATUS[i.status])}</dd></div>
     ${i.note && i.kind === 'rent' ? `<div><dt>${tr('Note')}</dt><dd>${ui.esc(tx(i.note))}</dd></div>` : ''}
   </dl>`)}
-  <div class="stack">${pay}${payments}${voidForm}</div>
+  <div class="stack">${pay}${(h.invoiceCards || []).map((fn) => fn(req, i)).join('')}${payments}${voidForm}</div>
 </div>`;
     h.page(req, res, { title: tr('Invoice {ref}', { ref: i.ref }), crumbs: [['/admin/billing', tr('Billing')], ...(i.lease_id ? [[`/admin/leases/${i.lease_id}`, i.brand_name]] : []), [null, i.ref]], active: '/admin/billing', body, actions: ui.btn(tr('Print'), { href: `/admin/invoices/${i.id}/print`, cls: 'btn--ghost', ic: 'print', attrs: { target: '_blank' } }) });
   });
@@ -650,25 +683,33 @@ module.exports = function deals(router, h) {
     h.back(req, res, back, 'ok', tr('Payment reversed.'));
   });
 
-  router.get('/invoices/:id/print', (req, res, next) => {
-    const i = invoiceOf(req.params.id);
-    if (!i) return next();
-    const lang = docLang(req);
-    const html = i18n.run(lang, () => {
+  // The printable invoice, shared with the tenant portal (routes/portal.js):
+  // h.invoiceDoc(id, { lang, back, self }) → a full HTML page, or null when there is no such invoice.
+  h.invoiceDoc = (id, { lang = 'en', back = `/admin/invoices/${id}`, self = `/admin/invoices/${id}/print` } = {}) => {
+    const i = invoiceOf(id);
+    if (!i) return null;
+    return i18n.run(lang, () => {
       const s = db.settings();
-      const vat = Number(s.vat_pct) || 0;
+      // VAT is stored on the invoice when it is issued (billing.js); the total already includes it
+      const vatAmt = Number(i.vat) || 0;
+      const net = i.total - vatAmt;
+      const vat = vatAmt && net ? Math.round((vatAmt / net) * 10000) / 100 : 0;
       const lines = [i.rent ? [tr('Base rent'), i.rent] : null, i.service ? [tr('Service charge'), i.service] : null, i.other ? [tx(i.note) || KINDS()[i.kind] || tr('Other'), i.other] : null].filter(Boolean);
       const body = `<main class="doc">
-  <div class="doc__bar noprint"><button class="btn btn--primary" data-print>${ui.icon('print')}<span>${tr('Print or save as PDF')}</span></button><a class="btn btn--ghost" href="/admin/invoices/${i.id}">${tr('Back')}</a>${docSwitch(`/admin/invoices/${i.id}/print`, lang)}</div>
+  <div class="doc__bar noprint"><button class="btn btn--primary" data-print>${ui.icon('print')}<span>${tr('Print or save as PDF')}</span></button><a class="btn btn--ghost" href="${back}">${tr('Back')}</a>${docSwitch(self, lang)}</div>
   <header class="doc__head">${ui.logo('doc__logo')}<div><p class="eyebrow">${tr('doc|Invoice')}</p><p class="doc__ref">${tr('{ref} · issued {date}', { ref: `<bdi>${ui.esc(i.ref)}</bdi>`, date: ui.date(i.created_at) })}</p></div></header>
-  <section class="doc__to"><p class="eyebrow">${tr('Billed to')}</p><h1>${ui.esc(i.brand_name)}</h1><p>${i.kind === 'rent' ? tr('Lease {ref} · period {start} – {end}', { ref: ui.esc(i.lease_ref), start: ui.date(i.period_start), end: ui.date(i.period_end) }) : tr('Lease {ref}', { ref: ui.esc(i.lease_ref) })}</p></section>
+  <section class="doc__to"><p class="eyebrow">${tr('Billed to')}</p><h1>${ui.esc(i.brand_name)}</h1>${i.lease_ref ? `<p>${i.kind === 'rent' ? tr('Lease {ref} · period {start} – {end}', { ref: ui.esc(i.lease_ref), start: ui.date(i.period_start), end: ui.date(i.period_end) }) : tr('Lease {ref}', { ref: ui.esc(i.lease_ref) })}</p>` : ''}</section>
   <table class="doc__t"><thead><tr><th>${tr('Description')}</th><th class="num">${tr('Amount ({cur})', { cur: ui.esc(ui.curLabel()) })}</th></tr></thead><tbody>${lines.map(([l, a]) => `<tr><td>${ui.esc(l)}</td><td class="num">${ui.money(a, { cur: false })}</td></tr>`).join('')}</tbody>
-  <tfoot><tr><td>${tr('Subtotal')}</td><td class="num">${ui.money(i.total, { cur: false })}</td></tr>${vat ? `<tr><td>${tr('VAT {pct}%', { pct: vat })}</td><td class="num">${ui.money(i.total * vat / 100, { cur: false })}</td></tr>` : ''}<tr><td><b>${tr('Total due by {date}', { date: ui.date(i.due_date) })}</b></td><td class="num"><b>${ui.money(i.total * (1 + vat / 100))}</b></td></tr>${i.paid ? `<tr><td>${tr('Paid')}</td><td class="num">${ui.money(i.paid, { cur: false })}</td></tr>` : ''}</tfoot></table>
+  <tfoot><tr><td>${tr('Subtotal')}</td><td class="num">${ui.money(net, { cur: false })}</td></tr>${vatAmt ? `<tr><td>${tr('VAT {pct}%', { pct: vat })}</td><td class="num">${ui.money(vatAmt, { cur: false })}</td></tr>` : ''}<tr><td><b>${tr('Total due by {date}', { date: ui.date(i.due_date) })}</b></td><td class="num"><b>${ui.money(i.total)}</b></td></tr>${i.paid ? `<tr><td>${tr('Paid')}</td><td class="num">${ui.money(i.paid, { cur: false })}</td></tr>` : ''}</tfoot></table>
   <p class="doc__small">${tr('Please quote {ref} with your payment.', { ref: ui.esc(i.ref) })}</p>
   <p class="doc__foot">${ui.esc(tx(s.legal_name))} · ${ui.esc(tx(s.address))} · ${ui.esc(s.leasing_email)}</p>
 </main>`;
       return ui.bare({ title: tr('Invoice {ref}', { ref: i.ref }), body, cls: 'print' });
     });
+  };
+  router.get('/invoices/:id/print', (req, res, next) => {
+    const html = h.invoiceDoc(h.int(req.params.id), { lang: docLang(req) });
+    if (!html) return next();
     res.type('html').send(html);
   });
 };

@@ -203,6 +203,7 @@ function privateRoutes(router, h) {
     const body = `<div class="grid grid--2">
 ${ui.card(tr('Your details'), ui.form('/admin/me', req.session.csrf, `<div class="fields">${ui.input('name', tr('Name'), req.user.name, { required: true })}${ui.input('title', tr('Job title'), req.user.title)}${ui.input('phone', tr('Phone'), req.user.phone, { type: 'tel' })}</div>${ui.btn(ui.esc(tr('Save')), { cls: 'btn--primary' })}`, { cls: 'stack' }))}
 ${ui.card(tr('Change password'), ui.form('/admin/me/password', req.session.csrf, `<div class="fields">${ui.input('current', tr('Current password'), '', { type: 'password', required: true, attrs: { autocomplete: 'current-password' } })}${ui.input('password', tr('New password'), '', { type: 'password', required: true, hint: tr('At least 10 characters.'), attrs: { autocomplete: 'new-password', minlength: 10 } })}</div>${ui.btn(ui.esc(tr('Update password')), { cls: 'btn--primary' })}`, { cls: 'stack' }))}
+${(h.mePanels || []).map((fn) => fn(req) || '').join('')}
 </div>`;
     h.page(req, res, { title: tr('Your account'), crumbs: [['/admin', tr('Dashboard')], [null, tr('Account')]], active: '/admin/me', body });
   });

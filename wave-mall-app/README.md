@@ -57,6 +57,18 @@ The app reads `PORT` from the environment (Hostinger sets it) and trusts one pro
 | `OWNER_RESET` | Set to `1` for one deploy to reset the owner's password to `OWNER_PASSWORD` (and sign them out everywhere); remove it afterwards |
 | `ADMIN_FILES` | Optional folder for uploaded documents (default `DATA_DIR/files`) |
 | `ADMIN_DB`    | Full path to the database file instead of `DATA_DIR` (tests use `:memory:`) |
+| `ADMIN_WEB_FILES` | Optional folder for website images uploaded in the office (default: the documents folder with `-web` added, so under `DATA_DIR` too) |
+| `ADMIN_JOBS`  | Background jobs (reminders, overdue notices, offer expiry, scheduled messages) run by default; `0` turns them off |
+| `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_ID` | WhatsApp Business Cloud API: a permanent access token and the sending number's ID (Meta Business → WhatsApp → API setup) |
+| `WHATSAPP_APP_SECRET`, `WHATSAPP_VERIFY_TOKEN` | For replies: the Meta app secret (checks incoming messages) and any phrase you choose. Webhook URL: `https://<site>/webhooks/whatsapp` |
+| `PAYMOB_API_KEY`, `PAYMOB_HMAC_SECRET`, `PAYMOB_IFRAME_ID` | Paymob online payments for the tenant portal. Callback URL: `https://<site>/payments/paymob/callback` |
+| `PAYMOB_INTEGRATION_CARD`, `PAYMOB_INTEGRATION_WALLET`, `PAYMOB_INTEGRATION_KIOSK` | Paymob integration IDs per method (leave out the ones you do not use) |
+| `PAYMENTS_MODE` | `sandbox` for pretend payments while testing; no money moves. Remove it for real payments |
+| `ETA_CLIENT_ID`, `ETA_CLIENT_SECRET`, `ETA_SIGNER_URL` | Egyptian Tax Authority e-invoicing: the ERP system's credentials and the address of your signing service (USB token or HSM). Pre-production or production is chosen in *Finance → E-invoicing* |
+| `FOOTFALL_API_KEY`, `FOOTFALL_HMAC_SECRET` | For people counters sending hourly counts to `/ingest/footfall` (the secret is optional and also requires signed requests) |
+| `PORTAL_DEMO_PASSWORD` | Optional fixed password for the sample tenant-portal accounts (otherwise random, shown on *Tenant portal*) |
+
+Nothing above is needed to start: each integration shows *not connected* in **Integrations** until its keys are set, and the office works without them (offers go by email or a copied link, payments are recorded by hand, e-invoices wait to be submitted).
 
 ## Leasing office (`/admin`)
 
@@ -82,6 +94,19 @@ A sales ERP for the leasing team, built into the same app. It is private (`noind
 | Brands | Brand directory with contacts, their leads and leases |
 | Reports | Occupancy by level, rent roll, WALE, forecast, tenant mix, why deals are lost, team against monthly targets, lead sources and conversion, aging, upcoming expiries; CSV exports |
 | Team, subscribers, settings, audit log | Roles, targets, newsletter list, rates and rules, one-click backup, and a record of who did what |
+| Conversations | Offers sent by email or WhatsApp with a signing link: the brand reads the proposal and signs on screen (drawn signature, name, time, IP and a fingerprint of the document); WhatsApp chats with brands and tenants, templates and scheduled reminders |
+| Tenant portal (`/portal`) | Each tenant signs in to see their lease, invoices and payments, pay online (Paymob card, wallet or kiosk), download receipts, report sales, open maintenance requests and follow their fit-out |
+| Fit-out | From handover to opening: design submissions and approvals, the fit-out deposit, works permits, inspections and snags, the opening date, and the deposit refund |
+| Short-term space | Kiosks, carts, pop-ups, promotional and event bookings by day or week, with a calendar, availability check and billing |
+| Maintenance | Requests from tenants and staff, priorities and response targets, assignment, planned maintenance and the asset register |
+| Footfall | Daily and hourly visitors by entrance (typed in, imported or sent by counters), trends and conversion against tenant sales |
+| Turnover & sales | Monthly sales reported by tenants, percentage rent above the base rent, audits and sales per m² |
+| Service charge & utilities | Yearly service charge budget, apportionment by area, actual costs and the year-end reconciliation; electricity, water and chilled-water meters, readings and recharge invoices |
+| Website | Brands directory and events for the public site (`/stores/`, `/events/`), edited here with images |
+| Finance & accounting | Chart of accounts, journal with automatic entries from invoices, payments, payroll and expenses, suppliers and bills, banks and reconciliation, VAT, period closing, trial balance, profit and loss, balance sheet and cash flow; ETA e-invoicing |
+| Phone app | Install the office (and the tenant portal) on a phone from the browser: home-screen icon, full screen, bottom tab bar, works offline for pages already opened |
+
+**Finance permission:** accounting, payroll costs and bank details are visible only to people with *Finance* ticked under Team (administrators always have it).
 
 **English and Arabic:** every page, message, document and export works in both languages. Each person switches with the language button in the top bar (or on the sign-in page) and the office remembers their choice. Arabic pages are fully right to left, set in Almarai, with Arabic dates, months, money (ج.م) and plurals; digits stay Western, as on Egyptian leasing documents. Notes the system writes itself (timeline entries, the activity log, next steps, invoice notes) are stored once and shown in each reader's language, so an Arabic and an English colleague see the same records. Proposals and invoices print in either language from the switch on the document (`?doc=ar` / `?doc=en`). The Arabic text lives in `src/admin/i18n/`; `node scripts/i18n-audit.js` visits every page in Arabic and lists anything still in English (the test suite runs it too).
 

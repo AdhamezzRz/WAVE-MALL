@@ -308,6 +308,7 @@ module.exports = {
   'Unit holds last (days)': 'مدة الحجز المؤقت للوحدات (بالأيام)',
   'VAT on invoices (%)': 'ضريبة القيمة المضافة على الفواتير (%)',
   'Shown on printed invoices. 0 to leave it off.': 'تظهر على الفواتير المطبوعة. اكتب 0 لإلغائها.',
+  'Added to new invoices (deposits excluded) and posted to the books. 0 to leave it off.': 'تُضاف إلى الفواتير الجديدة (باستثناء التأمينات) وتُقيَّد في الحسابات. اكتب 0 لإلغائها.',
   Currency: 'العملة',
   'A three-letter code, e.g. EGP.': 'رمز من ثلاثة أحرف، مثل EGP.',
   'On proposals and invoices': 'على العروض والفواتير',

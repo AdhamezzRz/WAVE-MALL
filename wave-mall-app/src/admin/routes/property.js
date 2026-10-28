@@ -125,8 +125,8 @@ module.exports = function property(router, h) {
     const plan = ['plaza', 'street'].includes(u.zone) ? ui.card(tr('Where it is'), ui.plan(db.all('SELECT * FROM units'), u.zone === 'plaza' ? 'G' : 'B1').replace(`data-code="${u.code}"`, `data-code="${u.code}" data-focus`)) : '';
     const body = `<div class="kpis kpis--4">${kpis}</div>
 <div class="grid grid--side">
-  <div class="stack">${plan}${unitDocs}${ui.card(tr('Leads interested'), interestList)}${ui.card(tr('Offers'), offersList)}${ui.card(tr('History'), hist)}</div>
-  <div class="stack">${holdBox}${lease ? ui.card(tr('Lease'), `<p><a href="/admin/leases/${lease.id}"><b>${ui.esc(lease.brand_name)}</b></a> · ${ui.badge(lease.status, M.LEASE_STATUS[lease.status])}</p><p class="muted">${ui.date(lease.start_date)} – ${ui.date(lease.end_date)}</p><p>${ui.btn(tr('Open tenant file'), { href: `/admin/tenants/${lease.brand_id}`, cls: 'btn--ghost btn--sm', ic: 'tenant' })}</p>`) : ''}${edit}${u.notes && !edit ? ui.card(tr('Notes'), `<p>${ui.esc(tx(u.notes))}</p>`) : ''}</div>
+  <div class="stack">${plan}${unitDocs}${h.opsPanels && h.opsPanels.unit ? h.opsPanels.unit(req, u.id) : ''}${ui.card(tr('Leads interested'), interestList)}${ui.card(tr('Offers'), offersList)}${ui.card(tr('History'), hist)}</div>
+  <div class="stack">${holdBox}${lease ? ui.card(tr('Lease'), `<p><a href="/admin/leases/${lease.id}"><b>${ui.esc(lease.brand_name)}</b></a> · ${ui.badge(lease.status, M.LEASE_STATUS[lease.status])}</p><p class="muted">${ui.date(lease.start_date)} – ${ui.date(lease.end_date)}</p><p>${ui.btn(tr('Open tenant file'), { href: `/admin/tenants/${lease.brand_id}`, cls: 'btn--ghost btn--sm', ic: 'tenant' })}</p>`) : ''}${h.fitout ? h.fitout.summaryCard(req, { unitId: u.id }) : ''}${edit}${u.notes && !edit ? ui.card(tr('Notes'), `<p>${ui.esc(tx(u.notes))}</p>`) : ''}</div>
 </div>`;
     h.page(req, res, { title: tr('Unit {code}', { code: u.code }), crumbs: [['/admin/units', tr('Units')], [null, u.code]], active: '/admin/units', body });
   });

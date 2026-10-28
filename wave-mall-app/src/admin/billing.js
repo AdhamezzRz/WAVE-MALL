@@ -8,10 +8,18 @@ const { now, today } = require('./db');
 
 const KINDS = ['rent', 'deposit', 'key', 'other', 'service', 'turnover', 'service_recon', 'utility', 'specialty', 'fitout', 'penalty'];
 
+// Deposits are held, not sold: no VAT on them.
+const NO_VAT = ['deposit', 'fitout'];
+
 function billing(db, events) {
   const r2 = (n) => Math.round(Number(n || 0) * 100) / 100;
+  // VAT: an invoice's total is what the tenant pays. When VAT is on (Settings, vat_pct) the
+  // invoice stores its VAT share in `vat` and the total includes it, so "outstanding = total − paid"
+  // holds everywhere. Invoices created while VAT was 0 keep vat = 0.
+  if (db.ensure) db.ensure('billing-vat-1', 'ALTER TABLE invoices ADD COLUMN vat REAL NOT NULL DEFAULT 0;');
 
   // Create an invoice. Needs a lease, a brand or a customer name. Returns the stored row.
+  // v.vat_pct overrides the setting (0 for none).
   function createInvoice(v, { user = null, emit = true } = {}) {
     const lease = v.lease_id ? db.get('SELECT id, brand_id FROM leases WHERE id = ?', v.lease_id) : null;
     const brandId = v.brand_id || (lease ? lease.brand_id : null);
@@ -20,13 +28,16 @@ function billing(db, events) {
     const rent = r2(v.rent);
     const service = r2(v.service);
     const other = r2(v.other);
-    const total = r2(v.total ?? rent + service + other);
-    if (!(total > 0)) throw new Error('An invoice needs an amount above zero.');
+    const net = r2(v.total ?? rent + service + other);
+    if (!(net > 0)) throw new Error('An invoice needs an amount above zero.');
+    const pct = NO_VAT.includes(kind) ? 0 : Math.max(0, Number(v.vat_pct ?? db.setting('vat_pct')) || 0);
+    const vat = r2((net * pct) / 100);
+    const total = r2(net + vat);
     const id = Number(db.run(
-      `INSERT INTO invoices (ref, lease_id, brand_id, customer, kind, period_start, period_end, due_date, rent, service, other, total, note, source, source_id, demo, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO invoices (ref, lease_id, brand_id, customer, kind, period_start, period_end, due_date, rent, service, other, total, vat, note, source, source_id, demo, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       db.nextRef('invoices', 'IN', 4, true), lease ? lease.id : null, brandId, v.customer || null, kind, v.period_start || null, v.period_end || null,
-      v.due_date || today(), rent, service, other, total, v.note || null, v.source || null, v.source_id ?? null, v.demo ? 1 : 0, now(),
+      v.due_date || today(), rent, service, other, total, vat, v.note || null, v.source || null, v.source_id ?? null, v.demo ? 1 : 0, now(),
     ).lastInsertRowid);
     const invoice = db.get('SELECT * FROM invoices WHERE id = ?', id);
     if (emit) events.emit('invoice.created', { invoice, user });

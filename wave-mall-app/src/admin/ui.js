@@ -13,7 +13,7 @@ const { t, tn, tx, isAr, lang, dir } = require('./i18n');
 
 const PUBLIC = path.join(__dirname, '..', '..', 'public');
 const v = (f) => crypto.createHash('sha1').update(fs.readFileSync(path.join(PUBLIC, f))).digest('hex').slice(0, 8);
-const ASSETS = { css: v('admin/admin.css'), js: v('admin/admin.js') };
+const ASSETS = { css: v('admin/admin.css'), js: v('admin/admin.js'), pwa: v('admin/app/pwa.js') };
 
 const esc = (s) => (s === null || s === undefined ? '' : String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]));
 const attr = (o) => Object.entries(o).filter(([, x]) => x !== false && x !== null && x !== undefined).map(([k, x]) => (x === true ? k : `${k}="${esc(x)}"`)).join(' ');
@@ -114,6 +114,10 @@ const I = {
   arrow: 'M5 12h14M13 6l6 6-6 6',
   phone: 'M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2',
   dl: 'M12 4v12M7 11l5 5 5-5M5 20h14',
+  back: 'M19 12H5M11 6l-6 6 6 6',
+  home: 'M3 11l9-7 9 7M5 9.5V20h5v-6h4v6h5V9.5',
+  more: 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z',
+  x: 'M6 6l12 12M18 6L6 18',
   globe: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18',
   folder: 'M3 6h6l2 2h10v11H3z',
   contract: 'M7 3h7l5 5v13H7zM14 3v5h5M10 17c1.5-2 2.5-2 3 0s1.5 2 3 0',
@@ -135,7 +139,7 @@ const I = {
   plug: 'M9 3v5M15 3v5M6 8h12v4a6 6 0 0 1-12 0zM12 18v3',
 };
 // Icons that point somewhere are mirrored in Arabic (see .ic--dir in admin.css).
-const DIRECTIONAL = new Set(['arrow', 'out']);
+const DIRECTIONAL = new Set(['arrow', 'out', 'back']);
 const icon = (k, cls = '') => `<svg class="ic${DIRECTIONAL.has(k) ? ' ic--dir' : ''} ${cls}" viewBox="0 0 24 24" aria-hidden="true"><path d="${I[k]}"/></svg>`;
 const logo = (cls = '') => `<svg class="logo ${cls}" viewBox="0 0 490 225.2" aria-label="The Wave">${['T', 'H', 'E2', 'W', 'AV', 'E'].map((k) => `<path d="${LOGO[k]}"/>`).join('')}</svg>`;
 const mark = (cls = '') => `<svg class="mark ${cls}" viewBox="163 97 207 128" aria-hidden="true"><path d="${LOGO.AV}"/></svg>`;
@@ -162,35 +166,73 @@ const langForm = (csrf, back = '') => `<form method="post" action="/admin/lang" 
 const langLink = (path) => `<a class="langbtn" href="${esc(path)}${path.includes('?') ? '&' : '?'}lang=${other()}" lang="${other()}">${icon('globe')}<span>${otherLabel()}</span></a>`;
 const brandName = () => t('The Wave Leasing');
 
+// The installable app's head tags (manifest, theme colour, home-screen icon, service worker).
+// scope: 'admin' (the leasing office) or 'portal' (the tenant portal). See routes/mobile.js.
+function pwaHead(scope = 'admin') {
+  const base = scope === 'portal' ? '/portal' : '/admin';
+  return `<meta name="theme-color" content="#fbfaf6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1f2c28" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="${esc(t(scope === 'portal' ? 'mob|The Wave · Tenants' : 'mob|The Wave'))}">
+<link rel="manifest" href="${base}/manifest.webmanifest${isAr() ? '?lang=ar' : ''}">
+<link rel="apple-touch-icon" href="/admin/app/apple-touch-icon.png">
+<script src="/admin/app/pwa.js?v=${ASSETS.pwa}" data-sw="${base}/sw.js" data-scope="${base}/" defer></script>`;
+}
+
 function layout({ title, crumbs = [], active = '', body, user, csrf, nonce, flash, actions = '', counts = {}, wide = false, path = '' }) {
   const allowedTo = (min) => !min || (min === 'hr' ? user.role === 'admin' || !!user.hr : min === 'finance' ? user.role === 'admin' || !!user.finance : RANK[user.role] >= RANK[min]);
   // the most specific menu entry wins (/admin/hr/leave over /admin/hr)
   const best = NAV.flatMap(([, items]) => items.map(([href]) => href)).filter((href) => (href === '/admin' ? active === '/admin' : active === href || active.startsWith(`${href}/`) || active.startsWith(`${href}?`))).sort((a, b) => b.length - a.length)[0];
-  const nav = NAV.map(([group, items]) => {
-    const links = items
-      .filter(([, , , , min]) => allowedTo(min))
-      .map(([href, label, ic, count]) => {
-        const on = href === best;
-        const c = count && counts[count] ? `<b class="nav__count">${counts[count]}</b>` : '';
-        return `<a href="${href}" class="nav__a${on ? ' is-on' : ''}"${on ? ' aria-current="page"' : ''}>${icon(ic)}<span>${esc(t(label))}</span>${c}</a>`;
-      })
-      .join('');
-    return links ? `<div class="nav__group"><p class="nav__label">${esc(t(group))}</p>${links}</div>` : '';
-  }).join('');
+  // the menu this person may see: [group, [{ href, label, ic, on, count }]]
+  const menu = NAV.map(([group, items]) => [group, items
+    .filter(([, , , , min]) => allowedTo(min))
+    .map(([href, label, ic, count]) => ({ href, label: t(label), ic, on: href === best, count: count && counts[count] ? counts[count] : 0 }))])
+    .filter(([, items]) => items.length);
+  const nav = menu.map(([group, items]) => `<div class="nav__group"><p class="nav__label">${esc(t(group))}</p>${items.map((a) => `<a href="${a.href}" class="nav__a${a.on ? ' is-on' : ''}"${a.on ? ' aria-current="page"' : ''}>${icon(a.ic)}<span>${esc(a.label)}</span>${a.count ? `<b class="nav__count">${a.count}</b>` : ''}</a>`).join('')}</div>`).join('');
   const crumb = crumbs.length ? `<p class="crumbs">${crumbs.map(([h, l]) => (h ? `<a href="${h}">${esc(l)}</a>` : `<span>${esc(l)}</span>`)).join('<i>/</i>')}</p>` : '';
   const toast = flash ? `<div class="toast toast--${esc(flash.type || 'ok')}" role="status" data-toast>${icon(flash.type === 'error' ? 'log' : 'check')}<span>${esc(flash.text)}</span></div>` : '';
+  // phones: a back button to the nearest crumb, a bottom tab bar and a "More" sheet with the whole menu
+  const parent = [...crumbs].reverse().find(([h]) => h);
+  const back = parent ? `<a class="bar__back" href="${parent[0]}" aria-label="${esc(t('mob|Back'))}" title="${esc(parent[1])}">${icon('back')}</a>` : '';
+  const tabOn = ['/admin', '/admin/pipeline', '/admin/calendar'].includes(best) ? best : 'more';
+  const moreCount = menu.flatMap(([, items]) => items).filter((a) => !['/admin', '/admin/pipeline', '/admin/calendar'].includes(a.href)).reduce((s, a) => s + (a.count || 0), 0);
+  const tab = (href, ic, label, extra = '', attrs = '') => `<a href="${href}" class="tabbar__a${tabOn === href || (href === '#more' && tabOn === 'more') ? ' is-on' : ''}"${tabOn === href ? ' aria-current="page"' : ''} ${attrs}>${icon(ic)}<span>${esc(label)}</span>${extra}</a>`;
+  const tasks = counts.tasks ? `<b class="tabbar__count">${counts.tasks}</b>` : '';
+  const tabbar = `<nav class="tabbar" aria-label="${esc(t('mob|App navigation'))}">
+    ${tab('/admin', 'home', t('mob|Home'))}
+    ${tab('/admin/pipeline', 'pipe', t('mob|Pipeline'))}
+    ${tab('/admin/calendar', 'cal', t('mob|Calendar'), tasks)}
+    ${tab('/admin/leads', 'search', t('Search'), '', 'data-cmdk-open data-tab-search')}
+    ${tab('#more', 'more', t('mob|More'), moreCount ? `<b class="tabbar__count">${moreCount > 99 ? '99+' : moreCount}</b>` : '', 'data-more-open aria-controls="more"')}
+  </nav>`;
+  const more = `<div class="sheet more" id="more" data-more role="dialog" aria-modal="true" aria-label="${esc(t('Menu'))}">
+  <a class="sheet__scrim" href="#close" data-more-close aria-label="${esc(t('mob|Close'))}"></a>
+  <div class="sheet__panel" data-sheet-panel>
+    <span class="sheet__grip" aria-hidden="true"></span>
+    <header class="more__me">
+      <a class="avatar" href="/admin/me">${esc(initials(user.name))}</a>
+      <a class="more__who" href="/admin/me"><b>${esc(user.name)}</b><small>${esc(M.ROLES[user.role])} · ${esc(t('Your account'))}</small></a>
+      <a class="iconbtn more__x" href="#close" data-more-close aria-label="${esc(t('mob|Close'))}">${icon('x')}</a>
+    </header>
+    <div class="more__nav">${menu.map(([group, items]) => `<section class="more__group"><p class="more__label">${esc(t(group))}</p><div class="more__grid">${items.map((a) => `<a href="${a.href}" class="more__a${a.on ? ' is-on' : ''}">${icon(a.ic)}<span>${esc(a.label)}</span>${a.count ? `<b class="nav__count">${a.count}</b>` : ''}</a>`).join('')}</div></section>`).join('')}</div>
+    <footer class="more__foot">${langForm(csrf, path)}<form method="post" action="/admin/logout"><input type="hidden" name="_csrf" value="${esc(csrf)}"><button type="submit" class="btn btn--ghost btn--block">${icon('out')}<span>${esc(t('Sign out'))}</span></button></form></footer>
+  </div>
+</div>`;
   return `<!doctype html>
 <html lang="${lang()}" dir="${dir()}">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="csrf" content="${esc(csrf)}">
 <title>${esc(title)} · ${esc(brandName())}</title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/admin/admin.css?v=${ASSETS.css}">
+${pwaHead('admin')}
 </head>
-<body class="adm" data-lang="${lang()}">
+<body class="adm has-tabbar" data-lang="${lang()}">
 <aside class="side" id="side" data-side>
   <a class="side__brand" href="/admin">${logo()}<span>${esc(t('Leasing office'))}</span></a>
   <nav class="nav" aria-label="${esc(t('Leasing office'))}">${nav}</nav>
@@ -203,6 +245,7 @@ function layout({ title, crumbs = [], active = '', body, user, csrf, nonce, flas
 <div class="main">
   <header class="bar">
     <button type="button" class="iconbtn bar__menu" data-side-toggle aria-label="${esc(t('Menu'))}">${icon('menu')}</button>
+    ${back}
     <div class="bar__title">${crumb}<h1>${esc(title)}</h1></div>
     <button type="button" class="search" data-cmdk-open>${icon('search')}<span>${esc(t('Search leads, brands, units…'))}</span><kbd>⌘K</kbd></button>
     ${langForm(csrf, path)}
@@ -211,9 +254,12 @@ function layout({ title, crumbs = [], active = '', body, user, csrf, nonce, flas
   ${toast}
   <main class="content${wide ? ' content--wide' : ''}" id="content">${body}</main>
 </div>
+${tabbar}
+${more}
+<div class="ptr" data-ptr aria-hidden="true">${icon('arrow')}</div>
 <div class="cmdk" data-cmdk hidden>
   <div class="cmdk__box" role="dialog" aria-label="${esc(t('Search'))}">
-    <div class="cmdk__in">${icon('search')}<input type="search" placeholder="${esc(t('Search leads, brands, units, offers, leases…'))}" autocomplete="off" data-cmdk-input></div>
+    <div class="cmdk__in">${icon('search')}<input type="search" placeholder="${esc(t('Search leads, brands, units, offers, leases…'))}" autocomplete="off" data-cmdk-input><button type="button" class="cmdk__close" data-cmdk-close>${esc(t('Cancel'))}</button></div>
     <div class="cmdk__list" data-cmdk-list></div>
   </div>
 </div>
@@ -228,11 +274,12 @@ function bare({ title, body, cls = '' }) {
 <html lang="${lang()}" dir="${dir()}">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>${esc(title)} · ${esc(brandName())}</title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/admin/admin.css?v=${ASSETS.css}">
+${pwaHead('admin')}
 </head>
 <body class="adm ${cls}" data-lang="${lang()}">${body}<script src="/admin/admin.js?v=${ASSETS.js}" defer></script></body>
 </html>`;
@@ -271,10 +318,11 @@ function table(cols, rows, { empty = null, href = null, cls = '' } = {}) {
   const tr = rows
     .map((r) => {
       const link = href ? href(r) : null;
-      return `<tr${link ? ` data-href="${esc(link)}" tabindex="0"` : ''}>${cols.map((c) => `<td${c.num ? ' class="num"' : ''}>${c.render ? c.render(r) : esc(r[c.key])}</td>`).join('')}</tr>`;
+      // data-label: on phones each row becomes a card of "label: value" lines (admin.css, mobile app)
+      return `<tr${link ? ` data-href="${esc(link)}" tabindex="0"` : ''}>${cols.map((c) => `<td${c.num ? ' class="num"' : ''} data-label="${esc(c.label)}">${c.render ? c.render(r) : esc(r[c.key])}</td>`).join('')}</tr>`;
     })
     .join('');
-  return `<div class="tablewrap"><table class="table ${cls}"><thead><tr>${th}</tr></thead><tbody>${tr}</tbody></table></div>`;
+  return `<div class="tablewrap"><table class="table table--resp ${cls}"><thead><tr>${th}</tr></thead><tbody>${tr}</tbody></table></div>`;
 }
 
 function empty(text, action = '') {
@@ -408,7 +456,7 @@ function plan(units, level, { link = true } = {}) {
 const planLegend = () => `<ul class="legend legend--row">${Object.entries(M.UNIT_STATUS).map(([k, l]) => `<li><i class="st-${k}"></i><span>${esc(l)}</span></li>`).join('')}</ul>`;
 
 module.exports = {
-  esc, attr, n0, money, local, m2, pct, date, dt, rel, initials, icon, logo, mark, setCurrency, docPanel, expiry, KB, fileIcon, curLabel, monthName, monthYear, weekdays, langLink, langForm, t, tn,
+  esc, attr, n0, money, local, m2, pct, date, dt, rel, initials, icon, logo, mark, setCurrency, pwaHead, ASSETS, docPanel, expiry, KB, fileIcon, curLabel, monthName, monthYear, weekdays, langLink, langForm, t, tn,
   layout, bare, badge, stageBadge, unitBadge, kpi, trend, card, table, empty, btn, hidden, form, input, select, textarea,
   bars, funnel, donut, meter, plan, planLegend, TONE, RANK,
 };

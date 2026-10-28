@@ -14,7 +14,7 @@ const i18n = require('../src/admin/i18n');
 
 const args = Object.fromEntries(process.argv.slice(2).map((a) => a.replace(/^--/, '').split('=')).map(([k, v]) => [k, v ?? true]));
 const ONLY = args.only ? String(args.only).split(',') : null;
-const MAX = Number(args.max) || 700;
+const MAX = Number(args.max) || 4000;
 
 // Latin words that are fine in Arabic UI: product names, file formats, codes.
 const OK_WORDS = new Set(['CSV', 'PDF', 'WALE', 'VAT', 'ID', 'The', 'Wave', 'K', 'English', 'EGP', 'JPG', 'PNG', 'WebP', 'Word', 'Excel', 'docx', 'xlsx', 'IBAN', 'EG']);
@@ -68,9 +68,19 @@ async function audit({ quiet = false } = {}) {
       // HR: what is typed about a person (names, contact details, bank and insurance numbers)
       for (const r of db.all('SELECT code, name, email, phone, address, emergency_name, emergency_phone, bank_name, iban, insurance_no, national_id FROM employees')) Object.values(r).forEach(add);
       for (const r of db.all('SELECT value FROM settings')) Object.values(r).forEach(add);
+      // accounting: suppliers, banks, bill and statement text as typed or imported, invoice customers
+      const has = (t) => db.value("SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = ?", t);
+      if (has('acc_vendors')) {
+        for (const r of db.all('SELECT name, tax_id, email, bank, iban FROM acc_vendors UNION ALL SELECT name, bank, iban, NULL, NULL FROM acc_banks')) Object.values(r).forEach(add);
+        for (const r of db.all('SELECT vendor_ref, memo FROM acc_bills UNION ALL SELECT description, NULL FROM acc_bill_lines UNION ALL SELECT description, reference FROM acc_statement_lines')) Object.values(r).forEach(add);
+      }
+      for (const r of db.all('SELECT DISTINCT customer FROM invoices WHERE customer IS NOT NULL')) Object.values(r).forEach(add);
       add(db.file);
     }
     // single words of people's and brands' names (sample sentences mention first names)
+    // typed values in the revenue modules (meter codes, areas, serials, cost descriptions)
+    const safe = (sql) => { try { return db ? db.all(sql) : []; } catch { return []; } };
+    for (const r of safe('SELECT code, area, serial, notes FROM utl_meters UNION ALL SELECT description, source_ref, NULL, NULL FROM sc_actuals')) Object.values(r).forEach(add);
     if (db) for (const r of db.all('SELECT name FROM users UNION SELECT name FROM contacts UNION SELECT name FROM brands')) for (const w of String(r.name || '').split(/\s+/)) if (w.length > 2 && /[A-Za-z]/.test(w)) typed.add(w);
     const longTyped = [...typed].filter((v) => v.length > 30);
     const typedList = [...typed].sort((a, b) => b.length - a.length);
