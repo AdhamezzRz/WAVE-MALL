@@ -44,7 +44,8 @@ const LEADS = [
 
 // Sample data for the newer modules lives beside this file (demo-records.js, demo-tenants.js, demo-hr.js).
 // Each exports load(db, admin, { files }) and clear(db, { files }).
-const EXTRAS = ['demo-tenants', 'demo-records', 'demo-hr'];
+// Order matters: accounting comes last so it can post everything the others created.
+const EXTRAS = ['demo-tenants', 'demo-records', 'demo-hr', 'demo-comms', 'demo-portal', 'demo-fitout', 'demo-website', 'demo-ops', 'demo-revenue', 'demo-accounting'];
 const extras = () => EXTRAS.flatMap((m) => {
   try {
     return [require(`./${m}`)];
@@ -56,11 +57,13 @@ const extras = () => EXTRAS.flatMap((m) => {
 
 function load(db, admin, opts = {}) {
   if (db.value('SELECT COUNT(*) FROM leads WHERE demo = 1')) return;
-  loadSales(db, admin);
+  // without the office's billing service (scripts, tests), bill quietly with no listeners
+  const bill = opts.billing || require('./billing').billing(db, require('./events').bus());
+  loadSales(db, admin, bill);
   for (const x of extras()) x.load(db, admin, opts);
 }
 
-function loadSales(db, admin) {
+function loadSales(db, admin, bill) {
   const T = M.today();
   // Past moments land in office hours (09:00–17:30 UTC+3) so the calendar reads like a real week.
   const ago = (d) => {
@@ -173,10 +176,12 @@ function loadSales(db, admin) {
         const total = p.rent + p.service;
         const late = title === 'Saffron Table' && due < T && due > M.addDays(T, -60);
         const paid = due < M.addDays(T, -5) && !late ? total : 0;
-        db.run('INSERT INTO invoices (ref, lease_id, kind, period_start, period_end, due_date, rent, service, total, paid, status, paid_at, method, demo, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)',
-          db.nextRef('invoices', 'IN', 4, true), id, 'rent', p.period_start, p.period_end, due, p.rent, p.service, total, paid, paid ? 'paid' : 'open', paid ? M.addDays(due, 4) : null, paid ? 'transfer' : null, ago(signedAgo));
+        if (!(total > 0)) continue;
+        const inv = bill.createInvoice({ lease_id: id, kind: 'rent', period_start: p.period_start, period_end: p.period_end, due_date: due, rent: p.rent, service: p.service, demo: 1 });
+        if (paid) bill.recordPayment({ invoice_id: inv.id, amount: total, date: M.addDays(due, 4), method: 'transfer', reference: `TRF-${inv.ref.slice(-4)}`, demo: 1 });
       }
-      db.run("INSERT INTO invoices (ref, lease_id, kind, due_date, other, total, paid, status, paid_at, method, note, demo, created_at) VALUES (?, ?, 'deposit', ?, ?, ?, ?, 'paid', ?, 'transfer', 'Security deposit', 1, ?)", db.nextRef('invoices', 'IN', 4, true), id, M.addDays(T, -signedAgo), s.deposit, s.deposit, s.deposit, M.addDays(T, -signedAgo + 3), ago(signedAgo));
+      const dep = bill.createInvoice({ lease_id: id, kind: 'deposit', due_date: M.addDays(T, -signedAgo), other: s.deposit, note: 'Security deposit', demo: 1 });
+      bill.recordPayment({ invoice_id: dep.id, amount: s.deposit, date: M.addDays(T, -signedAgo + 3), method: 'transfer', reference: `TRF-${dep.ref.slice(-4)}`, demo: 1 });
     };
     lease('Maison Lune', ['G01', 'G02'], 2350, 75, 'quarterly', 100, 2);
     lease('Kahwa House', ['G04'], 2250, 95, 'monthly', 115, 1);
@@ -219,6 +224,7 @@ function clear(db, opts = {}) {
     }
     const leadIds = db.all('SELECT id FROM leads WHERE demo = 1').map((r) => r.id);
     for (const id of leadIds) db.run("UPDATE units SET status = 'available', hold_until = NULL, hold_lead_id = NULL WHERE hold_lead_id = ?", id);
+    db.run('DELETE FROM payments WHERE demo = 1 OR invoice_id IN (SELECT id FROM invoices WHERE demo = 1 OR lease_id IN (SELECT id FROM leases WHERE demo = 1))');
     db.run('DELETE FROM invoices WHERE demo = 1 OR lease_id IN (SELECT id FROM leases WHERE demo = 1)');
     db.run('DELETE FROM leases WHERE demo = 1');
     db.run('DELETE FROM offers WHERE demo = 1 OR lead_id IN (SELECT id FROM leads WHERE demo = 1)');

@@ -66,7 +66,7 @@ function load(db) {
     if (t) {
       const s = db.get('SELECT * FROM sessions WHERE id = ?', sha(t));
       if (s && s.expires_at > now()) {
-        const user = db.get('SELECT id, name, email, role, title, phone, active, lang, hr FROM users WHERE id = ?', s.user_id);
+        const user = db.get('SELECT id, name, email, role, title, phone, active, lang, hr, finance FROM users WHERE id = ?', s.user_id);
         if (user && user.active) {
           req.user = user;
           req.session = s;

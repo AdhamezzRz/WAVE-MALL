@@ -17,9 +17,13 @@ const M = require('./model');
 function mount(app, { env = process.env } = {}) {
   const office = { db: null, error: null, ready: null };
   let router = null;
+  let pub = null;
   const boot = (db) => {
-    router = build(db, env);
+    const built = build(db, env, app);
+    router = built.router;
+    pub = built.pub;
     office.db = db;
+    office.h = built.h;
   };
   const fail = (err) => {
     office.error = err;
@@ -41,6 +45,13 @@ function mount(app, { env = process.env } = {}) {
   app.use('/admin', (req, res, next) => {
     if (router) return router(req, res, next);
     return office.ready.then(() => (router ? router(req, res, next) : unavailable(res, office.error)), next);
+  });
+  // Public pages the office serves outside /admin (offer signing, payment returns, the tenant
+  // portal). Requests the website did not answer reach them here; if the office is down they fall
+  // through to the website's 404.
+  app.use((req, res, next) => {
+    if (pub) return pub(req, res, next);
+    return office.ready.then(() => (pub ? pub(req, res, next) : next()), next);
   });
   // Website forms: saved once the office is ready; false when it is not running.
   office.record = async (value) => {
@@ -66,12 +77,22 @@ function unavailable(res, err) {
 <main><h1>The leasing office is not available</h1><p>The website itself is running. The office at /admin could not start:</p><code>${esc(reason)}</code><p>${esc(hint)}</p><p dir="rtl" lang="ar">مكتب التأجير غير متاح حاليًا، والموقع نفسه يعمل بشكل طبيعي.</p><small>Node ${esc(process.version)}</small></main></html>`);
 }
 
-function build(db, env) {
+function build(db, env, app) {
   ui.setCurrency(db.setting('currency'));
   owner(db, env);
 
   const h = helpers(db);
+  h.env = env;
+  h.app = app;
   h.files = require('./files').store(env);
+  h.events = require('./events').bus();
+  h.billing = require('./billing').billing(db, h.events);
+  // routes outside /admin (see mount()); modules add their own parsers and auth
+  h.public = express.Router();
+  h.public.use((req, res, next) => {
+    res.set('Cache-Control', 'no-store');
+    next();
+  });
   const router = express.Router();
   router.use((req, res, next) => {
     res.set('X-Robots-Tag', 'noindex, nofollow');
@@ -100,7 +121,9 @@ function build(db, env) {
   require('./routes/property')(router, h);
   require('./routes/office')(router, h);
   require('./routes/files')(router, h);
-  for (const mod of ['records', 'tenants', 'hr']) {
+  // Modules, in load order. The portal goes first (others add tabs to it); accounting goes last
+  // (it listens to everyone's events). A module that is not there yet is skipped.
+  for (const mod of ['portal', 'records', 'tenants', 'hr', 'comms', 'payments', 'fitout', 'website', 'specialty', 'maintenance', 'footfall', 'revenue', 'accounting', 'mobile']) {
     try {
       require.resolve(`./routes/${mod}`);
     } catch {
@@ -109,12 +132,21 @@ function build(db, env) {
     require(`./routes/${mod}`)(router, h);
   }
 
-  return router;
+  return { router, pub: h.public, h };
 }
 
 // Shared helpers handed to every route module.
 function helpers(db) {
+  // modules add sidebar badges: h.count('docs', (user) => n)
+  const extraCounts = {};
   const counts = (user) => ({
+    ...Object.fromEntries(Object.entries(extraCounts).map(([k, fn]) => {
+      try {
+        return [k, fn(user) || 0];
+      } catch {
+        return [k, 0];
+      }
+    })),
     inbox: db.value("SELECT COUNT(*) FROM messages WHERE status = 'new'"),
     approvals: auth.allowed(user, 'manager') ? db.value("SELECT COUNT(*) FROM offers WHERE status = 'pending'") : 0,
     tasks: db.value("SELECT COUNT(*) FROM activities WHERE user_id = ? AND done_at IS NULL AND due_at IS NOT NULL AND due_at < ? AND type NOT IN ('viewing','meeting')", user.id, M.addDays(M.today(), 1)),
@@ -136,6 +168,10 @@ function helpers(db) {
     },
     can: (req, min) => auth.allowed(req.user, min),
     R: (min) => auth.requireRole(min),
+    count: (key, fn) => { extraCounts[key] = fn; },
+    // Finance: administrators, and anyone given finance access on the Team page
+    canFinance: (req) => !!req.user && (req.user.role === 'admin' || !!req.user.finance),
+    RF: (req, res, next) => (req.user && (req.user.role === 'admin' || req.user.finance) ? next() : auth.denied(req, res)),
     // HR: administrators, and anyone given HR access on the Team page
     canHR: (req) => !!req.user && (req.user.role === 'admin' || !!req.user.hr),
     RH: (req, res, next) => (req.user && (req.user.role === 'admin' || req.user.hr) ? next() : auth.denied(req, res)),

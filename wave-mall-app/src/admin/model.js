@@ -40,6 +40,16 @@ const INVOICE_STATUS = labels({ open: 'invoice|Open', partial: 'invoice|Part pai
 const ACTIVITY_TYPES = labels({ note: 'activity|Note', call: 'activity|Call', email: 'activity|Email', whatsapp: 'activity|WhatsApp', meeting: 'activity|Meeting', viewing: 'activity|Viewing', task: 'activity|Task' });
 // Stored in English (leads.lost_reason); shown with tx().
 const LOST_REASONS = ['Price', 'Unit size', 'Location', 'Timing', 'Chose another mall', 'No response', 'Other'];
+// What an invoice is for, and how money arrives (billing.js and every module that bills).
+const INVOICE_KINDS = labels({
+  rent: 'kind|Rent', deposit: 'kind|Deposit', key: 'kind|Key money', other: 'kind|Other charge', service: 'kind|Service charge',
+  turnover: 'kind|Turnover rent', service_recon: 'kind|Service charge settlement', utility: 'kind|Utilities', specialty: 'kind|Short-term space',
+  fitout: 'kind|Fit-out', penalty: 'kind|Penalty',
+});
+const PAY_METHODS = labels({
+  transfer: 'pay|Bank transfer', cheque: 'pay|Cheque', card: 'pay|Card', cash: 'pay|Cash', online: 'pay|Online payment', instapay: 'pay|InstaPay', fawry: 'pay|Fawry', wallet: 'pay|Mobile wallet',
+});
+
 // The document vault: what a document is, grouped by what it belongs to.
 const DOC_KINDS = labels({
   commercial_register: 'Commercial register', tax_card: 'Tax card', vat_certificate: 'VAT certificate', signatory_id: 'Signatory ID',
@@ -337,7 +347,7 @@ function reports(db) {
 }
 
 module.exports = {
-  STAGES, OPEN_STAGES, stage, stageEn, CATEGORIES, DOC_KINDS, DOC_GROUPS, TENANT_REQUIRED, DOC_ENTITIES, SOURCES, ZONES, UNIT_STATUS, OFFER_STATUS, LEASE_STATUS, INVOICE_STATUS, ACTIVITY_TYPES, LOST_REASONS, ROLES,
+  STAGES, OPEN_STAGES, stage, stageEn, CATEGORIES, INVOICE_KINDS, PAY_METHODS, DOC_KINDS, DOC_GROUPS, TENANT_REQUIRED, DOC_ENTITIES, SOURCES, ZONES, UNIT_STATUS, OFFER_STATUS, LEASE_STATUS, INVOICE_STATUS, ACTIVITY_TYPES, LOST_REASONS, ROLES,
   addMonths, addDays, daysBetween, monthKey, num, listRates, monthly, schedule, needsApproval, invoicePlan, score, estimateValue,
   dashboard, reports, leaseUnits, offerUnits, leaseArea, currentAnnualRent, now, today,
 };

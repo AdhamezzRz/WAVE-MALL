@@ -10,8 +10,8 @@ module.exports = function deals(router, h) {
   const { db, ui, M } = h;
   const R = h.auth.requireRole;
   // payment methods are stored as keys
-  const METHODS = () => ({ transfer: tr('Bank transfer'), cheque: tr('Cheque'), card: tr('Card'), cash: tr('Cash') });
-  const KINDS = () => ({ rent: tr('Rent'), deposit: tr('Security deposit'), key: tr('Key money'), other: tr('Charge') });
+  const METHODS = () => M.PAY_METHODS;
+  const KINDS = () => M.INVOICE_KINDS;
   const FREQ = () => ({ monthly: tr('Monthly in advance'), quarterly: tr('Quarterly in advance'), annual: tr('Yearly in advance') });
   const months = (n) => tn(n, '{n} month', '{n} months');
   const years = (n) => tn(n, '{n} year', '{n} years');
@@ -498,10 +498,10 @@ module.exports = function deals(router, h) {
       db.run("UPDATE leases SET status = 'active', signed_at = COALESCE(signed_at, ?) WHERE id = ?", M.today(), s.id);
       for (const u of units) db.run("UPDATE units SET status = 'leased', hold_until = NULL, hold_lead_id = NULL, updated_at = ? WHERE id = ?", M.now(), u.id);
       for (const p of M.invoicePlan(s, units)) {
-        db.run('INSERT INTO invoices (ref, lease_id, kind, period_start, period_end, due_date, rent, service, total, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', db.nextRef('invoices', 'IN', 4, true), s.id, 'rent', p.period_start, p.period_end, p.due_date, p.rent, p.service, p.rent + p.service, M.now());
+        if (p.rent + p.service > 0) h.billing.createInvoice({ lease_id: s.id, kind: 'rent', period_start: p.period_start, period_end: p.period_end, due_date: p.due_date, rent: p.rent, service: p.service }, { user: req.user });
       }
-      if (s.deposit) db.run("INSERT INTO invoices (ref, lease_id, kind, due_date, other, total, note, created_at) VALUES (?, ?, 'deposit', ?, ?, ?, 'Security deposit', ?)", db.nextRef('invoices', 'IN', 4, true), s.id, s.signed_at || M.today(), s.deposit, s.deposit, M.now());
-      if (s.key_money) db.run("INSERT INTO invoices (ref, lease_id, kind, due_date, other, total, note, created_at) VALUES (?, ?, 'key', ?, ?, ?, 'Key money', ?)", db.nextRef('invoices', 'IN', 4, true), s.id, s.signed_at || M.today(), s.key_money, s.key_money, M.now());
+      if (s.deposit) h.billing.createInvoice({ lease_id: s.id, kind: 'deposit', due_date: s.signed_at || M.today(), other: s.deposit, note: 'Security deposit' }, { user: req.user });
+      if (s.key_money) h.billing.createInvoice({ lease_id: s.id, kind: 'key', due_date: s.signed_at || M.today(), other: s.key_money, note: 'Key money' }, { user: req.user });
       if (s.lead_id) {
         const l = db.get('SELECT * FROM leads WHERE id = ?', s.lead_id);
         if (l && l.stage !== 'won') h.changeStage(req, l, 'won');
@@ -519,7 +519,9 @@ module.exports = function deals(router, h) {
     const date = /^\d{4}-\d{2}-\d{2}$/.test(req.body.date || '') ? req.body.date : M.today();
     db.tx(() => {
       db.run('UPDATE leases SET status = ?, end_date = ? WHERE id = ?', how, date, s.id);
-      db.run("UPDATE invoices SET status = 'void', note = CASE WHEN note IS NULL OR note = '' THEN 'Voided: lease ended' ELSE note || ' (lease ended)' END WHERE lease_id = ? AND status = 'open' AND due_date > ?", s.id, date);
+      for (const inv of db.all("SELECT id, note FROM invoices WHERE lease_id = ? AND status = 'open' AND paid = 0 AND due_date > ?", s.id, date)) {
+        h.billing.voidInvoice(inv.id, { user: req.user, note: inv.note ? `${inv.note} (lease ended)` : 'Voided: lease ended' });
+      }
       for (const u of M.leaseUnits(db, s.id)) db.run("UPDATE units SET status = 'available', updated_at = ? WHERE id = ?", M.now(), u.id);
     });
     h.log(req, `Lease ${how}`, 'lease', s.id, `${s.ref} · ${s.brand_name}`);
@@ -531,7 +533,8 @@ module.exports = function deals(router, h) {
     if (!s) return next();
     const amount = h.numv(req.body.amount);
     if (!amount || amount <= 0) return h.back(req, res, `/admin/leases/${s.id}`, 'error', tr('Enter an amount.'));
-    db.run("INSERT INTO invoices (ref, lease_id, kind, due_date, other, total, note, created_at) VALUES (?, ?, 'other', ?, ?, ?, ?, ?)", db.nextRef('invoices', 'IN', 4, true), s.id, h.str(req.body.due, 10) || M.today(), amount, amount, h.str(req.body.note, 200), M.now());
+    const due = /^\d{4}-\d{2}-\d{2}$/.test(String(req.body.due || '')) ? req.body.due : M.today();
+    h.billing.createInvoice({ lease_id: s.id, kind: 'other', due_date: due, other: amount, note: h.str(req.body.note, 200) || null }, { user: req.user });
     h.log(req, 'Added a charge', 'lease', s.id, `${s.ref} · ${amount}`);
     h.back(req, res, `/admin/leases/${s.id}`, 'ok', tr('Charge added.'));
   });
@@ -541,7 +544,7 @@ module.exports = function deals(router, h) {
     const t = M.today();
     const st = ['open', 'overdue', 'paid', 'all', 'upcoming'].includes(req.query.status) ? req.query.status : 'open';
     const where = { open: "i.status IN ('open','partial') AND i.due_date <= ?", overdue: "i.status IN ('open','partial') AND i.due_date < ?", paid: "i.status = 'paid' AND ? IS NOT NULL", all: "i.status != 'void' AND ? IS NOT NULL", upcoming: "i.status IN ('open','partial') AND i.due_date > ?" }[st];
-    const rows = db.all(`SELECT i.*, s.ref lease_ref, b.name brand_name FROM invoices i JOIN leases s ON s.id = i.lease_id JOIN brands b ON b.id = s.brand_id WHERE ${where} ORDER BY ${st === 'paid' ? 'i.paid_at DESC' : 'i.due_date'} LIMIT 400`, st === 'open' ? M.addDays(t, 30) : t);
+    const rows = db.all(`SELECT i.*, s.ref lease_ref, COALESCE(b.name, i.customer) brand_name FROM invoices i LEFT JOIN leases s ON s.id = i.lease_id LEFT JOIN brands b ON b.id = i.brand_id WHERE ${where} ORDER BY ${st === 'paid' ? 'i.paid_at DESC' : 'i.due_date'} LIMIT 400`, st === 'open' ? M.addDays(t, 30) : t);
     const R2 = M.reports(db);
     const outstanding = db.value("SELECT COALESCE(SUM(total - paid), 0) FROM invoices WHERE status IN ('open','partial') AND due_date <= ?", t);
     const overdue = db.value("SELECT COALESCE(SUM(total - paid), 0) FROM invoices WHERE status IN ('open','partial') AND due_date < ?", t);
@@ -557,7 +560,7 @@ module.exports = function deals(router, h) {
     const tabs = [['open', tr('Due within 30 days')], ['overdue', tr('Overdue')], ['upcoming', tr('Upcoming')], ['paid', tr('invoice|Paid')], ['all', tr('All')]].map(([k, l]) => `<a class="tab${st === k ? ' is-on' : ''}" href="/admin/billing?status=${k}">${l}</a>`).join('');
     const table = ui.table(
       [
-        { label: tr('Invoice'), render: (i) => `<b>${ui.esc(i.ref)}</b><small class="sub">${ui.esc(i.brand_name)} · ${ui.esc(i.lease_ref)}</small>` },
+        { label: tr('Invoice'), render: (i) => `<b>${ui.esc(i.ref)}</b><small class="sub">${ui.esc(i.brand_name || '')}${i.lease_ref ? ` · ${ui.esc(i.lease_ref)}` : ''}</small>` },
         { label: tr('invoice|For'), render: (i) => (i.kind === 'rent' ? `${ui.date(i.period_start)} – ${ui.date(i.period_end)}` : ui.esc(tx(i.note) || KINDS()[i.kind] || i.kind)) },
         { label: tr('Due'), render: (i) => `<span class="${['open', 'partial'].includes(i.status) && i.due_date < t ? 'late' : ''}">${ui.date(i.due_date)}<small class="sub">${ui.rel(i.due_date)}</small></span>` },
         { label: tr('Total'), num: true, render: (i) => ui.money(i.total, { cur: false }) },
@@ -567,9 +570,9 @@ module.exports = function deals(router, h) {
       rows,
       { empty: st === 'overdue' ? tr('Nothing overdue.') : tr('No invoices here.'), href: (i) => `/admin/invoices/${i.id}` },
     );
-    const owed = db.all("SELECT b.id, b.name, s.id lease_id, s.ref, SUM(i.total - i.paid) amount, MIN(i.due_date) oldest, COUNT(*) n FROM invoices i JOIN leases s ON s.id = i.lease_id JOIN brands b ON b.id = s.brand_id WHERE i.status IN ('open','partial') AND i.due_date < ? GROUP BY s.id ORDER BY amount DESC LIMIT 6", t);
+    const owed = db.all("SELECT b.id, COALESCE(b.name, i.customer) name, s.id lease_id, s.ref, SUM(i.total - i.paid) amount, MIN(i.due_date) oldest, COUNT(*) n FROM invoices i LEFT JOIN leases s ON s.id = i.lease_id LEFT JOIN brands b ON b.id = i.brand_id WHERE i.status IN ('open','partial') AND i.due_date < ? GROUP BY COALESCE(s.id, -i.brand_id, i.customer) ORDER BY amount DESC LIMIT 6", t);
     const owedList = owed.length
-      ? `<ul class="list">${owed.map((o) => `<li><a href="/admin/leases/${o.lease_id}"><span class="dot dot--rose"></span><span class="what"><b>${ui.esc(o.name)}</b><small>${tr('{ref} · {invoices} · oldest {when}', { ref: ui.esc(o.ref), invoices: tn(o.n, '{n} invoice', '{n} invoices'), when: ui.rel(o.oldest) })}</small></span><b>${ui.money(o.amount, { compact: true })}</b></a></li>`).join('')}</ul>`
+      ? `<ul class="list">${owed.map((o) => `<li><a href="${o.lease_id ? `/admin/leases/${o.lease_id}` : `/admin/billing?status=overdue`}"><span class="dot dot--rose"></span><span class="what"><b>${ui.esc(o.name)}</b><small>${tr('{ref} · {invoices} · oldest {when}', { ref: ui.esc(o.ref || ''), invoices: tn(o.n, '{n} invoice', '{n} invoices'), when: ui.rel(o.oldest) })}</small></span><b>${ui.money(o.amount, { compact: true })}</b></a></li>`).join('')}</ul>`
       : `<p class="muted pad">${tr('No one is behind. Every invoice due so far is paid.')}</p>`;
     const body = `<div class="kpis kpis--4">${kpis}</div>
 <nav class="tabs">${tabs}</nav>${ui.card(tn(rows.length, '{n} invoice', '{n} invoices'), table, { action: ui.btn(tr('Export CSV'), { href: '/admin/export/invoices.csv', cls: 'btn--ghost btn--sm', ic: 'dl' }) })}
@@ -580,7 +583,7 @@ module.exports = function deals(router, h) {
     h.page(req, res, { title: tr('Billing'), active: '/admin/billing', wide: true, body });
   });
 
-  const invoiceOf = (id) => db.get('SELECT i.*, s.ref lease_ref, s.id lease_id, s.brand_id, b.name brand_name FROM invoices i JOIN leases s ON s.id = i.lease_id JOIN brands b ON b.id = s.brand_id WHERE i.id = ?', id);
+  const invoiceOf = (id) => db.get('SELECT i.*, s.ref lease_ref, COALESCE(b.name, i.customer) brand_name FROM invoices i LEFT JOIN leases s ON s.id = i.lease_id LEFT JOIN brands b ON b.id = i.brand_id WHERE i.id = ?', id);
 
   router.get('/invoices/:id', (req, res, next) => {
     const i = invoiceOf(req.params.id);
@@ -588,14 +591,18 @@ module.exports = function deals(router, h) {
     const t = M.today();
     const open = ['open', 'partial'].includes(i.status);
     const pay = open && h.can(req, 'manager')
-      ? ui.card(tr('Record a payment'), ui.form(`/admin/invoices/${i.id}/pay`, req.session.csrf, `<div class="fields">${ui.input('amount', tr('Amount'), i.total - i.paid, { type: 'number', min: 1, step: '0.01', required: true })}${ui.input('date', tr('Received on'), t, { type: 'date', required: true })}${ui.select('method', tr('Method'), METHODS(), 'transfer')}${ui.input('note', tr('Reference'), '', { placeholder: tr('e.g. transfer ref or cheque no.') })}</div>${ui.btn(tr('Record payment'), { cls: 'btn--primary' })}`, { cls: 'stack' }))
+      ? ui.card(tr('Record a payment'), ui.form(`/admin/invoices/${i.id}/pay`, req.session.csrf, `<div class="fields">${ui.input('amount', tr('Amount'), i.total - i.paid, { type: 'number', min: 1, step: '0.01', required: true })}${ui.input('date', tr('Received on'), t, { type: 'date', required: true })}${ui.select('method', tr('Method'), METHODS(), 'transfer')}${ui.input('reference', tr('Reference'), '', { placeholder: tr('e.g. transfer ref or cheque no.') })}</div>${ui.btn(tr('Record payment'), { cls: 'btn--primary' })}`, { cls: 'stack' }))
       : '';
-    const voidForm = open && h.can(req, 'manager') ? `<details class="danger"><summary>${tr('Void invoice')}</summary>${ui.form(`/admin/invoices/${i.id}/void`, req.session.csrf, ui.btn(tr('Void invoice'), { cls: 'btn--danger btn--sm', attrs: { 'data-confirm': tr('Void this invoice?') } }))}</details>` : '';
+    const voidForm = i.status === 'open' && !i.paid && h.can(req, 'manager') ? `<details class="danger"><summary>${tr('Void invoice')}</summary>${ui.form(`/admin/invoices/${i.id}/void`, req.session.csrf, ui.btn(tr('Void invoice'), { cls: 'btn--danger btn--sm', attrs: { 'data-confirm': tr('Void this invoice?') } }))}</details>` : '';
+    const pays = db.all('SELECT p.*, u.name user_name FROM payments p LEFT JOIN users u ON u.id = p.user_id WHERE p.invoice_id = ? ORDER BY p.date, p.id', i.id);
+    const payments = pays.length
+      ? ui.card(tr('Payments'), `<ul class="list">${pays.map((p) => `<li><span class="what"><b>${ui.esc(p.ref)} · ${ui.money(p.amount)}</b><small>${ui.date(p.date)}${p.method ? ` · ${ui.esc(METHODS()[p.method] || p.method)}` : ''}${p.reference ? ` · ${ui.esc(p.reference)}` : ''}${p.user_name ? ` · ${ui.esc(p.user_name)}` : ''}</small></span>${p.status === 'reversed' ? ui.badge('void', tr('pay|Reversed')) : h.can(req, 'manager') ? ui.form(`/admin/payments/${p.id}/reverse`, req.session.csrf, ui.btn(tr('Reverse'), { cls: 'btn--ghost btn--xs', attrs: { 'data-confirm': tr('Reverse this payment? The invoice will be open again.') } })) : ''}</li>`).join('')}</ul>`)
+      : '';
     const paidAt = i.paid_at ? (i.method ? tr('{date} by {method}', { date: ui.date(i.paid_at), method: ui.esc(METHODS()[i.method] || i.method) }) : ui.date(i.paid_at)) : '';
     const body = `<div class="grid grid--side">
   ${ui.card(tr('Invoice'), `<dl class="dl">
-    <div><dt>${tr('Tenant')}</dt><dd><a href="/admin/brands/${i.brand_id}">${ui.esc(i.brand_name)}</a></dd></div>
-    <div><dt>${tr('Lease')}</dt><dd><a href="/admin/leases/${i.lease_id}">${ui.esc(i.lease_ref)}</a></dd></div>
+    <div><dt>${i.brand_id ? tr('Tenant') : tr('Customer')}</dt><dd>${i.brand_id ? `<a href="/admin/brands/${i.brand_id}">${ui.esc(i.brand_name)}</a>` : ui.esc(i.brand_name || '')}</dd></div>
+    ${i.lease_id ? `<div><dt>${tr('Lease')}</dt><dd><a href="/admin/leases/${i.lease_id}">${ui.esc(i.lease_ref)}</a></dd></div>` : ''}
     <div><dt>${tr('invoice|For')}</dt><dd>${i.kind === 'rent' ? tr('Rent and service, {start} – {end}', { start: ui.date(i.period_start), end: ui.date(i.period_end) }) : ui.esc(tx(i.note) || KINDS()[i.kind] || i.kind)}</dd></div>
     <div><dt>${tr('Due')}</dt><dd class="${open && i.due_date < t ? 'late' : ''}">${ui.date(i.due_date)} · ${ui.rel(i.due_date)}</dd></div>
     <div><dt>${tr('Rent')}</dt><dd>${ui.money(i.rent)}</dd></div><div><dt>${tr('Service')}</dt><dd>${ui.money(i.service)}</dd></div>${i.other ? `<div><dt>${tr('Other')}</dt><dd>${ui.money(i.other)}</dd></div>` : ''}
@@ -604,9 +611,9 @@ module.exports = function deals(router, h) {
     <div><dt>${tr('Status')}</dt><dd>${open && i.due_date < t ? ui.badge('overdue', tr('invoice|Overdue')) : ui.badge(i.status, M.INVOICE_STATUS[i.status])}</dd></div>
     ${i.note && i.kind === 'rent' ? `<div><dt>${tr('Note')}</dt><dd>${ui.esc(tx(i.note))}</dd></div>` : ''}
   </dl>`)}
-  <div class="stack">${pay}${voidForm}</div>
+  <div class="stack">${pay}${payments}${voidForm}</div>
 </div>`;
-    h.page(req, res, { title: tr('Invoice {ref}', { ref: i.ref }), crumbs: [['/admin/billing', tr('Billing')], [`/admin/leases/${i.lease_id}`, i.brand_name], [null, i.ref]], active: '/admin/billing', body, actions: ui.btn(tr('Print'), { href: `/admin/invoices/${i.id}/print`, cls: 'btn--ghost', ic: 'print', attrs: { target: '_blank' } }) });
+    h.page(req, res, { title: tr('Invoice {ref}', { ref: i.ref }), crumbs: [['/admin/billing', tr('Billing')], ...(i.lease_id ? [[`/admin/leases/${i.lease_id}`, i.brand_name]] : []), [null, i.ref]], active: '/admin/billing', body, actions: ui.btn(tr('Print'), { href: `/admin/invoices/${i.id}/print`, cls: 'btn--ghost', ic: 'print', attrs: { target: '_blank' } }) });
   });
 
   router.post('/invoices/:id/pay', R('manager'), (req, res, next) => {
@@ -614,17 +621,33 @@ module.exports = function deals(router, h) {
     if (!i) return next();
     const amount = h.numv(req.body.amount);
     if (!amount || amount <= 0) return h.back(req, res, `/admin/invoices/${i.id}`, 'error', tr('Enter the amount received.'));
-    const paid = Math.min(i.total, i.paid + amount);
-    const date = /^\d{4}-\d{2}-\d{2}$/.test(req.body.date || '') ? req.body.date : M.today();
-    db.run('UPDATE invoices SET paid = ?, status = ?, paid_at = ?, method = ?, note = COALESCE(?, note) WHERE id = ?', paid, paid >= i.total - 0.5 ? 'paid' : 'partial', date, h.str(req.body.method, 20), h.str(req.body.note, 200) || null, i.id);
-    h.log(req, 'Recorded a payment', 'invoice', i.id, `${i.ref} · ${amount}`);
-    h.back(req, res, `/admin/invoices/${i.id}`, 'ok', paid >= i.total - 0.5 ? tr('Paid in full.') : tr('Part payment recorded.'));
+    let out;
+    try {
+      out = h.billing.recordPayment({ invoice_id: i.id, amount, date: req.body.date, method: M.PAY_METHODS[req.body.method] ? req.body.method : null, reference: h.str(req.body.reference, 80) || null, note: h.str(req.body.note, 200) || null }, { user: req.user });
+    } catch (err) {
+      return h.back(req, res, `/admin/invoices/${i.id}`, 'error', tr(err.message));
+    }
+    h.log(req, 'Recorded a payment', 'invoice', i.id, `${i.ref} · ${out.payment.amount}`);
+    h.back(req, res, `/admin/invoices/${i.id}`, 'ok', out.invoice.status === 'paid' ? tr('Paid in full.') : tr('Part payment recorded.'));
   });
 
   router.post('/invoices/:id/void', R('manager'), (req, res) => {
-    db.run("UPDATE invoices SET status = 'void' WHERE id = ? AND status IN ('open','partial')", req.params.id);
-    h.log(req, 'Voided an invoice', 'invoice', h.int(req.params.id));
+    const done = h.billing.voidInvoice(h.int(req.params.id), { user: req.user });
+    if (!done) return h.back(req, res, `/admin/invoices/${req.params.id}`, 'error', tr('Only an open invoice with nothing paid can be voided.'));
+    h.log(req, 'Voided an invoice', 'invoice', done.id, done.ref);
     h.back(req, res, `/admin/invoices/${req.params.id}`, 'ok', tr('Invoice voided.'));
+  });
+
+  router.post('/payments/:id/reverse', R('manager'), (req, res) => {
+    const p = db.get('SELECT * FROM payments WHERE id = ?', h.int(req.params.id));
+    const back = p && p.invoice_id ? `/admin/invoices/${p.invoice_id}` : '/admin/billing';
+    try {
+      h.billing.reversePayment(h.int(req.params.id), { user: req.user });
+    } catch (err) {
+      return h.back(req, res, back, 'error', tr(err.message));
+    }
+    h.log(req, 'Reversed a payment', 'payment', p.id, `${p.ref} · ${p.amount}`);
+    h.back(req, res, back, 'ok', tr('Payment reversed.'));
   });
 
   router.get('/invoices/:id/print', (req, res, next) => {

@@ -203,6 +203,42 @@ const SCHEMA = [
     UNIQUE (run_id, employee_id)
   );
   `,
+  // 4: invoices that need no lease (kiosks, events, utilities, fit-out), a payments ledger,
+  //    the finance permission, and self-migrating modules
+  `
+  CREATE TABLE invoices_new (
+    id INTEGER PRIMARY KEY, ref TEXT NOT NULL UNIQUE, lease_id INTEGER REFERENCES leases(id) ON DELETE CASCADE,
+    brand_id INTEGER REFERENCES brands(id) ON DELETE SET NULL, customer TEXT,
+    kind TEXT NOT NULL DEFAULT 'rent', period_start TEXT, period_end TEXT, due_date TEXT NOT NULL,
+    rent REAL NOT NULL DEFAULT 0, service REAL NOT NULL DEFAULT 0, other REAL NOT NULL DEFAULT 0, total REAL NOT NULL,
+    paid REAL NOT NULL DEFAULT 0, status TEXT NOT NULL DEFAULT 'open', paid_at TEXT, method TEXT, note TEXT,
+    source TEXT, source_id INTEGER, demo INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL
+  );
+  INSERT INTO invoices_new (id, ref, lease_id, brand_id, kind, period_start, period_end, due_date, rent, service, other, total, paid, status, paid_at, method, note, demo, created_at)
+    SELECT i.id, i.ref, i.lease_id, (SELECT brand_id FROM leases WHERE id = i.lease_id), i.kind, i.period_start, i.period_end, i.due_date, i.rent, i.service, i.other, i.total, i.paid, i.status, i.paid_at, i.method, i.note, i.demo, i.created_at FROM invoices i;
+  DROP TABLE invoices;
+  ALTER TABLE invoices_new RENAME TO invoices;
+  CREATE INDEX invoices_due ON invoices(due_date);
+  CREATE INDEX invoices_lease ON invoices(lease_id);
+  CREATE INDEX invoices_brand ON invoices(brand_id);
+  CREATE INDEX invoices_source ON invoices(source, source_id);
+
+  CREATE TABLE payments (
+    id INTEGER PRIMARY KEY, ref TEXT NOT NULL UNIQUE, invoice_id INTEGER REFERENCES invoices(id) ON DELETE SET NULL,
+    brand_id INTEGER REFERENCES brands(id) ON DELETE SET NULL, amount REAL NOT NULL, date TEXT NOT NULL,
+    method TEXT, reference TEXT, provider TEXT, provider_ref TEXT, status TEXT NOT NULL DEFAULT 'received', note TEXT,
+    user_id INTEGER REFERENCES users(id) ON DELETE SET NULL, demo INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL
+  );
+  CREATE INDEX payments_invoice ON payments(invoice_id);
+  CREATE INDEX payments_date ON payments(date);
+  INSERT INTO payments (ref, invoice_id, brand_id, amount, date, method, note, demo, created_at)
+    SELECT 'RC-' || substr(COALESCE(paid_at, due_date), 1, 4) || '-' || printf('%05d', id), id, brand_id, paid, COALESCE(paid_at, due_date), method, 'Recorded before the payments ledger', demo, created_at
+    FROM invoices WHERE paid > 0;
+
+  ALTER TABLE users ADD COLUMN finance INTEGER NOT NULL DEFAULT 0;
+  UPDATE users SET finance = 1 WHERE role = 'admin';
+  CREATE TABLE _modules (name TEXT PRIMARY KEY, applied_at TEXT NOT NULL);
+  `,
 ];
 
 const DEFAULT_SETTINGS = {
@@ -269,6 +305,7 @@ function ready(db, file, engineName) {
 
 function wrap(db, file) {
   const cache = new Map();
+  let depth = 0;
   const stmt = (sql) => {
     if (!cache.has(sql)) cache.set(sql, db.prepare(sql));
     return cache.get(sql);
@@ -284,7 +321,26 @@ function wrap(db, file) {
       const row = stmt(sql).get(...norm(p));
       return row ? Object.values(row)[0] : undefined;
     },
+    // Runs fn in a transaction. Nested calls become savepoints, so a module can call the billing
+    // service (which uses tx) from inside its own transaction.
     tx(fn) {
+      if (depth > 0) {
+        const sp = `sp${depth}`;
+        depth++;
+        db.exec(`SAVEPOINT ${sp}`);
+        try {
+          const out = fn();
+          db.exec(`RELEASE ${sp}`);
+          return out;
+        } catch (err) {
+          db.exec(`ROLLBACK TO ${sp}`);
+          db.exec(`RELEASE ${sp}`);
+          throw err;
+        } finally {
+          depth--;
+        }
+      }
+      depth++;
       db.exec('BEGIN');
       try {
         const out = fn();
@@ -293,6 +349,8 @@ function wrap(db, file) {
       } catch (err) {
         db.exec('ROLLBACK');
         throw err;
+      } finally {
+        depth--;
       }
     },
     setting(key) {
@@ -318,6 +376,21 @@ function wrap(db, file) {
       stmt('INSERT INTO audit (user_id, action, entity, entity_id, detail, ip, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)').run(
         user ? user.id : null, action, entity || null, entityId ?? null, detail ? String(detail).slice(0, 500) : null, ip || null, now(),
       );
+    },
+    // A module's own schema step, applied once (modules live in routes/ and keep their schema with them).
+    // ensure('accounting-1', sql) — names must never be reused; add 'accounting-2' for later changes.
+    ensure(name, sqlText) {
+      if (stmt('SELECT 1 FROM _modules WHERE name = ?').get(name)) return false;
+      db.exec('BEGIN');
+      try {
+        db.exec(sqlText);
+        stmt('INSERT INTO _modules (name, applied_at) VALUES (?, ?)').run(name, now());
+        db.exec('COMMIT');
+      } catch (err) {
+        db.exec('ROLLBACK');
+        throw new Error(`Module migration ${name} failed: ${err.message}`);
+      }
+      return true;
     },
     // a consistent copy of the whole database, written to dest
     backup: (dest) => db.backupTo(dest),

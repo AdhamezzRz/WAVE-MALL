@@ -43,7 +43,7 @@ class SqlJsDatabase {
     const cleaned = s.replace(/PRAGMA\s+(journal_mode|busy_timeout)\s*=\s*[^;]+;?/gi, '');
     if (cleaned.trim()) this.db.exec(cleaned);
     if (/^BEGIN\b/i.test(s)) this.depth++;
-    else if (/^(COMMIT|END|ROLLBACK)\b/i.test(s)) this.depth = Math.max(0, this.depth - 1);
+    else if (/^(COMMIT|END)\b/i.test(s) || /^ROLLBACK\s*;?\s*$/i.test(s)) this.depth = Math.max(0, this.depth - 1);
     this.touched(s);
   }
   prepare(sql) {

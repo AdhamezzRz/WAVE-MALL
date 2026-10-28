@@ -60,7 +60,7 @@ async function audit({ quiet = false } = {}) {
       for (const r of db.all('SELECT ref, title, message FROM leads')) Object.values(r).forEach(add);
       for (const r of db.all('SELECT name, email, phone, brand, subject, body FROM messages')) Object.values(r).forEach(add);
       for (const r of db.all('SELECT email FROM subscribers')) Object.values(r).forEach(add);
-      for (const r of db.all('SELECT ref FROM offers UNION SELECT ref FROM leases UNION SELECT ref FROM invoices')) Object.values(r).forEach(add);
+      for (const r of db.all('SELECT ref FROM offers UNION SELECT ref FROM leases UNION SELECT ref FROM invoices UNION SELECT ref FROM payments UNION SELECT reference FROM payments')) Object.values(r).forEach(add);
       for (const r of db.all('SELECT code FROM units')) Object.values(r).forEach(add);
       // contracts register and document vault: company names, their contacts, file names
       for (const r of db.all('SELECT ref, counterparty, contact_name, contact_phone, contact_email FROM contracts')) Object.values(r).forEach(add);

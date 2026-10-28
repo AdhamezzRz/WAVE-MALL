@@ -116,7 +116,7 @@ module.exports = function office(router, h) {
     leads: () => [db.all('SELECT l.*, b.name brand, u.name owner FROM leads l LEFT JOIN brands b ON b.id = l.brand_id LEFT JOIN users u ON u.id = l.owner_id ORDER BY l.id'), [['ref', 'Ref'], ['title', 'Lead'], ['brand', 'Brand'], [(r) => M.CATEGORIES[r.category], 'Category'], [(r) => M.SOURCES[r.source], 'Source'], [(r) => M.stage(r.stage).label, 'Stage'], ['probability', 'Probability %'], ['area_min', 'Area from'], ['area_max', 'Area to'], ['budget_m2', 'Budget / m²'], ['value_est', 'Annual value'], ['owner', 'Owner'], [(r) => tx(r.next_step), 'Next step'], ['next_step_at', 'Next step due'], [(r) => tx(r.lost_reason), 'Lost reason'], ['created_at', 'Created']]],
     units: () => [db.all('SELECT * FROM units ORDER BY sort'), [['code', 'Unit'], [(u) => M.ZONES[u.zone], 'Level'], ['indoor_m2', 'Indoor m²'], ['terrace_m2', 'Terrace m²'], [(u) => M.UNIT_STATUS[u.status], 'Status'], [(u) => M.listRates(db, u).rent, 'List rent / m²'], [(u) => M.listRates(db, u).terrace, 'Terrace / m²'], ['hold_until', 'Hold until']]],
     rentroll: () => [M.reports(db).rentRoll, [['ref', 'Lease'], ['brand', 'Tenant'], [(x) => M.CATEGORIES[x.category], 'Category'], ['units', 'Units'], ['area', 'Area m²'], [(x) => Math.round(x.annual), 'Annual rent'], ['start_date', 'Start'], ['end_date', 'End'], [(x) => x.remaining.toFixed(2), 'Years left']]],
-    invoices: () => [db.all('SELECT i.*, s.ref lease, b.name tenant FROM invoices i JOIN leases s ON s.id = i.lease_id JOIN brands b ON b.id = s.brand_id ORDER BY i.due_date'), [['ref', 'Invoice'], ['tenant', 'Tenant'], ['lease', 'Lease'], [(i) => tr(INVOICE_KINDS[i.kind] || i.kind), 'Kind'], ['period_start', 'From'], ['period_end', 'To'], ['due_date', 'Due'], ['rent', 'Rent'], ['service', 'Service'], ['other', 'Other'], ['total', 'Total'], ['paid', 'Paid'], [(i) => M.INVOICE_STATUS[i.status], 'Status'], ['paid_at', 'Paid on']]],
+    invoices: () => [db.all('SELECT i.*, s.ref lease, COALESCE(b.name, i.customer) tenant FROM invoices i LEFT JOIN leases s ON s.id = i.lease_id LEFT JOIN brands b ON b.id = i.brand_id ORDER BY i.due_date'), [['ref', 'Invoice'], ['tenant', 'Tenant'], ['lease', 'Lease'], [(i) => tr(INVOICE_KINDS[i.kind] || i.kind), 'Kind'], ['period_start', 'From'], ['period_end', 'To'], ['due_date', 'Due'], ['rent', 'Rent'], ['service', 'Service'], ['other', 'Other'], ['total', 'Total'], ['paid', 'Paid'], [(i) => M.INVOICE_STATUS[i.status], 'Status'], ['paid_at', 'Paid on']]],
     offers: () => [db.all('SELECT o.*, l.title lead FROM offers o JOIN leads l ON l.id = o.lead_id ORDER BY o.id'), [['ref', 'Offer'], ['lead', 'Lead'], [(o) => M.offerUnits(db, o.id).map((u) => u.code).join(' '), 'Units'], ['rent_m2', 'Rent / m²'], ['term_years', 'Years'], ['escalation_pct', 'Increase %'], ['rent_free_months', 'Rent-free'], [(o) => M.OFFER_STATUS[o.status], 'Status'], ['valid_until', 'Valid until'], ['created_at', 'Created']]],
     activities: () => [db.all('SELECT a.*, l.title lead, u.name user FROM activities a LEFT JOIN leads l ON l.id = a.lead_id LEFT JOIN users u ON u.id = a.user_id ORDER BY a.id'), [[(a) => M.ACTIVITY_TYPES[a.type] || a.type, 'Type'], [(a) => tx(a.subject), 'Subject'], ['lead', 'Lead'], ['user', 'By'], ['due_at', 'Due'], ['done_at', 'Done'], ['created_at', 'Created']]],
     subscribers: () => [db.all('SELECT * FROM subscribers ORDER BY created_at DESC'), [['email', 'Email'], [(x) => (x.lang === 'ar' ? tr('o|Arabic') : tr('English')), 'Language'], [(x) => (x.source === 'website' ? tr('Website') : x.source), 'Source'], ['created_at', 'Joined']]],
@@ -143,17 +143,17 @@ module.exports = function office(router, h) {
     const table = ui.table(
       [
         { label: tr('Person'), render: (u) => `<span class="who"><span class="avatar avatar--sm">${ui.esc(ui.initials(u.name))}</span><span><b>${ui.esc(u.name)}</b>${u.title ? `<small class="sub">${ui.esc(tx(u.title))}</small>` : ''}<small class="sub ltr">${ui.esc(u.email)}</small></span></span>` },
-        { label: tr('Role'), render: (u) => `${ui.badge(u.role, M.ROLES[u.role])}${u.role === 'admin' || u.hr ? ` ${ui.badge('hr', tr('HR access'), 'sand')}` : ''}` },
+        { label: tr('Role'), render: (u) => `${ui.badge(u.role, M.ROLES[u.role])}${u.role === 'admin' || u.hr ? ` ${ui.badge('hr', tr('HR access'), 'sand')}` : ''}${u.role === 'admin' || u.finance ? ` ${ui.badge('finance', tr('Finance access'), 'sky')}` : ''}` },
         { label: tr('Open deals'), num: true, render: (u) => ui.n0(stats(u).open) },
         { label: tr('report|Signed'), num: true, render: (u) => ui.n0(stats(u).won) },
         { label: tr('Last sign-in'), render: (u) => (u.last_login_at ? ui.rel(u.last_login_at) : tr('Never')) },
         { label: tr('Status'), render: (u) => (u.active ? ui.badge('active', tr('user|Active')) : ui.badge('void', tr('user|Disabled'))) },
-        ...(isAdmin ? [{ label: '', render: (u) => (u.id === req.user.id ? `<span class="muted">${tr('You')}</span>` : `<details class="pop"><summary class="btn btn--ghost btn--xs">${tr('Manage')}</summary>${ui.form(`/admin/team/${u.id}`, csrf, `${ui.select('role', tr('Role'), M.ROLES, u.role)}<label class="check"><input type="checkbox" name="hr" value="1" ${u.hr ? 'checked' : ''}> ${tr('HR access (staff, pay, leave)')}</label><label class="check"><input type="checkbox" name="active" value="1" ${u.active ? 'checked' : ''}> ${tr('Can sign in')}</label><label class="check"><input type="checkbox" name="reset" value="1"> ${tr('Reset password')}</label>${ui.btn(tr('Save'), { cls: 'btn--primary btn--sm' })}`, { cls: 'stack' })}</details>`) }] : []),
+        ...(isAdmin ? [{ label: '', render: (u) => (u.id === req.user.id ? `<span class="muted">${tr('You')}</span>` : `<details class="pop"><summary class="btn btn--ghost btn--xs">${tr('Manage')}</summary>${ui.form(`/admin/team/${u.id}`, csrf, `${ui.select('role', tr('Role'), M.ROLES, u.role)}<label class="check"><input type="checkbox" name="hr" value="1" ${u.hr ? 'checked' : ''}> ${tr('HR access (staff, pay, leave)')}</label><label class="check"><input type="checkbox" name="finance" value="1" ${u.finance ? 'checked' : ''}> ${tr('Finance access (accounting, banks, reports)')}</label><label class="check"><input type="checkbox" name="active" value="1" ${u.active ? 'checked' : ''}> ${tr('Can sign in')}</label><label class="check"><input type="checkbox" name="reset" value="1"> ${tr('Reset password')}</label>${ui.btn(tr('Save'), { cls: 'btn--primary btn--sm' })}`, { cls: 'stack' })}</details>`) }] : []),
       ],
       users,
     );
     const invite = isAdmin
-      ? ui.card(tr('Add someone'), ui.form('/admin/team', csrf, `<div class="fields">${ui.input('name', tr('Name'), '', { required: true })}${ui.input('email', tr('Email'), '', { type: 'email', required: true })}${ui.select('role', tr('Role'), M.ROLES, 'agent')}${ui.input('title', tr('Job title'), '', { placeholder: tr('e.g. Leasing executive') })}</div><label class="check"><input type="checkbox" name="hr" value="1"> ${tr('HR access (staff, pay, leave)')}</label><p class="muted">${tr('A password is generated and shown to you once, to pass on securely.')}</p>${ui.btn(tr('Add to the team'), { cls: 'btn--primary' })}`, { cls: 'stack' }), { sub: tr('<b>Agents</b> work their leads and offers. <b>Managers</b> approve discounts, sign leases and record payments. <b>Viewers</b> can only look.') + ` ${tr('<b>HR access</b> opens the People section (salaries, leave, employee files); administrators always have it.')}` })
+      ? ui.card(tr('Add someone'), ui.form('/admin/team', csrf, `<div class="fields">${ui.input('name', tr('Name'), '', { required: true })}${ui.input('email', tr('Email'), '', { type: 'email', required: true })}${ui.select('role', tr('Role'), M.ROLES, 'agent')}${ui.input('title', tr('Job title'), '', { placeholder: tr('e.g. Leasing executive') })}</div><label class="check"><input type="checkbox" name="hr" value="1"> ${tr('HR access (staff, pay, leave)')}</label><label class="check"><input type="checkbox" name="finance" value="1"> ${tr('Finance access (accounting, banks, reports)')}</label><p class="muted">${tr('A password is generated and shown to you once, to pass on securely.')}</p>${ui.btn(tr('Add to the team'), { cls: 'btn--primary' })}`, { cls: 'stack' }), { sub: tr('<b>Agents</b> work their leads and offers. <b>Managers</b> approve discounts, sign leases and record payments. <b>Viewers</b> can only look.') + ` ${tr('<b>HR access</b> opens the People section (salaries, leave, employee files); administrators always have it.')}` })
       : '';
     const agents = users.filter((u) => u.active && u.role !== 'viewer');
     const targets = h.can(req, 'manager')
@@ -173,7 +173,9 @@ module.exports = function office(router, h) {
     if (db.get('SELECT id FROM users WHERE email = ?', email)) return h.back(req, res, '/admin/team', 'error', tr('Someone already uses that email.'));
     const password = auth.token(9);
     const hrAccess = req.body.hr ? 1 : 0;
-    const r = db.run('INSERT INTO users (name, email, role, title, password_hash, hr, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)', name, email, role, h.str(req.body.title, 120) || null, hashPassword(password), hrAccess, M.now());
+    const financeAccess = req.body.finance ? 1 : 0;
+    const r = db.run('INSERT INTO users (name, email, role, title, password_hash, hr, finance, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', name, email, role, h.str(req.body.title, 120) || null, hashPassword(password), hrAccess, financeAccess, M.now());
+    if (financeAccess) h.log(req, 'Granted finance access', 'user', Number(r.lastInsertRowid), name);
     h.log(req, 'Added a team member', 'user', Number(r.lastInsertRowid), `${name}, role: ${ROLE_EN[role]}`);
     if (hrAccess) h.log(req, 'Granted HR access', 'user', Number(r.lastInsertRowid), name);
     h.back(req, res, '/admin/team', 'ok', tr('{name} added. Their temporary password is {password} (shown once). They can change it under Your account.', { name, password }));
@@ -197,7 +199,9 @@ module.exports = function office(router, h) {
     const active = req.body.active ? 1 : 0;
     if (u.role === 'admin' && (role !== 'admin' || !active) && db.value("SELECT COUNT(*) FROM users WHERE role = 'admin' AND active = 1") <= 1) return h.back(req, res, '/admin/team', 'error', tr('Keep at least one active administrator.'));
     const hrAccess = req.body.hr ? 1 : 0;
-    db.run('UPDATE users SET role = ?, active = ?, hr = ? WHERE id = ?', role, active, hrAccess, u.id);
+    const financeAccess = req.body.finance ? 1 : 0;
+    db.run('UPDATE users SET role = ?, active = ?, hr = ?, finance = ? WHERE id = ?', role, active, hrAccess, financeAccess, u.id);
+    if (financeAccess !== (u.finance ? 1 : 0)) h.log(req, financeAccess ? 'Granted finance access' : 'Removed finance access', 'user', u.id, u.name);
     if (hrAccess !== (u.hr ? 1 : 0)) h.log(req, hrAccess ? 'Granted HR access' : 'Removed HR access', 'user', u.id, u.name);
     let msg = tr('{name} updated.', { name: u.name });
     if (!active || req.body.reset) db.run('DELETE FROM sessions WHERE user_id = ?', u.id);
@@ -302,12 +306,12 @@ ${ui.card(tr('Opening news list'), ui.table([{ label: tr('Email'), render: (s) =
   });
 
   router.post('/settings/demo', R('admin'), (req, res) => {
-    demo.load(db, req.user, { files: h.files });
+    demo.load(db, req.user, { files: h.files, billing: h.billing, h });
     h.log(req, 'Loaded sample data', 'settings');
     h.back(req, res, '/admin', 'ok', tr('Sample data loaded. Explore freely, then clear it in Settings.'));
   });
   router.post('/settings/demo/clear', R('admin'), (req, res) => {
-    demo.clear(db, { files: h.files });
+    demo.clear(db, { files: h.files, billing: h.billing, h });
     h.log(req, 'Cleared sample data', 'settings');
     h.back(req, res, '/admin/settings', 'ok', tr('Sample data cleared.'));
   });

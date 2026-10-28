@@ -124,6 +124,15 @@ const I = {
   upload: 'M12 16V4M7 9l5-5 5 5M5 20h14',
   file: 'M7 3h7l5 5v13H7zM14 3v5h5',
   shield: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z',
+  chat: 'M4 5h16v11H9l-5 4zM8 9h8M8 12h5',
+  wrench: 'M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z',
+  coins: 'M12 7c4.4 0 8-1.3 8-3s-3.6-3-8-3-8 1.3-8 3 3.6 3 8 3M4 4v5c0 1.7 3.6 3 8 3s8-1.3 8-3V4M4 9v5c0 1.7 3.6 3 8 3s8-1.3 8-3V9M4 14v5c0 1.7 3.6 3 8 3s8-1.3 8-3v-5',
+  store: 'M4 9l1-5h14l1 5M4 9h16v11H4zM4 9c0 2 4 2 4 0 0 2 4 2 4 0 0 2 4 2 4 0 0 2 4 2 4 0M10 20v-5h4v5',
+  gauge: 'M12 21a9 9 0 1 1 9-9M12 12l4-4M7 16h10',
+  percent: 'M19 5L5 19M7 9a2 2 0 1 0 0-4 2 2 0 0 0 0 4M17 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4',
+  hammer: 'M14 4l6 6-3 3-6-6zM11 7L3 15l3 3 8-8',
+  flow: 'M3 12h4l3-7 4 14 3-7h4',
+  plug: 'M9 3v5M15 3v5M6 8h12v4a6 6 0 0 1-12 0zM12 18v3',
 };
 // Icons that point somewhere are mirrored in Arabic (see .ic--dir in admin.css).
 const DIRECTIONAL = new Set(['arrow', 'out']);
@@ -134,13 +143,15 @@ const mark = (cls = '') => `<svg class="mark ${cls}" viewBox="163 97 207 128" ar
 // ---------- shell ----------
 const NAV = [
   ['Overview', [['/admin', 'Dashboard', 'dash']]],
-  ['Sales', [['/admin/inbox', 'Inbox', 'inbox', 'inbox'], ['/admin/leads', 'Leads', 'leads'], ['/admin/pipeline', 'Pipeline', 'pipe'], ['/admin/offers', 'Offers', 'offer', 'approvals'], ['/admin/calendar', 'Calendar & tasks', 'cal', 'tasks']]],
-  ['Property', [['/admin/units', 'Units & plan', 'unit'], ['/admin/brands', 'Brands', 'brand'], ['/admin/tenants', 'Tenant files', 'tenant']]],
-  ['Revenue', [['/admin/leases', 'Leases', 'lease'], ['/admin/billing', 'Billing', 'bill', 'overdue']]],
+  ['Sales', [['/admin/inbox', 'Inbox', 'inbox', 'inbox'], ['/admin/leads', 'Leads', 'leads'], ['/admin/pipeline', 'Pipeline', 'pipe'], ['/admin/offers', 'Offers', 'offer', 'approvals'], ['/admin/conversations', 'nav|Conversations', 'chat', 'conversations'], ['/admin/calendar', 'Calendar & tasks', 'cal', 'tasks']]],
+  ['Property', [['/admin/units', 'Units & plan', 'unit'], ['/admin/brands', 'Brands', 'brand'], ['/admin/tenants', 'Tenant files', 'tenant'], ['/admin/fitout', 'nav|Fit-out', 'hammer', 'fitout'], ['/admin/specialty', 'nav|Short-term space', 'store', 'specialty']]],
+  ['Revenue', [['/admin/leases', 'Leases', 'lease'], ['/admin/billing', 'Billing', 'bill', 'overdue'], ['/admin/turnover', 'nav|Turnover & sales', 'percent', 'turnover'], ['/admin/service-charge', 'nav|Service charge', 'report'], ['/admin/utilities', 'nav|Utilities', 'gauge']]],
+  ['nav|Finance', [['/admin/accounting', 'nav|Accounting', 'coins', 'finance', 'finance']]],
+  ['nav|Operations', [['/admin/maintenance', 'nav|Maintenance', 'wrench', 'maintenance'], ['/admin/footfall', 'nav|Footfall', 'flow'], ['/admin/website', 'nav|Website', 'globe']]],
   ['Records', [['/admin/documents', 'Documents', 'folder', 'docs'], ['/admin/contracts', 'Contracts', 'contract', 'renewals']]],
   ['People', [['/admin/hr', 'Employees', 'people', null, 'hr'], ['/admin/hr/leave', 'nav|Leave', 'leave', 'leave', 'hr'], ['/admin/hr/payroll', 'Payroll', 'wallet', null, 'hr']]],
   ['Insight', [['/admin/reports', 'Reports', 'report']]],
-  ['Office', [['/admin/team', 'Team & targets', 'team'], ['/admin/subscribers', 'Subscribers', 'mail'], ['/admin/settings', 'Settings', 'gear', null, 'admin'], ['/admin/audit', 'Activity log', 'log', null, 'manager']]],
+  ['Office', [['/admin/team', 'Team & targets', 'team'], ['/admin/subscribers', 'Subscribers', 'mail'], ['/admin/integrations', 'nav|Integrations', 'plug', null, 'admin'], ['/admin/settings', 'Settings', 'gear', null, 'admin'], ['/admin/audit', 'Activity log', 'log', null, 'manager']]],
 ];
 const RANK = { viewer: 0, agent: 1, manager: 2, admin: 3 };
 
@@ -152,7 +163,7 @@ const langLink = (path) => `<a class="langbtn" href="${esc(path)}${path.includes
 const brandName = () => t('The Wave Leasing');
 
 function layout({ title, crumbs = [], active = '', body, user, csrf, nonce, flash, actions = '', counts = {}, wide = false, path = '' }) {
-  const allowedTo = (min) => !min || (min === 'hr' ? user.role === 'admin' || !!user.hr : RANK[user.role] >= RANK[min]);
+  const allowedTo = (min) => !min || (min === 'hr' ? user.role === 'admin' || !!user.hr : min === 'finance' ? user.role === 'admin' || !!user.finance : RANK[user.role] >= RANK[min]);
   // the most specific menu entry wins (/admin/hr/leave over /admin/hr)
   const best = NAV.flatMap(([, items]) => items.map(([href]) => href)).filter((href) => (href === '/admin' ? active === '/admin' : active === href || active.startsWith(`${href}/`) || active.startsWith(`${href}?`))).sort((a, b) => b.length - a.length)[0];
   const nav = NAV.map(([group, items]) => {
