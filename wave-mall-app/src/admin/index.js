@@ -87,6 +87,8 @@ function build(db, env, app) {
   h.files = require('./files').store(env);
   h.events = require('./events').bus();
   h.billing = require('./billing').billing(db, h.events);
+  h.jobs = require('./scheduler').scheduler({ enabled: env.ADMIN_JOBS === '1' || (env.ADMIN_DB !== ':memory:' && process.env.NODE_ENV !== 'test' && env.ADMIN_JOBS !== '0') });
+  h.every = h.jobs.every;
   // routes outside /admin (see mount()); modules add their own parsers and auth
   h.public = express.Router();
   h.public.use((req, res, next) => {
