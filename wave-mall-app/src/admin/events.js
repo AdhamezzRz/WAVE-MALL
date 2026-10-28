@@ -12,6 +12,10 @@
 //   payment.reversed  { payment, invoice }
 //   payroll.approved  { run, lines }            HR payroll locked
 //   payroll.paid      { run, lines, date }
+//   parking.entry     { session }               a car came in (parking/core.js)
+//   parking.exit      { session }               a car left, its price final
+//   parking.paid      { session, payment }      money for a visit (booth, machine or online)
+//   parking.validated { session, validation }   a shop or the mall made a visit free
 //   (modules may add their own: name them 'area.what' and document them here)
 
 function bus() {

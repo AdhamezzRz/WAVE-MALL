@@ -13,7 +13,7 @@ const { t, tn, tx, isAr, lang, dir } = require('./i18n');
 
 const PUBLIC = path.join(__dirname, '..', '..', 'public');
 const v = (f) => crypto.createHash('sha1').update(fs.readFileSync(path.join(PUBLIC, f))).digest('hex').slice(0, 8);
-const ASSETS = { css: v('admin/admin.css'), js: v('admin/admin.js'), pwa: v('admin/app/pwa.js') };
+const ASSETS = { css: v('admin/admin.css'), js: v('admin/admin.js'), pwa: v('admin/app/pwa.js'), parking: v('admin/parking.js') };
 
 const esc = (s) => (s === null || s === undefined ? '' : String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]));
 const attr = (o) => Object.entries(o).filter(([, x]) => x !== false && x !== null && x !== undefined).map(([k, x]) => (x === true ? k : `${k}="${esc(x)}"`)).join(' ');
@@ -137,6 +137,9 @@ const I = {
   hammer: 'M14 4l6 6-3 3-6-6zM11 7L3 15l3 3 8-8',
   flow: 'M3 12h4l3-7 4 14 3-7h4',
   plug: 'M9 3v5M15 3v5M6 8h12v4a6 6 0 0 1-12 0zM12 18v3',
+  car: 'M5 16V11l2-5h10l2 5v5M3 16h18v3H3zM7 19v2M17 19v2M5 11h14M7.5 13.5h1M15.5 13.5h1',
+  cam: 'M4 8h3l2-3h6l2 3h3v11H4zM12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8',
+  nfc: 'M6 8a8 8 0 0 1 0 8M9.5 6a11 11 0 0 1 0 12M13 4a14 14 0 0 1 0 16M17 2.5a17 17 0 0 1 0 19',
 };
 // Icons that point somewhere are mirrored in Arabic (see .ic--dir in admin.css).
 const DIRECTIONAL = new Set(['arrow', 'out', 'back']);
@@ -151,7 +154,7 @@ const NAV = [
   ['Property', [['/admin/units', 'Units & plan', 'unit'], ['/admin/brands', 'Brands', 'brand'], ['/admin/tenants', 'Tenant files', 'tenant'], ['/admin/fitout', 'nav|Fit-out', 'hammer', 'fitout'], ['/admin/specialty', 'nav|Short-term space', 'store', 'specialty']]],
   ['Revenue', [['/admin/leases', 'Leases', 'lease'], ['/admin/billing', 'Billing', 'bill', 'overdue'], ['/admin/turnover', 'nav|Turnover & sales', 'percent', 'turnover'], ['/admin/service-charge', 'nav|Service charge', 'report'], ['/admin/utilities', 'nav|Utilities', 'gauge']]],
   ['nav|Finance', [['/admin/accounting', 'nav|Accounting', 'coins', 'finance', 'finance']]],
-  ['nav|Operations', [['/admin/maintenance', 'nav|Maintenance', 'wrench', 'maintenance'], ['/admin/footfall', 'nav|Footfall', 'flow'], ['/admin/website', 'nav|Website', 'globe']]],
+  ['nav|Operations', [['/admin/maintenance', 'nav|Maintenance', 'wrench', 'maintenance'], ['/admin/parking', 'nav|Parking', 'car', 'parking'], ['/admin/footfall', 'nav|Footfall', 'flow'], ['/admin/website', 'nav|Website', 'globe']]],
   ['Records', [['/admin/documents', 'Documents', 'folder', 'docs'], ['/admin/contracts', 'Contracts', 'contract', 'renewals']]],
   ['People', [['/admin/hr', 'Employees', 'people', null, 'hr'], ['/admin/hr/leave', 'nav|Leave', 'leave', 'leave', 'hr'], ['/admin/hr/payroll', 'Payroll', 'wallet', null, 'hr']]],
   ['Insight', [['/admin/reports', 'Reports', 'report']]],

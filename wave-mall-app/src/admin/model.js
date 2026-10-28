@@ -44,7 +44,7 @@ const LOST_REASONS = ['Price', 'Unit size', 'Location', 'Timing', 'Chose another
 const INVOICE_KINDS = labels({
   rent: 'kind|Rent', deposit: 'kind|Deposit', key: 'kind|Key money', other: 'kind|Other charge', service: 'kind|Service charge',
   turnover: 'kind|Turnover rent', service_recon: 'kind|Service charge settlement', utility: 'kind|Utilities', specialty: 'kind|Short-term space',
-  fitout: 'kind|Fit-out', penalty: 'kind|Penalty',
+  fitout: 'kind|Fit-out', penalty: 'kind|Penalty', parking: 'kind|Parking',
 });
 const PAY_METHODS = labels({
   transfer: 'pay|Bank transfer', cheque: 'pay|Cheque', card: 'pay|Card', cash: 'pay|Cash', online: 'pay|Online payment', instapay: 'pay|InstaPay', fawry: 'pay|Fawry', wallet: 'pay|Mobile wallet',

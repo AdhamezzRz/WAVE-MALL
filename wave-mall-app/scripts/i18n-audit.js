@@ -17,7 +17,7 @@ const ONLY = args.only ? String(args.only).split(',') : null;
 const MAX = Number(args.max) || 4000;
 
 // Latin words that are fine in Arabic UI: product names, file formats, codes.
-const OK_WORDS = new Set(['CSV', 'PDF', 'WALE', 'VAT', 'ID', 'The', 'Wave', 'K', 'English', 'EGP', 'JPG', 'PNG', 'WebP', 'Word', 'Excel', 'docx', 'xlsx', 'IBAN', 'EG']);
+const OK_WORDS = new Set(['CSV', 'PDF', 'WALE', 'VAT', 'ID', 'The', 'Wave', 'K', 'English', 'EGP', 'JPG', 'PNG', 'WebP', 'Word', 'Excel', 'docx', 'xlsx', 'IBAN', 'EG', 'NFC', 'QR', 'EGYPT']);
 
 async function audit({ quiet = false } = {}) {
   const app = createApp({ env: { SITE_URL: 'https://thewavemall.com', ADMIN_DB: ':memory:' }, mail: async () => ({ delivered: true }) });
@@ -81,6 +81,9 @@ async function audit({ quiet = false } = {}) {
     // typed values in the revenue modules (meter codes, areas, serials, cost descriptions)
     const safe = (sql) => { try { return db ? db.all(sql) : []; } catch { return []; } };
     for (const r of safe('SELECT code, area, serial, notes FROM utl_meters UNION ALL SELECT description, source_ref, NULL, NULL FROM sc_actuals')) Object.values(r).forEach(add);
+    // parking: subscribers, cards, devices and receipt numbers as typed (ticket codes and references by pattern below; plates are Arabic)
+    for (const r of safe('SELECT name, card_uid, phone, email FROM pk_permits UNION ALL SELECT device, NULL, NULL, NULL FROM pk_tills UNION ALL SELECT DISTINCT receipt_ref, NULL, NULL, NULL FROM pk_validations WHERE receipt_ref IS NOT NULL')) Object.values(r).forEach(add);
+    for (const r of safe('SELECT code FROM pk_lanes UNION ALL SELECT code FROM pk_zones UNION ALL SELECT level FROM pk_zones UNION ALL SELECT code FROM pk_plans UNION ALL SELECT DISTINCT card_uid FROM pk_sessions WHERE card_uid IS NOT NULL')) Object.values(r).forEach(add);
     if (db) for (const r of db.all('SELECT name FROM users UNION SELECT name FROM contacts UNION SELECT name FROM brands')) for (const w of String(r.name || '').split(/\s+/)) if (w.length > 2 && /[A-Za-z]/.test(w)) typed.add(w);
     const longTyped = [...typed].filter((v) => v.length > 30);
     const typedList = [...typed].sort((a, b) => b.length - a.length);
@@ -88,6 +91,17 @@ async function audit({ quiet = false } = {}) {
 
     i18n.missing.clear();
     const seen = new Set();
+    // thousands of parking visits and receipts share a few templates: a sample of each is enough
+    const SAMPLED = [/^\/admin\/parking\/visits\/\d+(\/ticket)?$/, /^\/admin\/parking\/payments\/\d+\/receipt$/, /^\/admin\/parking\/tills\/\d+$/, /^\/admin\/parking\/visits\?.*page=/];
+    const sampled = new Map();
+    const queued = new Set();
+    const tooMany = (p) => {
+      const i = SAMPLED.findIndex((re) => re.test(p));
+      if (i < 0) return false;
+      const key = `${i}${p.endsWith('/ticket') ? 't' : ''}`;
+      sampled.set(key, (sampled.get(key) || 0) + 1);
+      return sampled.get(key) > 40;
+    };
     const queue = ONLY ? [...ONLY] : ['/admin'];
     while (queue.length && seen.size < MAX) {
       const path = queue.shift();
@@ -104,7 +118,7 @@ async function audit({ quiet = false } = {}) {
         const h = decode(m[1]);
         if (/\.(css|js|csv)(\?|$)/.test(h) || /[?&](lang|doc)=/.test(h) || /\/export\//.test(h) || /\/settings\/backup/.test(h)) continue;
         if (ONLY && !ONLY.some((o) => h.startsWith(o))) continue;
-        if (!seen.has(h)) queue.push(h);
+        if (!seen.has(h) && !queued.has(h) && !tooMany(h)) { queued.add(h); queue.push(h); }
       }
       // visible text and the attributes people read
       let body = html.replace(/<script[\s\S]*?<\/script>/g, ' ').replace(/<style[\s\S]*?<\/style>/g, ' ').replace(/<head>[\s\S]*?<\/head>/, ' ');
@@ -116,6 +130,8 @@ async function audit({ quiet = false } = {}) {
         // a shortened customer message ("We are looking for a…")
         const cut = s.replace(/(…|\.\.\.)$/, '').trim();
         if ((cut !== s || cut.length > 60) && cut.length > 15 && longTyped.some((v) => v.replace(/\s+/g, ' ').startsWith(cut.replace(/\s+/g, ' ')))) continue;
+        // parking ticket codes (ABCD-2345) before typed values, which could cut a code in two
+        s = s.replace(/\b[2-9A-HJ-NP-Z]{4}-?[2-9A-HJ-NP-Z]{4}\b/g, (m) => (/\d|-/.test(m) ? ' ' : m));
         for (const v of typedList) if (s.includes(v)) s = s.split(v).join(' ');
         s = s.replace(/\S+@\S+/g, ' ').replace(/https?:\/\/\S+/g, ' ').replace(/\b[A-Z]{2}-\d{4}(-\d+)?\b/g, ' ').replace(/\b[GS]\d{2}\b/g, ' ');
         const words = (s.match(/[A-Za-z][A-Za-z'’-]*[A-Za-z]|\b[A-Za-z]\b/g) || []).filter((w) => !OK_WORDS.has(w) && w.length > 1);

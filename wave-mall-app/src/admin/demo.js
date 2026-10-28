@@ -45,7 +45,7 @@ const LEADS = [
 // Sample data for the newer modules lives beside this file (demo-records.js, demo-tenants.js, demo-hr.js).
 // Each exports load(db, admin, { files }) and clear(db, { files }).
 // Order matters: accounting comes last so it can post everything the others created.
-const EXTRAS = ['demo-tenants', 'demo-records', 'demo-hr', 'demo-comms', 'demo-portal', 'demo-fitout', 'demo-website', 'demo-ops', 'demo-revenue', 'demo-accounting'];
+const EXTRAS = ['demo-tenants', 'demo-records', 'demo-hr', 'demo-comms', 'demo-portal', 'demo-fitout', 'demo-website', 'demo-ops', 'demo-revenue', 'demo-parking', 'demo-accounting'];
 const extras = () => EXTRAS.flatMap((m) => {
   try {
     return [require(`./${m}`)];

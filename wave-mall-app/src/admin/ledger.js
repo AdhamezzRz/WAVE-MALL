@@ -139,6 +139,7 @@ const CHART = [
   ['4500', 'inc_utility', 'income', 'income', 'Utility recharges', 'إيراد استرداد المرافق', '4', 0],
   ['4600', 'inc_key', 'income', 'income', 'Key money income', 'إيراد الخلو', '4', 0],
   ['4700', 'inc_other', 'income', 'income', 'Penalties and other income', 'الغرامات والإيرادات الأخرى', '4', 0],
+  ['4800', 'inc_parking', 'income', 'income', 'Parking income', 'إيرادات مواقف السيارات', '4', 0],
   ['5', null, 'expense', null, 'Expenses', 'المصروفات', null, 1],
   ['5100', 'exp_salaries', 'expense', 'expense', 'Salaries and wages', 'الرواتب والأجور', '5', 0],
   ['5110', 'exp_si', 'expense', 'expense', 'Employer social insurance', 'حصة صاحب العمل في التأمينات', '5', 0],
@@ -163,6 +164,7 @@ const ASSET_CLASSES = {
 const KIND_ACCOUNTS = {
   rent: 'inc_rent', service: 'inc_service', turnover: 'inc_turnover', service_recon: 'inc_service', utility: 'inc_utility',
   specialty: 'inc_specialty', key: 'inc_key', other: 'inc_other', penalty: 'inc_other', deposit: 'deposits', fitout: 'fitout_deposits',
+  parking: 'inc_parking',
 };
 // Supplier spending by category (maintenance module, service-contract kinds).
 const CATEGORY_ACCOUNTS = {
@@ -201,6 +203,19 @@ function ledger(db, events = null) {
         ).lastInsertRowid);
       }
     });
+  } else {
+    // books opened before an account joined the standard chart (Parking income, say) get it too,
+    // unless its code or key is already taken by an account of their own
+    const missing = CHART.filter(([code, key]) => key && !db.get('SELECT id FROM acc_accounts WHERE key = ? OR code = ?', key, code));
+    if (missing.length) {
+      db.tx(() => {
+        for (const [code, key, type, sub, en, ar, parent, group] of missing) {
+          const p = parent ? db.get('SELECT id FROM acc_accounts WHERE code = ?', parent) : null;
+          db.run('INSERT INTO acc_accounts (code, key, type, sub, name_en, name_ar, parent_id, is_group, system, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?)',
+            code, key, type, sub, en, ar, p ? p.id : null, group, now());
+        }
+      });
+    }
   }
 
   const S = (k, d = '') => {

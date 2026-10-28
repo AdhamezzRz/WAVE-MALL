@@ -12,6 +12,7 @@ module.exports = {
   'kind|Short-term space': 'مساحة قصيرة الأجل',
   'kind|Fit-out': 'التجهيز',
   'kind|Penalty': 'غرامة',
+  'kind|Parking': 'مواقف السيارات',
   // payment methods
   'pay|Bank transfer': 'تحويل بنكي',
   'pay|Cheque': 'شيك',

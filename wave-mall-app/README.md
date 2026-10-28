@@ -66,6 +66,7 @@ The app reads `PORT` from the environment (Hostinger sets it) and trusts one pro
 | `PAYMENTS_MODE` | `sandbox` for pretend payments while testing; no money moves. Remove it for real payments |
 | `ETA_CLIENT_ID`, `ETA_CLIENT_SECRET`, `ETA_SIGNER_URL` | Egyptian Tax Authority e-invoicing: the ERP system's credentials and the address of your signing service (USB token or HSM). Pre-production or production is chosen in *Finance → E-invoicing* |
 | `FOOTFALL_API_KEY`, `FOOTFALL_HMAC_SECRET` | For people counters sending hourly counts to `/ingest/footfall` (the secret is optional and also requires signed requests) |
+| `PARKING_API_KEY`, `PARKING_HMAC_SECRET` | For the car park's equipment: plate cameras, ticket and card readers, pay machines and level sensors send their reads to `/ingest/parking` with the key (the secret is optional and also requires signed requests). Set-up and examples: *Parking → Set-up* |
 | `PORTAL_DEMO_PASSWORD` | Optional fixed password for the sample tenant-portal accounts (otherwise random, shown on *Tenant portal*) |
 
 Nothing above is needed to start: each integration shows *not connected* in **Integrations** until its keys are set, and the office works without them (offers go by email or a copied link, payments are recorded by hand, e-invoices wait to be submitted).
@@ -104,6 +105,7 @@ A sales ERP for the leasing team, built into the same app. It is private (`noind
 | Service charge & utilities | Yearly service charge budget, apportionment by area, actual costs and the year-end reconciliation; electricity, water and chilled-water meters, readings and recharge invoices |
 | Website | Brands directory and events for the public site (`/stores/`, `/events/`), edited here with images |
 | Finance & accounting | Chart of accounts, journal with automatic entries from invoices, payments, payroll and expenses, suppliers and bills, banks and reconciliation, VAT, period closing, trial balance, profit and loss, balance sheet and cash flow; ETA e-invoicing |
+| Parking | The live car park (free spaces per level, cars in, takings, the gates' feed, cars parked too long), the exit booth for cashiers on a tablet or phone (scan the ticket's QR code, tap an NFC card or type the plate; cash, card, wallet or InstaPay; lost tickets; letting a car out), tills that close into the books, every visit, subscriptions on plates or NFC cards (billed monthly, suspended when unpaid), shops validating their customers' parking from the tenant portal (whole visit or some hours free, billed to the shop when it pays), prices by the hour with a day rate, event prices, reports and the gates' API. Visitors see free spaces and prices, find their car and pay by phone at `/parking`; each ticket's QR code opens its own page |
 | Phone app | Install the office (and the tenant portal) on a phone from the browser: home-screen icon, full screen, bottom tab bar, works offline for pages already opened |
 
 **Finance permission:** accounting, payroll costs and bank details are visible only to people with *Finance* ticked under Team (administrators always have it).

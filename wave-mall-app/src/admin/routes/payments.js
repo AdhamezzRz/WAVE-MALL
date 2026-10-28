@@ -68,6 +68,8 @@ const ICON = { card: 'wallet', wallet: 'phone', kiosk: 'store' };
 const LINK_DAYS = 14;
 // invoices the ETA never sees: refundable deposits and fit-out deposits are not sales
 const ETA_SKIP = ['deposit', 'fitout'];
+// visitors' parking (no brand) is a retail sale for the e-receipt system, not a B2B e-invoice
+const etaSkipped = (inv) => ETA_SKIP.includes(inv.kind) || (inv.kind === 'parking' && !inv.brand_id);
 
 const r2 = (n) => Math.round(Number(n || 0) * 100) / 100;
 const now = () => new Date().toISOString();
@@ -200,7 +202,7 @@ module.exports = function payments(router, h) {
         const r = h.billing.recordPayment({
           invoice_id: cur.invoice_id, amount: cur.amount, date: M.today(), method: PAY_METHOD[cur.method],
           reference: `${provider === 'sandbox' ? 'Sandbox' : 'Paymob'} ${txnId}`, provider, provider_ref: String(txnId),
-          note: cur.source === 'link' ? 'Paid online through a payment link' : 'Paid online through the tenant portal', demo: cur.demo,
+          note: cur.source === 'link' ? 'Paid online through a payment link' : cur.source === 'parking' ? 'Paid online for parking' : 'Paid online through the tenant portal', demo: cur.demo,
         });
         payment = r.payment;
         if (payment.amount < cur.amount - 0.005) error = `Received ${cur.amount}; ${payment.amount} applied to the invoice. Refund or credit the rest.`;
@@ -410,6 +412,8 @@ ${refresh ? `<meta http-equiv="refresh" content="${ui.esc(refresh)}">` : ''}
     if (!i) {
       return payPage(req, res, { status: 404, title: tr('por|Payment'), body: `<section class="card paycard"><div class="card__body stack"><h1>${ui.esc(tr('por|We could not find this payment.'))}</h1><p class="muted">${ui.esc(tr('por|If money left your account, the leasing office will confirm it. Nothing is charged twice.'))}</p></div></section>` });
     }
+    // parking: back to the visitor's ticket, which shows the result and the way out
+    if (i.source === 'parking' && h.parking && h.parking.afterPay) return res.redirect(303, h.parking.afterPay(i, req.lang));
     const inv = invoiceBy(i.invoice_id);
     const p = i.payment_id ? db.get('SELECT * FROM payments WHERE id = ?', i.payment_id) : null;
     const portalLink = i.source === 'portal' ? `<a class="btn btn--primary btn--block" href="/portal/invoices/${i.invoice_id}">${ui.icon('arrow')}<span>${ui.esc(tr('por|Back to the portal'))}</span></a>` : '';
@@ -690,7 +694,7 @@ ${refresh ? `<meta http-equiv="refresh" content="${ui.esc(refresh)}">` : ''}
   });
   const etaBadge = (s) => ui.badge(`eta-${s}`, (ETA_STATUS()[s] || [s])[0], (ETA_STATUS()[s] || [])[1]);
   const etaLog = (docId, action, detail, user = null) => db.run('INSERT INTO eta_log (eta_document_id, action, detail, user_id, created_at) VALUES (?, ?, ?, ?, ?)', docId, action, detail ? String(detail).slice(0, 1000) : null, user ? user.id : null, now());
-  const etaEligible = (inv) => inv && inv.status !== 'void' && !ETA_SKIP.includes(inv.kind) && inv.total > 0;
+  const etaEligible = (inv) => inv && inv.status !== 'void' && !etaSkipped(inv) && inv.total > 0;
   const LOCKED = ['submitted', 'valid', 'cancel_needed'];
 
   // Build and check the document for an invoice; returns the eta_documents row.
@@ -801,7 +805,7 @@ ${refresh ? `<meta http-equiv="refresh" content="${ui.esc(refresh)}">` : ''}
   const monthOf = (req) => (/^\d{4}-\d{2}$/.test(String(req.query.month || req.body.month || '')) ? String(req.query.month || req.body.month) : M.today().slice(0, 7));
   const monthInvoices = (month) => db.all(
     `SELECT i.*, COALESCE(b.name, i.customer) party, e.id eta_id, e.status eta_status, e.errors eta_errors, e.uuid FROM invoices i LEFT JOIN brands b ON b.id = i.brand_id LEFT JOIN eta_documents e ON e.invoice_id = i.id
-     WHERE substr(i.due_date, 1, 7) = ? AND (i.status != 'void' OR e.id IS NOT NULL) AND i.kind NOT IN (${ETA_SKIP.map(() => '?').join(',')}) ORDER BY i.due_date, i.ref`, month, ...ETA_SKIP,
+     WHERE substr(i.due_date, 1, 7) = ? AND (i.status != 'void' OR e.id IS NOT NULL) AND i.kind NOT IN (${ETA_SKIP.map(() => '?').join(',')}) AND NOT (i.kind = 'parking' AND i.brand_id IS NULL) ORDER BY i.due_date, i.ref`, month, ...ETA_SKIP,
   );
 
   router.get('/eta', h.RF, (req, res) => {

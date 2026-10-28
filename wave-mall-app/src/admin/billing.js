@@ -6,7 +6,7 @@
 
 const { now, today } = require('./db');
 
-const KINDS = ['rent', 'deposit', 'key', 'other', 'service', 'turnover', 'service_recon', 'utility', 'specialty', 'fitout', 'penalty'];
+const KINDS = ['rent', 'deposit', 'key', 'other', 'service', 'turnover', 'service_recon', 'utility', 'specialty', 'fitout', 'penalty', 'parking'];
 
 // Deposits are held, not sold: no VAT on them.
 const NO_VAT = ['deposit', 'fitout'];
@@ -19,7 +19,8 @@ function billing(db, events) {
   if (db.ensure) db.ensure('billing-vat-1', 'ALTER TABLE invoices ADD COLUMN vat REAL NOT NULL DEFAULT 0;');
 
   // Create an invoice. Needs a lease, a brand or a customer name. Returns the stored row.
-  // v.vat_pct overrides the setting (0 for none).
+  // v.vat_pct overrides the setting (0 for none). v.vat_included: the amount given already includes
+  // VAT (prices for the public, like parking), so the total stays exactly that amount.
   function createInvoice(v, { user = null, emit = true } = {}) {
     const lease = v.lease_id ? db.get('SELECT id, brand_id FROM leases WHERE id = ?', v.lease_id) : null;
     const brandId = v.brand_id || (lease ? lease.brand_id : null);
@@ -31,8 +32,8 @@ function billing(db, events) {
     const net = r2(v.total ?? rent + service + other);
     if (!(net > 0)) throw new Error('An invoice needs an amount above zero.');
     const pct = NO_VAT.includes(kind) ? 0 : Math.max(0, Number(v.vat_pct ?? db.setting('vat_pct')) || 0);
-    const vat = r2((net * pct) / 100);
-    const total = r2(net + vat);
+    const vat = v.vat_included ? r2(net - net / (1 + pct / 100)) : r2((net * pct) / 100);
+    const total = v.vat_included ? net : r2(net + vat);
     const id = Number(db.run(
       `INSERT INTO invoices (ref, lease_id, brand_id, customer, kind, period_start, period_end, due_date, rent, service, other, total, vat, note, source, source_id, demo, created_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,

@@ -22,7 +22,7 @@ const BILL_TONES = { draft: 'mute', approved: 'sky', partial: 'amber', paid: 'ok
 const INV_KINDS = {
   rent: 'acckind|Base rent', service: 'acckind|Service charge', turnover: 'acckind|Turnover rent', service_recon: 'acckind|Service charge settlement',
   utility: 'acckind|Utility recharges', specialty: 'acckind|Specialty leasing', key: 'acckind|Key money', penalty: 'acckind|Penalties',
-  other: 'acckind|Other charges', deposit: 'acckind|Security deposits', fitout: 'acckind|Fit-out deposits',
+  other: 'acckind|Other charges', deposit: 'acckind|Security deposits', fitout: 'acckind|Fit-out deposits', parking: 'acckind|Parking',
 };
 const METHODS = { transfer: 'accm|Bank transfer', cheque: 'accm|Cheque', card: 'accm|Card', cash: 'accm|Cash', online: 'accm|Online payment', instapay: 'accm|InstaPay', fawry: 'accm|Fawry', wallet: 'accm|Mobile wallet' };
 const ASSET_CLASSES = { building: 'accfa|Buildings', fitout: 'accfa|Fit-out and improvements', mep: 'accfa|MEP and equipment', furniture: 'accfa|Furniture and fixtures', it: 'accfa|IT equipment', vehicles: 'accfa|Vehicles' };

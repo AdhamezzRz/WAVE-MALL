@@ -456,6 +456,8 @@ test('portal: pages are fully Arabic, with sample data; sample data clears again
   // other modules' stored invoice notes and portal tabs are checked by their own tests (their keys show in i18n.missing)
   for (const r of db.all("SELECT DISTINCT note FROM invoices WHERE note IS NOT NULL")) typed.add(r.note);
   for (const r of db.all('SELECT ref FROM invoices UNION SELECT ref FROM payments UNION SELECT reference FROM payments UNION SELECT ref FROM leases UNION SELECT title FROM documents UNION SELECT file_name FROM documents UNION SELECT code FROM units')) Object.values(r).forEach((v) => v && typed.add(v));
+  // parking subscriptions and tills named in invoice notes
+  for (const r of db.all('SELECT ref FROM pk_permits UNION SELECT ref FROM pk_tills')) typed.add(r.ref);
   const list = [...typed].map(String).sort((a, b) => b.length - a.length);
   const OK = new Set(['The', 'Wave', 'English', 'PDF', 'JPG', 'PNG', 'WebP', 'Word', 'Excel', 'EGP', 'IBAN']);
   const leftovers = {};

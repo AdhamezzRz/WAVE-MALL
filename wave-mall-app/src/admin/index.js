@@ -125,7 +125,7 @@ function build(db, env, app) {
   require('./routes/files')(router, h);
   // Modules, in load order. The portal goes first (others add tabs to it); accounting goes last
   // (it listens to everyone's events). A module that is not there yet is skipped.
-  for (const mod of ['portal', 'records', 'tenants', 'hr', 'comms', 'payments', 'fitout', 'website', 'specialty', 'maintenance', 'footfall', 'revenue', 'accounting', 'mobile']) {
+  for (const mod of ['portal', 'records', 'tenants', 'hr', 'comms', 'payments', 'fitout', 'website', 'specialty', 'maintenance', 'footfall', 'revenue', 'parking', 'accounting', 'mobile']) {
     try {
       require.resolve(`./routes/${mod}`);
     } catch {
