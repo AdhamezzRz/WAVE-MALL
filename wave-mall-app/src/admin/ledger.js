@@ -140,6 +140,7 @@ const CHART = [
   ['4600', 'inc_key', 'income', 'income', 'Key money income', 'إيراد الخلو', '4', 0],
   ['4700', 'inc_other', 'income', 'income', 'Penalties and other income', 'الغرامات والإيرادات الأخرى', '4', 0],
   ['4800', 'inc_parking', 'income', 'income', 'Parking income', 'إيرادات مواقف السيارات', '4', 0],
+  ['4900', 'inc_media', 'income', 'income', 'Advertising and media income', 'إيرادات الإعلانات والوسائط', '4', 0],
   ['5', null, 'expense', null, 'Expenses', 'المصروفات', null, 1],
   ['5100', 'exp_salaries', 'expense', 'expense', 'Salaries and wages', 'الرواتب والأجور', '5', 0],
   ['5110', 'exp_si', 'expense', 'expense', 'Employer social insurance', 'حصة صاحب العمل في التأمينات', '5', 0],
@@ -164,7 +165,7 @@ const ASSET_CLASSES = {
 const KIND_ACCOUNTS = {
   rent: 'inc_rent', service: 'inc_service', turnover: 'inc_turnover', service_recon: 'inc_service', utility: 'inc_utility',
   specialty: 'inc_specialty', key: 'inc_key', other: 'inc_other', penalty: 'inc_other', deposit: 'deposits', fitout: 'fitout_deposits',
-  parking: 'inc_parking',
+  parking: 'inc_parking', media: 'inc_media',
 };
 // Supplier spending by category (maintenance module, service-contract kinds).
 const CATEGORY_ACCOUNTS = {

@@ -6,7 +6,7 @@
 
 const { now, today } = require('./db');
 
-const KINDS = ['rent', 'deposit', 'key', 'other', 'service', 'turnover', 'service_recon', 'utility', 'specialty', 'fitout', 'penalty', 'parking'];
+const KINDS = ['rent', 'deposit', 'key', 'other', 'service', 'turnover', 'service_recon', 'utility', 'specialty', 'fitout', 'penalty', 'parking', 'media'];
 
 // Deposits are held, not sold: no VAT on them.
 const NO_VAT = ['deposit', 'fitout'];
