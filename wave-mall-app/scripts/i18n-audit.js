@@ -88,6 +88,8 @@ async function audit({ quiet = false } = {}) {
     for (const r of safe(`SELECT name, phone, email, note FROM pk_bookings UNION ALL SELECT name, contact_name, address, notes FROM pk_accounts UNION ALL SELECT name, phone, notes, place FROM pk_valet
       UNION ALL SELECT place, note, resolution, NULL FROM pk_violations UNION ALL SELECT title, place, description, resolution FROM pk_incidents UNION ALL SELECT reporter_name, claim_ref, item, stored_at FROM pk_incidents
       UNION ALL SELECT returned_to, NULL, NULL, NULL FROM pk_incidents UNION ALL SELECT reason, NULL, NULL, NULL FROM hr_advances UNION ALL SELECT subject, NULL, NULL, NULL FROM outbox UNION ALL SELECT body, NULL, NULL, NULL FROM pk_incident_notes UNION ALL SELECT witness, bag, carrier, reference FROM pk_safe UNION ALL SELECT note, NULL, NULL, NULL FROM pk_safe`)) Object.values(r).forEach(add);
+    // each module lists the fields people type: h.auditTyped (SELECT statements)
+    for (const q of (app.locals.admin.h && app.locals.admin.h.auditTyped) || []) for (const r of safe(q)) Object.values(r).forEach(add);
     if (db) for (const r of db.all('SELECT name FROM users UNION SELECT name FROM contacts UNION SELECT name FROM brands')) for (const w of String(r.name || '').split(/\s+/)) if (w.length > 2 && /[A-Za-z]/.test(w)) typed.add(w);
     const longTyped = [...typed].filter((v) => v.length > 30);
     const typedList = [...typed].sort((a, b) => b.length - a.length);
