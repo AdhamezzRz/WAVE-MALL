@@ -400,7 +400,7 @@ module.exports = function deals(router, h) {
       rows,
       { empty: tr('No leases yet. Accept an offer, then create a lease from it.'), href: (s) => `/admin/leases/${s.id}` },
     );
-    h.page(req, res, { title: tr('Leases'), active: '/admin/leases', wide: true, body: `<nav class="tabs">${tabs}</nav>${f.html}${ui.card(tn(rows.length, '{n} lease', '{n} leases'), table, { action: ui.btn(tr('Rent roll CSV'), { href: '/admin/export/rentroll.csv', cls: 'btn--ghost btn--sm', ic: 'dl' }) })}`, actions: h.can(req, 'manager') ? ui.btn(tr('New lease'), { href: '/admin/leases/new', cls: 'btn--primary', ic: 'plus' }) : '' });
+    h.page(req, res, { title: tr('Leases'), active: '/admin/leases', wide: true, body: `<nav class="tabs">${tabs}</nav>${f.html}${ui.card(tn(rows.length, '{n} lease', '{n} leases'), table, { action: ui.btn(tr('Rent roll CSV'), { href: '/admin/export/rentroll.csv', cls: 'btn--ghost btn--sm', ic: 'dl' }) })}`, actions: `<div class="row">${ui.btn(ui.esc(tr('amd|Renewals')), { href: '/admin/leases/renewals', cls: 'btn--ghost', ic: 'cal' })}${h.can(req, 'manager') ? ui.btn(tr('New lease'), { href: '/admin/leases/new', cls: 'btn--primary', ic: 'plus' }) : ''}</div>` });
   });
 
   router.get('/leases/new', R('manager'), (req, res) => {
@@ -518,7 +518,7 @@ module.exports = function deals(router, h) {
     });
     const actions = [];
     if (s.status === 'draft' && h.can(req, 'manager')) actions.push(ui.form(`/admin/leases/${s.id}/activate`, csrf, ui.btn(tr('Activate lease'), { cls: 'btn--primary', ic: 'check', attrs: { 'data-confirm': tr('Activate? The units become leased and the invoices are created.') } })));
-    if (s.status === 'active' && h.can(req, 'manager')) actions.push(`<details class="pop"><summary class="btn btn--ghost">${tr('End lease')}</summary>${ui.form(`/admin/leases/${s.id}/end`, csrf, `${ui.select('how', tr('How'), { ended: tr('Ended (term complete)'), terminated: tr('Terminated early') }, 'terminated')}${ui.input('date', tr('Last day'), t, { type: 'date' })}${ui.btn(tr('End lease'), { cls: 'btn--danger btn--sm', attrs: { 'data-confirm': tr('End this lease? Future invoices are voided and the units become available.') } })}`, { cls: 'stack' })}</details>`);
+    if (s.status === 'active' && h.can(req, 'manager')) actions.push(`<details class="pop"><summary class="btn btn--ghost">${tr('End lease')}</summary>${ui.form(`/admin/leases/${s.id}/end`, csrf, `${ui.select('how', tr('How'), { ended: tr('Ended (term complete)'), terminated: tr('Terminated early') }, 'terminated')}${ui.input('date', tr('Last day'), t, { type: 'date' })}${ui.btn(tr('End lease'), { cls: 'btn--danger btn--sm', attrs: { 'data-confirm': tr('End this lease? Future invoices are voided and the units become available.') } })}`, { cls: 'stack' })}<p class="small muted">${ui.esc(tr('amd|Or settle it: what is owed against the deposit, with a printed statement.'))} <a href="/admin/leases/${s.id}/settle">${ui.esc(tr('amd|End and settle'))}</a></p></details>`);
     if (s.status === 'active' && h.can(req, 'manager')) actions.push(`<details class="pop"><summary class="btn btn--ghost">${tr('Add a charge')}</summary>${ui.form(`/admin/leases/${s.id}/charge`, csrf, `${ui.input('note', tr('What for'), '', { required: true, placeholder: tr('e.g. Signage approval fee') })}${ui.input('amount', tr('Amount'), '', { type: 'number', min: 1, step: 1, required: true })}${ui.input('due', tr('Due'), M.addDays(t, 14), { type: 'date' })}${ui.input('vat_pct', tr('VAT (%)'), s.vat_pct ?? (Number(db.setting('vat_pct')) || 0), { type: 'number', min: 0, max: 100, step: '0.5' })}<label class="check"><input type="checkbox" name="vat_included" value="1"${s.vat_included ? ' checked' : ''}> ${tr('The amount includes VAT')}</label>${ui.btn(tr('Add charge'), { cls: 'btn--primary btn--sm' })}`, { cls: 'stack' })}</details>`);
     const kpis = [
       ui.kpi({ label: tr('Area'), value: ui.m2(sc.indoor), sub: units.map((u) => u.code).join(', ') }),
@@ -568,7 +568,8 @@ module.exports = function deals(router, h) {
     if (!s) return next();
     if (s.status !== 'draft') return h.back(req, res, `/admin/leases/${s.id}`, 'error', tr('Only a draft lease can be activated.'));
     const units = M.leaseUnits(db, s.id);
-    const clash = units.filter((u) => u.status === 'leased');
+    const renewing = s.renewed_from ? M.leaseUnits(db, s.renewed_from).map((u) => u.id) : [];
+    const clash = units.filter((u) => u.status === 'leased' && !renewing.includes(u.id));
     if (clash.length) return h.back(req, res, `/admin/leases/${s.id}`, 'error', tr('{codes} already leased.', { codes: clash.map((u) => u.code).join(', ') }));
     db.tx(() => {
       db.run("UPDATE leases SET status = 'active', signed_at = COALESCE(signed_at, ?) WHERE id = ?", M.today(), s.id);
@@ -588,18 +589,23 @@ module.exports = function deals(router, h) {
     h.back(req, res, `/admin/leases/${s.id}`, 'ok', tr('Lease active. {codes} leased and invoices created.', { codes: units.map((u) => u.code).join(', ') }));
   });
 
+  function endLease(s, { how, date, user = null }) {
+    db.run('UPDATE leases SET status = ?, end_date = ? WHERE id = ?', how, date, s.id);
+    for (const inv of db.all("SELECT id, note FROM invoices WHERE lease_id = ? AND status = 'open' AND paid = 0 AND due_date > ?", s.id, date)) {
+      h.billing.voidInvoice(inv.id, { user, note: inv.note ? `${inv.note} (lease ended)` : 'Voided: lease ended' });
+    }
+    for (const u of M.leaseUnits(db, s.id)) {
+      const other = db.get("SELECT s.id FROM lease_units x JOIN leases s ON s.id = x.lease_id WHERE x.unit_id = ? AND s.id != ? AND s.status = 'active'", u.id, s.id);
+      if (!other) db.run("UPDATE units SET status = 'available', updated_at = ? WHERE id = ?", M.now(), u.id);
+    }
+  }
+  h.endLease = endLease;
   router.post('/leases/:id/end', R('manager'), (req, res, next) => {
     const s = leaseOf(req.params.id);
     if (!s) return next();
     const how = req.body.how === 'ended' ? 'ended' : 'terminated';
     const date = /^\d{4}-\d{2}-\d{2}$/.test(req.body.date || '') ? req.body.date : M.today();
-    db.tx(() => {
-      db.run('UPDATE leases SET status = ?, end_date = ? WHERE id = ?', how, date, s.id);
-      for (const inv of db.all("SELECT id, note FROM invoices WHERE lease_id = ? AND status = 'open' AND paid = 0 AND due_date > ?", s.id, date)) {
-        h.billing.voidInvoice(inv.id, { user: req.user, note: inv.note ? `${inv.note} (lease ended)` : 'Voided: lease ended' });
-      }
-      for (const u of M.leaseUnits(db, s.id)) db.run("UPDATE units SET status = 'available', updated_at = ? WHERE id = ?", M.now(), u.id);
-    });
+    db.tx(() => endLease(s, { how, date, user: req.user }));
     h.log(req, `Lease ${how}`, 'lease', s.id, `${s.ref} · ${s.brand_name}`);
     h.back(req, res, `/admin/leases/${s.id}`, 'ok', tr('Lease ended. Its units are available again.'));
   });
@@ -675,7 +681,7 @@ module.exports = function deals(router, h) {
     const voidForm = i.status === 'open' && !i.paid && h.can(req, 'manager') ? `<details class="danger"><summary>${tr('Void invoice')}</summary>${ui.form(`/admin/invoices/${i.id}/void`, req.session.csrf, ui.btn(tr('Void invoice'), { cls: 'btn--danger btn--sm', attrs: { 'data-confirm': tr('Void this invoice?') } }))}</details>` : '';
     const pays = db.all('SELECT p.*, u.name user_name FROM payments p LEFT JOIN users u ON u.id = p.user_id WHERE p.invoice_id = ? ORDER BY p.date, p.id', i.id);
     const payments = pays.length
-      ? ui.card(tr('Payments'), `<ul class="list">${pays.map((p) => `<li><span class="what"><b>${ui.esc(p.ref)} · ${ui.money(p.amount)}</b><small>${ui.date(p.date)}${p.method ? ` · ${ui.esc(METHODS()[p.method] || p.method)}` : ''}${p.reference ? ` · ${ui.esc(p.reference)}` : ''}${p.user_name ? ` · ${ui.esc(p.user_name)}` : ''}</small></span>${p.status === 'reversed' ? ui.badge('void', tr('pay|Reversed')) : h.can(req, 'manager') ? ui.form(`/admin/payments/${p.id}/reverse`, req.session.csrf, ui.btn(tr('Reverse'), { cls: 'btn--ghost btn--xs', attrs: { 'data-confirm': tr('Reverse this payment? The invoice will be open again.') } })) : ''}</li>`).join('')}</ul>`)
+      ? ui.card(tr('Payments'), `<ul class="list">${pays.map((p) => `<li><span class="what"><b>${ui.esc(p.ref)} · ${ui.money(p.amount)}</b><small>${ui.date(p.date)}${p.method ? ` · ${ui.esc(METHODS()[p.method] || p.method)}` : ''}${p.reference ? ` · ${ui.esc(p.reference)}` : ''}${p.user_name ? ` · ${ui.esc(p.user_name)}` : ''}</small></span>${p.status === 'reversed' ? ui.badge('void', tr('pay|Reversed')) : reversalPending(p.id) ? ui.badge('pending', tr('col|Reversal awaiting approval'), 'amber') : h.can(req, 'manager') ? ui.form(`/admin/payments/${p.id}/reverse`, req.session.csrf, ui.btn(tr('Reverse'), { cls: 'btn--ghost btn--xs', attrs: { 'data-confirm': tr('Reverse this payment? The invoice will be open again.') } })) : ''}</li>`).join('')}</ul>`)
       : '';
     const paidAt = i.paid_at ? (i.method ? tr('{date} by {method}', { date: ui.date(i.paid_at), method: ui.esc(METHODS()[i.method] || i.method) }) : ui.date(i.paid_at)) : '';
     const body = `<div class="grid grid--side">
@@ -703,7 +709,7 @@ module.exports = function deals(router, h) {
     if (!amount || amount <= 0) return h.back(req, res, `/admin/invoices/${i.id}`, 'error', tr('Enter the amount received.'));
     let out;
     try {
-      out = h.billing.recordPayment({ invoice_id: i.id, amount, date: req.body.date, method: M.PAY_METHODS[req.body.method] ? req.body.method : null, reference: h.str(req.body.reference, 80) || null, note: h.str(req.body.note, 200) || null }, { user: req.user });
+      out = h.billing.recordPayment({ invoice_id: i.id, amount, date: req.body.date, method: Object.keys(M.PAY_METHODS).includes(req.body.method) ? req.body.method : null, reference: h.str(req.body.reference, 80) || null, note: h.str(req.body.note, 200) || null }, { user: req.user });
     } catch (err) {
       return h.back(req, res, `/admin/invoices/${i.id}`, 'error', tr(err.message));
     }
@@ -718,9 +724,24 @@ module.exports = function deals(router, h) {
     h.back(req, res, `/admin/invoices/${req.params.id}`, 'ok', tr('Invoice voided.'));
   });
 
+  // a reversal waiting for approval (approvals kind 'refund', decided in routes/collections.js)
+  function reversalPending(paymentId) {
+    try {
+      return !!(h.approvals && typeof h.approvals.pendingFor === 'function' && h.approvals.pendingFor('payment', paymentId));
+    } catch {
+      return false;
+    }
+  }
   router.post('/payments/:id/reverse', R('manager'), (req, res) => {
     const p = db.get('SELECT * FROM payments WHERE id = ?', h.int(req.params.id));
     const back = p && p.invoice_id ? `/admin/invoices/${p.invoice_id}` : '/admin/billing';
+    if (p && p.status !== 'reversed' && !['writeoff', 'deposit'].includes(p.method) && h.refunds && h.refunds.needs(p.amount)) {
+      if (reversalPending(p.id)) return h.back(req, res, back, 'error', tr('col|A reversal of this payment already waits for approval.'));
+      const inv = p.invoice_id ? db.get('SELECT i.ref, b.name FROM invoices i LEFT JOIN brands b ON b.id = i.brand_id WHERE i.id = ?', p.invoice_id) : null;
+      h.refunds.ask({ type: 'reverse_payment', title: `Reverse receipt ${p.ref}${inv ? ` · ${inv.ref}${inv.name ? ` · ${inv.name}` : ''}` : ''}`, amount: p.amount, entity: 'payment', entity_id: p.id, link: back, payload: { payment_id: p.id }, user: req.user, demo: p.demo });
+      h.log(req, 'Asked to reverse a payment', 'payment', p.id, `${p.ref} · ${p.amount}`);
+      return h.back(req, res, back, 'ok', tr('col|Sent for approval. The payment is reversed once approved.'));
+    }
     try {
       h.billing.reversePayment(h.int(req.params.id), { user: req.user });
     } catch (err) {
