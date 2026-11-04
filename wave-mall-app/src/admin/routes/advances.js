@@ -5,6 +5,8 @@
 // open (payroll_lines.advance, shown on the payslip); an installment counts as repaid once its run is
 // approved. An employee can also repay early in cash. In the books: the advance is a receivable
 // from staff (paid out of cash or the bank), settled by payroll deductions or the cash repaid.
+// When the approval rules say so (routes/approvals.js, kind 'advance'), an advance from a set amount
+// waits for approval first; once approved it is given exactly as if it had been entered directly.
 
 const { t: tr, tn, isAr } = require('../i18n');
 
@@ -114,6 +116,8 @@ module.exports = function advances(router, h) {
     ], rows, { empty: esc(tr('adv|No advances here.')), href: (a) => `/admin/hr/advances/${a.id}` });
     const csrf = req.session.csrf;
     const next = M.addMonths(`${month}-01`, 1).slice(0, 7);
+    const rule = apr() ? apr().ruleOf('advance') : null;
+    const pending = waiting(emp);
     const form = ui.form('/admin/hr/advances', csrf, `<div class="fields">
       ${ui.select('employee_id', tr('Employee'), employees().map((e) => [e.id, `${nm(e)} · ${e.code}`]), emp || '', { required: true, blank: tr('Choose…') })}
       ${ui.input('amount', tr('adv|Amount'), '', { type: 'number', min: 1, step: '0.01', required: true })}
@@ -122,12 +126,55 @@ module.exports = function advances(router, h) {
       ${ui.input('issued_on', tr('adv|Given on'), M.today(), { type: 'date', required: true })}
       ${ui.select('method', tr('adv|Paid out by'), Object.fromEntries(Object.entries(METHODS).map(([k, v]) => [k, tr(v)])), 'cash')}
       ${ui.input('reason', tr('adv|Reason'), '', { cls: 'span-all', placeholder: tr('adv|e.g. Family occasion') })}
-    </div><p class="muted small">${esc(tr('adv|The monthly amount is taken off their pay from the first deduction month until it is repaid.'))}</p>${ui.btn(esc(tr('adv|Give the advance')), { cls: 'btn--primary btn--sm' })}`, { cls: 'stack' });
+    </div><p class="muted small">${esc(tr('adv|The monthly amount is taken off their pay from the first deduction month until it is repaid.'))}</p>${rule && rule.active ? `<p class="muted small">${esc(tr('apr|Advances from {amount} wait for approval first.', { amount: ui.money(rule.min_amount) }))}</p>` : ''}${ui.btn(esc(tr('adv|Give the advance')), { cls: 'btn--primary btn--sm' })}`, { cls: 'stack' });
     h.page(req, res, {
       title: tr('adv|Salary advances'), active: '/admin/hr/advances', wide: true,
-      body: `<div class="kpis kpis--3">${kpis}</div>${tabs}<div class="grid grid--side"><div>${ui.card(tr('adv|Advances'), table)}</div><div>${ui.card(tr('adv|New advance'), form, { sub: esc(tr('adv|A loan against salary, repaid from payroll.')) })}</div></div>`,
+      body: `<div class="kpis kpis--3">${kpis}</div>${tabs}<div class="grid grid--side"><div class="stack">${pending.length ? ui.card(tr('apr|Waiting for approval'), waitingList(pending), { sub: esc(tr('apr|Given once approved.')) }) : ''}${ui.card(tr('adv|Advances'), table)}</div><div>${ui.card(tr('adv|New advance'), form, { sub: esc(tr('adv|A loan against salary, repaid from payroll.')) })}</div></div>`,
     });
   });
+
+  // Give an advance: the record, its posting in the books, and the draft payrolls it now affects.
+  function giveAdvance({ employee, amount, installments, start, issued, method, reason, by = null, user = null, demo = 0 }) {
+    const n = Math.min(36, Math.max(1, Number(installments) || 1));
+    const id = db.tx(() => {
+      const aid = Number(db.run('INSERT INTO hr_advances (ref, employee_id, amount, installments, monthly, start_period, issued_on, method, reason, created_by, demo, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        db.nextRef('hr_advances', 'AD', 4, true), employee.id, amount, n, r2(Math.ceil((amount / n) * 100) / 100), start, issued, method, reason || null, by, demo ? 1 : 0, now()).lastInsertRowid);
+      const L = ledger();
+      if (L) book(`Salary advance to ${employee.name}`, [{ account: 'other_receivables', debit: amount }, { account: cashAccount(L, method), credit: amount }], { date: issued, source: `advance:${aid}`, user, demo });
+      return aid;
+    });
+    // a draft payroll for a month it already covers picks it up now
+    for (const run of db.all("SELECT * FROM payroll_runs WHERE status = 'draft' AND period >= ?", start)) {
+      if (h.hrRecalc) h.hrRecalc(run);
+    }
+    return id;
+  }
+  h.advances.give = giveAdvance;
+  const apr = () => (h.approvals && typeof h.approvals.needs === 'function' ? h.approvals : null);
+  // (approvals loads after this module: it runs the hooks queued here once it is ready)
+  (h.approvalHooks = h.approvalHooks || []).push((A) => {
+    // approved: the advance is given as asked (by the person who asked); rejected: nothing to do
+    A.onDecision('advance', (r, decision, user) => {
+      if (decision !== 'approved') return;
+      const p = r.payload || {};
+      const e = db.get("SELECT * FROM employees WHERE id = ? AND status = 'active'", Number(p.employee_id));
+      if (!e) throw new Error('apr|The employee is no longer active, so the advance cannot be given.');
+      const id = giveAdvance({ employee: e, amount: r2(p.amount), installments: p.installments, start: isYm(p.start_period) ? p.start_period : M.today().slice(0, 7), issued: /^\d{4}-\d{2}-\d{2}$/.test(String(p.issued_on || '')) && p.issued_on >= M.today() ? p.issued_on : M.today(), method: METHODS[p.method] ? p.method : 'cash', reason: p.reason, by: r.requested_by, user, demo: r.demo });
+      A.relink(r.id, { entity: 'advance', entity_id: id, link: `/admin/hr/advances/${id}` });
+    });
+    A.describe('advance', (r) => (r.payload && r.payload.employee_name ? tr('apr|Salary advance for {name}', { name: r.payload.employee_name }) : r.title));
+    A.details('advance', (r) => {
+      const p = r.payload || {};
+      if (!p.installments) return '';
+      return `<dl class="dl apr-more"><div><dt>${esc(tr('adv|Repayment'))}</dt><dd>${esc(tr('adv|{amount} a month for {n} months, from {month}', { amount: ui.money(r2(Math.ceil((p.amount / p.installments) * 100) / 100)), n: p.installments, month: isYm(p.start_period) ? ui.monthYear(p.start_period) : '—' }))}</dd></div>${p.employee_id ? `<div><dt>${esc(tr('Employee'))}</dt><dd><a href="/admin/hr/employees/${Number(p.employee_id)}">${esc(p.employee_name || '—')}</a></dd></div>` : ''}${p.reason ? `<div><dt>${esc(tr('adv|Reason'))}</dt><dd>${esc(p.reason)}</dd></div>` : ''}</dl>`;
+    });
+  });
+  // advance requests still waiting for approval
+  const waiting = (employeeId = null) => (apr()
+    ? db.all(`SELECT * FROM apr_requests WHERE kind = 'advance' AND status = 'pending' ${employeeId ? "AND entity = 'employee' AND entity_id = ?" : ''} ORDER BY created_at`, ...(employeeId ? [employeeId] : []))
+      .map((r) => ({ ...r, payload: (() => { try { return JSON.parse(r.payload || '{}'); } catch { return {}; } })() }))
+    : []);
+  const waitingList = (rows) => `<ul class="list">${rows.map((r) => `<li><a href="/admin/approvals/${r.id}"><span class="what"><b>${esc(r.payload.employee_name || r.title)} · ${ui.money(r.amount)}</b><small><bdi>${esc(r.ref)}</bdi> · ${esc(ui.date(r.created_at))} · ${esc(tr('apr|Step {n} of {total}', { n: r.step + 1, total: (() => { try { return JSON.parse(r.steps).length; } catch { return 1; } })() }))}</small></span>${ui.badge('pending', tr('apr|Waiting for approval'), 'amber')}</a></li>`).join('')}</ul>`;
 
   router.post('/hr/advances', RH, (req, res) => {
     const b = req.body;
@@ -138,17 +185,17 @@ module.exports = function advances(router, h) {
     if (!e || !(amount > 0)) return h.back(req, res, '/admin/hr/advances', 'error', tr('adv|Choose the employee and enter the amount.'));
     const method = METHODS[b.method] ? b.method : 'cash';
     const issued = /^\d{4}-\d{2}-\d{2}$/.test(String(b.issued_on || '')) ? b.issued_on : M.today();
-    const id = db.tx(() => {
-      const aid = Number(db.run('INSERT INTO hr_advances (ref, employee_id, amount, installments, monthly, start_period, issued_on, method, reason, created_by, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        db.nextRef('hr_advances', 'AD', 4, true), e.id, amount, n, r2(Math.ceil((amount / n) * 100) / 100), start, issued, method, h.str(b.reason, 200) || null, req.user.id, now()).lastInsertRowid);
-      const L = ledger();
-      if (L) book(`Salary advance to ${e.name}`, [{ account: 'other_receivables', debit: amount }, { account: cashAccount(L, method), credit: amount }], { date: issued, source: `advance:${aid}`, user: req.user });
-      return aid;
-    });
-    // a draft payroll for a month it already covers picks it up now
-    for (const run of db.all("SELECT * FROM payroll_runs WHERE status = 'draft' AND period >= ?", start)) {
-      if (h.hrRecalc) h.hrRecalc(run);
+    const reason = h.str(b.reason, 200) || null;
+    // above the approval amount: it waits for approval, and is given once approved
+    if (apr() && apr().needs('advance', amount)) {
+      const r = apr().request({
+        kind: 'advance', title: `Salary advance for ${e.name}`, amount, entity: 'employee', entity_id: e.id, link: `/admin/hr/employees/${e.id}`,
+        payload: { employee_id: e.id, employee_name: e.name, amount, installments: n, start_period: start, issued_on: issued, method, reason }, note: reason, user: req.user,
+      });
+      h.log(req, 'Asked to approve a salary advance', 'employee', e.id, `${e.name} · ${amount} · ${r.ref}`);
+      return h.back(req, res, '/admin/hr/advances', 'ok', tr('apr|Sent for approval ({ref}). The advance is given once it is approved.', { ref: r.ref }));
     }
+    const id = giveAdvance({ employee: e, amount, installments: n, start, issued, method, reason, by: req.user.id, user: req.user });
     h.log(req, 'Gave a salary advance', 'employee', e.id, `${e.name} · ${amount} over ${n} months`);
     h.back(req, res, `/admin/hr/advances/${id}`, 'ok', tr('adv|Advance recorded. {amount} a month comes off their pay from {month}.', { amount: ui.money(r2(amount / n)), month: ui.monthYear(start) }));
   });
@@ -226,6 +273,8 @@ module.exports = function advances(router, h) {
   (h.employeeCards = h.employeeCards || []).push((req, e) => {
     const list = db.all('SELECT * FROM hr_advances WHERE employee_id = ? ORDER BY issued_on DESC LIMIT 10', e.id);
     const add = e.status === 'active' ? ui.btn(esc(tr('adv|New advance')), { href: `/admin/hr/advances?employee=${e.id}`, cls: 'btn--ghost btn--sm', ic: 'plus' }) : '';
+    const pending = waiting(e.id);
+    if (pending.length) return ui.card(tr('adv|Salary advances'), `${waitingList(pending)}${list.length ? `<ul class="list">${list.map((a) => `<li><a href="/admin/hr/advances/${a.id}"><span class="what"><b>${ui.money(a.amount)}</b><small>${esc(ui.date(a.issued_on))} · ${esc(tr('adv|{amount} left', { amount: ui.money(remaining(a)) }))}</small></span>${badge(a.status)}</a></li>`).join('')}</ul>` : ''}`, { action: add });
     if (!list.length) return add ? ui.card(tr('adv|Salary advances'), `<p class="muted pad">${esc(tr('adv|No advances.'))}</p>`, { action: add }) : '';
     return ui.card(tr('adv|Salary advances'), `<ul class="list">${list.map((a) => `<li><a href="/admin/hr/advances/${a.id}"><span class="what"><b>${ui.money(a.amount)}</b><small>${esc(ui.date(a.issued_on))} · ${esc(tr('adv|{amount} left', { amount: ui.money(remaining(a)) }))}</small></span>${badge(a.status)}</a></li>`).join('')}</ul>`, { action: add });
   });
