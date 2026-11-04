@@ -165,7 +165,7 @@ module.exports = function office(router, h) {
     const table = ui.table(
       [
         { label: tr('Person'), render: (u) => `<span class="who"><span class="avatar avatar--sm">${ui.esc(ui.initials(u.name))}</span><span><b>${ui.esc(u.name)}</b>${u.title ? `<small class="sub">${ui.esc(tx(u.title))}</small>` : ''}<small class="sub ltr">${ui.esc(u.email)}</small></span></span>` },
-        { label: tr('Role'), render: (u) => `${ui.badge(u.role, M.ROLES[u.role])}${u.role === 'admin' || u.hr ? ` ${ui.badge('hr', tr('HR access'), 'sand')}` : ''}${u.role === 'admin' || u.finance ? ` ${ui.badge('finance', tr('Finance access'), 'sky')}` : ''}${hiddenCount(u) ? ` ${isAdmin ? `<a href="/admin/team/${u.id}/access" class="badgelink">${ui.badge('limited', tn(hiddenCount(u), 'acc2|{n} module hidden', 'acc2|{n} modules hidden'), 'amber')}</a>` : ui.badge('limited', tn(hiddenCount(u), 'acc2|{n} module hidden', 'acc2|{n} modules hidden'), 'amber')}` : ''}` },
+        { label: tr('Role'), render: (u) => `${u.role_id && u.role !== 'admin' && h.access ? ui.badge(u.role, h.access.roleName(h.access.roleOf(u)), 'sea') : ui.badge(u.role, M.ROLES[u.role])}${u.role === 'admin' || u.hr ? ` ${ui.badge('hr', tr('HR access'), 'sand')}` : ''}${u.role === 'admin' || u.finance ? ` ${ui.badge('finance', tr('Finance access'), 'sky')}` : ''}${hiddenCount(u) ? ` ${isAdmin ? `<a href="/admin/team/${u.id}/access" class="badgelink">${ui.badge('limited', tn(hiddenCount(u), 'acc2|{n} module hidden', 'acc2|{n} modules hidden'), 'amber')}</a>` : ui.badge('limited', tn(hiddenCount(u), 'acc2|{n} module hidden', 'acc2|{n} modules hidden'), 'amber')}` : ''}` },
         { label: tr('Open deals'), num: true, render: (u) => ui.n0(stats(u).open) },
         { label: tr('report|Signed'), num: true, render: (u) => ui.n0(stats(u).won) },
         { label: tr('Last sign-in'), render: (u) => (u.last_login_at ? ui.rel(u.last_login_at) : tr('Never')) },
@@ -184,7 +184,8 @@ module.exports = function office(router, h) {
           return `<tr><td>${ui.esc(u.name)}</td>${['leads', 'viewings', 'signed_m2', 'revenue'].map((k) => `<td><input class="cellin" type="number" min="0" name="${k}_${u.id}" value="${t[k] ?? ''}"></td>`).join('')}</tr>`;
         }).join('')}</tbody></table></div><div class="row">${ui.btn(tr('Save targets'), { cls: 'btn--primary btn--sm' })}<a class="btn btn--ghost btn--sm" href="/admin/team?period=${M.addMonths(`${period}-01`, -1).slice(0, 7)}#targets">${isAr() ? '→' : '←'} ${tr('o|Previous month')}</a><a class="btn btn--ghost btn--sm" href="/admin/team?period=${M.addMonths(`${period}-01`, 1).slice(0, 7)}#targets">${tr('o|Next month')} ${isAr() ? '←' : '→'}</a></div>`, { cls: 'stack', attrs: { id: 'targets' } }))
       : '';
-    h.page(req, res, { title: tr('Team & targets'), active: '/admin/team', wide: true, body: `<div class="grid grid--side"><div class="stack">${ui.card(tr('The leasing team'), table)}${targets}</div><div class="stack">${invite}${ui.card(tr('Your account'), `<p>${ui.btn(tr('Change your password'), { href: '/admin/me', cls: 'btn--ghost btn--sm' })}</p>`)}</div></div>` });
+    const peopleLink = h.access && (h.access.has(req.user, 'manage_users') || h.access.has(req.user, 'grant')) ? ui.btn(ui.esc(tr('nav|Users & permissions')), { href: '/admin/people', cls: 'btn--ghost', ic: 'shield' }) : '';
+    h.page(req, res, { title: tr('Team & targets'), active: '/admin/team', wide: true, actions: peopleLink, body: `<div class="grid grid--side"><div class="stack">${ui.card(tr('The leasing team'), table)}${targets}</div><div class="stack">${invite}${ui.card(tr('Your account'), `<p>${ui.btn(tr('Change your password'), { href: '/admin/me', cls: 'btn--ghost btn--sm' })}</p>`)}</div></div>` });
   });
 
   router.post('/team', R('admin'), (req, res) => {
@@ -223,6 +224,8 @@ module.exports = function office(router, h) {
     const hrAccess = req.body.hr ? 1 : 0;
     const financeAccess = req.body.finance ? 1 : 0;
     db.run('UPDATE users SET role = ?, active = ?, hr = ?, finance = ? WHERE id = ?', role, active, hrAccess, financeAccess, u.id);
+    // a different built-in role chosen here replaces a custom role (Users & permissions)
+    if (role !== u.role) db.run('UPDATE users SET role_id = NULL WHERE id = ?', u.id);
     if (financeAccess !== (u.finance ? 1 : 0)) h.log(req, financeAccess ? 'Granted finance access' : 'Removed finance access', 'user', u.id, u.name);
     if (hrAccess !== (u.hr ? 1 : 0)) h.log(req, hrAccess ? 'Granted HR access' : 'Removed HR access', 'user', u.id, u.name);
     let msg = tr('{name} updated.', { name: u.name });
@@ -265,7 +268,8 @@ module.exports = function office(router, h) {
       ? groups.replace(/<input /g, '<input disabled ')
       : ui.form(`/admin/team/${u.id}/access`, req.session.csrf, `${groups}<div class="row">${ui.btn(ui.esc(tr('Save')), { cls: 'btn--primary' })}${ui.btn(ui.esc(tr('acc2|Open every module')), { cls: 'btn--ghost', attrs: { name: 'reset', value: '1' } })}</div>`, { cls: 'stack modaccess' });
     const side = ui.card(tr('acc2|At a glance'), `<dl class="dl"><div><dt>${ui.esc(tr('Role'))}</dt><dd>${ui.badge(u.role, M.ROLES[u.role])}</dd></div><div><dt>${ui.esc(tr('acc2|Modules open'))}</dt><dd><b>${ui.n0(openN)}</b> / ${ui.n0(allowedN)}</dd></div><div><dt>${ui.esc(tr('HR access'))}</dt><dd>${isAdminUser || u.hr ? ui.esc(tr('acc2|Yes')) : ui.esc(tr('acc2|No'))}</dd></div><div><dt>${ui.esc(tr('Finance access'))}</dt><dd>${isAdminUser || u.finance ? ui.esc(tr('acc2|Yes')) : ui.esc(tr('acc2|No'))}</dd></div></dl><p class="muted small">${ui.esc(tr('acc2|New modules added to the office later are open by default; untick them here if needed.'))}</p>`);
-    h.page(req, res, { title: tr('acc2|Module access'), crumbs: [['/admin/team', tr('Team & targets')], [null, u.name]], active: '/admin/team', wide: true, body: `<div class="grid grid--side"><div class="stack">${ui.card(tr('acc2|What {name} can open', { name: u.name }), `${intro}${form}`)}</div><div class="stack">${side}</div></div>` });
+    const fuller = `<p class="notice">${ui.icon('shield')}<span>${ui.esc(tr('ppl|For levels per module (view, edit, full), permissions and temporary access, use Users & permissions.'))} <a href="/admin/people/${u.id}/access">${ui.esc(tr('ppl|Open effective access'))}</a></span></p>`;
+    h.page(req, res, { title: tr('acc2|Module access'), crumbs: [['/admin/team', tr('Team & targets')], [null, u.name]], active: '/admin/team', wide: true, body: `${fuller}<div class="grid grid--side"><div class="stack">${ui.card(tr('acc2|What {name} can open', { name: u.name }), `${intro}${form}`)}</div><div class="stack">${side}</div></div>` });
   });
   router.post('/team/:id/access', R('admin'), (req, res, next) => {
     const u = db.get('SELECT * FROM users WHERE id = ?', req.params.id);

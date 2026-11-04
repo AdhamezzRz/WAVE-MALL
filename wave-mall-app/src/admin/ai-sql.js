@@ -18,7 +18,7 @@
 const path = require('node:path');
 
 // tables nobody reads through the assistant
-const NEVER = new Set(['sessions', 'settings', '_modules', 'portal_sessions', 'portal_tokens', 'payment_events', 'pk_edge_events', 'offer_signing', 'notice_emails', 'payment_links', 'payment_intents', 'outbox', 'web_images', 'footfall_imports', 'audit', 'backup_runs', 'notif_prefs']);
+const NEVER = new Set(['sessions', 'settings', '_modules', 'portal_sessions', 'portal_tokens', 'payment_events', 'pk_edge_events', 'offer_signing', 'notice_emails', 'payment_links', 'payment_intents', 'outbox', 'web_images', 'footfall_imports', 'audit', 'backup_runs', 'notif_prefs', 'ppl_invites', 'ppl_logins']);
 const NEVER_PREFIX = ['ai_', 'sqlite_'];
 // columns nobody reads (any table)
 const SECRET_COL = /^(password_hash|password|token|token_hash|access_token|csrf|reveal|signature|nonce|secret|api_key)$/i;
@@ -40,7 +40,7 @@ const MODULE = {
 };
 const MODULE_PREFIX = [['fitout_', '/admin/fitout'], ['turnover_', '/admin/turnover'], ['sc_', '/admin/service-charge'], ['utl_', '/admin/utilities'], ['acc_', '/admin/accounting'], ['eta_', '/admin/accounting'], ['pk_', '/admin/parking'], ['web_', '/admin/website'],
   ['col_', '/admin/collections'], ['lease_', '/admin/leases'], ['apr_', '/admin/approvals'], ['pur_', '/admin/purchasing'], ['inv_', '/admin/purchasing'],
-  ['media_', '/admin/media'], ['sec_', '/admin/security'], ['cmp_', '/admin/compliance'], ['fb_', '/admin/feedback'], ['nrg_', '/admin/energy'], ['users', '/admin/team']];
+  ['media_', '/admin/media'], ['sec_', '/admin/security'], ['cmp_', '/admin/compliance'], ['fb_', '/admin/feedback'], ['nrg_', '/admin/energy'], ['ppl_', '/admin/people'], ['users', '/admin/team']];
 
 const startsWithAny = (name, list) => list.some((p) => name.startsWith(p));
 

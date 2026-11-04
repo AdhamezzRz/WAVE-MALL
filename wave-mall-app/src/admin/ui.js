@@ -192,10 +192,18 @@ function hiddenModules(user) {
 }
 // hidden from this person by an administrator (not by their role)
 const isHidden = (user, href) => !!user && user.role !== 'admin' && href !== '/admin' && hiddenModules(user).has(href);
+// The permission engine (access.js) answers for a signed-in person: routes/core.js hands it to the
+// request's user (user.__access), so each office (and each test app) asks its own database. Without
+// it, the role and the modules hidden on the Team page decide.
+const engineOf = (user) => (user && user.__access) || null;
+// the name of a person's role (a custom role's own name)
+const roleName = (user) => (engineOf(user) && user.role_id && user.role !== 'admin' ? engineOf(user).roleName(engineOf(user).roleOf(user)) : M.ROLES[user && user.role]);
 // may this person open the module at href (role and module access)
 const canOpen = (user, href) => {
+  if (!user) return false;
+  if (engineOf(user)) return engineOf(user).levelOf(user, href) !== 'none';
   const e = NAV_ENTRIES.find((x) => x.href === href);
-  return !!user && (!e || roleAllows(user, e.min)) && !isHidden(user, href);
+  return (!e || roleAllows(user, e.min)) && !isHidden(user, href);
 };
 
 // The language switch: a small form in the top bar (signed in) or a link (sign-in pages).
@@ -226,7 +234,7 @@ function layout({ title, crumbs = [], active = '', body, user, csrf, nonce, flas
   const best = NAV.flatMap(([, items]) => items.map(([href]) => href)).filter((href) => (href === '/admin' ? active === '/admin' : active === href || active.startsWith(`${href}/`) || active.startsWith(`${href}?`))).sort((a, b) => b.length - a.length)[0];
   // the menu this person may see: [group, [{ href, label, ic, on, count }]]
   const menu = NAV.map(([group, items]) => [group, items
-    .filter(([href, , , , min]) => allowedTo(min) && !isHidden(user, href))
+    .filter(([href, , , , min]) => (engineOf(user) ? canOpen(user, href) : allowedTo(min) && !isHidden(user, href)))
     .map(([href, label, ic, count]) => ({ href, label: t(label), ic, on: href === best, count: count && counts[count] ? counts[count] : 0 }))])
     .filter(([, items]) => items.length);
   const nav = menu.map(([group, items]) => `<div class="nav__group"><p class="nav__label">${esc(t(group))}</p>${items.map((a) => `<a href="${a.href}" class="nav__a${a.on ? ' is-on' : ''}"${a.on ? ' aria-current="page"' : ''}>${icon(a.ic)}<span>${esc(a.label)}</span>${a.count ? `<b class="nav__count">${a.count}</b>` : ''}</a>`).join('')}</div>`).join('');
@@ -252,7 +260,7 @@ function layout({ title, crumbs = [], active = '', body, user, csrf, nonce, flas
     <span class="sheet__grip" aria-hidden="true"></span>
     <header class="more__me">
       <a class="avatar" href="/admin/me">${esc(initials(user.name))}</a>
-      <a class="more__who" href="/admin/me"><b>${esc(user.name)}</b><small>${esc(M.ROLES[user.role])} · ${esc(t('Your account'))}</small></a>
+      <a class="more__who" href="/admin/me"><b>${esc(user.name)}</b><small>${esc(roleName(user))} · ${esc(t('Your account'))}</small></a>
       <a class="iconbtn more__x" href="#close" data-more-close aria-label="${esc(t('mob|Close'))}">${icon('x')}</a>
     </header>
     <div class="more__nav">${menu.map(([group, items]) => `<section class="more__group"><p class="more__label">${esc(t(group))}</p><div class="more__grid">${items.map((a) => `<a href="${a.href}" class="more__a${a.on ? ' is-on' : ''}">${icon(a.ic)}<span>${esc(a.label)}</span>${a.count ? `<b class="nav__count">${a.count}</b>` : ''}</a>`).join('')}</div></section>`).join('')}</div>
@@ -277,7 +285,7 @@ ${pwaHead('admin')}
   <nav class="nav" aria-label="${esc(t('Leasing office'))}">${nav}</nav>
   <div class="side__me">
     <a class="avatar" href="/admin/me" title="${esc(t('Your account'))}">${esc(initials(user.name))}</a>
-    <div><b>${esc(user.name)}</b><small>${esc(M.ROLES[user.role])}</small></div>
+    <div><b>${esc(user.name)}</b><small>${esc(roleName(user))}</small></div>
     <form method="post" action="/admin/logout"><input type="hidden" name="_csrf" value="${esc(csrf)}"><button type="submit" class="iconbtn" title="${esc(t('Sign out'))}" aria-label="${esc(t('Sign out'))}">${icon('out')}</button></form>
   </div>
 </aside>
@@ -536,5 +544,5 @@ module.exports = {
   esc, attr, n0, money, local, m2, pct, date, dt, rel, initials, icon, logo, mark, setCurrency, pwaHead, ASSETS, docPanel, expiry, KB, fileIcon, curLabel, monthName, monthYear, weekdays, langLink, langForm, t, tn,
   layout, bare, badge, stageBadge, unitBadge, kpi, trend, card, table, empty, btn, hidden, form, input, select, textarea,
   bars, funnel, donut, meter, plan, planLegend, cellsOf, TONE, RANK,
-  NAV, NAV_ENTRIES, navFor, roleAllows, hiddenModules, isHidden, canOpen,
+  NAV, NAV_ENTRIES, navFor, roleAllows, hiddenModules, isHidden, canOpen, roleName,
 };

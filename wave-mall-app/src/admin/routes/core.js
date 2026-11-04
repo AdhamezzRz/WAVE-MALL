@@ -42,6 +42,28 @@ function publicRoutes(router, h, { loginLimit }) {
   const { db, ui, auth } = h;
   const noUsers = () => !db.value('SELECT COUNT(*) FROM users');
 
+  // ---------- the permission engine (access.js), for every module ----------
+  const engine = require('../access').create({ db, ui });
+  h.access = {
+    engine,
+    can: (user, href, level) => engine.can(user, href, level),
+    has: (user, cap) => engine.has(user, cap),
+    roles: (o) => engine.roles(o),
+    roleOf: (user) => engine.roleOf(user),
+    roleName: (role) => engine.roleName(role),
+    usersWithRole: (id) => engine.usersWithRole(id),
+    limitFor: (user, kind) => engine.limitFor(user, kind),
+    effective: (user) => engine.effective(user),
+    check: (user, method, url) => engine.check(user, method, url),
+  };
+
+  // ---------- sign-in history and lockout ----------
+  const lockAfter = () => Math.max(3, Number(db.setting('ppl_lock_after')) || 5);
+  const lockMinutes = () => Math.max(1, Number(db.setting('ppl_lock_minutes')) || 15);
+  const logLogin = (req, user, email, ok, reason) => db.run('INSERT INTO ppl_logins (user_id, email, ok, reason, ip, agent, at) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    user ? user.id : null, String(email || '').slice(0, 200), ok ? 1 : 0, reason || null, req.ip || null, String(req.get('user-agent') || '').slice(0, 200), new Date().toISOString());
+  h.logLogin = logLogin;
+
   router.get('/login', (req, res) => {
     if (noUsers()) return res.redirect(303, '/admin/setup');
     if (req.user) return res.redirect(303, safeNext(req.query.next));
@@ -52,11 +74,32 @@ function publicRoutes(router, h, { loginLimit }) {
     const email = h.str(req.body.email, 200);
     const next = safeNext(req.body.next);
     if (!auth.checkLoginToken(req)) return res.status(403).type('html').send(signinPage(ui, { token: auth.loginToken(req, res), next, email, error: tr('The form expired. Please try again.') }));
-    const user = db.get('SELECT * FROM users WHERE email = ? COLLATE NOCASE', email);
+    let user = db.get('SELECT * FROM users WHERE email = ? COLLATE NOCASE', email);
+    const nowIso = new Date().toISOString();
+    // a lock that has run out starts the count again
+    if (user && user.locked_until && user.locked_until <= nowIso) {
+      db.run('UPDATE users SET locked_until = NULL, failed_logins = 0 WHERE id = ?', user.id);
+      user = db.get('SELECT * FROM users WHERE id = ?', user.id);
+    }
+    if (user && user.active && user.locked_until && user.locked_until > nowIso) {
+      logLogin(req, user, email, false, 'locked');
+      const mins = Math.max(1, Math.ceil((Date.parse(user.locked_until) - Date.now()) / 60000));
+      return res.status(423).type('html').send(signinPage(ui, { token: auth.loginToken(req, res), next, email, error: tr('ppl|This account is locked after too many failed sign-ins. Try again in {n} minutes, or ask an administrator to unlock it.', { n: mins }) }));
+    }
     if (!user || !user.active || !verifyPassword(String(req.body.password || ''), user.password_hash)) {
       db.audit(null, 'Failed sign-in', 'user', user ? user.id : null, email, req.ip);
+      logLogin(req, user, email, false, !user ? 'unknown' : !user.active ? 'deactivated' : 'password');
+      if (user && user.active) {
+        const fails = (user.failed_logins || 0) + 1;
+        if (fails >= lockAfter()) {
+          db.run('UPDATE users SET failed_logins = ?, locked_until = ? WHERE id = ?', fails, new Date(Date.now() + lockMinutes() * 60000).toISOString(), user.id);
+          db.audit(null, 'Account locked', 'user', user.id, user.name, req.ip);
+        } else db.run('UPDATE users SET failed_logins = ? WHERE id = ?', fails, user.id);
+      }
       return res.status(401).type('html').send(signinPage(ui, { token: auth.loginToken(req, res), next, email, error: tr('That email and password do not match.') }));
     }
+    db.run('UPDATE users SET failed_logins = 0, locked_until = NULL WHERE id = ?', user.id);
+    logLogin(req, user, email, true, null);
     auth.startSession(db, req, res, user);
     // the language chosen on the sign-in page carries into the office
     const chosen = auth.cookies(req).wv_lang;
@@ -87,24 +130,133 @@ function publicRoutes(router, h, { loginLimit }) {
     auth.flash(req, res, 'ok', tr('Welcome, {name}. Start by setting your list rates in Settings.', { name }));
     res.redirect(303, '/admin');
   });
+
+  // ---------- invitations and password links (routes/people.js sends them) ----------
+  const crypto = require('node:crypto');
+  const sha = (x) => crypto.createHash('sha256').update(String(x)).digest('hex');
+  const inviteOf = (tok) => {
+    if (!/^[A-Za-z0-9_-]{20,100}$/.test(String(tok || ''))) return { error: 'ppl|This link is not valid.' };
+    const inv = db.get('SELECT * FROM ppl_invites WHERE token_hash = ?', sha(tok));
+    if (!inv) return { error: 'ppl|This link is not valid.' };
+    if (inv.revoked_at) return { error: 'ppl|This link was withdrawn. Ask for a new one.' };
+    if (inv.accepted_at) return { error: 'ppl|This link has already been used. Sign in instead.' };
+    if (inv.expires_at <= new Date().toISOString()) return { error: 'ppl|This link has expired. Ask for a new one.' };
+    if (inv.kind === 'invite' && db.get('SELECT id FROM users WHERE email = ? COLLATE NOCASE', inv.email)) return { error: 'ppl|Someone already uses that email. Sign in instead.' };
+    if (inv.kind === 'reset' && !db.get('SELECT id FROM users WHERE id = ? AND active = 1', inv.user_id)) return { error: 'ppl|This account is not active.' };
+    return { inv };
+  };
+  const invitePage = (req, res, tok, { inv = null, error = '', name = '' } = {}) => {
+    const here = `/admin/invite/${tok}`;
+    const fields = inv
+      ? `${inv.kind === 'invite' ? ui.input('name', tr('Your name'), name || inv.name || '', { required: true, attrs: { autocomplete: 'name' } }) : ''}
+         <label class="f"><span class="f__l">${ui.esc(tr('Email'))}</span><input type="email" value="${ui.esc(inv.email)}" disabled class="ltr"></label>
+         ${ui.input('password', tr('ppl|Choose a password'), '', { type: 'password', required: true, hint: tr('At least 10 characters.'), attrs: { autocomplete: 'new-password', minlength: 10 } })}
+         ${ui.input('password2', tr('ppl|Type it again'), '', { type: 'password', required: true, attrs: { autocomplete: 'new-password', minlength: 10 } })}`
+      : '';
+    const title = inv && inv.kind === 'reset' ? tr('ppl|Set a new password') : tr('ppl|Join the office');
+    return ui.bare({
+      title, cls: 'signin',
+      body: `<main class="signin__wrap">
+  <section class="signin__art">${ui.logo('signin__logo')}<p class="signin__line">${ui.esc(tr('Where every line leads somewhere.'))}</p><p class="signin__foot">${ui.esc(tr('North 90 · New Cairo'))}</p></section>
+  <section class="signin__form">
+    <div class="signin__lang">${ui.langLink(here)}</div>
+    <p class="eyebrow">${ui.esc(tr('Leasing office'))}</p>
+    <h1>${ui.esc(title)}</h1>
+    ${inv && inv.kind === 'invite' ? `<p class="muted">${ui.esc(tr('ppl|You were invited to The Wave leasing office. Choose a password to finish setting up your account.'))}</p>` : ''}
+    ${error ? `<p class="alert alert--error">${ui.esc(error)}</p>` : ''}
+    ${inv ? `<form method="post" action="${ui.esc(here)}" class="stack"><input type="hidden" name="_token" value="${ui.esc(auth.loginToken(req, res))}">${fields}${ui.btn(ui.esc(inv.kind === 'reset' ? tr('ppl|Save the password') : tr('ppl|Create my account')), { cls: 'btn--primary btn--block', ic: 'arrow' })}</form>` : `<p>${ui.btn(ui.esc(tr('Sign in')), { href: '/admin/login', cls: 'btn--primary' })}</p>`}
+  </section>
+</main>`,
+    });
+  };
+  router.get('/invite/:token', (req, res) => {
+    const { inv, error } = inviteOf(req.params.token);
+    res.status(inv ? 200 : 410).type('html').send(invitePage(req, res, req.params.token, { inv, error: error ? tr(error) : '' }));
+  });
+  router.post('/invite/:token', loginLimit, (req, res) => {
+    const tok = req.params.token;
+    const { inv, error } = inviteOf(tok);
+    if (!inv) return res.status(410).type('html').send(invitePage(req, res, tok, { error: tr(error) }));
+    const name = h.str(req.body.name, 120);
+    const password = String(req.body.password || '');
+    let problem = '';
+    if (!auth.checkLoginToken(req)) problem = tr('The form expired. Please try again.');
+    else if (inv.kind === 'invite' && !name) problem = tr('ppl|Enter your name.');
+    else if (password.length < 10) problem = tr('Use a password of at least 10 characters.');
+    else if (password !== String(req.body.password2 || '')) problem = tr('ppl|The two passwords are not the same.');
+    if (problem) return res.status(422).type('html').send(invitePage(req, res, tok, { inv, error: problem, name }));
+    const t = new Date().toISOString();
+    let user;
+    db.tx(() => {
+      if (inv.kind === 'invite') {
+        const r = db.run('INSERT INTO users (name, email, role, role_id, title, password_hash, lang, invited_by, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+          name, inv.email.toLowerCase(), inv.role, inv.role_id || null, inv.title || null, hashPassword(password), inv.lang || req.lang || null, inv.created_by || null, h.M.now());
+        user = db.get('SELECT * FROM users WHERE id = ?', Number(r.lastInsertRowid));
+        engine.syncFlags(user.id);
+        db.run('INSERT INTO ppl_history (user_id, actor_id, action, changes, at) VALUES (?, ?, ?, ?, ?)', user.id, user.id, 'joined', JSON.stringify([{ kind: 'role', key: inv.role_id ? `role:${inv.role_id}` : inv.role, from: null, to: inv.role_id ? `role:${inv.role_id}` : inv.role }]), t);
+        db.audit(user, 'Accepted an invitation', 'user', user.id, user.name, req.ip);
+      } else {
+        db.run('UPDATE users SET password_hash = ?, failed_logins = 0, locked_until = NULL WHERE id = ?', hashPassword(password), inv.user_id);
+        db.run('DELETE FROM sessions WHERE user_id = ?', inv.user_id);
+        user = db.get('SELECT * FROM users WHERE id = ?', inv.user_id);
+        db.audit(user, 'Set a password from a link', 'user', user.id, user.name, req.ip);
+      }
+      db.run('UPDATE ppl_invites SET accepted_at = ?, user_id = ? WHERE id = ?', t, user.id, inv.id);
+    });
+    engine.touch();
+    logLogin(req, user, user.email, true, inv.kind);
+    auth.startSession(db, req, res, user);
+    auth.flash(req, res, 'ok', inv.kind === 'invite' ? tr('ppl|Welcome to the office, {name}.', { name: user.name.split(' ')[0] }) : tr('ppl|Your new password is saved.'));
+    res.redirect(303, '/admin');
+  });
 }
 
 function privateRoutes(router, h) {
   const { db, ui, M, auth } = h;
 
-  // ---------- module access ----------
-  // users.hidden_modules: the sidebar entries an administrator has hidden from a person (a JSON list
-  // of hrefs; NULL = everything the role allows). See ui.js (canOpen) and the Team page.
-  db.ensure('access-1', 'ALTER TABLE users ADD COLUMN hidden_modules TEXT;');
-  // A hidden module is refused by address as well, for every method, before any module sees the request.
+  // ---------- access (access.js) ----------
+  // Before any module sees a request: the person's level for the module the path belongs to (view to
+  // open, edit to post, full to delete, void, cancel, reverse or approve) and, for downloads and
+  // printouts, the export capability. Administrators always pass. On a built-in role the role's own
+  // checks still decide what is outside its rank (as they always did); the guard only enforces what
+  // was changed for the person: hidden modules, permanent or temporary changes. Custom roles are
+  // enforced in full.
+  const engine = h.access.engine;
+  const LEVEL_NAME = { none: 'ppl|No access', view: 'ppl|View', edit: 'ppl|Edit', full: 'ppl|Full' };
   router.use((req, res, next) => {
-    const href = ui.navFor(req.originalUrl);
-    if (!href || !ui.isHidden(req.user, href)) return next();
-    const entry = ui.NAV_ENTRIES.find((e) => e.href === href);
-    const name = entry ? tr(entry.label) : href;
+    Object.defineProperty(req.user, '__access', { value: engine, enumerable: false, configurable: true });
+    const eff = engine.effective(req.user);
+    // custom roles: HR and finance follow the role (the rest of the office reads these switches)
+    if (!eff.admin && req.user.role_id) {
+      req.user.hr = eff.caps.hr.on ? 1 : 0;
+      req.user.finance = eff.caps.finance.on ? 1 : 0;
+    }
+    const c = engine.check(req.user, req.method, req.originalUrl);
+    if (c.ok) return next();
+    const m = engine.effective(req.user).modules[c.module] || {};
+    // built-in roles: what their rank leaves out is the module's own business (a flash and a way back)
+    if (!req.user.role_id && c.reason !== 'export' && !['hidden', 'override', 'capability'].includes(m.source)) return next();
+    const entry = ui.NAV_ENTRIES.find((e) => e.href === c.module);
+    const name = entry ? tr(entry.label) : c.module;
+    const grantors = db.all('SELECT * FROM users WHERE active = 1 ORDER BY role = \'admin\' DESC, name').filter((u) => engine.has(u, 'grant')).slice(0, 4);
+    let headline;
+    let why;
+    if (c.reason === 'export') {
+      headline = tr('ppl|Downloads are not part of your access');
+      why = tr('ppl|Exports and printouts (CSV, PDF) need the "Export data" permission.');
+    } else if (c.have === 'none') {
+      headline = tr('acc2|{module} is not part of your access', { module: name });
+      why = m.source === 'hidden' || m.source === 'override' ? tr('acc2|An administrator has not opened this module for your account, so its pages and records are hidden from you.') : tr('ppl|Your role does not include {module}.', { module: name });
+    } else {
+      headline = tr('ppl|This needs more access to {module}', { module: name });
+      why = tr('ppl|You have {have} access to {module}; this action needs {need}.', { module: name, have: tr(LEVEL_NAME[c.have]), need: tr(LEVEL_NAME[c.level]) });
+    }
     res.status(403);
-    if (req.method !== 'GET' && req.accepts(['html', 'json']) === 'json') return res.json({ ok: false, error: tr('acc2|{module} is not part of your access.', { module: name }) });
-    const body = `<div class="noaccess">${ui.card(tr('acc2|{module} is not part of your access', { module: name }), `<div class="noaccess__body">${ui.icon('shield', 'noaccess__ic')}<div><p>${ui.esc(tr('acc2|An administrator has not opened this module for your account, so its pages and records are hidden from you.'))}</p><p class="muted">${ui.esc(tr('acc2|If you need it for your work, ask an administrator to tick it under Team & targets → Module access.'))}</p><div class="row">${ui.btn(ui.esc(tr('acc2|Back to the dashboard')), { href: '/admin', cls: 'btn--primary btn--sm', ic: 'home' })}</div></div></div>`)}</div>`;
+    if ((req.method !== 'GET' && req.accepts(['html', 'json']) === 'json') || req.xhr) return res.json({ ok: false, error: c.have === 'none' && c.reason !== 'export' ? tr('acc2|{module} is not part of your access.', { module: name }) : headline });
+    const who = grantors.length
+      ? `<p class="muted">${ui.esc(tr('ppl|People who can give access:'))}</p><ul class="ppl-grantors">${grantors.map((u) => `<li><span class="avatar avatar--sm">${ui.esc(ui.initials(u.name))}</span><span><b>${ui.esc(u.name)}</b><small class="ltr">${ui.esc(u.email)}</small></span></li>`).join('')}</ul>`
+      : '';
+    const body = `<div class="noaccess">${ui.card(headline, `<div class="noaccess__body">${ui.icon('shield', 'noaccess__ic')}<div><p>${ui.esc(why)}</p>${who}<div class="row">${ui.btn(ui.esc(tr('acc2|Back to the dashboard')), { href: '/admin', cls: 'btn--primary btn--sm', ic: 'home' })}</div></div></div>`)}</div>`;
     return h.page(req, res, { title: tr('acc2|No access'), crumbs: [['/admin', tr('Dashboard')]], body });
   });
 
