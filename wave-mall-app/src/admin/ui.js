@@ -170,7 +170,7 @@ const RANK = { viewer: 0, agent: 1, manager: 2, admin: 3 };
 // the dashboard can never be hidden. routes/core.js refuses a hidden module's pages by URL too.
 const NAV_ENTRIES = NAV.flatMap(([group, items]) => items.map(([href, label, ic, , min]) => ({ group, href, label, ic, min: min || null })));
 // pages that belong to a module without living under its address
-const NAV_ALIASES = { '/admin/invoices': '/admin/billing', '/admin/payments': '/admin/billing', '/admin/payment-links': '/admin/billing', '/admin/eta': '/admin/accounting', '/admin/contacts': '/admin/brands', '/admin/portal': '/admin/tenants', '/admin/export': '/admin/reports' };
+const NAV_ALIASES = { '/admin/invoices': '/admin/billing', '/admin/payments': '/admin/billing', '/admin/payment-links': '/admin/billing', '/admin/eta': '/admin/accounting', '/admin/contacts': '/admin/brands', '/admin/portal': '/admin/tenants', '/admin/export': '/admin/reports', '/admin/approvals': '/admin/work' };
 const roleAllows = (user, min) => !min || (min === 'hr' ? user.role === 'admin' || !!user.hr : min === 'finance' ? user.role === 'admin' || !!user.finance : RANK[user.role] >= RANK[min]);
 // the module a path belongs to: the most specific sidebar entry (/admin/hr/leave over /admin/hr), else an alias
 function navFor(p) {
