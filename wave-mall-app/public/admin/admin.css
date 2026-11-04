@@ -1908,3 +1908,17 @@ pre.pk-code { margin: 8px 0 0; padding: 10px 12px; border-radius: 8px; backgroun
 
 /* ---------- salary advances: the repayment plan ---------- */
 .adv-plan li.is-future { opacity: .62; }
+
+/* ---------- long values never push a column wider than the page ---------- */
+.grid > * { min-width: 0; }
+.dl dd, .what, .what b, .what small { overflow-wrap: anywhere; }
+.fields > * { min-width: 0; }
+.stack { grid-template-columns: minmax(0, 1fr); }
+.frounds { grid-template-columns: minmax(0, 1fr); }
+.frounds > *, .contacts > li > div { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 560px) { .frounds .row, .frounds header { flex-wrap: wrap; } }
+/* a long stepper (fit-out has nine stages) scrolls within itself on a phone */
+.stepper { overflow-x: auto; scrollbar-width: none; }
+.stepper::-webkit-scrollbar { display: none; }
+@media (max-width: 860px) { .stepper li { flex: 1 0 auto; } }
+.fround__docs { grid-template-columns: minmax(0, 1fr); }
