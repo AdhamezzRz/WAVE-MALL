@@ -3,6 +3,7 @@
 // Deals: offers (with approval and a printable proposal), leases and billing.
 
 const i18n = require('../i18n');
+const TM = require('../terms');
 
 const { t: tr, tn, tx, isAr } = i18n;
 
@@ -29,9 +30,9 @@ module.exports = function deals(router, h) {
   const terms = (o) => ({ rent_m2: o.rent_m2, terrace_rent_m2: o.terrace_rent_m2, service_m2: o.service_m2, term_years: o.term_years, escalation_pct: o.escalation_pct, rent_free_months: o.rent_free_months, deposit_months: o.deposit_months, key_money: o.key_money });
 
   function scheduleTable(sc, { showRate = true } = {}) {
-    return `<div class="tablewrap"><table class="table table--fin"><thead><tr><th>${tr('Year')}</th>${showRate ? `<th class="num">${tr('Rate / m²')}</th>` : ''}<th class="num">${tr('Monthly rent')}</th><th class="num">${tr('Rent-free')}</th><th class="num">${tr('Rent')}</th><th class="num">${tr('Service')}</th><th class="num">${tr('Total')}</th></tr></thead><tbody>
-      ${sc.years.map((y) => `<tr><td>${tr('Year {n}', { n: y.year })}</td>${showRate ? `<td class="num">${ui.money(y.rate, { cur: false })}</td>` : ''}<td class="num">${ui.money(y.monthRent, { cur: false })}</td><td class="num">${y.free ? tn(y.free, '{n} mo', '{n} mo') : '—'}</td><td class="num">${ui.money(y.rent, { cur: false })}</td><td class="num">${ui.money(y.service, { cur: false })}</td><td class="num"><b>${ui.money(y.total, { cur: false })}</b></td></tr>`).join('')}
-      </tbody><tfoot><tr><td colspan="${showRate ? 4 : 3}">${Math.round(sc.total - sc.totalRent - sc.totalService) ? tr('Contract total (incl. key money)') : tr('Contract total')}</td><td class="num">${ui.money(sc.totalRent, { cur: false })}</td><td class="num">${ui.money(sc.totalService, { cur: false })}</td><td class="num"><b>${ui.money(sc.total, { cur: false })}</b></td></tr></tfoot></table></div>`;
+    return `<div class="tablewrap"><table class="table table--fin"><thead><tr><th>${tr('Year')}</th><th class="num">${tr('Increase')}</th>${showRate ? `<th class="num">${tr('Rate / m²')}</th>` : ''}<th class="num">${tr('Monthly rent')}</th><th class="num">${tr('Rent-free')}</th><th class="num">${tr('Rent')}</th><th class="num">${tr('Service')}</th><th class="num">${tr('Total')}</th></tr></thead><tbody>
+      ${sc.years.map((y) => `<tr><td>${tr('Year {n}', { n: y.year })}</td><td class="num">${y.pct ? `+${y.pct}%` : '—'}</td>${showRate ? `<td class="num">${ui.money(y.rate, { cur: false })}</td>` : ''}<td class="num">${ui.money(y.monthRent, { cur: false })}</td><td class="num">${y.free ? tn(y.free, '{n} mo', '{n} mo') : '—'}</td><td class="num">${ui.money(y.rent, { cur: false })}</td><td class="num">${ui.money(y.service, { cur: false })}</td><td class="num"><b>${ui.money(y.total, { cur: false })}</b></td></tr>`).join('')}
+      </tbody><tfoot><tr><td colspan="${showRate ? 5 : 4}">${Math.round(sc.total - sc.totalRent - sc.totalService) ? tr('Contract total (incl. key money)') : tr('Contract total')}</td><td class="num">${ui.money(sc.totalRent, { cur: false })}</td><td class="num">${ui.money(sc.totalService, { cur: false })}</td><td class="num"><b>${ui.money(sc.total, { cur: false })}</b></td></tr></tfoot></table></div>`;
   }
 
   // ---------- offers ----------
@@ -379,31 +380,34 @@ module.exports = function deals(router, h) {
   // ---------- leases ----------
   router.get('/leases', (req, res) => {
     const st = M.LEASE_STATUS[req.query.status] ? req.query.status : '';
-    const rows = db.all(`SELECT s.*, b.name brand_name FROM leases s JOIN brands b ON b.id = s.brand_id ${st ? 'WHERE s.status = ?' : ''} ORDER BY s.status = 'active' DESC, s.start_date DESC`, ...(st ? [st] : []))
+    const f = h.listFilters(req, { cols: { date: 's.start_date', brand: 's.brand_id', lease: 's.id' }, dateLabel: tr('Start date'), keep: ['status'] });
+    const where = [...(st ? ['s.status = ?'] : []), ...f.where];
+    const rows = db.all(`SELECT s.*, b.name brand_name FROM leases s JOIN brands b ON b.id = s.brand_id ${where.length ? `WHERE ${where.join(' AND ')}` : ''} ORDER BY s.status = 'active' DESC, s.start_date DESC`, ...(st ? [st] : []), ...f.args)
       .map((s) => ({ ...s, signed: !!db.value("SELECT COUNT(*) FROM documents WHERE entity = 'lease' AND entity_id = ? AND kind = 'lease_contract' AND archived = 0", s.id), units: M.leaseUnits(db, s.id), annual: s.status === 'active' ? M.currentAnnualRent(db, s) : null, next: db.get("SELECT due_date, total FROM invoices WHERE lease_id = ? AND status IN ('open','partial') ORDER BY due_date LIMIT 1", s.id) }));
-    const tabs = [['', tr('All')], ...Object.entries(M.LEASE_STATUS)].map(([k, l]) => `<a class="tab${st === k ? ' is-on' : ''}" href="/admin/leases${k ? `?status=${k}` : ''}">${l}</a>`).join('');
+    const fq = ['brand', 'lease', 'from', 'to'].filter((k) => req.query[k]).map((k) => `${k}=${encodeURIComponent(req.query[k])}`).join('&');
+    const tabs = [['', tr('All')], ...Object.entries(M.LEASE_STATUS)].map(([k, l]) => `<a class="tab${st === k ? ' is-on' : ''}" href="/admin/leases${k || fq ? `?${[k ? `status=${k}` : '', fq].filter(Boolean).join('&')}` : ''}">${l}</a>`).join('');
     const table = ui.table(
       [
         { label: tr('Lease'), render: (s) => `<b>${ui.esc(s.brand_name)}</b><small class="sub">${ui.esc(s.ref)}</small>` },
         { label: tr('Units'), render: (s) => ui.esc(s.units.map((u) => u.code).join(', ')) },
         { label: tr('Area'), num: true, render: (s) => ui.m2(s.units.reduce((a, u) => a + u.indoor_m2, 0)) },
-        { label: tr('Term'), render: (s) => `${ui.date(s.start_date)} – ${ui.date(s.end_date)}` },
-        { label: tr('Annual rent now'), num: true, render: (s) => (s.annual !== null ? ui.money(s.annual, { compact: true }) : '—') },
-        { label: tr('Next invoice'), render: (s) => (s.next ? `<span class="${s.next.due_date < M.today() ? 'late' : ''}">${ui.date(s.next.due_date)}<small class="sub">${ui.money(s.next.total, { compact: true })}</small></span>` : '—') },
+        { label: tr('Term'), sort: (s) => s.start_date, render: (s) => `${ui.date(s.start_date)} – ${ui.date(s.end_date)}` },
+        { label: tr('Annual rent now'), num: true, sort: (s) => s.annual ?? 0, render: (s) => (s.annual !== null ? ui.money(s.annual, { compact: true }) : '—') },
+        { label: tr('Next invoice'), sort: (s) => (s.next ? s.next.due_date : '9999'), render: (s) => (s.next ? `<span class="${s.next.due_date < M.today() ? 'late' : ''}">${ui.date(s.next.due_date)}<small class="sub">${ui.money(s.next.total, { compact: true })}</small></span>` : '—') },
         { label: tr('Signed copy'), render: (s) => (s.signed ? `<span class="paper is-ok">${ui.icon('check')}${ui.esc(tr('rec|On file'))}</span>` : `<span class="paper is-missing">${ui.esc(tr('rec|Missing'))}</span>`) },
         { label: tr('Status'), render: (s) => ui.badge(s.status, M.LEASE_STATUS[s.status]) },
       ],
       rows,
       { empty: tr('No leases yet. Accept an offer, then create a lease from it.'), href: (s) => `/admin/leases/${s.id}` },
     );
-    h.page(req, res, { title: tr('Leases'), active: '/admin/leases', wide: true, body: `<nav class="tabs">${tabs}</nav>${ui.card(tn(rows.length, '{n} lease', '{n} leases'), table, { action: ui.btn(tr('Rent roll CSV'), { href: '/admin/export/rentroll.csv', cls: 'btn--ghost btn--sm', ic: 'dl' }) })}`, actions: h.can(req, 'manager') ? ui.btn(tr('New lease'), { href: '/admin/leases/new', cls: 'btn--primary', ic: 'plus' }) : '' });
+    h.page(req, res, { title: tr('Leases'), active: '/admin/leases', wide: true, body: `<nav class="tabs">${tabs}</nav>${f.html}${ui.card(tn(rows.length, '{n} lease', '{n} leases'), table, { action: ui.btn(tr('Rent roll CSV'), { href: '/admin/export/rentroll.csv', cls: 'btn--ghost btn--sm', ic: 'dl' }) })}`, actions: h.can(req, 'manager') ? ui.btn(tr('New lease'), { href: '/admin/leases/new', cls: 'btn--primary', ic: 'plus' }) : '' });
   });
 
   router.get('/leases/new', R('manager'), (req, res) => {
     const o = req.query.offer ? offerOf(h.int(req.query.offer)) : null;
     const s = db.settings();
     const chosen = new Set(o ? M.offerUnits(db, o.id).map((u) => u.id) : []);
-    const units = db.all("SELECT * FROM units WHERE status != 'leased' ORDER BY sort");
+    const units = db.all("SELECT * FROM units WHERE status NOT IN ('leased','retired') ORDER BY sort");
     const brands = db.all('SELECT id, name FROM brands ORDER BY name');
     const start = o ? (o.start_date && o.start_date > M.today() ? o.start_date : M.addMonths(M.today(), o.fitout_months || 0)) : M.addMonths(M.today(), 1);
     const sc = o ? M.schedule(terms(o), [...chosen].map((id) => units.find((u) => u.id === id)).filter(Boolean)) : null;
@@ -414,10 +418,29 @@ module.exports = function deals(router, h) {
         <div class="picks span-all">${units.map((u) => `<label class="pick${chosen.has(u.id) ? ' is-on' : ''}"><input type="checkbox" name="units" value="${u.id}" ${chosen.has(u.id) ? 'checked' : ''}><b>${ui.esc(u.code)}</b><span>${u.terrace_m2 ? tr('deal|{a} + {b} terrace', { a: ui.m2(u.indoor_m2), b: ui.m2(u.terrace_m2) }) : ui.m2(u.indoor_m2)}</span>${ui.unitBadge(u.status)}</label>`).join('')}</div>
       </div></fieldset>
       <fieldset><legend>${tr('Rent')}</legend><div class="fields">
-        ${ui.input('rent_m2', tr('Rent per m² / month'), o ? o.rent_m2 : '', { type: 'number', step: '0.01', min: 0, required: true })}
+        ${ui.input('rent_m2', tr('Rent per m² / month'), o ? o.rent_m2 : '', { type: 'number', step: '0.01', min: 0, hint: tr('Leave empty for a revenue share only') })}
         ${ui.input('terrace_rent_m2', tr('Terrace per m² / month'), o ? o.terrace_rent_m2 : '', { type: 'number', step: '0.01', min: 0 })}
+      </div></fieldset>
+      <fieldset><legend>${tr('Yearly increase')}</legend><div class="fields">
+        ${ui.input('escalation_pct', tr('Yearly increase (%)'), o ? o.escalation_pct : s.default_escalation, { type: 'number', step: '0.5', min: 0, hint: tr('From the second year') })}
+        ${[1, 2, 3].map((n) => `<div class="esc-step span-all">${ui.input(`esc_from_${n}`, tr('From year'), '', { type: 'number', min: 2, max: 30, placeholder: String(1 + n * 5) })}${ui.input(`esc_pct_${n}`, tr('Increase becomes (%)'), '', { type: 'number', step: '0.5', min: 0, placeholder: n === 1 ? '12.5' : '' })}</div>`).join('')}
+        <p class="muted small span-all">${tr('Optional: a different increase for later years. Example: 10% a year, then from year 6 12.5% a year.')}</p>
+      </div></fieldset>
+      <fieldset><legend>${tr('Service charge')}</legend><div class="fields">
+        ${ui.select('service_mode', tr('Service charge is'), [['m2', tr('An amount per m²')], ['pct', tr('A percentage of the rent')]], 'm2')}
         ${ui.input('service_m2', tr('Service charge per m² / month'), o ? o.service_m2 : s.service_m2, { type: 'number', step: '0.01', min: 0 })}
-        ${ui.input('escalation_pct', tr('Yearly increase (%)'), o ? o.escalation_pct : s.default_escalation, { type: 'number', step: '0.5', min: 0 })}
+        ${ui.input('service_pct', tr('Service charge (% of the rent)'), '', { type: 'number', step: '0.5', min: 0, max: 100 })}
+      </div></fieldset>
+      <fieldset><legend>${tr('acc|VAT')}</legend><div class="fields">
+        ${ui.input('vat_pct', tr('VAT rate for this contract (%)'), '', { type: 'number', step: '0.5', min: 0, max: 100, placeholder: String(Number(s.vat_pct) || 0), hint: tr('Empty: the rate in Settings') })}
+        <label class="check span-all"><input type="checkbox" name="vat_included" value="1"> ${tr('The rent and charges above already include VAT')}</label>
+      </div></fieldset>
+      <fieldset><legend>${tr('Revenue share')}</legend><div class="fields">
+        <label class="check span-all"><input type="checkbox" name="revenue_share" value="1"> ${tr('This contract has a revenue share (a percentage of the tenant’s sales)')}</label>
+        ${ui.input('revenue_pct', tr('Share of sales (%)'), '', { type: 'number', step: '0.5', min: 0, max: 50 })}
+        ${ui.input('min_guarantee', tr('Minimum guarantee per month'), '', { type: 'number', step: 1, min: 0, hint: tr('Empty: the rent per m² above is the minimum') })}
+        <label class="check span-all"><input type="checkbox" name="take_higher" value="1" checked> ${tr('Charge whichever is higher: the minimum guarantee or the revenue share')}</label>
+        <p class="muted small span-all">${tr('Unticked: the minimum guarantee plus the share of all sales.')}</p>
       </div></fieldset>
       <fieldset><legend>${tr('Term and payment')}</legend><div class="fields">
         ${ui.input('start_date', tr('Start date'), start, { type: 'date', required: true })}
@@ -437,20 +460,38 @@ module.exports = function deals(router, h) {
     const b = req.body;
     const unitIds = h.list(b.units).map(Number).filter(Boolean);
     const brand = db.get('SELECT * FROM brands WHERE id = ?', h.int(b.brand_id));
-    const rent = h.numv(b.rent_m2);
+    const rent = h.numv(b.rent_m2) ?? 0;
     const start = h.str(b.start_date, 10);
     const years = Math.max(1, Math.min(30, h.int(b.term_years) || 5));
-    if (!brand || !unitIds.length || !rent || !/^\d{4}-\d{2}-\d{2}$/.test(start)) return h.back(req, res, `/admin/leases/new${b.offer_id ? `?offer=${h.int(b.offer_id)}` : ''}`, 'error', tr('Choose the tenant and units, and set the rent and start date.'));
+    const backTo = `/admin/leases/new${b.offer_id ? `?offer=${h.int(b.offer_id)}` : ''}`;
+    const share = b.revenue_share === '1';
+    const sharePct = h.numv(b.revenue_pct) ?? 0;
+    const guarantee = share && h.numv(b.min_guarantee) > 0 ? h.numv(b.min_guarantee) : null;
+    if (!brand || !unitIds.length || !/^\d{4}-\d{2}-\d{2}$/.test(start)) return h.back(req, res, backTo, 'error', tr('Choose the tenant and units, and set the rent and start date.'));
+    if (share && !(sharePct > 0 && sharePct <= 50)) return h.back(req, res, backTo, 'error', tr('Enter the revenue share as a percentage of sales (up to 50%).'));
+    if (!(rent > 0) && !share) return h.back(req, res, backTo, 'error', tr('Choose the tenant and units, and set the rent and start date.'));
+    // stepped increases: "from year n, x% a year"
+    const steps = TM.steps([1, 2, 3].map((n) => ({ from: h.int(b[`esc_from_${n}`]), pct: h.numv(b[`esc_pct_${n}`]) })).filter((x) => x.from && x.pct !== null && x.from <= years));
+    const serviceMode = b.service_mode === 'pct' ? 'pct' : 'm2';
+    const vatPct = h.numv(b.vat_pct);
     const id = db.tx(() => {
       const r = db.run(
-        `INSERT INTO leases (ref, brand_id, lead_id, offer_id, status, start_date, end_date, term_years, rent_m2, terrace_rent_m2, service_m2, escalation_pct, rent_free_months, payment_freq, deposit, key_money, signed_at, notes, created_by, created_at)
-         VALUES (?, ?, ?, ?, 'draft', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO leases (ref, brand_id, lead_id, offer_id, status, start_date, end_date, term_years, rent_m2, terrace_rent_m2, service_m2, escalation_pct, rent_free_months, payment_freq, deposit, key_money, signed_at, notes, created_by, created_at,
+           escalation_steps, service_mode, service_pct, vat_pct, vat_included, revenue_share, revenue_pct, min_guarantee, take_higher)
+         VALUES (?, ?, ?, ?, 'draft', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         db.nextRef('leases', 'LS', 3, true), brand.id, h.int(b.lead_id), h.int(b.offer_id), start, M.addDays(M.addMonths(start, years * 12), -1), years, rent,
-        h.numv(b.terrace_rent_m2) ?? 0, h.numv(b.service_m2) ?? 0, h.numv(b.escalation_pct) ?? 0, h.int(b.rent_free_months) || 0,
+        h.numv(b.terrace_rent_m2) ?? 0, serviceMode === 'm2' ? h.numv(b.service_m2) ?? 0 : 0, h.numv(b.escalation_pct) ?? 0, h.int(b.rent_free_months) || 0,
         ['monthly', 'quarterly', 'annual'].includes(b.payment_freq) ? b.payment_freq : 'quarterly', h.numv(b.deposit) ?? 0, h.numv(b.key_money) ?? 0, h.str(b.signed_at, 10) || null, h.str(b.notes, 3000) || null, req.user.id, M.now(),
+        steps.length ? JSON.stringify(steps) : null, serviceMode, serviceMode === 'pct' ? Math.min(100, Math.max(0, h.numv(b.service_pct) ?? 0)) : 0,
+        vatPct === null ? null : Math.min(100, Math.max(0, vatPct)), b.vat_included === '1' ? 1 : 0, share ? 1 : 0, share ? sharePct : 0, guarantee, b.take_higher === '1' || !share ? 1 : 0,
       );
       const leaseId = Number(r.lastInsertRowid);
       for (const u of unitIds) db.run('INSERT INTO lease_units (lease_id, unit_id) VALUES (?, ?)', leaseId, u);
+      // the revenue share is billed by the turnover module from the tenant's monthly sales
+      if (share) {
+        db.run(`INSERT INTO turnover_terms (lease_id, pct, breakpoint_type, breakpoint, frequency, due_day, annual_recon, audit_rights, updated_at) VALUES (?, ?, ?, 0, 'monthly', 10, 1, 1, ?)
+          ON CONFLICT(lease_id) DO UPDATE SET pct = excluded.pct, breakpoint_type = excluded.breakpoint_type, updated_at = excluded.updated_at`, leaseId, sharePct, b.take_higher === '1' ? 'natural' : 'none', M.now());
+      }
       return leaseId;
     });
     h.log(req, 'Drafted a lease', 'lease', id, brand.name);
@@ -478,10 +519,10 @@ module.exports = function deals(router, h) {
     const actions = [];
     if (s.status === 'draft' && h.can(req, 'manager')) actions.push(ui.form(`/admin/leases/${s.id}/activate`, csrf, ui.btn(tr('Activate lease'), { cls: 'btn--primary', ic: 'check', attrs: { 'data-confirm': tr('Activate? The units become leased and the invoices are created.') } })));
     if (s.status === 'active' && h.can(req, 'manager')) actions.push(`<details class="pop"><summary class="btn btn--ghost">${tr('End lease')}</summary>${ui.form(`/admin/leases/${s.id}/end`, csrf, `${ui.select('how', tr('How'), { ended: tr('Ended (term complete)'), terminated: tr('Terminated early') }, 'terminated')}${ui.input('date', tr('Last day'), t, { type: 'date' })}${ui.btn(tr('End lease'), { cls: 'btn--danger btn--sm', attrs: { 'data-confirm': tr('End this lease? Future invoices are voided and the units become available.') } })}`, { cls: 'stack' })}</details>`);
-    if (s.status === 'active' && h.can(req, 'manager')) actions.push(`<details class="pop"><summary class="btn btn--ghost">${tr('Add a charge')}</summary>${ui.form(`/admin/leases/${s.id}/charge`, csrf, `${ui.input('note', tr('What for'), '', { required: true, placeholder: tr('e.g. Signage approval fee') })}${ui.input('amount', tr('Amount'), '', { type: 'number', min: 1, step: 1, required: true })}${ui.input('due', tr('Due'), M.addDays(t, 14), { type: 'date' })}${ui.btn(tr('Add charge'), { cls: 'btn--primary btn--sm' })}`, { cls: 'stack' })}</details>`);
+    if (s.status === 'active' && h.can(req, 'manager')) actions.push(`<details class="pop"><summary class="btn btn--ghost">${tr('Add a charge')}</summary>${ui.form(`/admin/leases/${s.id}/charge`, csrf, `${ui.input('note', tr('What for'), '', { required: true, placeholder: tr('e.g. Signage approval fee') })}${ui.input('amount', tr('Amount'), '', { type: 'number', min: 1, step: 1, required: true })}${ui.input('due', tr('Due'), M.addDays(t, 14), { type: 'date' })}${ui.input('vat_pct', tr('VAT (%)'), s.vat_pct ?? (Number(db.setting('vat_pct')) || 0), { type: 'number', min: 0, max: 100, step: '0.5' })}<label class="check"><input type="checkbox" name="vat_included" value="1"${s.vat_included ? ' checked' : ''}> ${tr('The amount includes VAT')}</label>${ui.btn(tr('Add charge'), { cls: 'btn--primary btn--sm' })}`, { cls: 'stack' })}</details>`);
     const kpis = [
       ui.kpi({ label: tr('Area'), value: ui.m2(sc.indoor), sub: units.map((u) => u.code).join(', ') }),
-      ui.kpi({ label: tr('Annual rent now'), value: ui.money(s.status === 'active' ? M.currentAnnualRent(db, s) : sc.annual, { compact: true }), sub: tr('{rate} / m² at start, +{pct}%', { rate: ui.money(s.rent_m2), pct: s.escalation_pct }) }),
+      ui.kpi({ label: tr('Annual rent now'), value: ui.money(s.status === 'active' ? M.currentAnnualRent(db, s) : sc.annual, { compact: true }), sub: ui.esc(TM.describe(s, tr)) }),
       ui.kpi({ label: tr('Contract value'), value: ui.money(sc.total, { compact: true }), sub: years(s.term_years) }),
       ui.kpi({ label: tr('Collected'), value: ui.money(paid, { compact: true }), bar: billed ? paid / billed : 0, sub: tr('of {amount} billed', { amount: ui.money(billed, { compact: true }) }) }),
       ui.kpi({ label: tr('Overdue'), value: ui.money(overdue, { compact: true }), tone: overdue ? 'kpi--alert' : '' }),
@@ -503,8 +544,11 @@ module.exports = function deals(router, h) {
       <div><dt>${tr('Tenant')}</dt><dd><a href="/admin/brands/${s.brand_id}">${ui.esc(s.brand_name)}</a> · ${ui.esc(M.CATEGORIES[s.category])}</dd></div>
       <div><dt>${tr('Status')}</dt><dd>${ui.badge(s.status, M.LEASE_STATUS[s.status])}</dd></div>
       <div><dt>${tr('Term')}</dt><dd>${ui.date(s.start_date)} – ${ui.date(s.end_date)} (${years(s.term_years)})</dd></div>
-      <div><dt>${tr('Rent')}</dt><dd>${tr('{rate} / m² · terrace {terrace} · service {service}', { rate: ui.money(s.rent_m2), terrace: ui.money(s.terrace_rent_m2, { cur: false }), service: ui.money(s.service_m2, { cur: false }) })}</dd></div>
-      <div><dt>${tr('Increase')}</dt><dd>${tr('{pct}% a year', { pct: s.escalation_pct })}</dd></div>
+      <div><dt>${tr('Rent')}</dt><dd>${s.revenue_share && s.min_guarantee ? ui.esc(tr('Minimum guarantee {amount} a month', { amount: ui.money(s.min_guarantee) })) : tr('{rate} / m² · terrace {terrace}', { rate: ui.money(s.rent_m2), terrace: ui.money(s.terrace_rent_m2, { cur: false }) })}</dd></div>
+      <div><dt>${tr('Increase')}</dt><dd>${ui.esc(TM.describe(s, tr))}</dd></div>
+      <div><dt>${tr('Service charge')}</dt><dd>${s.service_mode === 'pct' ? ui.esc(tr('{pct}% of the rent', { pct: s.service_pct })) : ui.esc(tr('{amount} per m² a month', { amount: ui.money(s.service_m2) }))}</dd></div>
+      <div><dt>${tr('acc|VAT')}</dt><dd>${ui.esc(tr(s.vat_included ? '{pct}%, included in the amounts' : '{pct}%, added to the amounts', { pct: s.vat_pct ?? (Number(db.setting('vat_pct')) || 0) }))}</dd></div>
+      ${s.revenue_share ? `<div><dt>${tr('Revenue share')}</dt><dd><a href="/admin/turnover/leases/${s.id}">${ui.esc(tr('{pct}% of sales', { pct: s.revenue_pct }))}</a><small class="sub">${ui.esc(s.min_guarantee ? tr('Minimum guarantee {amount} a month', { amount: ui.money(s.min_guarantee) }) : tr('The base rent is the minimum'))} · ${ui.esc(s.take_higher ? tr('whichever is higher') : tr('plus the share of all sales'))}</small></dd></div>` : ''}
       <div><dt>${tr('Rent-free')}</dt><dd>${months(s.rent_free_months)}</dd></div>
       <div><dt>${tr('Invoiced')}</dt><dd>${FREQ()[s.payment_freq] || ''}</dd></div>
       <div><dt>${tr('Deposit')}</dt><dd>${ui.money(s.deposit)}</dd></div>
@@ -566,7 +610,8 @@ module.exports = function deals(router, h) {
     const amount = h.numv(req.body.amount);
     if (!amount || amount <= 0) return h.back(req, res, `/admin/leases/${s.id}`, 'error', tr('Enter an amount.'));
     const due = /^\d{4}-\d{2}-\d{2}$/.test(String(req.body.due || '')) ? req.body.due : M.today();
-    h.billing.createInvoice({ lease_id: s.id, kind: 'other', due_date: due, other: amount, note: h.str(req.body.note, 200) || null }, { user: req.user });
+    const vatPct = h.numv(req.body.vat_pct);
+    h.billing.createInvoice({ lease_id: s.id, kind: 'other', due_date: due, other: amount, note: h.str(req.body.note, 200) || null, vat_pct: vatPct === null ? undefined : Math.min(100, Math.max(0, vatPct)), vat_included: req.body.vat_included === '1' }, { user: req.user });
     h.log(req, 'Added a charge', 'lease', s.id, `${s.ref} · ${amount}`);
     h.back(req, res, `/admin/leases/${s.id}`, 'ok', tr('Charge added.'));
   });
@@ -576,7 +621,8 @@ module.exports = function deals(router, h) {
     const t = M.today();
     const st = ['open', 'overdue', 'paid', 'all', 'upcoming'].includes(req.query.status) ? req.query.status : 'open';
     const where = { open: "i.status IN ('open','partial') AND i.due_date <= ?", overdue: "i.status IN ('open','partial') AND i.due_date < ?", paid: "i.status = 'paid' AND ? IS NOT NULL", all: "i.status != 'void' AND ? IS NOT NULL", upcoming: "i.status IN ('open','partial') AND i.due_date > ?" }[st];
-    const rows = db.all(`SELECT i.*, s.ref lease_ref, COALESCE(b.name, i.customer) brand_name FROM invoices i LEFT JOIN leases s ON s.id = i.lease_id LEFT JOIN brands b ON b.id = i.brand_id WHERE ${where} ORDER BY ${st === 'paid' ? 'i.paid_at DESC' : 'i.due_date'} LIMIT 400`, st === 'open' ? M.addDays(t, 30) : t);
+    const f = h.listFilters(req, { cols: { date: 'i.due_date', brand: 'i.brand_id', lease: 'i.lease_id' }, dateLabel: tr('Due'), keep: ['status'] });
+    const rows = db.all(`SELECT i.*, s.ref lease_ref, COALESCE(b.name, i.customer) brand_name FROM invoices i LEFT JOIN leases s ON s.id = i.lease_id LEFT JOIN brands b ON b.id = i.brand_id WHERE ${[where, ...f.where].join(' AND ')} ORDER BY ${st === 'paid' ? 'i.paid_at DESC' : 'i.due_date'} LIMIT ${f.active ? 2000 : 400}`, st === 'open' && !f.active ? M.addDays(t, 30) : st === 'open' ? '9999-12-31' : t, ...f.args);
     const R2 = M.reports(db);
     const outstanding = db.value("SELECT COALESCE(SUM(total - paid), 0) FROM invoices WHERE status IN ('open','partial') AND due_date <= ?", t);
     const overdue = db.value("SELECT COALESCE(SUM(total - paid), 0) FROM invoices WHERE status IN ('open','partial') AND due_date < ?", t);
@@ -589,14 +635,15 @@ module.exports = function deals(router, h) {
       ui.kpi({ label: tr('Due in 30 days'), value: ui.money(next30, { compact: true }), href: '/admin/billing?status=upcoming' }),
       ui.kpi({ label: tr('Collected this month'), value: ui.money(collected, { compact: true }), bar: billedMonth ? Math.min(1, collected / billedMonth) : 0, sub: tr('of {amount} billed this month', { amount: ui.money(billedMonth, { compact: true }) }) }),
     ].join('');
-    const tabs = [['open', tr('Due within 30 days')], ['overdue', tr('Overdue')], ['upcoming', tr('Upcoming')], ['paid', tr('invoice|Paid')], ['all', tr('All')]].map(([k, l]) => `<a class="tab${st === k ? ' is-on' : ''}" href="/admin/billing?status=${k}">${l}</a>`).join('');
+    const fq = ['brand', 'lease', 'from', 'to'].filter((k) => req.query[k]).map((k) => `&${k}=${encodeURIComponent(req.query[k])}`).join('');
+    const tabs = [['open', f.active ? tr('Open') : tr('Due within 30 days')], ['overdue', tr('Overdue')], ['upcoming', tr('Upcoming')], ['paid', tr('invoice|Paid')], ['all', tr('All')]].map(([k, l]) => `<a class="tab${st === k ? ' is-on' : ''}" href="/admin/billing?status=${k}${fq}">${l}</a>`).join('');
     const table = ui.table(
       [
         { label: tr('Invoice'), render: (i) => `<b>${ui.esc(i.ref)}</b><small class="sub">${ui.esc(i.brand_name || '')}${i.lease_ref ? ` · ${ui.esc(i.lease_ref)}` : ''}</small>` },
         { label: tr('invoice|For'), render: (i) => (i.kind === 'rent' ? `${ui.date(i.period_start)} – ${ui.date(i.period_end)}` : ui.esc(tx(i.note) || KINDS()[i.kind] || i.kind)) },
-        { label: tr('Due'), render: (i) => `<span class="${['open', 'partial'].includes(i.status) && i.due_date < t ? 'late' : ''}">${ui.date(i.due_date)}<small class="sub">${ui.rel(i.due_date)}</small></span>` },
-        { label: tr('Total'), num: true, render: (i) => ui.money(i.total, { cur: false }) },
-        { label: tr('Outstanding'), num: true, render: (i) => `<b>${ui.money(i.total - i.paid, { cur: false })}</b>` },
+        { label: tr('Due'), sort: (i) => i.due_date, render: (i) => `<span class="${['open', 'partial'].includes(i.status) && i.due_date < t ? 'late' : ''}">${ui.date(i.due_date)}<small class="sub">${ui.rel(i.due_date)}</small></span>` },
+        { label: tr('Total'), num: true, sort: (i) => i.total, render: (i) => ui.money(i.total, { cur: false }) },
+        { label: tr('Outstanding'), num: true, sort: (i) => i.total - i.paid, render: (i) => `<b>${ui.money(i.total - i.paid, { cur: false })}</b>` },
         { label: tr('Status'), render: (i) => (['open', 'partial'].includes(i.status) && i.due_date < t ? ui.badge('overdue', tr('invoice|Overdue')) : ui.badge(i.status, M.INVOICE_STATUS[i.status])) },
       ],
       rows,
@@ -607,7 +654,7 @@ module.exports = function deals(router, h) {
       ? `<ul class="list">${owed.map((o) => `<li><a href="${o.lease_id ? `/admin/leases/${o.lease_id}` : `/admin/billing?status=overdue`}"><span class="dot dot--rose"></span><span class="what"><b>${ui.esc(o.name)}</b><small>${tr('{ref} · {invoices} · oldest {when}', { ref: ui.esc(o.ref || ''), invoices: tn(o.n, '{n} invoice', '{n} invoices'), when: ui.rel(o.oldest) })}</small></span><b>${ui.money(o.amount, { compact: true })}</b></a></li>`).join('')}</ul>`
       : `<p class="muted pad">${tr('No one is behind. Every invoice due so far is paid.')}</p>`;
     const body = `<div class="kpis kpis--4">${kpis}</div>
-<nav class="tabs">${tabs}</nav>${ui.card(tn(rows.length, '{n} invoice', '{n} invoices'), table, { action: ui.btn(tr('Export CSV'), { href: '/admin/export/invoices.csv', cls: 'btn--ghost btn--sm', ic: 'dl' }) })}
+<nav class="tabs">${tabs}</nav>${f.html}${ui.card(tn(rows.length, '{n} invoice', '{n} invoices'), table, { action: ui.btn(tr('Export CSV'), { href: '/admin/export/invoices.csv', cls: 'btn--ghost btn--sm', ic: 'dl' }) })}
 <div class="grid grid--2">
   ${ui.card(tr('Receivables aging'), ui.bars(R2.aging, { key: 'amount', label: 'label', fmtv: (n) => ui.money(n, { compact: true, cur: false }), tone: 'cocoa' }), { sub: tr('Overdue amounts by days past due') })}
   ${ui.card(tr('Who is behind'), owedList, { sub: tr('Overdue balance by lease') })}

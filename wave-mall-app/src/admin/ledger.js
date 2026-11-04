@@ -386,9 +386,11 @@ function ledger(db, events = null) {
     }).entry;
   }
   function payrollTotals(runId) {
+    // salary advance repayments (payroll_lines.advance) settle what staff owe, like other deductions
+    const adv = db.value("SELECT COUNT(*) FROM pragma_table_info('payroll_lines') WHERE name = 'advance'") ? 'COALESCE(SUM(advance),0)' : '0';
     const t = db.get(`SELECT COALESCE(SUM(net),0) net, COALESCE(SUM(insurance_employee),0) ie, COALESCE(SUM(insurance_employer),0) ir,
-      COALESCE(SUM(tax),0) tax, COALESCE(SUM(deductions),0) ded FROM payroll_lines WHERE run_id = ?`, runId);
-    return { net: r2(t.net), ie: r2(t.ie), ir: r2(t.ir), tax: r2(t.tax), ded: r2(t.ded), gross: r2(t.net + t.ie + t.tax + t.ded) };
+      COALESCE(SUM(tax),0) tax, COALESCE(SUM(deductions),0) ded, ${adv} adv FROM payroll_lines WHERE run_id = ?`, runId);
+    return { net: r2(t.net), ie: r2(t.ie), ir: r2(t.ir), tax: r2(t.tax), ded: r2(t.ded + t.adv), gross: r2(t.net + t.ie + t.tax + t.ded + t.adv) };
   }
   function postPayroll(run) {
     if (!run || !['approved', 'paid'].includes(run.status)) return null;

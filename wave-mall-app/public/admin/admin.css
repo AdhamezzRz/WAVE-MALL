@@ -1883,3 +1883,28 @@ pre.pk-code { margin: 8px 0 0; padding: 10px 12px; border-radius: 8px; backgroun
 .pk-wrap { max-width: 560px; }
 .pkf-label--v { font-size: 10px; letter-spacing: .12em; }
 .pk-ticket__qr--eta { width: 30mm; height: 30mm; margin-top: 4mm; }
+
+/* ---------- units: merged and split on the plan; the merge / split forms ---------- */
+.plan__unit.is-merged { stroke-opacity: .25; }
+.split-part { padding: 10px 0; border-bottom: 1px dashed var(--line); }
+.split-part:last-of-type { border-bottom: 0; }
+.pop-inline > summary { list-style: none; cursor: pointer; display: inline-flex; }
+.pop-inline > summary::-webkit-details-marker { display: none; }
+.pop-inline[open] > summary { margin-bottom: 12px; }
+.esc-step { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 560px) { .esc-step { grid-template-columns: 1fr; } }
+
+/* ---------- sortable tables and the filter bar of lists ---------- */
+.table th.is-sortable { cursor: pointer; user-select: none; }
+.table th.is-sortable:hover { color: var(--ink); }
+.table th.is-sortable::after { content: ''; display: inline-block; width: 0; height: 0; margin-inline-start: 6px; vertical-align: middle; border: 4px solid transparent; opacity: 0; }
+.table th[aria-sort="ascending"]::after { border-bottom-color: currentColor; border-top-width: 0; opacity: 1; }
+.table th[aria-sort="descending"]::after { border-top-color: currentColor; border-bottom-width: 0; opacity: 1; }
+.filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 14px; margin: 0 0 16px; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--r); background: var(--white); }
+.filters .f { min-width: 150px; flex: 1 1 150px; margin: 0; }
+.filters .f select, .filters .f input { width: 100%; }
+.filters__go { display: flex; gap: 8px; align-items: center; padding-bottom: 2px; }
+.chq-rows input { width: 100%; min-width: 90px; }
+
+/* ---------- salary advances: the repayment plan ---------- */
+.adv-plan li.is-future { opacity: .62; }

@@ -260,7 +260,12 @@ ${ui.card(tn(matching, '{n} document', '{n} documents'), `${table}${pager}`, { s
       renewals: (r) => r.due && !['terminated', 'expired'].includes(r.state),
       expired: (r) => r.state === 'expired',
     }[tab];
-    const list = rows.filter(pick).sort((a, b) => (a.end || '9999').localeCompare(b.end || '9999'));
+    // the filter bar: when it ends, and the tenant or lease
+    const f = h.listFilters(req, { cols: { date: 'x', brand: 'x', lease: 'x' }, dateLabel: tr('Ends'), keep: ['tab'] });
+    const leaseBrand = Object.fromEntries(leases.map((s) => [s.id, s.brand_id]));
+    const inRange = (r) => (!f.from || (r.end && r.end >= f.from)) && (!f.to || (r.end && r.end <= f.to))
+      && (!f.brand || (r.type === 'lease' && leaseBrand[r.id] === f.brand)) && (!f.lease || (r.type === 'lease' && r.id === f.lease));
+    const list = rows.filter(pick).filter(inRange).sort((a, b) => (a.end || '9999').localeCompare(b.end || '9999'));
 
     const activeSvc = services.filter((c) => stateOf(c, t) === 'active');
     const kpis = [
@@ -296,7 +301,7 @@ ${ui.card(tn(matching, '{n} document', '{n} documents'), `${table}${pager}`, { s
 
     const body = `<div class="kpis kpis--4">${kpis}</div>
 ${ui.card(tr('The next twelve months'), strip, { sub: ui.esc(tr('Contracts and leases by the month they end')) })}
-<div class="spacer"></div><nav class="tabs">${tabs}</nav>
+<div class="spacer"></div><nav class="tabs">${tabs}</nav>${f.html}
 ${ui.card(tn(list.length, '{n} contract', '{n} contracts'), table)}`;
     h.page(req, res, {
       title: tr('Contracts'), active: '/admin/contracts', wide: true, body,

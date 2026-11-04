@@ -3,6 +3,7 @@
 // Leasing logic: the pipeline, pricing, offer financials, lease billing and the numbers
 // behind the dashboard and reports. Rents are per m² per month; money is in the settings currency.
 
+const TM = require('./terms');
 const { now, today } = require('./db');
 const { t: tr, english } = require('./i18n');
 
@@ -33,7 +34,8 @@ const SOURCES = labels({
   website: 'Website', referral: 'Referral', broker: 'Broker', walk_in: 'Walk-in', social: 'Social media', event: 'Event', direct: 'Direct outreach', phone: 'source|Phone',
 });
 const ZONES = labels({ plaza: 'Plaza level', street: 'Street level', upper: 'Upper floors', kiosk: 'Kiosk' });
-const UNIT_STATUS = labels({ available: 'unit|Available', hold: 'unit|On hold', reserved: 'unit|Reserved', leased: 'unit|Leased', blocked: 'unit|Blocked' });
+// retired: merged into another unit or split into new ones (kept for the history of its leases)
+const UNIT_STATUS = labels({ available: 'unit|Available', hold: 'unit|On hold', reserved: 'unit|Reserved', leased: 'unit|Leased', blocked: 'unit|Blocked', retired: 'unit|Merged or split' });
 const OFFER_STATUS = labels({ draft: 'offer|Draft', pending: 'offer|Awaiting approval', approved: 'offer|Approved', sent: 'offer|Sent', accepted: 'offer|Accepted', rejected: 'offer|Rejected', expired: 'offer|Expired' });
 const LEASE_STATUS = labels({ draft: 'lease|Draft', active: 'lease|Active', ended: 'lease|Ended', terminated: 'lease|Terminated' });
 const INVOICE_STATUS = labels({ open: 'invoice|Open', partial: 'invoice|Part paid', paid: 'invoice|Paid', void: 'invoice|Void' });
@@ -105,19 +107,22 @@ function monthly(units, { rent = 0, terrace = 0, service = 0 }) {
   return { indoor, outdoor, area: indoor + outdoor, rent: indoor * rent + outdoor * terrace, service: indoor * service };
 }
 
-// Year-by-year schedule for an offer or lease: escalation each year, rent-free months at the start.
+// Year-by-year schedule for an offer or lease: increases each year (stepped if the terms say so),
+// rent-free months at the start, service per m² or as a share of the rent (terms.js).
 function schedule(terms, units) {
   const m = monthly(units, { rent: terms.rent_m2, terrace: terms.terrace_rent_m2, service: terms.service_m2 });
+  m.rent = TM.baseMonthly(terms, units).rent;
+  m.service = TM.serviceMonthly(terms, units, m.rent);
   const years = [];
   let totalRent = 0;
   let totalService = 0;
   for (let y = 0; y < (terms.term_years || 1); y++) {
-    const factor = (1 + (terms.escalation_pct || 0) / 100) ** y;
+    const factor = TM.factor(terms, y);
     const monthRent = m.rent * factor;
     const freeThisYear = Math.max(0, Math.min(12, (terms.rent_free_months || 0) - y * 12));
     const rent = monthRent * (12 - freeThisYear);
-    const service = m.service * 12;
-    years.push({ year: y + 1, rate: terms.rent_m2 * factor, monthRent, free: freeThisYear, rent, service, total: rent + service });
+    const service = TM.serviceMonthly(terms, units, monthRent) * 12;
+    years.push({ year: y + 1, rate: (terms.rent_m2 || 0) * factor, pct: y ? TM.pctFor(terms, y + 1) : 0, monthRent, free: freeThisYear, rent, service, total: rent + service });
     totalRent += rent;
     totalService += service;
   }
@@ -146,7 +151,7 @@ function needsApproval(db, offer, units) {
 
 // Billing: one invoice per period (monthly or quarterly, in advance) from start to end.
 function invoicePlan(lease, units) {
-  const m = monthly(units, { rent: lease.rent_m2, terrace: lease.terrace_rent_m2, service: lease.service_m2 });
+  const base = TM.baseMonthly(lease, units).rent;
   const step = lease.payment_freq === 'monthly' ? 1 : lease.payment_freq === 'annual' ? 12 : 3;
   const months = lease.term_years * 12;
   const out = [];
@@ -154,9 +159,9 @@ function invoicePlan(lease, units) {
     let rent = 0;
     let service = 0;
     for (let k = i; k < Math.min(i + step, months); k++) {
-      const y = Math.floor(k / 12);
-      if (k >= (lease.rent_free_months || 0)) rent += m.rent * (1 + (lease.escalation_pct || 0) / 100) ** y;
-      service += m.service;
+      const monthRent = base * TM.factor(lease, Math.floor(k / 12));
+      if (k >= (lease.rent_free_months || 0)) rent += monthRent;
+      service += TM.serviceMonthly(lease, units, monthRent);
     }
     const start = addMonths(lease.start_date, i);
     const end = addDays(addMonths(lease.start_date, Math.min(i + step, months)), -1);
@@ -196,7 +201,7 @@ function estimateValue(db, lead) {
 // ---------- the numbers ----------
 function dashboard(db, user) {
   const t = today();
-  const units = db.all('SELECT * FROM units');
+  const units = db.all("SELECT * FROM units WHERE status != 'retired'");
   const area = (list) => list.reduce((s, u) => s + u.indoor_m2, 0);
   const gla = area(units);
   const leased = area(units.filter((u) => u.status === 'leased'));
@@ -270,14 +275,13 @@ const leaseArea = (db, id) => leaseUnits(db, id).reduce((s, u) => s + u.indoor_m
 
 function currentAnnualRent(db, lease) {
   const units = leaseUnits(db, lease.id);
-  const m = monthly(units, { rent: lease.rent_m2, terrace: lease.terrace_rent_m2, service: 0 });
   const y = Math.max(0, Math.floor(daysBetween(lease.start_date, today()) / 365.25));
-  return m.rent * 12 * (1 + lease.escalation_pct / 100) ** Math.min(y, lease.term_years - 1);
+  return TM.baseMonthly(lease, units).rent * 12 * TM.factor(lease, Math.min(y, lease.term_years - 1));
 }
 
 function reports(db) {
   const t = today();
-  const units = db.all('SELECT * FROM units ORDER BY sort');
+  const units = db.all("SELECT * FROM units WHERE status != 'retired' ORDER BY sort");
   const zones = Object.keys(ZONES)
     .map((z) => {
       const list = units.filter((u) => u.zone === z);

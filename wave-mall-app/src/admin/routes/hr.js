@@ -78,7 +78,8 @@ const monthBounds = (period) => {
 };
 // One payslip line. Pay is pro-rated by calendar days for someone who joined or left during the
 // month; unpaid leave is taken off at a daily rate of (basic + allowances) / working days a month.
-function payLine(emp, period, s, { unpaidDays = 0, overtime = 0, bonus = 0, deductions = 0, tax = 0 } = {}) {
+// advance: this month's repayment of salary advances (routes/advances.js), taken off the net.
+function payLine(emp, period, s, { unpaidDays = 0, overtime = 0, bonus = 0, deductions = 0, tax = 0, advance = 0 } = {}) {
   const { start, end, days } = monthBounds(period);
   const from = emp.hire_date > start ? emp.hire_date : start;
   const to = emp.ended_at && emp.ended_at < end ? emp.ended_at : end;
@@ -91,13 +92,13 @@ function payLine(emp, period, s, { unpaidDays = 0, overtime = 0, bonus = 0, dedu
   const wage = worked ? insuredWage(emp, s) : 0;
   const insEmp = r2((wage * (Number(s.si_employee_pct) || 0)) / 100);
   const insCo = r2((wage * (Number(s.si_employer_pct) || 0)) / 100);
-  const extra = { overtime: r2(overtime), bonus: r2(bonus), deductions: r2(deductions), tax: r2(tax) };
-  const net = r2(basic + allowances + extra.overtime + extra.bonus - extra.deductions - unpaid - insEmp - extra.tax);
+  const extra = { overtime: r2(overtime), bonus: r2(bonus), deductions: r2(deductions), tax: r2(tax), advance: r2(advance) };
+  const net = r2(basic + allowances + extra.overtime + extra.bonus - extra.deductions - unpaid - insEmp - extra.tax - extra.advance);
   return { basic, allowances, ...extra, unpaid_days: Number(unpaidDays) || 0, unpaid, insurance_employee: insEmp, insurance_employer: insCo, net, worked, days };
 }
 const gross = (l) => r2(l.basic + l.allowances + l.overtime + l.bonus);
 // The unpaid-leave amount of a stored line (what is left once everything else is accounted for).
-const unpaidOf = (l) => r2(gross(l) - l.deductions - l.insurance_employee - l.tax - l.net);
+const unpaidOf = (l) => r2(gross(l) - l.deductions - l.insurance_employee - l.tax - (l.advance || 0) - l.net);
 
 module.exports = function hr(router, h) {
   const { db, ui, M } = h;
@@ -432,7 +433,7 @@ module.exports = function hr(router, h) {
       : ui.form(`/admin/hr/employees/${e.id}/reactivate`, csrf, ui.btn(esc(tr('hr|Rehire')), { cls: 'btn--ghost btn--sm' }));
     const notes = e.notes ? ui.card(tr('Notes'), `<p class="quote quote--sm">${esc(tx(e.notes)).replace(/\n/g, '<br>')}</p>`) : '';
     const body = `${head}<div class="grid grid--side">
-      <div class="stack">${ui.card(tr('hr|Personal'), personal)}${ui.card(tr('hr|Job'), job)}${leaveCard}${slipCard}${notes}</div>
+      <div class="stack">${ui.card(tr('hr|Personal'), personal)}${ui.card(tr('hr|Job'), job)}${leaveCard}${slipCard}${(h.employeeCards || []).map((fn) => fn(req, e)).join("")}${notes}</div>
       <div class="stack">${ui.card(tr('hr|Pay'), pay)}${docs}${end}</div></div>`;
     h.page(req, res, {
       title: nm(e), crumbs: [['/admin/hr', tr('Employees')], [null, e.code]], active: '/admin/hr', body,
@@ -650,12 +651,13 @@ ${ui.card(tr('Balances {year}', { year: year() }), balTable, { sub: esc(tr('Annu
   router.post('/hr/leave/:id/cancel', RH, decide('cancelled', 'Cancelled leave'));
 
   // ---------- payroll ----------
+  db.ensure('payroll-advance-1', 'ALTER TABLE payroll_lines ADD COLUMN advance REAL NOT NULL DEFAULT 0;');
   const runOf = (id) => db.get('SELECT r.*, a.name approver FROM payroll_runs r LEFT JOIN users a ON a.id = r.approved_by WHERE r.id = ?', id);
   const linesOf = (runId) => db.all('SELECT l.*, e.name, e.name_ar, e.code, e.iban, e.bank_name, e.position, e.basic_salary emp_basic, e.allowances emp_allow, d.name dept FROM payroll_lines l JOIN employees e ON e.id = l.employee_id LEFT JOIN departments d ON d.id = e.department_id WHERE l.run_id = ? ORDER BY d.sort, e.name', runId);
   const totals = (lines) => lines.reduce((t, l) => {
-    t.gross += gross(l); t.insE += l.insurance_employee; t.insR += l.insurance_employer; t.tax += l.tax; t.net += l.net; t.unpaid += unpaidOf(l); t.ded += l.deductions;
+    t.gross += gross(l); t.insE += l.insurance_employee; t.insR += l.insurance_employer; t.tax += l.tax; t.net += l.net; t.unpaid += unpaidOf(l); t.ded += l.deductions; t.adv += l.advance || 0;
     return t;
-  }, { gross: 0, insE: 0, insR: 0, tax: 0, net: 0, unpaid: 0, ded: 0 });
+  }, { gross: 0, insE: 0, insR: 0, tax: 0, net: 0, unpaid: 0, ded: 0, adv: 0 });
   const unpaidDaysIn = (empId, period) => {
     const { start, end } = monthBounds(period);
     return db.all("SELECT * FROM leave_requests WHERE employee_id = ? AND type = 'unpaid' AND status = 'approved' AND start_date <= ? AND end_date >= ?", empId, end, start)
@@ -674,14 +676,19 @@ ${ui.card(tr('Balances {year}', { year: year() }), balTable, { sub: esc(tr('Annu
       const old = existing.get(e.id) || {};
       const pick = (k, d) => (typed[`${k}_${e.id}`] !== undefined && typed[`${k}_${e.id}`] !== '' ? Math.max(0, h.numv(typed[`${k}_${e.id}`]) || 0) : old[k] ?? d);
       const unpaidDays = typed[`unpaid_days_${e.id}`] !== undefined ? Math.max(0, h.numv(typed[`unpaid_days_${e.id}`]) || 0) : old.unpaid_days ?? unpaidDaysIn(e.id, run.period);
-      const l = payLine(e, run.period, s, { unpaidDays, overtime: pick('overtime', 0), bonus: pick('bonus', 0), deductions: pick('deductions', 0), tax: pick('tax', 0) });
-      db.run(`INSERT INTO payroll_lines (run_id, employee_id, basic, allowances, overtime, bonus, deductions, unpaid_days, insurance_employee, insurance_employer, tax, net, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ON CONFLICT(run_id, employee_id) DO UPDATE SET basic = excluded.basic, allowances = excluded.allowances, overtime = excluded.overtime, bonus = excluded.bonus, deductions = excluded.deductions, unpaid_days = excluded.unpaid_days, insurance_employee = excluded.insurance_employee, insurance_employer = excluded.insurance_employer, tax = excluded.tax, net = excluded.net`,
-      run.id, e.id, l.basic, l.allowances, l.overtime, l.bonus, l.deductions, l.unpaid_days, l.insurance_employee, l.insurance_employer, l.tax, l.net, old.notes || null);
+      // salary advances due this month (routes/advances.js plans the repayment of each)
+      const advance = h.advances ? h.advances.plan(run, e) : 0;
+      const l = payLine(e, run.period, s, { unpaidDays, overtime: pick('overtime', 0), bonus: pick('bonus', 0), deductions: pick('deductions', 0), tax: pick('tax', 0), advance });
+      db.run(`INSERT INTO payroll_lines (run_id, employee_id, basic, allowances, overtime, bonus, deductions, unpaid_days, insurance_employee, insurance_employer, tax, net, notes, advance) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(run_id, employee_id) DO UPDATE SET basic = excluded.basic, allowances = excluded.allowances, overtime = excluded.overtime, bonus = excluded.bonus, deductions = excluded.deductions, unpaid_days = excluded.unpaid_days, insurance_employee = excluded.insurance_employee, insurance_employer = excluded.insurance_employer, tax = excluded.tax, net = excluded.net, advance = excluded.advance`,
+      run.id, e.id, l.basic, l.allowances, l.overtime, l.bonus, l.deductions, l.unpaid_days, l.insurance_employee, l.insurance_employer, l.tax, l.net, old.notes || null, l.advance);
       keep.add(e.id);
     }
     for (const id of existing.keys()) if (!keep.has(id)) db.run('DELETE FROM payroll_lines WHERE run_id = ? AND employee_id = ?', run.id, id);
   }
+
+  // advances (routes/advances.js) replan a draft payroll when one is given or repaid
+  h.hrRecalc = (run) => db.tx(() => calcRun(run));
 
   router.get('/hr/payroll', RH, (req, res) => {
     const csrf = req.session.csrf;
@@ -752,12 +759,12 @@ ${ui.card(tr('Balances {year}', { year: year() }), balTable, { sub: esc(tr('Annu
     ].join('');
     const rows = lines.map((l) => {
       const daily = r2((Number(l.emp_basic) + Number(l.emp_allow)) / (Number(s.work_days_month) || 26));
-      return `<tr data-payrow data-basic="${l.basic}" data-allow="${l.allowances}" data-ins="${l.insurance_employee}" data-daily="${daily}">
+      return `<tr data-payrow data-basic="${l.basic}" data-allow="${l.allowances}" data-ins="${l.insurance_employee}" data-daily="${daily}" data-adv="${l.advance || 0}">
         <td><a href="/admin/hr/employees/${l.employee_id}"><b>${esc(nm(l))}</b></a><small class="sub">${esc(tx(l.position) || '')}</small></td>
         <td class="num">${money(l.basic + l.allowances)}<small class="sub">${esc(tr('{a} + {b} allowances', { a: money(l.basic), b: money(l.allowances) }))}</small></td>
         <td class="num">${cell(l, 'overtime', l.overtime)}</td><td class="num">${cell(l, 'bonus', l.bonus)}</td>
         <td class="num">${draft ? `<input class="cellin cellin--sm" type="number" min="0" step="0.5" name="unpaid_days_${l.employee_id}" value="${l.unpaid_days || ''}" placeholder="0">` : l.unpaid_days || '—'}<small class="sub">${unpaidOf(l) ? `−${money(unpaidOf(l))}` : ''}</small></td>
-        <td class="num">${cell(l, 'deductions', l.deductions)}</td>
+        <td class="num">${cell(l, 'deductions', l.deductions)}${l.advance ? `<small class="sub"><a href="/admin/hr/advances?employee=${l.employee_id}">${esc(tr('hr|Advance −{amount}', { amount: money(l.advance) }))}</a></small>` : ''}</td>
         <td class="num">${money(l.insurance_employee)}</td>
         <td class="num">${cell(l, 'tax', l.tax)}</td>
         <td class="num"><b data-net>${money(l.net)}</b></td>
@@ -829,7 +836,7 @@ ${ui.card(tr('Balances {year}', { year: year() }), balTable, { sub: esc(tr('Annu
     const lines = linesOf(run.id);
     const cols = bank
       ? [['code', tr('hr|Employee code')], ['name', tr('Full name (English)')], ['bank_name', tr('hr|Bank')], ['iban', tr('hr|IBAN')], ['net', tr('hr|Net')]]
-      : [['code', tr('hr|Employee code')], ['name', tr('Full name (English)')], ['name_ar', tr('Full name (Arabic)')], [(l) => deptName(l.dept), tr('hr|Department')], ['basic', tr('hr|Basic')], ['allowances', tr('hr|Allowances')], ['overtime', tr('hr|Overtime')], ['bonus', tr('hr|Bonus')], ['unpaid_days', tr('hr|Unpaid days')], [(l) => unpaidOf(l), tr('hr|Unpaid leave')], ['deductions', tr('hr|Deductions')], ['insurance_employee', tr('Insurance (employee)')], ['tax', tr('hr|Income tax')], ['net', tr('hr|Net')], ['insurance_employer', tr('Insurance (employer)')]];
+      : [['code', tr('hr|Employee code')], ['name', tr('Full name (English)')], ['name_ar', tr('Full name (Arabic)')], [(l) => deptName(l.dept), tr('hr|Department')], ['basic', tr('hr|Basic')], ['allowances', tr('hr|Allowances')], ['overtime', tr('hr|Overtime')], ['bonus', tr('hr|Bonus')], ['unpaid_days', tr('hr|Unpaid days')], [(l) => unpaidOf(l), tr('hr|Unpaid leave')], ['deductions', tr('hr|Deductions')], ['advance', tr('hr|Salary advance repayment')], ['insurance_employee', tr('Insurance (employee)')], ['tax', tr('hr|Income tax')], ['net', tr('hr|Net')], ['insurance_employer', tr('Insurance (employer)')]];
     h.log(req, 'Exported', 'export', null, bank ? 'Bank transfer file' : 'Payroll sheet');
     res.set('Content-Disposition', `attachment; filename="${bank ? 'bank-transfer' : 'payroll'}-${run.period}.csv"`).type('text/csv; charset=utf-8').send(csv(lines, cols));
   };
@@ -847,7 +854,7 @@ ${ui.card(tr('Balances {year}', { year: year() }), balTable, { sub: esc(tr('Annu
     const html = i18n.run(lang, () => {
       const s = S();
       const earn = [[tr('hr|Basic salary'), l.basic], [tr('hr|Allowances'), l.allowances], l.overtime ? [tr('hr|Overtime'), l.overtime] : null, l.bonus ? [tr('hr|Bonus'), l.bonus] : null].filter(Boolean);
-      const ded = [unpaidOf(l) ? [tr('Unpaid leave ({n} days)', { n: l.unpaid_days }), unpaidOf(l)] : null, [tr('Social insurance ({pct}%)', { pct: s.si_employee_pct }), l.insurance_employee], l.tax ? [tr('hr|Income tax'), l.tax] : null, l.deductions ? [tr('Other deductions'), l.deductions] : null].filter(Boolean);
+      const ded = [unpaidOf(l) ? [tr('Unpaid leave ({n} days)', { n: l.unpaid_days }), unpaidOf(l)] : null, [tr('Social insurance ({pct}%)', { pct: s.si_employee_pct }), l.insurance_employee], l.tax ? [tr('hr|Income tax'), l.tax] : null, l.advance ? [tr('hr|Salary advance repayment'), l.advance] : null, l.deductions ? [tr('Other deductions'), l.deductions] : null].filter(Boolean);
       const rowsOf = (list) => list.map(([k, v]) => `<tr><td>${esc(k)}</td><td class="num">${money(v)}</td></tr>`).join('');
       const totalDed = ded.reduce((a, [, v]) => a + v, 0);
       const name = lang === 'ar' && e.name_ar ? e.name_ar : e.name;

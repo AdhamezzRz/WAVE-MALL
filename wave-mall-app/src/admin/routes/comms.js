@@ -1058,7 +1058,8 @@ module.exports = function comms(router, h) {
     const statusL = statusLabel();
     const out = db.all('SELECT * FROM outbox ORDER BY id DESC LIMIT 200');
     const outTable = ui.table([
-      { label: tr('com|To'), render: (m) => `<b>${ui.esc(m.to_addr || '—')}</b><small class="sub">${ui.esc(tx(m.subject) || '')}</small>` },
+      // the subject as it was sent, in the recipient's language
+      { label: tr('com|To'), render: (m) => `<b>${ui.esc(m.to_addr || '—')}</b><small class="sub">${ui.esc(m.subject || '')}</small>` },
       { label: tr('Status'), render: (m) => `${ui.badge(m.status, statusL[m.status] || m.status, statusTone[m.status])}${m.error ? `<small class="sub">${ui.esc(String(tx(m.error)).slice(0, 80))}</small>` : ''}` },
       { label: tr('Date'), render: (m) => ui.esc(ui.rel(m.created_at)) },
       { label: '', render: (m) => (['failed', 'not_configured', 'queued'].includes(m.status) && mail.configured() ? ui.form(`/admin/integrations/outbox/${m.id}/retry`, csrf, ui.btn(tr('com|Retry'), { cls: 'btn--ghost btn--xs' })) : '') },

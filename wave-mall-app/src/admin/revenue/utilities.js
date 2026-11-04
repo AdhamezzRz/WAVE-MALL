@@ -385,7 +385,7 @@ ${ui.card(tr('utl|Billed'), doneTable)}`;
       list,
       { empty: ui.esc(tr('utl|No meters yet.')), href: (m) => `/admin/utilities/meters/${m.id}` },
     );
-    const units = db.all('SELECT id, code FROM units ORDER BY sort, code');
+    const units = db.all("SELECT id, code FROM units WHERE status != 'retired' ORDER BY sort, code");
     const add = h.can(req, 'manager')
       ? ui.form('/admin/utilities/meters', req.session.csrf, `<div class="fields">
           ${ui.input('code', tr('utl|Meter code'), '', { required: true, placeholder: 'E-G05', attrs: { dir: 'ltr' } })}
@@ -447,7 +447,7 @@ ${ui.card(tr('utl|Billed'), doneTable)}`;
       readings,
       { empty: ui.esc(tr('utl|No readings yet.')) },
     );
-    const units = db.all('SELECT id, code FROM units ORDER BY sort, code');
+    const units = db.all("SELECT id, code FROM units WHERE status != 'retired' ORDER BY sort, code");
     const edit = h.can(req, 'manager')
       ? ui.form(`/admin/utilities/meters/${m.id}`, req.session.csrf, `<div class="fields">
           ${ui.input('code', tr('utl|Meter code'), m.code, { required: true, attrs: { dir: 'ltr' } })}

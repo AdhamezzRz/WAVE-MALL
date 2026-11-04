@@ -4,6 +4,8 @@
 // turnover (percentage) rent, base rent by month, service-charge apportionment with vacancy
 // borne by the landlord, and utility meter consumption and cost.
 
+const TM = require('../terms');
+
 const r2 = (n) => Math.round((Number(n) || 0) * 100) / 100;
 const num = (v) => (v === '' || v === null || v === undefined || Number.isNaN(Number(v)) ? null : Number(v));
 
@@ -36,10 +38,10 @@ const isPeriod = (p) => periodMonths(p).length > 0;
 
 // ---------- leases: base rent and service by month ----------
 // Monthly rent at the lease's rates for its units (indoor + terrace), before escalation.
+// A minimum guarantee, when the lease has one, is the base rent (terms.js).
 function monthlyRent(lease, units) {
-  const indoor = units.reduce((s, u) => s + (u.indoor_m2 || 0), 0);
-  const terrace = units.reduce((s, u) => s + (u.terrace_m2 || 0), 0);
-  return { indoor, terrace, rent: indoor * (lease.rent_m2 || 0) + terrace * (lease.terrace_rent_m2 || 0), service: indoor * (lease.service_m2 || 0) };
+  const b = TM.baseMonthly(lease, units);
+  return { indoor: b.indoor, terrace: b.outdoor, rent: b.rent, service: TM.serviceMonthly(lease, units, b.rent) };
 }
 // Share of a month the lease covers (first and last months pro rata by days).
 function monthCover(lease, ym) {
@@ -57,24 +59,31 @@ function baseRentMonth(lease, units, ym) {
   if (!cover) return 0;
   const k = ymDiff(ymOf(lease.start_date), ym);
   if (k < (lease.rent_free_months || 0)) return 0;
-  const factor = (1 + (lease.escalation_pct || 0) / 100) ** Math.floor(k / 12);
-  return r2(monthlyRent(lease, units).rent * factor * cover);
+  return r2(monthlyRent(lease, units).rent * TM.factor(lease, Math.floor(k / 12)) * cover);
 }
+// Service for one month: per m², or a share of that month's rent (before any rent-free discount).
 function serviceMonth(lease, units, ym) {
-  return r2(monthlyRent(lease, units).service * monthCover(lease, ym));
+  const cover = monthCover(lease, ym);
+  if (!cover) return 0;
+  const k = ymDiff(ymOf(lease.start_date), ym);
+  const rent = monthlyRent(lease, units).rent * TM.factor(lease, Math.max(0, Math.floor(k / 12)));
+  return r2(TM.serviceMonthly(lease, units, rent) * cover);
 }
 
 // ---------- turnover (percentage) rent ----------
 // natural breakpoint: the tenant pays pct of sales above the point where pct × sales equals base rent,
 //   i.e. max(0, sales × pct − base);
-// fixed breakpoint: pct of sales above an agreed amount for the period, i.e. max(0, (sales − breakpoint) × pct).
+// fixed breakpoint: pct of sales above an agreed amount for the period, i.e. max(0, (sales − breakpoint) × pct);
+// none: pct of all sales, on top of the base rent.
 function pctRent({ sales, pct, base = 0, type = 'natural', breakpoint = 0 }) {
   const p = (Number(pct) || 0) / 100;
   if (!p || !(sales > 0)) return 0;
+  if (type === 'none') return r2(sales * p);
   return type === 'fixed' ? r2(Math.max(0, (sales - (breakpoint || 0)) * p)) : r2(Math.max(0, sales * p - (base || 0)));
 }
 // The breakpoint for a period of n months: natural = base ÷ pct; fixed = the yearly amount × n / 12.
 function breakpointFor(terms, base, months) {
+  if (terms.breakpoint_type === 'none') return 0;
   if (terms.breakpoint_type === 'fixed') return r2((terms.breakpoint || 0) * months / 12);
   const p = (Number(terms.pct) || 0) / 100;
   return p ? r2(base / p) : 0;

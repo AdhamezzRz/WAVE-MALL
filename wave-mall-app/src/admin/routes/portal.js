@@ -16,6 +16,7 @@ const rateLimit = require('express-rate-limit');
 const i18n = require('../i18n');
 const { hashPassword, verifyPassword } = require('../db');
 const tenancy = require('../tenancy');
+const { template, facts, escH } = require('../mailer');
 
 const { t: tr, tn, tx } = i18n;
 
@@ -65,6 +66,20 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 module.exports = function portal(router, h) {
   const { db, ui, M } = h;
   db.ensure('portal-1', SCHEMA);
+  // personal notifications (a cheque deposited or returned, …) and whether the tenant has seen them:
+  // read in the portal (portal_notice_reads) or the email opened (notice_emails, a 1×1 image)
+  db.ensure('portal-2', `
+    ALTER TABLE portal_notices ADD COLUMN kind TEXT NOT NULL DEFAULT 'notice';
+    ALTER TABLE portal_notices ADD COLUMN entity TEXT;
+    ALTER TABLE portal_notices ADD COLUMN entity_id INTEGER;
+    ALTER TABLE portal_notices ADD COLUMN link TEXT;
+    CREATE TABLE notice_emails (
+      id INTEGER PRIMARY KEY, notice_id INTEGER NOT NULL REFERENCES portal_notices(id) ON DELETE CASCADE,
+      portal_user_id INTEGER REFERENCES portal_users(id) ON DELETE CASCADE, email TEXT, token_hash TEXT NOT NULL UNIQUE,
+      sent_at TEXT NOT NULL, opened_at TEXT, opens INTEGER NOT NULL DEFAULT 0
+    );
+    CREATE INDEX notice_emails_notice ON notice_emails(notice_id);
+  `);
   const { ASSETS } = ui;
 
   // ---------- cookies ----------
@@ -716,7 +731,7 @@ ${quick}
     db.run('INSERT INTO portal_notice_reads (notice_id, portal_user_id, read_at) VALUES (?, ?, ?) ON CONFLICT DO NOTHING', n.id, req.tenant.id, now());
     page(req, res, {
       title: noticeTitle(n), active: 'notices', crumbs: [['/portal/notices', tr('por|Notices')], [null, ui.date(n.publish_at || n.created_at)]],
-      body: ui.card(noticeTitle(n), `<div class="pnotice__body">${paragraphs(noticeBody(n))}</div>`, { sub: ui.date(n.publish_at || n.created_at) }),
+      body: ui.card(noticeTitle(n), `<div class="pnotice__body">${paragraphs(noticeBody(n))}</div>${n.link && /^\/portal\//.test(n.link) ? `<p>${ui.btn(ui.esc(tr('por|Open')), { href: n.link, cls: 'btn--primary btn--sm', ic: 'arrow' })}</p>` : ''}`, { sub: ui.date(n.publish_at || n.created_at) }),
     });
   });
 
@@ -792,7 +807,8 @@ ${quick}
   router.get('/portal', (req, res) => {
     const csrf = req.session.csrf;
     const users = db.all('SELECT u.*, b.name brand FROM portal_users u JOIN brands b ON b.id = u.brand_id ORDER BY b.name, u.name');
-    const notices = db.all('SELECT n.*, (SELECT COUNT(*) FROM portal_notice_reads r WHERE r.notice_id = n.id) reads FROM portal_notices n ORDER BY n.id DESC LIMIT 100');
+    const notices = db.all("SELECT n.*, (SELECT COUNT(*) FROM portal_notice_reads r WHERE r.notice_id = n.id) reads FROM portal_notices n WHERE n.kind = 'notice' ORDER BY n.id DESC LIMIT 100");
+    const sent = db.all("SELECT * FROM portal_notices WHERE kind != 'notice' ORDER BY id DESC LIMIT 15");
     const s = db.settings();
     const demoPw = db.value('SELECT COUNT(*) FROM portal_users WHERE demo = 1') ? db.setting('portal_demo_password') : '';
     const brands = tenantsBrands();
@@ -806,7 +822,7 @@ ${quick}
       { label: tr('Title'), render: (n) => `<b>${ui.esc(noticeTitle(n))}</b>${n.title_ar ? '' : `<small class="sub">${ui.esc(tr('por|English only'))}</small>`}` },
       { label: tr('por|Audience'), render: (n) => ui.esc(n.audience === 'all' ? tr('por|All tenants') : tn(String(n.brand_ids || '').split(',').filter(Boolean).length, '{n} tenant', '{n} tenants')) },
       { label: tr('Status'), render: (n) => ui.badge(n.status, n.status === 'published' ? (n.expire_at && n.expire_at <= now() ? tr('offer|Expired') : tr('por|Published')) : tr('offer|Draft'), n.status === 'published' ? 'ok' : 'mute') },
-      { label: tr('por|Read by'), num: true, render: (n) => String(n.reads) },
+      { label: tr('por|Seen by'), num: true, render: (n) => { const r = receipts(n); return `<a href="/admin/portal/notices/${n.id}">${r.filter((x) => x.seen).length} / ${r.length}</a>`; } },
       ...(h.can(req, 'agent') ? [{ label: '', render: (n) => `<div class="prow">${ui.form(`/admin/portal/notices/${n.id}/toggle`, csrf, ui.btn(n.status === 'published' ? tr('por|Unpublish') : tr('por|Publish'), { cls: 'btn--ghost btn--xs' }))}${ui.form(`/admin/portal/notices/${n.id}/delete`, csrf, `<button class="iconbtn" title="${ui.esc(tr('Delete'))}" aria-label="${ui.esc(tr('Delete'))}" data-confirm="${ui.esc(tr('Delete {name}? This cannot be undone.', { name: noticeTitle(n) }))}">×</button>`)}</div>` }] : []),
     ], notices, { empty: ui.esc(tr('por|No notices yet.')) });
     const noticeForm = h.can(req, 'agent') ? `<details class="upload-box"><summary>${ui.icon('plus')}<span>${ui.esc(tr('por|New notice'))}</span></summary>${ui.form('/admin/portal/notices', csrf, `<div class="fields">
@@ -835,6 +851,7 @@ ${quick}
   <div class="stack">
     ${ui.card(tr('por|Tenant accounts'), usersTable(req, users, { csrf }), { action: ui.btn(tr('por|Open the portal'), { href: '/portal', cls: 'btn--ghost btn--sm', ic: 'arrow', attrs: { target: '_blank', rel: 'noopener' } }) })}
     ${ui.card(tr('por|Notices'), `${noticeRows}${noticeForm}`, { sub: ui.esc(tr('por|Announcements tenants see on their home page.')) })}
+    ${sent.length ? ui.card(tr('por|Notifications sent'), `<ul class="list">${sent.map((n) => { const r = receipts(n)[0]; return `<li><a href="/admin/portal/notices/${n.id}"><span class="what"><b>${ui.esc(noticeTitle(n))}</b><small>${ui.esc([r ? r.brand : '', ui.dt(n.created_at)].filter(Boolean).join(' · '))}</small></span>${seenBadge(r && r.seen)}</a></li>`; }).join('')}</ul>`, { sub: ui.esc(tr('por|Cheques deposited or returned, and other messages to one tenant, with whether they saw them.')) }) : ''}
   </div>
   <div class="stack">${invite}${instructions}${h.payments && h.payments.adminCard ? h.payments.adminCard(req) : ''}</div>
 </div>`;
@@ -907,6 +924,84 @@ ${quick}
     for (const k of ['portal_instapay', 'portal_instapay_name', 'portal_bank', 'portal_bank_account', 'portal_iban']) db.setSetting(k, h.str(req.body[k], 160));
     h.log(req, 'Changed the payment instructions', 'settings', null, null);
     h.back(req, res, '/admin/portal', 'ok', tr('Saved.'));
+  });
+
+  // ---------- notifications to tenants, and whether they saw them ----------
+  // h.tenantNotify(brandId, { kind, title, body, rows, link, entity, entity_id, demo }) — title and body are
+  // 'por|…' keys with params (written in English and Arabic); it shows in the tenant's portal and is
+  // emailed to the brand's portal users. Returns the notice id.
+  const GIF = Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64');
+  const publicSite = () => String((h.env && h.env.SITE_URL) || process.env.SITE_URL || '').replace(/\/$/, '');
+  function tenantNotify(brandId, { kind = 'notice', title, body, params = {}, rows = [], link = null, entity = null, entity_id = null, demo = 0, email = true } = {}) {
+    const both = (key, p = params) => ({ en: i18n.run('en', () => tr(key, p)), ar: i18n.run('ar', () => tr(key, p)) });
+    const t = both(title);
+    const b = both(body);
+    const id = Number(db.run(`INSERT INTO portal_notices (title_en, title_ar, body_en, body_ar, audience, brand_ids, status, publish_at, created_at, kind, entity, entity_id, link, demo)
+      VALUES (?, ?, ?, ?, 'brands', ?, 'published', ?, ?, ?, ?, ?, ?, ?)`, t.en, t.ar, b.en, b.ar, String(brandId), now(), now(), kind, entity, entity_id, link, demo ? 1 : 0).lastInsertRowid);
+    if (email && h.mail) {
+      for (const u of db.all('SELECT * FROM portal_users WHERE brand_id = ? AND active = 1 AND email IS NOT NULL', brandId)) {
+        const tok = token(18);
+        db.run('INSERT INTO notice_emails (notice_id, portal_user_id, email, token_hash, sent_at) VALUES (?, ?, ?, ?, ?)', id, u.id, u.email, sha(tok), now());
+        const lang = u.lang === 'ar' ? 'ar' : 'en';
+        const site = publicSite();
+        const html = i18n.run(lang, () => template({
+          lang, eyebrow: tr('por|The Wave · tenant portal'), title: t[lang], intro: escH(b[lang]),
+          body: rows.length ? facts(rows.map(([k, v]) => [tr(k), escH(String(v))]), { lang }) : '',
+          button: site ? { label: tr('por|Open the portal'), url: `${site}${link || '/portal/notices'}` } : null, site,
+        })).replace('</body>', `${site ? `<img src="${site}/n/${tok}.gif" width="1" height="1" alt="" style="display:block;border:0">` : ''}</body>`);
+        h.mail.send({ to: u.email, subject: t[lang], html, text: `${t[lang]}\n\n${b[lang]}`, lang, related: { entity: 'portal_notice', id }, demo });
+      }
+    }
+    return id;
+  }
+  h.tenantNotify = tenantNotify;
+  h.public.get('/n/:token.gif', (req, res) => {
+    const row = db.get('SELECT id FROM notice_emails WHERE token_hash = ?', sha(String(req.params.token)));
+    if (row) db.run('UPDATE notice_emails SET opened_at = COALESCE(opened_at, ?), opens = opens + 1 WHERE id = ?', now(), row.id);
+    res.set('Cache-Control', 'no-store').type('gif').send(GIF);
+  });
+  // who a notice is for, and what each of them did with it
+  function receipts(n) {
+    const brandIds = n.audience === 'all' ? db.all('SELECT DISTINCT brand_id id FROM portal_users WHERE active = 1').map((x) => x.id) : String(n.brand_ids || '').split(',').map(Number).filter(Boolean);
+    return brandIds.map((bid) => {
+      const users = db.all(`SELECT u.id, u.name, u.email, (SELECT read_at FROM portal_notice_reads r WHERE r.notice_id = ? AND r.portal_user_id = u.id) read_at,
+        (SELECT MIN(opened_at) FROM notice_emails e WHERE e.notice_id = ? AND e.portal_user_id = u.id) opened_at,
+        (SELECT COUNT(*) FROM notice_emails e WHERE e.notice_id = ? AND e.portal_user_id = u.id) emailed
+        FROM portal_users u WHERE u.brand_id = ? ORDER BY u.name`, n.id, n.id, n.id, bid);
+      const seen = users.map((u) => [u.read_at, u.opened_at]).flat().filter(Boolean).sort()[0] || null;
+      return { brand_id: bid, brand: db.value('SELECT name FROM brands WHERE id = ?', bid) || '—', users, seen };
+    });
+  }
+  const seenBadge = (when) => (when ? ui.badge('seen', tr('por|Seen {when}', { when: ui.rel(when) }), 'ok') : ui.badge('unseen', tr('por|Not seen yet'), 'amber'));
+  h.noticeSeen = (noticeId) => {
+    const n = db.get('SELECT * FROM portal_notices WHERE id = ?', noticeId);
+    return n ? receipts(n)[0] || null : null;
+  };
+  h.seenBadge = seenBadge;
+  router.get('/portal/notices/:id', (req, res, next) => {
+    const n = db.get('SELECT * FROM portal_notices WHERE id = ?', h.int(req.params.id));
+    if (!n) return next();
+    const list = receipts(n);
+    const seenCount = list.filter((r) => r.seen).length;
+    const rows = list.flatMap((r) => (r.users.length ? r.users.map((u, i) => ({ ...u, brand: i ? '' : r.brand, brand_id: r.brand_id })) : [{ brand: r.brand, brand_id: r.brand_id, name: null }]));
+    const table = ui.table([
+      { label: tr('Tenant'), render: (x) => (x.brand ? `<a href="/admin/tenants/${x.brand_id}"><b>${ui.esc(x.brand)}</b></a>` : '') },
+      { label: tr('por|Person'), render: (x) => (x.name ? `${ui.esc(x.name)}<small class="sub">${ui.esc(x.email || '')}</small>` : `<span class="muted">${ui.esc(tr('por|No portal account'))}</span>`) },
+      { label: tr('por|Opened in the portal'), render: (x) => (x.read_at ? ui.esc(ui.dt(x.read_at)) : '—') },
+      { label: tr('por|Email opened'), render: (x) => (x.opened_at ? ui.esc(ui.dt(x.opened_at)) : x.emailed ? ui.esc(tr('por|Sent, not opened')) : '—') },
+      { label: tr('Status'), render: (x) => (x.name ? seenBadge([x.read_at, x.opened_at].filter(Boolean).sort()[0]) : '') },
+    ], rows, { empty: ui.esc(tr('por|No tenants have a portal account yet.')) });
+    h.page(req, res, {
+      title: noticeTitle(n), crumbs: [['/admin/portal', tr('por|Tenant portal')], [null, tr('por|Who saw it')]], active: '/admin/tenants',
+      body: `<div class="kpis kpis--3">${ui.kpi({ label: tr('por|Sent to'), value: tn(list.length, '{n} tenant', '{n} tenants') })}${ui.kpi({ label: tr('por|Seen by'), value: String(seenCount), bar: list.length ? seenCount / list.length : 0 })}${ui.kpi({ label: tr('por|Not seen yet'), value: String(list.length - seenCount), tone: list.length - seenCount ? 'kpi--alert' : '' })}</div>
+${ui.card(noticeTitle(n), `<div class="pnotice__body">${paragraphs(noticeBody(n))}</div>`, { sub: ui.esc(ui.dt(n.publish_at || n.created_at)) })}${ui.card(tr('por|Who saw it'), table, { sub: ui.esc(tr('por|Seen means opened in the tenant portal, or the email opened (when their email app shows images).')) })}`,
+    });
+  });
+  // the tenant file: notifications sent to this tenant and whether they saw them
+  (h.tenantCards = h.tenantCards || []).push((req, b) => {
+    const list = db.all("SELECT * FROM portal_notices WHERE kind != 'notice' AND audience = 'brands' AND (',' || brand_ids || ',') LIKE ? ORDER BY id DESC LIMIT 12", `%,${b.id},%`);
+    if (!list.length) return '';
+    return ui.card(tr('por|Notifications sent'), `<ul class="list">${list.map((n) => { const r = receipts(n)[0]; return `<li><a href="/admin/portal/notices/${n.id}"><span class="what"><b>${ui.esc(noticeTitle(n))}</b><small>${ui.esc(ui.dt(n.created_at))}</small></span>${seenBadge(r && r.seen)}</a></li>`; }).join('')}</ul>`, { sub: ui.esc(tr('por|Seen in the portal or by email')) });
   });
 
   // the "Portal access" card on each tenant file

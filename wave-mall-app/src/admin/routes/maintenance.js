@@ -324,6 +324,12 @@ module.exports = function maintenance(router, h) {
     if (CATEGORIES[q.category]) { conds.push('w.category = ?'); args.push(q.category); }
     if (PRIORITY[q.priority]) { conds.push('w.priority = ?'); args.push(Number(q.priority)); }
     if (SOURCES[q.source]) { conds.push('w.source = ?'); args.push(q.source); }
+    // the date it was raised, and the tenant or its lease
+    const isDate = (d) => /^\d{4}-\d{2}-\d{2}$/.test(String(d || ''));
+    if (isDate(q.from)) { conds.push('substr(w.created_at, 1, 10) >= ?'); args.push(q.from); }
+    if (isDate(q.to)) { conds.push('substr(w.created_at, 1, 10) <= ?'); args.push(q.to); }
+    if (h.int(q.brand)) { conds.push('w.brand_id = ?'); args.push(h.int(q.brand)); }
+    if (h.int(q.lease)) { conds.push('w.unit_id IN (SELECT unit_id FROM lease_units WHERE lease_id = ?)'); args.push(h.int(q.lease)); }
     const sql = conds.length ? `WHERE ${conds.join(' AND ')}` : '';
     const total = db.value(`SELECT COUNT(*) FROM work_orders w ${sql}`, ...args);
     const pages = Math.max(1, Math.ceil(total / PER));
@@ -337,6 +343,10 @@ module.exports = function maintenance(router, h) {
       ${ui.select('category', tr('mnt|Category'), cats(), q.category || '', { blank: tr('mnt|All categories') })}
       ${ui.select('priority', tr('mnt|Priority'), pris(), q.priority || '', { blank: tr('mnt|All priorities') })}
       ${ui.select('source', tr('mnt|Raised by'), tmap(SOURCES), q.source || '', { blank: tr('mnt|Anyone') })}
+      ${ui.input('from', `${tr('mnt|Raised')} · ${tr('From')}`, /^\d{4}-\d{2}-\d{2}$/.test(String(q.from || '')) ? q.from : '', { type: 'date' })}
+      ${ui.input('to', tr('To'), /^\d{4}-\d{2}-\d{2}$/.test(String(q.to || '')) ? q.to : '', { type: 'date' })}
+      ${ui.select('brand', tr('Tenant'), db.all('SELECT DISTINCT b.id, b.name FROM brands b JOIN leases s ON s.brand_id = b.id ORDER BY b.name').map((b) => [b.id, b.name]), q.brand || '', { blank: tr('All') })}
+      ${ui.select('lease', tr('Contract'), db.all("SELECT s.id, s.ref, b.name FROM leases s JOIN brands b ON b.id = s.brand_id WHERE s.status IN ('active','draft') ORDER BY s.ref DESC").map((l) => [l.id, `${l.ref} · ${l.name}`]), q.lease || '', { blank: tr('All') })}
       ${ui.btn(tr('mnt|Filter'), { cls: 'btn--ghost btn--sm' })}</form>`;
     const table = ui.table([
       { label: tr('mnt|Work order'), render: (w) => `<b>${ui.esc(tx(w.title))}</b><small class="sub">${ui.esc(w.ref)} · ${ui.esc(tr(CATEGORIES[w.category]))}${w.brand_name ? ` · ${ui.esc(w.brand_name)}` : ''}</small>` },
@@ -346,7 +356,7 @@ module.exports = function maintenance(router, h) {
       { label: tr('Status'), render: (w) => `${sBadge(w.status)}<small class="sub">${slaChip(w)}</small>` },
       { label: tr('mnt|Raised'), render: (w) => `${ui.esc(ago(w.created_at))}<small class="sub">${ui.esc(tr(SOURCES[w.source]))}</small>` },
     ], rows, { empty: ui.esc(tr('mnt|No work orders here.')), href: (w) => `/admin/maintenance/orders/${w.id}` });
-    const keep = Object.fromEntries(Object.entries({ view, status: q.status, category: q.category, priority: q.priority, source: q.source }).filter(([, v]) => v));
+    const keep = Object.fromEntries(Object.entries({ view, status: q.status, category: q.category, priority: q.priority, source: q.source, from: q.from, to: q.to, brand: q.brand, lease: q.lease }).filter(([, v]) => v));
     h.page(req, res, {
       title: tr('mnt|Work orders'), crumbs: crumbs([null, tr('mnt|Work orders')]), active: '/admin/maintenance', wide: true,
       body: `${tabs('/admin/maintenance/orders', req)}<nav class="tabs">${viewTabs}</nav>${ui.card(tn(total, 'mnt|{n} work order', 'mnt|{n} work orders'), `${filters}${table}${pager(ui, '/admin/maintenance/orders', keep, page, pages)}`, { action: ui.btn(tr('Export CSV'), { href: '/admin/maintenance/orders.csv', cls: 'btn--ghost btn--sm', ic: 'dl' }) })}`,
@@ -367,7 +377,7 @@ module.exports = function maintenance(router, h) {
   });
 
   const assetOpts = () => db.all("SELECT id, code, name FROM assets WHERE status != 'retired' ORDER BY code").map((a) => [a.id, `${a.code} · ${tx(a.name)}`]);
-  const unitOpts = () => db.all('SELECT id, code FROM units ORDER BY code').map((u) => [u.id, u.code]);
+  const unitOpts = () => db.all("SELECT id, code FROM units WHERE status != 'retired' ORDER BY code").map((u) => [u.id, u.code]);
   const contractOpts = () => db.all("SELECT id, ref, title, counterparty FROM contracts WHERE status IN ('active','draft') ORDER BY counterparty").map((c) => [c.id, `${c.counterparty} · ${tx(c.title)}`]);
   const userOpts = () => h.users().map((u) => [u.id, u.name]);
 

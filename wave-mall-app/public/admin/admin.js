@@ -355,6 +355,48 @@
   // Select-all for lists with checkboxes, and auto-submit filters.
   $$('[data-autosubmit]').forEach((el) => el.addEventListener('change', () => el.form?.requestSubmit()));
   $$('select[data-nav]').forEach((s) => s.addEventListener('change', () => { if (s.value) location.href = s.value; }));
+
+  // ---------- sort any table by clicking a column title ----------
+  // A cell's data-sort wins (ui.table writes it for dates and amounts); otherwise the text is read as
+  // a number, a date ("12 Oct 2026" or "12 أكتوبر 2026") or plain text. Clicking again reverses.
+  const MON = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12,
+    'يناير': 1, 'فبراير': 2, 'مارس': 3, 'أبريل': 4, 'مايو': 5, 'يونيو': 6, 'يوليو': 7, 'أغسطس': 8, 'سبتمبر': 9, 'أكتوبر': 10, 'نوفمبر': 11, 'ديسمبر': 12 };
+  const keyOf = (td) => {
+    if (!td) return '';
+    if (td.dataset.sort !== undefined) { const n = Number(td.dataset.sort); return td.dataset.sort !== '' && Number.isFinite(n) ? n : td.dataset.sort; }
+    const text = td.textContent.replace(/[‎‏]/g, '').trim();
+    const d = text.match(/(\d{1,2})\s+([A-Za-z]{3}|[؀-ۿ]+)\s+(\d{4})/);
+    if (d && MON[d[2].toLowerCase()]) return `${d[3]}-${String(MON[d[2].toLowerCase()]).padStart(2, '0')}-${d[1].padStart(2, '0')}`;
+    const num = text.replace(/[^\d.\-−]/g, '').replace('−', '-');
+    if (/^-?\d+(\.\d+)?$/.test(num) && /\d/.test(text) && text.replace(/[\d\s,.\-−%]|EGP|ج\.م/gi, '').length <= 3) return Number(num);
+    return text.toLowerCase();
+  };
+  $$('table.table').forEach((tbl) => {
+    const head = tbl.tHead;
+    const body = tbl.tBodies[0];
+    if (!head || !body || body.rows.length < 2) return;
+    [...head.rows[0].cells].forEach((th, col) => {
+      if (!th.textContent.trim()) return;
+      th.classList.add('is-sortable');
+      th.tabIndex = 0;
+      th.setAttribute('aria-sort', 'none');
+      const sortBy = () => {
+        const dir = th.getAttribute('aria-sort') === 'ascending' ? -1 : 1;
+        [...head.rows[0].cells].forEach((x) => x !== th && x.setAttribute('aria-sort', 'none'));
+        th.setAttribute('aria-sort', dir === 1 ? 'ascending' : 'descending');
+        const rows = [...body.rows].map((r) => [keyOf(r.cells[col]), r]);
+        rows.sort((a, b) => {
+          const x = a[0];
+          const y = b[0];
+          if (typeof x === 'number' && typeof y === 'number') return (x - y) * dir;
+          return String(x).localeCompare(String(y), document.documentElement.lang || 'en', { numeric: true }) * dir;
+        });
+        rows.forEach(([, r]) => body.appendChild(r));
+      };
+      th.addEventListener('click', sortBy);
+      th.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); sortBy(); } });
+    });
+  });
 })();
 
 /* ---------- HR: live net pay on a draft payroll (routes/hr.js) ----------
@@ -372,7 +414,7 @@
   };
   const calc = (row) => {
     const d = row.dataset;
-    const net = (+d.basic || 0) + (+d.allow || 0) + val(row, 'overtime') + val(row, 'bonus') - val(row, 'deductions') - (+d.daily || 0) * val(row, 'unpaid_days') - (+d.ins || 0) - val(row, 'tax');
+    const net = (+d.basic || 0) + (+d.allow || 0) + val(row, 'overtime') + val(row, 'bonus') - val(row, 'deductions') - (+d.daily || 0) * val(row, 'unpaid_days') - (+d.ins || 0) - val(row, 'tax') - (+d.adv || 0);
     const out = row.querySelector('[data-net]');
     if (out) {
       out.textContent = fmt.format(Math.round(net));

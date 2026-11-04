@@ -41,6 +41,31 @@ const units = () =>
     return { n, d: `M${C[0]} ${C[1]} L${f(x0)} ${f(y0)} L${f(x1)} ${f(y1)} Z`, label: [f(lx), f(ly)] };
   });
 
+// One plan slot, or a slice of it (from, to: 0–1) for a unit split in two or three:
+// a plaza wedge is cut along its angle, a street shop across its depth.
+function slot(level, n, from = 0, to = 1) {
+  if (level === 'B1') {
+    const i = Number(n) - 1;
+    const y = 92 + i * 66 + 66 * from;
+    const h = 66 * (to - from);
+    return { kind: 'rect', x: 52, y: f(y), w: 92, h: f(h), label: [98, f(y + h / 2 + 4)] };
+  }
+  const i = GROUND_UNITS.findIndex(([x]) => Number(x) === Number(n));
+  if (i < 0) return null;
+  const [b0, b1] = i < 8 ? LEFT[i] : LEFT[i - 8].map((a) => 180 - a);
+  const a0 = b0 + (b1 - b0) * from;
+  const a1 = b0 + (b1 - b0) * to;
+  const [x0, y0] = pt(a0, 900);
+  const [x1, y1] = pt(a1, 900);
+  const mid = (a0 + a1) / 2;
+  const cx = Math.abs(Math.cos(rad(mid))) || 1e-6;
+  const sy = Math.abs(Math.sin(rad(mid))) || 1e-6;
+  const rIn = Math.min(150 / cx, 180 / sy);
+  const rOut = Math.min(400 / cx, 262 / sy);
+  const [lx, ly] = pt(mid, (rIn + rOut) / 2 + 6);
+  return { kind: 'path', d: `M${C[0]} ${C[1]} L${f(x0)} ${f(y0)} L${f(x1)} ${f(y1)} Z`, label: [f(lx), f(ly)] };
+}
+
 const defs = (id) =>
   `<defs><clipPath id="${id}-wing"><path clip-rule="evenodd" d="${OUTER} ${COURT}"/></clipPath></defs>`;
 
@@ -108,4 +133,4 @@ function heroPath(t, aspect = 1) {
   return `M${x(140)} ${y(40)} L${x(860)} ${y(40)} Q${x(960)} ${y(40)} ${x(960)} ${y(110)} C${x(960)} ${y(165)} ${wx(862, 1.02)} ${y(228)} ${wx(862, 1.02)} ${0.5} C${wx(862, 1.02)} ${y(412)} ${x(960)} ${y(475)} ${x(960)} ${y(530)} Q${x(960)} ${y(600)} ${x(860)} ${y(600)} L${x(140)} ${y(600)} Q${x(40)} ${y(600)} ${x(40)} ${y(530)} C${x(40)} ${y(475)} ${wx(138, -0.02)} ${y(412)} ${wx(138, -0.02)} ${0.5} C${wx(138, -0.02)} ${y(228)} ${x(40)} ${y(165)} ${x(40)} ${y(110)} Q${x(40)} ${y(40)} ${x(140)} ${y(40)} Z`.replace(/(\d\.\d{4})\d+/g, '$1');
 }
 
-module.exports = { floorSvg, heroPath, OUTER, COURT, VB };
+module.exports = { floorSvg, heroPath, slot, OUTER, COURT, VB };

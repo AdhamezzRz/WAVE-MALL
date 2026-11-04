@@ -152,11 +152,11 @@ const NAV = [
   ['Overview', [['/admin', 'Dashboard', 'dash']]],
   ['Sales', [['/admin/inbox', 'Inbox', 'inbox', 'inbox'], ['/admin/leads', 'Leads', 'leads'], ['/admin/pipeline', 'Pipeline', 'pipe'], ['/admin/offers', 'Offers', 'offer', 'approvals'], ['/admin/conversations', 'nav|Conversations', 'chat', 'conversations'], ['/admin/calendar', 'Calendar & tasks', 'cal', 'tasks']]],
   ['Property', [['/admin/units', 'Units & plan', 'unit'], ['/admin/brands', 'Brands', 'brand'], ['/admin/tenants', 'Tenant files', 'tenant'], ['/admin/fitout', 'nav|Fit-out', 'hammer', 'fitout'], ['/admin/specialty', 'nav|Short-term space', 'store', 'specialty']]],
-  ['Revenue', [['/admin/leases', 'Leases', 'lease'], ['/admin/billing', 'Billing', 'bill', 'overdue'], ['/admin/turnover', 'nav|Turnover & sales', 'percent', 'turnover'], ['/admin/service-charge', 'nav|Service charge', 'report'], ['/admin/utilities', 'nav|Utilities', 'gauge']]],
+  ['Revenue', [['/admin/leases', 'Leases', 'lease'], ['/admin/billing', 'Billing', 'bill', 'overdue'], ['/admin/cheques', 'nav|Cheques', 'wallet', 'cheques'], ['/admin/turnover', 'nav|Turnover & sales', 'percent', 'turnover'], ['/admin/service-charge', 'nav|Service charge', 'report'], ['/admin/utilities', 'nav|Utilities', 'gauge']]],
   ['nav|Finance', [['/admin/accounting', 'nav|Accounting', 'coins', 'finance', 'finance']]],
   ['nav|Operations', [['/admin/maintenance', 'nav|Maintenance', 'wrench', 'maintenance'], ['/admin/parking', 'nav|Parking', 'car', 'parking'], ['/admin/footfall', 'nav|Footfall', 'flow'], ['/admin/website', 'nav|Website', 'globe']]],
   ['Records', [['/admin/documents', 'Documents', 'folder', 'docs'], ['/admin/contracts', 'Contracts', 'contract', 'renewals']]],
-  ['People', [['/admin/hr', 'Employees', 'people', null, 'hr'], ['/admin/hr/leave', 'nav|Leave', 'leave', 'leave', 'hr'], ['/admin/hr/payroll', 'Payroll', 'wallet', null, 'hr']]],
+  ['People', [['/admin/hr', 'Employees', 'people', null, 'hr'], ['/admin/hr/leave', 'nav|Leave', 'leave', 'leave', 'hr'], ['/admin/hr/payroll', 'Payroll', 'wallet', null, 'hr'], ['/admin/hr/advances', 'nav|Salary advances', 'coins', null, 'hr']]],
   ['Insight', [['/admin/reports', 'Reports', 'report']]],
   ['Office', [['/admin/team', 'Team & targets', 'team'], ['/admin/subscribers', 'Subscribers', 'mail'], ['/admin/integrations', 'nav|Integrations', 'plug', null, 'admin'], ['/admin/settings', 'Settings', 'gear', null, 'admin'], ['/admin/audit', 'Activity log', 'log', null, 'manager']]],
 ];
@@ -322,7 +322,8 @@ function table(cols, rows, { empty = null, href = null, cls = '' } = {}) {
     .map((r) => {
       const link = href ? href(r) : null;
       // data-label: on phones each row becomes a card of "label: value" lines (admin.css, mobile app)
-      return `<tr${link ? ` data-href="${esc(link)}" tabindex="0"` : ''}>${cols.map((c) => `<td${c.num ? ' class="num"' : ''} data-label="${esc(c.label)}">${c.render ? c.render(r) : esc(r[c.key])}</td>`).join('')}</tr>`;
+      // data-sort: the value a column sorts by when its title is clicked (admin.js)
+      return `<tr${link ? ` data-href="${esc(link)}" tabindex="0"` : ''}>${cols.map((c) => `<td${c.num ? ' class="num"' : ''} data-label="${esc(c.label)}"${c.sort ? ` data-sort="${esc(c.sort(r) ?? '')}"` : ''}>${c.render ? c.render(r) : esc(r[c.key])}</td>`).join('')}</tr>`;
     })
     .join('');
   return `<div class="tablewrap"><table class="table table--resp ${cls}"><thead><tr>${th}</tr></thead><tbody>${tr}</tbody></table></div>`;
@@ -444,22 +445,59 @@ function donut(parts, { size = 150, label = '' } = {}) {
 const meter = (x, tone = 'forest') => `<span class="meter"><i class="t-${tone}" style="width:${Math.max(0, Math.min(100, (x || 0) * 100)).toFixed(1)}%"></i></span>`;
 
 // ---------- the plan, coloured by unit status ----------
+// The plan slots a unit covers: its own (G05, S03) unless it was merged or split (units.cells).
+function cellsOf(u) {
+  try {
+    const c = u.cells ? JSON.parse(u.cells) : null;
+    if (Array.isArray(c) && c.length) return c;
+  } catch {
+    /* fall back to the code */
+  }
+  return /^[GS]\d{2}$/.test(u.code) ? [{ slot: u.code, from: 0, to: 1 }] : [];
+}
+// "G05A" → "5A", "G03-04" → "3-4": the number painted on the plan
+const planLabel = (code) => String(code).replace(/^[GS]/, '').replace(/(^|[-+])0+(\d)/g, '$1$2');
 function plan(units, level, { link = true } = {}) {
-  const by = Object.fromEntries(units.map((u) => [u.code, u]));
+  const { slot } = require('../plan');
+  const live = units.filter((u) => u.status !== 'retired');
+  const bySlot = {};
+  const labelAt = {};
+  for (const u of live) {
+    const cells = cellsOf(u);
+    for (const c of cells) {
+      const g = slot(level, Number(String(c.slot).slice(1)), c.from ?? 0, c.to ?? 1);
+      if (!g || (level === 'B1') !== String(c.slot).startsWith('S')) continue;
+      (bySlot[c.slot] = bySlot[c.slot] || []).push({ u, g, merged: cells.length > 1 && cells.every((x) => (x.from ?? 0) === 0 && (x.to ?? 1) === 1) });
+      (labelAt[u.code] = labelAt[u.code] || []).push(g.label);
+    }
+  }
+  const attrs = (u, street, n, merged) => {
+    const tip = `${u.code} · ${M.UNIT_STATUS[u.status]} · ${t('plan|{a} + {b} terrace', { a: m2(u.indoor_m2), b: m2(u.terrace_m2) })}`;
+    return `class="plan__unit${street ? ' plan__unit--street' : ''} st-${u.status}${merged ? ' is-merged' : ''}" data-unit="${n}" data-code="${esc(u.code)}"${link ? ` data-href="/admin/units/${u.id}"` : ''} data-tip="${esc(tip)}"`;
+  };
+  const shape = (g, a, clip) => (g.kind === 'rect' ? `<rect ${a} x="${g.x}" y="${g.y}" width="${g.w}" height="${g.h}"/>` : `<path ${a} d="${g.d}"${clip ? ` clip-path="${clip}"` : ''}/>`);
+  const drawn = new Set();
+  const labels = () => Object.entries(labelAt).filter(([code]) => !drawn.has(code)).map(([code, pts]) => {
+    drawn.add(code);
+    const x = pts.reduce((s, p) => s + p[0], 0) / pts.length;
+    const y = pts.reduce((s, p) => s + p[1], 0) / pts.length;
+    return `<text class="plan__num" x="${Math.round(x * 10) / 10}" y="${Math.round(y * 10) / 10}">${esc(planLabel(code))}</text>`;
+  }).join('');
+  const piecesFor = (code, n, street, clip, original) => {
+    const list = bySlot[code];
+    if (!list) return original;
+    return list.map(({ u, g, merged }) => shape(g, attrs(u, street, n, merged), clip)).join('');
+  };
   let svg = level === 'G' ? floorSvg('G', { id: 'adm-g' }) : floorSvg('B1', { id: 'adm-s' });
-  svg = svg.replace(/class="plan__unit( plan__unit--street)?" data-unit="(\d+)"/g, (all, street, n) => {
-    const code = `${street ? 'S' : 'G'}${String(n).padStart(2, '0')}`;
-    const u = by[code];
-    if (!u) return all;
-    const tip = `${code} · ${M.UNIT_STATUS[u.status]} · ${t('plan|{a} + {b} terrace', { a: m2(u.indoor_m2), b: m2(u.terrace_m2) })}`;
-    return `class="plan__unit${street ? ' plan__unit--street' : ''} st-${u.status}" data-unit="${n}" data-code="${code}"${link ? ` data-href="/admin/units/${u.id}"` : ''} data-tip="${esc(tip)}"`;
-  });
+  svg = svg.replace(/<path class="plan__unit" data-unit="(\d+)" d="[^"]*" clip-path="([^"]+)"\/><text class="plan__num"[^>]*>\d+<\/text>/g, (all, n, clip) => piecesFor(`G${String(n).padStart(2, '0')}`, n, false, clip, all));
+  svg = svg.replace(/<rect class="plan__unit plan__unit--street" data-unit="(\d+)"[^>]*\/><text class="plan__num"[^>]*>\d+<\/text>/g, (all, n) => piecesFor(`S${String(n).padStart(2, '0')}`, n, true, null, all));
+  svg = svg.replace('</svg>', `${labels()}</svg>`);
   return `<div class="plan-wrap" data-plan>${svg}<div class="plan-tip" data-plan-tip hidden></div></div>`;
 }
-const planLegend = () => `<ul class="legend legend--row">${Object.entries(M.UNIT_STATUS).map(([k, l]) => `<li><i class="st-${k}"></i><span>${esc(l)}</span></li>`).join('')}</ul>`;
+const planLegend = () => `<ul class="legend legend--row">${Object.entries(M.UNIT_STATUS).filter(([k]) => k !== 'retired').map(([k, l]) => `<li><i class="st-${k}"></i><span>${esc(l)}</span></li>`).join('')}</ul>`;
 
 module.exports = {
   esc, attr, n0, money, local, m2, pct, date, dt, rel, initials, icon, logo, mark, setCurrency, pwaHead, ASSETS, docPanel, expiry, KB, fileIcon, curLabel, monthName, monthYear, weekdays, langLink, langForm, t, tn,
   layout, bare, badge, stageBadge, unitBadge, kpi, trend, card, table, empty, btn, hidden, form, input, select, textarea,
-  bars, funnel, donut, meter, plan, planLegend, TONE, RANK,
+  bars, funnel, donut, meter, plan, planLegend, cellsOf, TONE, RANK,
 };

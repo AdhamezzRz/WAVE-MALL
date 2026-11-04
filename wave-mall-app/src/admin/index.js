@@ -125,7 +125,7 @@ function build(db, env, app) {
   require('./routes/files')(router, h);
   // Modules, in load order. The portal goes first (others add tabs to it); accounting goes last
   // (it listens to everyone's events). A module that is not there yet is skipped.
-  for (const mod of ['portal', 'records', 'tenants', 'hr', 'comms', 'payments', 'fitout', 'website', 'specialty', 'maintenance', 'footfall', 'revenue', 'parking', 'accounting', 'mobile']) {
+  for (const mod of ['portal', 'records', 'tenants', 'hr', 'advances', 'comms', 'payments', 'cheques', 'fitout', 'website', 'specialty', 'maintenance', 'footfall', 'revenue', 'parking', 'accounting', 'mobile']) {
     try {
       require.resolve(`./routes/${mod}`);
     } catch {
@@ -173,6 +173,34 @@ function helpers(db) {
     count: (key, fn) => { extraCounts[key] = fn; },
     // Finance: administrators, and anyone given finance access on the Team page
     canFinance: (req) => !!req.user && (req.user.role === 'admin' || !!req.user.finance),
+    // The filter bar of a list: a date range, a tenant and a contract (lease), kept in the query string.
+    // cols maps them to the list's columns, e.g. { date: 'i.due_date', brand: 'i.brand_id', lease: 'i.lease_id' }.
+    // Returns { where: [...], args: [...], html, active, from, to, brand, lease }.
+    listFilters(req, { cols = {}, dateLabel = null, keep = [] } = {}) {
+      const q = req.query || {};
+      const isDate = (d) => /^\d{4}-\d{2}-\d{2}$/.test(String(d || ''));
+      const from = isDate(q.from) ? q.from : '';
+      const to = isDate(q.to) ? q.to : '';
+      const brand = cols.brand && Number(q.brand) > 0 ? Number(q.brand) : null;
+      const lease = cols.lease && Number(q.lease) > 0 ? Number(q.lease) : null;
+      const where = [];
+      const args = [];
+      if (cols.date && from) { where.push(`substr(${cols.date}, 1, 10) >= ?`); args.push(from); }
+      if (cols.date && to) { where.push(`substr(${cols.date}, 1, 10) <= ?`); args.push(to); }
+      if (brand) { where.push(`${cols.brand} = ?`); args.push(brand); }
+      if (lease) { where.push(`${cols.lease} = ?`); args.push(lease); }
+      const brands = cols.brand ? db.all('SELECT DISTINCT b.id, b.name FROM brands b JOIN leases s ON s.brand_id = b.id ORDER BY b.name') : [];
+      const leases = cols.lease ? db.all(`SELECT s.id, s.ref, b.name FROM leases s JOIN brands b ON b.id = s.brand_id ${brand ? 'WHERE s.brand_id = ?' : ''} ORDER BY s.status = 'active' DESC, s.ref DESC LIMIT 300`, ...(brand ? [brand] : [])) : [];
+      const active = !!(from || to || brand || lease);
+      const path = String(req.originalUrl || '').split('?')[0];
+      const kept = keep.filter((k) => q[k] !== undefined && q[k] !== '').map((k) => `<input type="hidden" name="${ui.esc(k)}" value="${ui.esc(q[k])}">`).join('');
+      const html = `<form method="get" action="${ui.esc(path)}" class="filters">${kept}
+        ${cols.date ? `${ui.input('from', `${dateLabel || ui.t('Date')} · ${ui.t('From')}`, from, { type: 'date' })}${ui.input('to', ui.t('To'), to, { type: 'date' })}` : ''}
+        ${cols.brand ? ui.select('brand', ui.t('Tenant'), brands.map((b) => [b.id, b.name]), brand || '', { blank: ui.t('All'), attrs: { 'data-autosubmit': '' } }) : ''}
+        ${cols.lease ? ui.select('lease', ui.t('Contract'), leases.map((l) => [l.id, `${l.ref} · ${l.name}`]), lease || '', { blank: ui.t('All') }) : ''}
+        <div class="filters__go">${ui.btn(ui.esc(ui.t('Filter')), { cls: 'btn--ghost btn--sm', ic: 'search' })}${active ? `<a class="btn btn--ghost btn--sm" href="${ui.esc(path)}${keep.filter((k) => q[k]).length ? `?${keep.filter((k) => q[k]).map((k) => `${k}=${encodeURIComponent(q[k])}`).join('&')}` : ''}">${ui.esc(ui.t('Clear'))}</a>` : ''}</div></form>`;
+      return { where, args, html, active, from, to, brand, lease };
+    },
     RF: (req, res, next) => (req.user && (req.user.role === 'admin' || req.user.finance) ? next() : auth.denied(req, res)),
     // HR: administrators, and anyone given HR access on the Team page
     canHR: (req) => !!req.user && (req.user.role === 'admin' || !!req.user.hr),

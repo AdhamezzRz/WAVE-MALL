@@ -8,7 +8,8 @@ const i18n = require('../i18n');
 const { t: tr, tn, tx } = i18n;
 
 const FREQ = { monthly: 'trn|Monthly', quarterly: 'trn|Quarterly' };
-const BREAK = { natural: 'trn|Natural breakpoint', fixed: 'trn|Fixed breakpoint' };
+// natural: the higher of the base rent and the percentage; none: the percentage of all sales on top of the base
+const BREAK = { natural: 'trn|Natural breakpoint', fixed: 'trn|Fixed breakpoint', none: 'trn|On top of the base rent' };
 const STATUS = { draft: ['trn|Draft', 'mute'], submitted: ['trn|Submitted', 'sky'], verified: ['trn|Verified', 'ok'], disputed: ['trn|Disputed', 'rose'] };
 const COUNTED = ['submitted', 'verified']; // sales that count towards turnover rent
 const OCR_RISK = 0.15;
@@ -520,6 +521,7 @@ ${ui.card(tr('trn|Tenant ranking'), ranking, { sub: ui.esc(tr('trn|Occupancy cos
     const back = `/admin/turnover/leases/${s.id}`;
     if (req.body.remove) {
       db.run('DELETE FROM turnover_terms WHERE lease_id = ?', s.id);
+      db.run('UPDATE leases SET revenue_share = 0 WHERE id = ?', s.id);
       h.log(req, 'Removed turnover terms', 'lease', s.id, s.ref);
       return h.back(req, res, back, 'ok', tr('trn|Turnover clause removed.'));
     }
@@ -535,6 +537,8 @@ ${ui.card(tr('trn|Tenant ranking'), ranking, { sub: ui.esc(tr('trn|Occupancy cos
        annual_recon = excluded.annual_recon, audit_rights = excluded.audit_rights, notes = excluded.notes, updated_at = excluded.updated_at`,
       s.id, pct, type, type === 'fixed' ? bp : 0, FREQ[req.body.frequency] ? req.body.frequency : 'monthly', due, req.body.annual_recon ? 1 : 0, req.body.audit_rights ? 1 : 0, h.str(req.body.notes, 500) || null, M.now(),
     );
+    // the contract shows the same revenue share (terms.js)
+    db.run('UPDATE leases SET revenue_share = 1, revenue_pct = ?, take_higher = ? WHERE id = ?', pct, type === 'none' ? 0 : 1, s.id);
     h.log(req, 'Saved turnover terms', 'lease', s.id, `${s.ref} · ${pct}%`);
     h.back(req, res, back, 'ok', tr('Saved.'));
   });

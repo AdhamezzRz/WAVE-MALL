@@ -198,7 +198,7 @@ module.exports = function service(router, h, X) {
     const pool = C.r2(base + feeAmt);
     const rules = rulesOf(year);
     const occ = occupancy(w.from, w.to);
-    const units = db.all('SELECT * FROM units ORDER BY sort, code');
+    const units = db.all("SELECT * FROM units WHERE status != 'retired' ORDER BY sort, code");
     const appor = C.apportion(pool, units.map((u) => ({
       id: u.id, area: u.indoor_m2, weight: rules[u.id] ? rules[u.id].weight : 1, excluded: rules[u.id] ? !!rules[u.id].excluded : false,
       cap: rules[u.id] && rules[u.id].cap !== null ? rules[u.id].cap : null, occupied: occ[u.id] || [],
@@ -342,7 +342,7 @@ ${ui.card(tr('svc|Tenants'), table, { sub: ui.esc(tr('svc|Each lease’s share f
     const total = lines.reduce((t, l) => t + l.amount, 0);
     const rec = lines.filter((l) => l.recoverable).reduce((t, l) => t + l.amount, 0);
     const fee = b ? b.mgmt_fee_pct : 10;
-    const area = db.value('SELECT COALESCE(SUM(indoor_m2), 0) FROM units');
+    const area = db.value("SELECT COALESCE(SUM(indoor_m2), 0) FROM units WHERE status != 'retired'");
     const perM2 = area ? (rec * (1 + fee / 100)) / area / 12 : 0;
     const actualPrev = prev ? db.value('SELECT COALESCE(SUM(amount), 0) FROM sc_actuals WHERE year = ?', year - 1) : 0;
     const rows = lines.map((l) => {
@@ -531,7 +531,7 @@ ${ui.card(tr('svc|Tenants'), table, { sub: ui.esc(tr('svc|Each lease’s share f
     const back = `/admin/service-charge/rules?year=${year}`;
     if (db.get('SELECT id FROM sc_recons WHERE year = ? LIMIT 1', year)) return h.back(req, res, back, 'error', tr('svc|This year is settled; its costs can no longer change.'));
     db.tx(() => {
-      for (const u of db.all('SELECT id FROM units')) {
+      for (const u of db.all("SELECT id FROM units WHERE status != 'retired'")) {
         const w = C.num(req.body[`w_${u.id}`]);
         const weight = w === null ? 1 : Math.min(5, Math.max(0, w));
         const cap = C.num(req.body[`c_${u.id}`]);

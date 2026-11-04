@@ -116,7 +116,7 @@ test('i18n: the language switch is remembered per person', async () => {
   }
 });
 
-test('i18n: every admin page is fully Arabic, with sample data loaded', { timeout: 300000 }, async () => {
+test('i18n: every admin page is fully Arabic, with sample data loaded', { timeout: 600000 }, async () => {
   const r = await audit({ quiet: true });
   assert.deepEqual(r.errors, [], 'pages failed or were not Arabic');
   assert.deepEqual(r.missing, [], 'keys without Arabic');

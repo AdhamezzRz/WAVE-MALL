@@ -17,12 +17,15 @@ function billing(db, events) {
   // invoice stores its VAT share in `vat` and the total includes it, so "outstanding = total − paid"
   // holds everywhere. Invoices created while VAT was 0 keep vat = 0.
   if (db.ensure) db.ensure('billing-vat-1', 'ALTER TABLE invoices ADD COLUMN vat REAL NOT NULL DEFAULT 0;');
+  require('./terms').ensure(db);
 
   // Create an invoice. Needs a lease, a brand or a customer name. Returns the stored row.
   // v.vat_pct overrides the setting (0 for none). v.vat_included: the amount given already includes
-  // VAT (prices for the public, like parking), so the total stays exactly that amount.
+  // VAT (prices for the public, like parking), so the total stays exactly that amount. A lease's own
+  // VAT terms (its rate, and whether its amounts include VAT) apply to its invoices unless v says otherwise.
   function createInvoice(v, { user = null, emit = true } = {}) {
-    const lease = v.lease_id ? db.get('SELECT id, brand_id FROM leases WHERE id = ?', v.lease_id) : null;
+    const lease = v.lease_id ? db.get('SELECT id, brand_id, vat_pct, vat_included FROM leases WHERE id = ?', v.lease_id) : null;
+    if (lease) v = { ...v, vat_pct: v.vat_pct ?? lease.vat_pct ?? undefined, vat_included: v.vat_included ?? !!lease.vat_included };
     const brandId = v.brand_id || (lease ? lease.brand_id : null);
     if (!lease && !brandId && !v.customer) throw new Error('An invoice needs a lease, a brand or a customer.');
     const kind = KINDS.includes(v.kind) ? v.kind : 'other';

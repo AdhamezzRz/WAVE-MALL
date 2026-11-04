@@ -12,6 +12,13 @@ const tiers = () => Object.fromEntries(Object.entries(TIERS).map(([k, v]) => [k,
 module.exports = function property(router, h) {
   const { db, ui, M } = h;
   const R = h.auth.requireRole;
+  // merged and split units: the plan slots a unit covers, and where it came from or went
+  db.ensure('units-2', `
+    ALTER TABLE units ADD COLUMN cells TEXT;
+    ALTER TABLE units ADD COLUMN made_from TEXT;
+    ALTER TABLE units ADD COLUMN replaced_by TEXT;
+    ALTER TABLE units ADD COLUMN retired_at TEXT;
+  `);
 
   // ---------- units ----------
   router.get('/units', (req, res) => {
@@ -20,10 +27,11 @@ module.exports = function property(router, h) {
     const units = db.all(
       `SELECT u.*, l.title hold_title,
         (SELECT b.name FROM lease_units lu JOIN leases s ON s.id = lu.lease_id JOIN brands b ON b.id = s.brand_id WHERE lu.unit_id = u.id AND s.status = 'active' LIMIT 1) tenant
-       FROM units u LEFT JOIN leads l ON l.id = u.hold_lead_id ORDER BY u.sort`,
+       FROM units u LEFT JOIN leads l ON l.id = u.hold_lead_id WHERE u.status != 'retired' ORDER BY u.sort`,
     );
+    const retired = db.all("SELECT * FROM units WHERE status = 'retired' ORDER BY retired_at DESC LIMIT 30");
     const total = units.reduce((s, u) => s + u.indoor_m2, 0);
-    const byStatus = Object.keys(M.UNIT_STATUS).map((k) => {
+    const byStatus = Object.keys(M.UNIT_STATUS).filter((k) => k !== 'retired').map((k) => {
       const list = units.filter((u) => u.status === k);
       return { k, label: M.UNIT_STATUS[k], n: list.length, area: list.reduce((s, u) => s + u.indoor_m2, 0) };
     });
@@ -55,7 +63,7 @@ module.exports = function property(router, h) {
     }
     h.page(req, res, {
       title: tr('Units & plan'), active: '/admin/units', wide: true,
-      body: `<div class="kpis kpis--${byStatus.filter((s) => s.k !== 'blocked' || s.n).length}">${kpis}</div>${switcher}${main}`,
+      body: `<div class="kpis kpis--${byStatus.filter((s) => s.k !== 'blocked' || s.n).length}">${kpis}</div>${switcher}${main}${retired.length ? ui.card(tr('Merged and split units'), `<ul class="list">${retired.map((u) => `<li><a href="/admin/units/${u.id}"><span class="what"><b>${ui.esc(u.code)}</b><small>${ui.esc(tr('Now {codes}', { codes: String(u.replaced_by || '').split(',').join(', ') }))} · ${ui.date(u.retired_at)}</small></span>${ui.unitBadge(u.status)}</a></li>`).join('')}</ul>`, { sub: ui.esc(tr('Kept for the history of their leases.')) }) : ''}`,
       actions: h.can(req, 'manager') ? ui.btn(tr('Add unit'), { href: '/admin/units/new', cls: 'btn--ghost', ic: 'plus' }) : '',
     });
   });
@@ -122,11 +130,17 @@ module.exports = function property(router, h) {
       docs: h.docs(req, 'unit', u.id), entity: 'unit', entityId: u.id, csrf, canUpload: h.can(req, 'agent'), canDelete: h.can(req, 'manager'), canConfidential: h.canHR(req),
       title: tr('Unit documents'), warnDays: Number(db.setting('doc_warn_days')) || 30, sub: ui.esc(tr('Fit-out drawings, handover reports and permits for this unit.')),
     });
-    const plan = ['plaza', 'street'].includes(u.zone) ? ui.card(tr('Where it is'), ui.plan(db.all('SELECT * FROM units'), u.zone === 'plaza' ? 'G' : 'B1').replace(`data-code="${u.code}"`, `data-code="${u.code}" data-focus`)) : '';
-    const body = `<div class="kpis kpis--4">${kpis}</div>
+    const plan = ['plaza', 'street'].includes(u.zone) && u.status !== 'retired' ? ui.card(tr('Where it is'), ui.plan(db.all('SELECT * FROM units'), u.zone === 'plaza' ? 'G' : 'B1').split(`data-code="${ui.esc(u.code)}"`).join(`data-code="${ui.esc(u.code)}" data-focus`)) : '';
+    const codes = (v) => String(v || '').split(',').filter(Boolean);
+    const linkCodes = (list) => list.map((c) => { const x = db.get('SELECT id FROM units WHERE code = ?', c); return x ? `<a href="/admin/units/${x.id}"><b>${ui.esc(c)}</b></a>` : ui.esc(c); }).join(', ');
+    const lineage = u.status === 'retired'
+      ? `<p class="alert alert--warn">${tr('{code} was merged or split on {date}. It is now {codes}.', { code: ui.esc(u.code), date: ui.date(u.retired_at), codes: linkCodes(codes(u.replaced_by)) })}</p>`
+      : u.made_from ? `<p class="alert alert--ok">${tr('Made from {codes}.', { codes: linkCodes(codes(u.made_from)) })}</p>` : '';
+    const reshape = h.can(req, 'manager') && ['available', 'blocked'].includes(u.status) ? reshapeCard(req, u) : '';
+    const body = `${lineage}<div class="kpis kpis--4">${kpis}</div>
 <div class="grid grid--side">
   <div class="stack">${plan}${unitDocs}${h.opsPanels && h.opsPanels.unit ? h.opsPanels.unit(req, u.id) : ''}${ui.card(tr('Leads interested'), interestList)}${ui.card(tr('Offers'), offersList)}${ui.card(tr('History'), hist)}</div>
-  <div class="stack">${holdBox}${lease ? ui.card(tr('Lease'), `<p><a href="/admin/leases/${lease.id}"><b>${ui.esc(lease.brand_name)}</b></a> · ${ui.badge(lease.status, M.LEASE_STATUS[lease.status])}</p><p class="muted">${ui.date(lease.start_date)} – ${ui.date(lease.end_date)}</p><p>${ui.btn(tr('Open tenant file'), { href: `/admin/tenants/${lease.brand_id}`, cls: 'btn--ghost btn--sm', ic: 'tenant' })}</p>`) : ''}${h.fitout ? h.fitout.summaryCard(req, { unitId: u.id }) : ''}${edit}${u.notes && !edit ? ui.card(tr('Notes'), `<p>${ui.esc(tx(u.notes))}</p>`) : ''}</div>
+  <div class="stack">${holdBox}${lease ? ui.card(tr('Lease'), `<p><a href="/admin/leases/${lease.id}"><b>${ui.esc(lease.brand_name)}</b></a> · ${ui.badge(lease.status, M.LEASE_STATUS[lease.status])}</p><p class="muted">${ui.date(lease.start_date)} – ${ui.date(lease.end_date)}</p><p>${ui.btn(tr('Open tenant file'), { href: `/admin/tenants/${lease.brand_id}`, cls: 'btn--ghost btn--sm', ic: 'tenant' })}</p>`) : ''}${h.fitout ? h.fitout.summaryCard(req, { unitId: u.id }) : ''}${u.status === 'retired' ? '' : edit}${reshape}${u.notes && !edit ? ui.card(tr('Notes'), `<p>${ui.esc(tx(u.notes))}</p>`) : ''}</div>
 </div>`;
     h.page(req, res, { title: tr('Unit {code}', { code: u.code }), crumbs: [['/admin/units', tr('Units')], [null, u.code]], active: '/admin/units', body });
   });
@@ -134,7 +148,8 @@ module.exports = function property(router, h) {
   router.post('/units/:id', R('manager'), (req, res, next) => {
     const u = db.get('SELECT * FROM units WHERE id = ?', req.params.id);
     if (!u) return next();
-    const status = u.status === 'leased' ? 'leased' : M.UNIT_STATUS[req.body.status] && req.body.status !== 'leased' ? req.body.status : u.status;
+    if (u.status === 'retired') return h.back(req, res, `/admin/units/${u.id}`, 'error', tr('That step is not possible now.'));
+    const status = u.status === 'leased' ? 'leased' : M.UNIT_STATUS[req.body.status] && !['leased', 'retired'].includes(req.body.status) ? req.body.status : u.status;
     db.run(
       'UPDATE units SET rent_m2 = ?, terrace_rent_m2 = ?, service_m2 = ?, status = ?, indoor_m2 = ?, terrace_m2 = ?, frontage = ?, notes = ?, hold_until = CASE WHEN ? = \'available\' THEN NULL ELSE hold_until END, hold_lead_id = CASE WHEN ? = \'available\' THEN NULL ELSE hold_lead_id END, updated_at = ? WHERE id = ?',
       h.numv(req.body.rent_m2), h.numv(req.body.terrace_rent_m2), h.numv(req.body.service_m2), status, h.numv(req.body.indoor_m2) ?? u.indoor_m2, h.numv(req.body.terrace_m2) ?? u.terrace_m2,
@@ -145,6 +160,104 @@ module.exports = function property(router, h) {
     if (status !== u.status) changes.push(`${u.status} → ${status}`);
     h.log(req, 'Updated a unit', 'unit', u.id, `${u.code}${changes.length ? ` · ${changes.join(', ')}` : ''}`);
     h.back(req, res, `/admin/units/${u.id}`, 'ok', tr('o|Saved.'));
+  });
+
+  // ---------- merge and split ----------
+  // Only units nobody is using (available or blocked) change shape. The old units stay, retired,
+  // so the leases and invoices they had keep pointing at them; the new ones go on the plan.
+  const free = (u) => ['available', 'blocked'].includes(u.status);
+  function reshapeCard(req, u) {
+    const csrf = req.session.csrf;
+    const neighbours = db.all("SELECT * FROM units WHERE zone = ? AND id != ? AND status IN ('available','blocked') ORDER BY sort", u.zone, u.id);
+    const merge = neighbours.length ? `<details class="pop-inline"><summary class="btn btn--ghost btn--sm">${ui.icon('plus')}<span>${ui.esc(tr('Merge with other units'))}</span></summary>${ui.form(`/admin/units/${u.id}/merge`, csrf, `
+      <div class="picks">${neighbours.map((n) => `<label class="pick"><input type="checkbox" name="with" value="${n.id}"><b>${ui.esc(n.code)}</b><span>${ui.m2(n.indoor_m2)}</span>${ui.unitBadge(n.status)}</label>`).join('')}</div>
+      <div class="fields">${ui.input('code', tr('Code of the merged unit'), '', { placeholder: tr('e.g. {code}', { code: `${u.code}-${String(Number(String(u.code).replace(/\D/g, '')) + 1).padStart(2, '0')}` }), hint: tr('Empty: made from the codes') })}</div>
+      ${ui.btn(ui.esc(tr('Merge')), { cls: 'btn--primary btn--sm', attrs: { 'data-confirm': tr('Merge these units into one? The old units are kept in the history.') } })}`, { cls: 'stack' })}</details>` : '';
+    const parts = [0, 1, 2].map((i) => `<div class="fields split-part">${ui.input(`code_${i}`, tr('Part {n} code', { n: i + 1 }), i < 2 ? `${u.code}${'ABC'[i]}` : '', { placeholder: `${u.code}${'ABC'[i]}` })}${ui.input(`indoor_${i}`, tr('Indoor area (m²)'), i < 2 ? Math.round((u.indoor_m2 / 2) * 10) / 10 : '', { type: 'number', min: 0, step: '0.1' })}${ui.input(`terrace_${i}`, tr('Terrace (m²)'), i < 2 ? Math.round(((u.terrace_m2 || 0) / 2) * 10) / 10 : '', { type: 'number', min: 0, step: '0.1' })}</div>`).join('');
+    const split = `<details class="pop-inline"><summary class="btn btn--ghost btn--sm">${ui.icon('plus')}<span>${ui.esc(tr('Split into two or three'))}</span></summary>${ui.form(`/admin/units/${u.id}/split`, csrf, `${parts}<p class="muted small">${ui.esc(tr('The parts must add up to {area}. Leave the third part empty to split in two. On the plan the shop is divided in the same proportions.', { area: ui.m2(u.indoor_m2) }))}</p>${ui.btn(ui.esc(tr('Split')), { cls: 'btn--primary btn--sm', attrs: { 'data-confirm': tr('Split this unit? The old unit is kept in the history.') } })}`, { cls: 'stack' })}</details>`;
+    const made = db.get("SELECT COUNT(*) n FROM units WHERE status = 'retired' AND (',' || replaced_by || ',') LIKE ?", `%,${u.code},%`).n;
+    const undo = made ? ui.form(`/admin/units/${u.id}/undo`, csrf, ui.btn(ui.esc(tr('Undo the merge or split')), { cls: 'btn--ghost btn--sm', attrs: { 'data-confirm': tr('Put the original units back? The units made from them are removed.') } })) : '';
+    return ui.card(tr('Merge or split'), `<div class="stack">${merge}${split}${undo}</div>`, { sub: ui.esc(tr('Join neighbouring shops into one, or divide one into smaller units. A lease can also take several units without merging them.')) });
+  }
+  const insertUnit = (v) => Number(db.run(
+    'INSERT INTO units (code, level, zone, indoor_m2, terrace_m2, status, frontage, notes, sort, cells, made_from, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    v.code, v.level, v.zone, v.indoor_m2, v.terrace_m2, v.status, v.frontage || null, v.notes || null, v.sort, v.cells.length ? JSON.stringify(v.cells) : null, v.made_from, M.now(),
+  ).lastInsertRowid);
+  const retire = (u, codes) => db.run("UPDATE units SET status = 'retired', retired_at = ?, replaced_by = ?, hold_until = NULL, hold_lead_id = NULL, updated_at = ? WHERE id = ?", M.now(), codes.join(','), M.now(), u.id);
+
+  router.post('/units/:id/merge', R('manager'), (req, res, next) => {
+    const u = db.get('SELECT * FROM units WHERE id = ?', h.int(req.params.id));
+    if (!u) return next();
+    const others = h.list(req.body.with).map(Number).filter(Boolean).map((id) => db.get('SELECT * FROM units WHERE id = ?', id)).filter((x) => x && x.id !== u.id);
+    const all = [u, ...others].sort((a, b) => a.sort - b.sort || a.code.localeCompare(b.code));
+    if (!others.length) return h.back(req, res, `/admin/units/${u.id}`, 'error', tr('Choose the units to merge with.'));
+    if (all.some((x) => !free(x) || x.zone !== u.zone)) return h.back(req, res, `/admin/units/${u.id}`, 'error', tr('Only available or blocked units on the same level can be merged.'));
+    const code = (h.str(req.body.code, 20).toUpperCase() || `${all[0].code}-${String(all.at(-1).code).replace(/^[A-Z]+/, '')}`).replace(/\s+/g, '');
+    if (db.get('SELECT id FROM units WHERE code = ?', code)) return h.back(req, res, `/admin/units/${u.id}`, 'error', tr('Use a new, unique unit code.'));
+    const id = db.tx(() => {
+      const nid = insertUnit({
+        code, level: u.level, zone: u.zone, indoor_m2: all.reduce((t, x) => t + (x.indoor_m2 || 0), 0), terrace_m2: all.reduce((t, x) => t + (x.terrace_m2 || 0), 0),
+        status: all.every((x) => x.status === 'blocked') ? 'blocked' : 'available', frontage: all.map((x) => x.frontage).filter(Boolean).join(' · ') || null,
+        sort: Math.min(...all.map((x) => x.sort)), cells: all.flatMap((x) => ui.cellsOf(x)), made_from: all.map((x) => x.code).join(','),
+      });
+      for (const x of all) retire(x, [code]);
+      return nid;
+    });
+    h.log(req, 'Merged units', 'unit', id, `${all.map((x) => x.code).join(' + ')} → ${code}`);
+    h.back(req, res, `/admin/units/${id}`, 'ok', tr('{codes} merged into {code}.', { codes: all.map((x) => x.code).join(', '), code }));
+  });
+
+  router.post('/units/:id/split', R('manager'), (req, res, next) => {
+    const u = db.get('SELECT * FROM units WHERE id = ?', h.int(req.params.id));
+    if (!u) return next();
+    const back = `/admin/units/${u.id}`;
+    if (!free(u)) return h.back(req, res, back, 'error', tr('Only an available or blocked unit can be split.'));
+    const parts = [0, 1, 2].map((i) => ({ code: h.str(req.body[`code_${i}`], 20).toUpperCase().replace(/\s+/g, ''), indoor: h.numv(req.body[`indoor_${i}`]) || 0, terrace: h.numv(req.body[`terrace_${i}`]) || 0 }))
+      .filter((p) => p.code || p.indoor);
+    if (parts.length < 2 || parts.some((p) => !p.code || !(p.indoor > 0))) return h.back(req, res, back, 'error', tr('Give each part a code and an indoor area.'));
+    if (new Set(parts.map((p) => p.code)).size !== parts.length || parts.some((p) => db.get('SELECT id FROM units WHERE code = ?', p.code))) return h.back(req, res, back, 'error', tr('Use a new, unique unit code.'));
+    const indoor = parts.reduce((t, p) => t + p.indoor, 0);
+    if (Math.abs(indoor - u.indoor_m2) > 1) return h.back(req, res, back, 'error', tr('The parts add up to {a}, not {b}.', { a: ui.m2(indoor), b: ui.m2(u.indoor_m2) }));
+    // each part takes its share of the shop on the plan: a slice of each cell in proportion to its area
+    const cells = ui.cellsOf(u);
+    let at = 0;
+    const ids = db.tx(() => {
+      const out = parts.map((p) => {
+        const from = at;
+        const to = at + p.indoor / indoor;
+        at = to;
+        const pieces = cells.length === 1
+          ? [{ slot: cells[0].slot, from: (cells[0].from ?? 0) + ((cells[0].to ?? 1) - (cells[0].from ?? 0)) * from, to: (cells[0].from ?? 0) + ((cells[0].to ?? 1) - (cells[0].from ?? 0)) * Math.min(1, to) }]
+          : cells.filter((c, k) => (k + 0.5) / cells.length >= from && (k + 0.5) / cells.length < to + 1e-9);
+        return insertUnit({ code: p.code, level: u.level, zone: u.zone, indoor_m2: p.indoor, terrace_m2: p.terrace, status: u.status, frontage: u.frontage, notes: u.notes, sort: u.sort, cells: pieces, made_from: u.code });
+      });
+      retire(u, parts.map((p) => p.code));
+      return out;
+    });
+    h.log(req, 'Split a unit', 'unit', u.id, `${u.code} → ${parts.map((p) => p.code).join(', ')}`);
+    h.back(req, res, `/admin/units/${ids[0]}`, 'ok', tr('{code} split into {codes}.', { code: u.code, codes: parts.map((p) => p.code).join(', ') }));
+  });
+
+  // Put the original units back, while the units made from them are still unused.
+  router.post('/units/:id/undo', R('manager'), (req, res, next) => {
+    const u = db.get('SELECT * FROM units WHERE id = ?', h.int(req.params.id));
+    if (!u) return next();
+    const back = `/admin/units/${u.id}`;
+    const originals = db.all("SELECT * FROM units WHERE status = 'retired' AND (',' || replaced_by || ',') LIKE ?", `%,${u.code},%`);
+    if (!originals.length) return h.back(req, res, back, 'error', tr('That step is not possible now.'));
+    const made = [...new Set(originals.flatMap((o) => String(o.replaced_by).split(',')))].map((c) => db.get('SELECT * FROM units WHERE code = ?', c)).filter(Boolean);
+    const used = made.some((x) => !free(x) || db.value('SELECT COUNT(*) FROM lease_units WHERE unit_id = ?', x.id) || db.value('SELECT COUNT(*) FROM offer_units WHERE unit_id = ?', x.id) || db.value('SELECT COUNT(*) FROM leads WHERE unit_id = ?', x.id));
+    if (used) return h.back(req, res, back, 'error', tr('A unit made from them already has a lease, an offer or a lead. Merge or split it again instead.'));
+    try {
+      db.tx(() => {
+        for (const x of made) db.run('DELETE FROM units WHERE id = ?', x.id);
+        for (const o of originals) db.run("UPDATE units SET status = 'available', retired_at = NULL, replaced_by = NULL, updated_at = ? WHERE id = ?", M.now(), o.id);
+      });
+    } catch {
+      return h.back(req, res, back, 'error', tr('A unit made from them already has a lease, an offer or a lead. Merge or split it again instead.'));
+    }
+    h.log(req, 'Undid a merge or split', 'unit', originals[0].id, `${made.map((x) => x.code).join(', ')} → ${originals.map((o) => o.code).join(', ')}`);
+    h.back(req, res, `/admin/units/${originals[0].id}`, 'ok', tr('{codes} are back.', { codes: originals.map((o) => o.code).join(', ') }));
   });
 
   router.post('/units/:id/hold', R('agent'), (req, res, next) => {
