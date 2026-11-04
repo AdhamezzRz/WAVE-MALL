@@ -17,6 +17,15 @@ module.exports = {
   'nav|Salary advances': 'السلف',
   'unit|Merged or split': 'مدمجة أو مقسمة',
 
+  // ---------- activity log: backups and module access ----------
+  'Backed up the database': 'نسخ احتياطي لقاعدة البيانات',
+  '{name}: module access, every module open': '{name}: صلاحيات الأقسام، كل الأقسام مفتوحة',
+  '{name}: module access, hidden: {list}': ({ name, list }) => {
+    const AR = require('../i18n').AR;
+    const ar = String(list).split(', ').map((x) => (typeof AR[`nav|${x}`] === 'string' ? AR[`nav|${x}`] : typeof AR[x] === 'string' ? AR[x] : x));
+    return `${name}: صلاحيات الأقسام، المخفية: ${ar.join('، ')}`;
+  },
+
   // ---------- lists ----------
   From: 'من',
   To: 'إلى',

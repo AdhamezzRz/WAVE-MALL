@@ -92,6 +92,22 @@ function publicRoutes(router, h, { loginLimit }) {
 function privateRoutes(router, h) {
   const { db, ui, M, auth } = h;
 
+  // ---------- module access ----------
+  // users.hidden_modules: the sidebar entries an administrator has hidden from a person (a JSON list
+  // of hrefs; NULL = everything the role allows). See ui.js (canOpen) and the Team page.
+  db.ensure('access-1', 'ALTER TABLE users ADD COLUMN hidden_modules TEXT;');
+  // A hidden module is refused by address as well, for every method, before any module sees the request.
+  router.use((req, res, next) => {
+    const href = ui.navFor(req.originalUrl);
+    if (!href || !ui.isHidden(req.user, href)) return next();
+    const entry = ui.NAV_ENTRIES.find((e) => e.href === href);
+    const name = entry ? tr(entry.label) : href;
+    res.status(403);
+    if (req.method !== 'GET' && req.accepts(['html', 'json']) === 'json') return res.json({ ok: false, error: tr('acc2|{module} is not part of your access.', { module: name }) });
+    const body = `<div class="noaccess">${ui.card(tr('acc2|{module} is not part of your access', { module: name }), `<div class="noaccess__body">${ui.icon('shield', 'noaccess__ic')}<div><p>${ui.esc(tr('acc2|An administrator has not opened this module for your account, so its pages and records are hidden from you.'))}</p><p class="muted">${ui.esc(tr('acc2|If you need it for your work, ask an administrator to tick it under Team & targets → Module access.'))}</p><div class="row">${ui.btn(ui.esc(tr('acc2|Back to the dashboard')), { href: '/admin', cls: 'btn--primary btn--sm', ic: 'home' })}</div></div></div>`)}</div>`;
+    return h.page(req, res, { title: tr('acc2|No access'), crumbs: [['/admin', tr('Dashboard')]], body });
+  });
+
   router.post('/logout', (req, res) => {
     h.log(req, 'Signed out', 'user', req.user.id);
     auth.endSession(db, req, res);

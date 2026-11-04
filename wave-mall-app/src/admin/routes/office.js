@@ -7,7 +7,7 @@ const os = require('node:os');
 const path = require('node:path');
 const { hashPassword } = require('../db');
 const demo = require('../demo');
-const { t: tr, tn, tx, isAr } = require('../i18n');
+const { t: tr, tn, tx, isAr, english: i18nEnglish } = require('../i18n');
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -28,6 +28,27 @@ const INVOICE_KINDS = { rent: 'kind|Rent', deposit: 'kind|Deposit', key: 'kind|K
 module.exports = function office(router, h) {
   const { db, ui, M, auth } = h;
   const R = auth.requireRole;
+
+  // ---------- automatic backups (see backups.js) ----------
+  const env = h.env || process.env;
+  const backups = require('../backups').create({ db, env });
+  h.backups = backups;
+  // checked every 20 minutes; runs once a day after the chosen hour (Cairo time)
+  h.every('daily-backup', 20 * 60 * 1000, () => backups.tick(), { first: 4 * 60 * 1000 });
+  (h.integrationCards = h.integrationCards || []).push({
+    key: 'backups',
+    get title() { return tr('bak|Off-site backups'); },
+    get help() { return tr('bak|A copy of the database is taken every night and kept on the server. With these settings a copy also goes to private S3-compatible storage (AWS S3, Cloudflare R2, Backblaze B2, Wasabi). Backups can also be emailed: set the addresses in Settings.'); },
+    env: ['BACKUP_S3_ENDPOINT', 'BACKUP_S3_BUCKET', 'BACKUP_S3_KEY', 'BACKUP_S3_SECRET', 'BACKUP_S3_REGION'],
+    href: '/admin/settings#backups',
+    get hrefLabel() { return tr('bak|Backup settings'); },
+    status: () => {
+      const s3 = backups.s3().ok;
+      const mail = backups.emails().length && backups.smtp();
+      const last = backups.lastGood();
+      return { ok: !!(s3 || mail), okText: tr('bak|Copies leave the server'), offText: tr('bak|Kept on the server only'), detail: last ? tr('bak|Last backup {when}.', { when: ui.rel(last.started_at) }) : tr('bak|No backup has been taken yet.') };
+    },
+  });
 
   // ---------- reports ----------
   router.get('/reports', (req, res) => {
@@ -133,6 +154,7 @@ module.exports = function office(router, h) {
   // ---------- team & targets ----------
   router.get('/team', (req, res) => {
     const users = db.all('SELECT * FROM users ORDER BY active DESC, name');
+    const hiddenCount = (u) => (u.role === 'admin' ? 0 : [...ui.hiddenModules(u)].filter((href) => ui.NAV_ENTRIES.some((e) => e.href === href && ui.roleAllows(u, e.min))).length);
     const period = /^\d{4}-\d{2}$/.test(req.query.period || '') ? req.query.period : M.today().slice(0, 7);
     const isAdmin = h.can(req, 'admin');
     const csrf = req.session.csrf;
@@ -143,12 +165,12 @@ module.exports = function office(router, h) {
     const table = ui.table(
       [
         { label: tr('Person'), render: (u) => `<span class="who"><span class="avatar avatar--sm">${ui.esc(ui.initials(u.name))}</span><span><b>${ui.esc(u.name)}</b>${u.title ? `<small class="sub">${ui.esc(tx(u.title))}</small>` : ''}<small class="sub ltr">${ui.esc(u.email)}</small></span></span>` },
-        { label: tr('Role'), render: (u) => `${ui.badge(u.role, M.ROLES[u.role])}${u.role === 'admin' || u.hr ? ` ${ui.badge('hr', tr('HR access'), 'sand')}` : ''}${u.role === 'admin' || u.finance ? ` ${ui.badge('finance', tr('Finance access'), 'sky')}` : ''}` },
+        { label: tr('Role'), render: (u) => `${ui.badge(u.role, M.ROLES[u.role])}${u.role === 'admin' || u.hr ? ` ${ui.badge('hr', tr('HR access'), 'sand')}` : ''}${u.role === 'admin' || u.finance ? ` ${ui.badge('finance', tr('Finance access'), 'sky')}` : ''}${hiddenCount(u) ? ` ${isAdmin ? `<a href="/admin/team/${u.id}/access" class="badgelink">${ui.badge('limited', tn(hiddenCount(u), 'acc2|{n} module hidden', 'acc2|{n} modules hidden'), 'amber')}</a>` : ui.badge('limited', tn(hiddenCount(u), 'acc2|{n} module hidden', 'acc2|{n} modules hidden'), 'amber')}` : ''}` },
         { label: tr('Open deals'), num: true, render: (u) => ui.n0(stats(u).open) },
         { label: tr('report|Signed'), num: true, render: (u) => ui.n0(stats(u).won) },
         { label: tr('Last sign-in'), render: (u) => (u.last_login_at ? ui.rel(u.last_login_at) : tr('Never')) },
         { label: tr('Status'), render: (u) => (u.active ? ui.badge('active', tr('user|Active')) : ui.badge('void', tr('user|Disabled'))) },
-        ...(isAdmin ? [{ label: '', render: (u) => (u.id === req.user.id ? `<span class="muted">${tr('You')}</span>` : `<details class="pop"><summary class="btn btn--ghost btn--xs">${tr('Manage')}</summary>${ui.form(`/admin/team/${u.id}`, csrf, `${ui.select('role', tr('Role'), M.ROLES, u.role)}<label class="check"><input type="checkbox" name="hr" value="1" ${u.hr ? 'checked' : ''}> ${tr('HR access (staff, pay, leave)')}</label><label class="check"><input type="checkbox" name="finance" value="1" ${u.finance ? 'checked' : ''}> ${tr('Finance access (accounting, banks, reports)')}</label><label class="check"><input type="checkbox" name="active" value="1" ${u.active ? 'checked' : ''}> ${tr('Can sign in')}</label><label class="check"><input type="checkbox" name="reset" value="1"> ${tr('Reset password')}</label>${ui.btn(tr('Save'), { cls: 'btn--primary btn--sm' })}`, { cls: 'stack' })}</details>`) }] : []),
+        ...(isAdmin ? [{ label: '', render: (u) => (u.id === req.user.id ? `<span class="muted">${tr('You')}</span>` : `<details class="pop"><summary class="btn btn--ghost btn--xs">${tr('Manage')}</summary>${ui.form(`/admin/team/${u.id}`, csrf, `${ui.select('role', tr('Role'), M.ROLES, u.role)}<label class="check"><input type="checkbox" name="hr" value="1" ${u.hr ? 'checked' : ''}> ${tr('HR access (staff, pay, leave)')}</label><label class="check"><input type="checkbox" name="finance" value="1" ${u.finance ? 'checked' : ''}> ${tr('Finance access (accounting, banks, reports)')}</label><label class="check"><input type="checkbox" name="active" value="1" ${u.active ? 'checked' : ''}> ${tr('Can sign in')}</label><label class="check"><input type="checkbox" name="reset" value="1"> ${tr('Reset password')}</label>${ui.btn(tr('Save'), { cls: 'btn--primary btn--sm' })}`, { cls: 'stack' })}<p class="pop__more">${ui.btn(ui.esc(tr('acc2|Module access')), { href: `/admin/team/${u.id}/access`, cls: 'btn--ghost btn--sm btn--block', ic: 'shield' })}</p></details>`) }] : []),
       ],
       users,
     );
@@ -214,6 +236,51 @@ module.exports = function office(router, h) {
     h.back(req, res, '/admin/team', 'ok', msg);
   });
 
+  // ---------- module access ----------
+  // Which sidebar modules a person may open, on top of what their role allows. Unticking hides the
+  // module from their sidebar, refuses its pages by address (routes/core.js) and keeps its tables
+  // out of the assistant's reach. Administrators always keep everything.
+  const NEEDS = { hr: 'acc2|Needs HR access', finance: 'acc2|Needs finance access', admin: 'acc2|Administrators only', manager: 'acc2|Managers and administrators' };
+  router.get('/team/:id/access', R('admin'), (req, res, next) => {
+    const u = db.get('SELECT * FROM users WHERE id = ?', req.params.id);
+    if (!u) return next();
+    const hidden = ui.hiddenModules(u);
+    const isAdminUser = u.role === 'admin';
+    const groups = ui.NAV.map(([group, items]) => {
+      const rows = items.map(([href]) => ui.NAV_ENTRIES.find((e) => e.href === href)).map((e) => {
+        const always = e.href === '/admin' || isAdminUser;
+        const roleOk = ui.roleAllows(u, e.min);
+        const on = always || (roleOk && !hidden.has(e.href));
+        const note = e.href === '/admin' ? tr('acc2|Always available') : !roleOk ? tr(NEEDS[e.min] || 'acc2|Not for this role') : '';
+        return `<label class="modpick${!roleOk ? ' is-off' : ''}"><input type="checkbox" name="m" value="${ui.esc(e.href)}"${on ? ' checked' : ''}${always || !roleOk ? ' disabled' : ''}>${ui.icon(e.ic)}<span><b>${ui.esc(tr(e.label))}</b>${note ? `<small>${ui.esc(note)}</small>` : ''}</span></label>`;
+      }).join('');
+      return `<fieldset class="modgroup"><legend>${ui.esc(tr(group))}</legend><div class="modgroup__list">${rows}</div></fieldset>`;
+    }).join('');
+    const allowedN = ui.NAV_ENTRIES.filter((e) => ui.roleAllows(u, e.min)).length;
+    const openN = ui.NAV_ENTRIES.filter((e) => ui.canOpen(u, e.href)).length;
+    const intro = isAdminUser
+      ? `<p class="notice">${ui.icon('shield')}<span>${ui.esc(tr('acc2|{name} is an administrator. Administrators always have every module; change the role on the Team page to limit what they see.', { name: u.name }))}</span></p>`
+      : `<p class="muted">${ui.esc(tr('acc2|Untick a module to hide it from {name}: it leaves their menu, its pages answer "no access" even by direct link, and the assistant cannot read its records for them. Greyed modules are outside their role.', { name: u.name }))}</p>`;
+    const form = isAdminUser
+      ? groups.replace(/<input /g, '<input disabled ')
+      : ui.form(`/admin/team/${u.id}/access`, req.session.csrf, `${groups}<div class="row">${ui.btn(ui.esc(tr('Save')), { cls: 'btn--primary' })}${ui.btn(ui.esc(tr('acc2|Open every module')), { cls: 'btn--ghost', attrs: { name: 'reset', value: '1' } })}</div>`, { cls: 'stack modaccess' });
+    const side = ui.card(tr('acc2|At a glance'), `<dl class="dl"><div><dt>${ui.esc(tr('Role'))}</dt><dd>${ui.badge(u.role, M.ROLES[u.role])}</dd></div><div><dt>${ui.esc(tr('acc2|Modules open'))}</dt><dd><b>${ui.n0(openN)}</b> / ${ui.n0(allowedN)}</dd></div><div><dt>${ui.esc(tr('HR access'))}</dt><dd>${isAdminUser || u.hr ? ui.esc(tr('acc2|Yes')) : ui.esc(tr('acc2|No'))}</dd></div><div><dt>${ui.esc(tr('Finance access'))}</dt><dd>${isAdminUser || u.finance ? ui.esc(tr('acc2|Yes')) : ui.esc(tr('acc2|No'))}</dd></div></dl><p class="muted small">${ui.esc(tr('acc2|New modules added to the office later are open by default; untick them here if needed.'))}</p>`);
+    h.page(req, res, { title: tr('acc2|Module access'), crumbs: [['/admin/team', tr('Team & targets')], [null, u.name]], active: '/admin/team', wide: true, body: `<div class="grid grid--side"><div class="stack">${ui.card(tr('acc2|What {name} can open', { name: u.name }), `${intro}${form}`)}</div><div class="stack">${side}</div></div>` });
+  });
+  router.post('/team/:id/access', R('admin'), (req, res, next) => {
+    const u = db.get('SELECT * FROM users WHERE id = ?', req.params.id);
+    if (!u) return next();
+    if (u.role === 'admin') return h.back(req, res, `/admin/team/${u.id}/access`, 'error', tr('acc2|Administrators always have every module.'));
+    const ticked = new Set(h.list(req.body.m).map(String));
+    const before = ui.hiddenModules(u);
+    // modules outside the role keep their earlier choice (they are greyed out on the page)
+    const hidden = req.body.reset ? [] : ui.NAV_ENTRIES.filter((e) => e.href !== '/admin' && (ui.roleAllows(u, e.min) ? !ticked.has(e.href) : before.has(e.href))).map((e) => e.href);
+    db.run('UPDATE users SET hidden_modules = ? WHERE id = ?', hidden.length ? JSON.stringify(hidden) : null, u.id);
+    const english = (href) => i18nEnglish((ui.NAV_ENTRIES.find((e) => e.href === href) || {}).label || href);
+    h.log(req, 'Updated a team member', 'user', u.id, `${u.name}: module access${hidden.length ? `, hidden: ${hidden.map(english).join(', ')}` : ', every module open'}`.slice(0, 480));
+    h.back(req, res, `/admin/team/${u.id}/access`, 'ok', hidden.length ? tn(hidden.length, 'acc2|Saved. {n} module is hidden from {name}.', 'acc2|Saved. {n} modules are hidden from {name}.', { name: u.name }) : tr('acc2|Saved. {name} can open every module their role allows.', { name: u.name }));
+  });
+
   // ---------- subscribers ----------
   router.get('/subscribers', (req, res) => {
     const rows = db.all('SELECT * FROM subscribers ORDER BY created_at DESC LIMIT 1000');
@@ -224,6 +291,64 @@ module.exports = function office(router, h) {
 ${ui.card(tr('Opening news list'), ui.table([{ label: tr('Email'), render: (s) => `<a href="mailto:${ui.esc(s.email)}">${ui.esc(s.email)}</a>` }, { label: tr('o|Language'), render: (s) => (s.lang === 'ar' ? tr('o|Arabic') : tr('English')) }, { label: tr('Source'), render: (s) => ui.esc(!s.source || s.source === 'website' ? tr('Website') : s.source) }, { label: tr('Joined'), render: (s) => ui.date(s.created_at) }], rows, { empty: ui.esc(tr('Sign-ups from the website footer appear here.')) }), { action: ui.btn(tr('Export CSV'), { href: '/admin/export/subscribers.csv', cls: 'btn--ghost btn--sm', ic: 'dl' }) })}`;
     h.page(req, res, { title: tr('Subscribers'), active: '/admin/subscribers', body });
   });
+
+  // ---------- backups: the Settings card ----------
+  const MB = (n) => `${(Number(n || 0) / 1048576).toLocaleString(isAr() ? 'ar-EG-u-nu-latn' : 'en-US', { maximumFractionDigits: n < 10485760 ? 2 : 1 })} ${isAr() ? 'ميجابايت' : 'MB'}`;
+  const BAK_STATUS = { ok: ['bak|Complete', 'ok'], partial: ['bak|Saved, a copy failed', 'amber'], failed: ['bak|Failed', 'rose'], running: ['bak|Running', 'sky'] };
+  const OFF = { sent: ['bak|Sent', 'ok'], failed: ['bak|Failed', 'rose'], skipped: ['bak|Skipped', 'amber'] };
+  function backupCard(req) {
+    const csrf = req.session.csrf;
+    const st = backups.settings();
+    const last = backups.last();
+    const list = backups.list();
+    const s3 = backups.s3();
+    const emails = backups.emails();
+    // why a copy was skipped, in the reader's language (server and provider errors stay as they came)
+    const why = (d) => {
+      if (d === 'SMTP is not configured') return tr('bak|Email is not set up (SMTP).');
+      const m = String(d).match(/^The backup \(([\d.]+) MB\) is over the (\d+) MB email limit$/);
+      return m ? tr('bak|Too large to email ({size} MB; the limit is {max} MB).', { size: m[1], max: m[2] }) : d;
+    };
+    const off = (status, detail, label) => `<li>${ui.esc(label)} ${status ? ui.badge(status, tr(OFF[status][0]), OFF[status][1]) : ui.badge('off', tr('bak|Not set up'), 'mute')}${detail ? `<small class="sub${status === 'sent' || status === 'failed' ? ' ltr' : ''}">${ui.esc(status === 'skipped' ? why(detail) : detail)}</small>` : ''}</li>`;
+    const lastHtml = last
+      ? `<div class="bak__last bak__last--${ui.esc(last.status)}">
+          <p class="bak__when">${ui.badge(last.status, tr(BAK_STATUS[last.status][0]), BAK_STATUS[last.status][1])} <b>${ui.esc(ui.dt(last.started_at))}</b> <span class="muted">· ${ui.esc(ui.rel(last.started_at))} · ${ui.esc(last.trigger === 'daily' ? tr('bak|Nightly') : last.user_name ? tr('bak|By {name}', { name: last.user_name }) : tr('bak|By hand'))}</span></p>
+          ${last.status === 'failed' ? `<p class="late">${ui.esc(tx(last.error || ''))}</p>` : `<ul class="bak__where">
+            <li>${ui.esc(tr('bak|On the server'))} ${ui.badge('ok', MB(last.bytes), 'ok')}${last.raw_bytes ? `<small class="sub">${ui.esc(tr('bak|{size} before compression', { size: MB(last.raw_bytes) }))}</small>` : ''}</li>
+            ${off(last.email_status, last.email_detail, tr('Email'))}
+            ${off(last.s3_status, last.s3_detail, tr('bak|Off-site storage'))}
+          </ul>`}
+        </div>`
+      : `<p class="muted">${ui.esc(tr('bak|No backup has been taken yet.'))}</p>`;
+    const files = list.length
+      ? `<ul class="bak__files">${list.slice(0, 14).map((b) => `<li><span>${ui.icon('file')}<b>${ui.esc(ui.date(b.date))}</b> <span class="muted">${ui.esc(b.time)} · ${ui.esc(b.trigger === 'daily' ? tr('bak|Nightly') : tr('bak|By hand'))}</span></span><span class="muted">${ui.esc(MB(b.bytes))}</span><a class="iconbtn" href="/admin/settings/backups/file/${encodeURIComponent(b.name)}" title="${ui.esc(tr('Download'))}" aria-label="${ui.esc(tr('Download'))}">${ui.icon('dl')}</a></li>`).join('')}</ul>${list.length > 14 ? `<p class="muted small">${ui.esc(tn(list.length - 14, 'bak|and {n} older backup', 'bak|and {n} older backups'))}</p>` : ''}`
+      : `<p class="muted small">${ui.esc(tr('bak|Backups appear here after the first one.'))}</p>`;
+    const hours = Array.from({ length: 24 }, (_, i) => [i, `${String(i).padStart(2, '0')}:00`]);
+    const form = ui.form('/admin/settings/backups', csrf, `
+      <label class="check"><input type="checkbox" name="backup_auto" value="1" ${st.backup_auto !== '0' ? 'checked' : ''}> ${ui.esc(tr('bak|Back up automatically every night'))}</label>
+      <div class="fields">
+        ${ui.select('backup_hour', tr('bak|After (Cairo time)'), hours, Number(st.backup_hour) || 0)}
+        ${ui.input('backup_keep_days', tr('bak|Keep on the server (days)'), st.backup_keep_days, { type: 'number', min: 1, max: 365 })}
+        ${ui.input('backup_email_to', tr('bak|Email a copy to'), st.backup_email_to, { cls: 'span-all', placeholder: 'it@thewavemall.com', hint: tr('bak|Up to five addresses, separated by commas. Only addresses you control: the file holds every record, salaries included.') })}
+        ${ui.input('backup_email_max_mb', tr('bak|Email it when smaller than (MB)'), st.backup_email_max_mb, { type: 'number', min: 1, max: 40, hint: tr('bak|Most mail servers refuse attachments over 20–25 MB.') })}
+      </div>
+      ${ui.btn(ui.esc(tr('bak|Save backup settings')), { cls: 'btn--ghost btn--sm' })}`, { cls: 'stack' });
+    const offsite = s3.ok
+      ? `<p class="intstate intstate--on">${ui.icon('check')}${ui.esc(tr('bak|Off-site storage is set up: {where}', { where: `${new URL(s3.endpoint.replace('{bucket}', s3.bucket)).host}/${s3.bucket}` }))}</p>`
+      : `<p class="muted small">${tr('bak|For a copy away from this server, set {vars} in the hosting panel (see Integrations).', { vars: ['BACKUP_S3_ENDPOINT', 'BACKUP_S3_BUCKET', 'BACKUP_S3_KEY', 'BACKUP_S3_SECRET', 'BACKUP_S3_REGION'].map((v) => `<code>${v}</code>`).join(' ') })}</p>`;
+    const restore = `<details class="bak__restore"><summary>${ui.icon('back')}<span>${ui.esc(tr('bak|How to restore a backup'))}</span></summary><ol class="bak__steps">
+      <li>${tr('bak|Download the backup you want (the download is the ready database file; an emailed or off-site copy ends in {ext}: unzip it first with 7-Zip or your computer\'s built-in tool).', { ext: '<code>.gz</code>' })}</li>
+      <li>${ui.esc(tr('bak|In the hosting panel, stop the application.'))}</li>
+      <li>${tr('bak|In the data folder, rename the current database file to keep it, delete the files next to it ending in {wal} and {shm}, and upload the backup under the database file\'s name:', { wal: '<code>-wal</code>', shm: '<code>-shm</code>' })} <code>${ui.esc(path.basename(db.file === ':memory:' ? 'leasing.db' : db.file))}</code></li>
+      <li>${ui.esc(tr('bak|Start the application again and check the dashboard. Anything entered after the backup was taken has to be entered again.'))}</li>
+    </ol><p class="muted small">${tr('Stored at {path}', { path: `<code>${ui.esc(db.file)}</code>` })}</p></details>`;
+    return `<section id="backups">${ui.card(tr('Backup'), `${lastHtml}
+      <div class="row wrap">${ui.form('/admin/settings/backups/run', csrf, ui.btn(ui.esc(tr('bak|Back up now')), { cls: 'btn--primary btn--sm', ic: 'check' }))}${ui.btn(tr('Download backup'), { href: '/admin/settings/backup', cls: 'btn--ghost btn--sm', ic: 'dl' })}</div>
+      ${offsite}
+      <h3 class="card__h3">${ui.esc(tr('bak|Kept on the server'))}</h3>${files}
+      <h3 class="card__h3">${ui.esc(tr('bak|Schedule and copies'))}</h3>${form}
+      ${restore}`, { sub: ui.esc(tr('bak|Every night a checked, compressed copy of the whole database is kept here and, when set up, sent off the server.')) })}</section>`;
+  }
 
   // ---------- settings ----------
   router.get('/settings', R('admin'), (req, res) => {
@@ -269,7 +394,7 @@ ${ui.card(tr('Opening news list'), ui.table([{ label: tr('Email'), render: (s) =
   </div>`)}
   <div class="row">${ui.btn(tr('Save settings'), { cls: 'btn--primary' })}</div>`, { cls: 'stack' })}</div>
 <div class="stack">
-  ${ui.card(tr('Backup'), `<p class="muted">${tr('Download the whole database as one file. Keep a copy somewhere safe each week.')}</p>${ui.btn(tr('Download backup'), { href: '/admin/settings/backup', cls: 'btn--ghost btn--sm', ic: 'dl' })}<p class="muted small">${tr('Stored at {path}', { path: `<code>${ui.esc(db.file)}</code>` })}</p>`)}
+  ${backupCard(req)}
   ${ui.card(tr('Sample data'), hasDemo
     ? `<p class="muted">${tr('The office has sample brands, leads, offers and leases in it. Clear them before you start for real; your own records stay.')}</p>${ui.form('/admin/settings/demo/clear', csrf, ui.btn(tr('Clear sample data'), { cls: 'btn--danger btn--sm', attrs: { 'data-confirm': tr('Remove all sample data?') } }))}`
     : `<p class="muted">${tr('Fill the office with a realistic sample pipeline to explore every screen. You can clear it with one click.')}</p>${ui.form('/admin/settings/demo', csrf, ui.btn(tr('Load sample data'), { cls: 'btn--ghost btn--sm' }))}`)}
@@ -303,6 +428,43 @@ ${ui.card(tr('Opening news list'), ui.table([{ label: tr('Email'), render: (s) =
     db.backup(file);
     h.log(req, 'Downloaded a backup', 'settings');
     res.download(file, `the-wave-leasing-${M.today()}.db`, () => fs.rm(file, { force: true }, () => {}));
+  });
+
+  router.post('/settings/backups/run', R('admin'), async (req, res) => {
+    const r = await backups.run({ trigger: 'manual', user: req.user });
+    if (r.busy) return h.back(req, res, '/admin/settings#backups', 'error', tr('bak|A backup is already running. Try again in a minute.'));
+    h.log(req, 'Backed up the database', 'settings', null, r.file || r.error || '');
+    if (r.status === 'failed') return h.back(req, res, '/admin/settings#backups', 'error', tr('bak|The backup failed: {error}', { error: r.error }));
+    const copies = [r.email_status === 'sent' ? tr('bak|emailed') : '', r.s3_status === 'sent' ? tr('bak|sent to off-site storage') : ''].filter(Boolean);
+    if (r.status === 'partial') return h.back(req, res, '/admin/settings#backups', 'error', tr('bak|Backup saved on the server, but a copy could not be sent. See the details below.'));
+    h.back(req, res, '/admin/settings#backups', 'ok', copies.length ? tr('bak|Backup saved ({size}) and {copies}.', { size: MB(r.bytes), copies: copies.join(isAr() ? ' و' : ' and ') }) : tr('bak|Backup saved ({size}).', { size: MB(r.bytes) }));
+  });
+  router.post('/settings/backups', R('admin'), (req, res) => {
+    const n = (v, lo, hi, d) => {
+      const x = h.int(v);
+      return x === null || x < lo || x > hi ? d : x;
+    };
+    const cur = backups.settings();
+    db.setSetting('backup_auto', req.body.backup_auto ? '1' : '0');
+    db.setSetting('backup_hour', String(n(req.body.backup_hour, 0, 23, Number(cur.backup_hour))));
+    db.setSetting('backup_keep_days', String(n(req.body.backup_keep_days, 1, 365, Number(cur.backup_keep_days))));
+    db.setSetting('backup_email_max_mb', String(n(req.body.backup_email_max_mb, 1, 40, Number(cur.backup_email_max_mb))));
+    const raw = h.str(req.body.backup_email_to, 400);
+    const emails = raw.split(/[,;\s]+/).map((x) => x.trim()).filter(Boolean);
+    const bad = emails.filter((x) => !EMAIL_RE.test(x));
+    if (bad.length) return h.back(req, res, '/admin/settings#backups', 'error', tr('bak|Not a valid email address: {email}', { email: bad[0] }));
+    db.setSetting('backup_email_to', emails.slice(0, 5).join(', '));
+    h.log(req, 'Updated settings', 'settings', null, 'Backups');
+    h.back(req, res, '/admin/settings#backups', 'ok', tr('Saved.'));
+  });
+  // a kept backup, unzipped into the ready database file (?gz=1 for the compressed file as kept)
+  router.get('/settings/backups/file/:name', R('admin'), (req, res, next) => {
+    const file = backups.file(req.params.name);
+    if (!file) return next();
+    h.log(req, 'Downloaded a backup', 'settings', null, req.params.name);
+    if (req.query.gz) return res.download(file, req.params.name);
+    res.attachment(req.params.name.replace(/\.gz$/, '')).type('application/vnd.sqlite3');
+    fs.createReadStream(file).pipe(require('node:zlib').createGunzip()).on('error', () => res.destroy()).pipe(res);
   });
 
   router.post('/settings/demo', R('admin'), (req, res) => {

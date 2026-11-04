@@ -162,6 +162,42 @@ const NAV = [
 ];
 const RANK = { viewer: 0, agent: 1, manager: 2, admin: 3 };
 
+// ---------- module access ----------
+// Each sidebar entry is a module. Beyond what a role allows (the fifth element of a NAV entry:
+// 'hr', 'finance' or a minimum role), an administrator can hide modules from a person on the Team
+// page: users.hidden_modules holds a JSON list of NAV hrefs. Nothing hidden (NULL) means everything
+// the role allows, so existing accounts are unchanged. Administrators always keep every module, and
+// the dashboard can never be hidden. routes/core.js refuses a hidden module's pages by URL too.
+const NAV_ENTRIES = NAV.flatMap(([group, items]) => items.map(([href, label, ic, , min]) => ({ group, href, label, ic, min: min || null })));
+// pages that belong to a module without living under its address
+const NAV_ALIASES = { '/admin/invoices': '/admin/billing', '/admin/payments': '/admin/billing', '/admin/payment-links': '/admin/billing', '/admin/eta': '/admin/accounting', '/admin/contacts': '/admin/brands', '/admin/portal': '/admin/tenants', '/admin/export': '/admin/reports' };
+const roleAllows = (user, min) => !min || (min === 'hr' ? user.role === 'admin' || !!user.hr : min === 'finance' ? user.role === 'admin' || !!user.finance : RANK[user.role] >= RANK[min]);
+// the module a path belongs to: the most specific sidebar entry (/admin/hr/leave over /admin/hr), else an alias
+function navFor(p) {
+  const path = String(p || '').split(/[?#]/)[0].replace(/\/+$/, '') || '/admin';
+  if (path === '/admin') return '/admin';
+  const hit = NAV_ENTRIES.map((e) => e.href).filter((href) => href !== '/admin' && (path === href || path.startsWith(`${href}/`))).sort((a, b) => b.length - a.length)[0];
+  if (hit) return hit;
+  const alias = Object.keys(NAV_ALIASES).find((a) => path === a || path.startsWith(`${a}/`));
+  return alias ? NAV_ALIASES[alias] : null;
+}
+function hiddenModules(user) {
+  if (!user || !user.hidden_modules) return new Set();
+  try {
+    const list = JSON.parse(user.hidden_modules);
+    return new Set(Array.isArray(list) ? list.filter((h) => typeof h === 'string') : []);
+  } catch {
+    return new Set();
+  }
+}
+// hidden from this person by an administrator (not by their role)
+const isHidden = (user, href) => !!user && user.role !== 'admin' && href !== '/admin' && hiddenModules(user).has(href);
+// may this person open the module at href (role and module access)
+const canOpen = (user, href) => {
+  const e = NAV_ENTRIES.find((x) => x.href === href);
+  return !!user && (!e || roleAllows(user, e.min)) && !isHidden(user, href);
+};
+
 // The language switch: a small form in the top bar (signed in) or a link (sign-in pages).
 const other = () => (isAr() ? 'en' : 'ar');
 const otherLabel = () => (isAr() ? 'English' : 'العربية');
@@ -185,12 +221,12 @@ function pwaHead(scope = 'admin') {
 }
 
 function layout({ title, crumbs = [], active = '', body, user, csrf, nonce, flash, actions = '', counts = {}, wide = false, path = '' }) {
-  const allowedTo = (min) => !min || (min === 'hr' ? user.role === 'admin' || !!user.hr : min === 'finance' ? user.role === 'admin' || !!user.finance : RANK[user.role] >= RANK[min]);
+  const allowedTo = (min) => roleAllows(user, min);
   // the most specific menu entry wins (/admin/hr/leave over /admin/hr)
   const best = NAV.flatMap(([, items]) => items.map(([href]) => href)).filter((href) => (href === '/admin' ? active === '/admin' : active === href || active.startsWith(`${href}/`) || active.startsWith(`${href}?`))).sort((a, b) => b.length - a.length)[0];
   // the menu this person may see: [group, [{ href, label, ic, on, count }]]
   const menu = NAV.map(([group, items]) => [group, items
-    .filter(([, , , , min]) => allowedTo(min))
+    .filter(([href, , , , min]) => allowedTo(min) && !isHidden(user, href))
     .map(([href, label, ic, count]) => ({ href, label: t(label), ic, on: href === best, count: count && counts[count] ? counts[count] : 0 }))])
     .filter(([, items]) => items.length);
   const nav = menu.map(([group, items]) => `<div class="nav__group"><p class="nav__label">${esc(t(group))}</p>${items.map((a) => `<a href="${a.href}" class="nav__a${a.on ? ' is-on' : ''}"${a.on ? ' aria-current="page"' : ''}>${icon(a.ic)}<span>${esc(a.label)}</span>${a.count ? `<b class="nav__count">${a.count}</b>` : ''}</a>`).join('')}</div>`).join('');
@@ -201,7 +237,7 @@ function layout({ title, crumbs = [], active = '', body, user, csrf, nonce, flas
   const back = parent ? `<a class="bar__back" href="${parent[0]}" aria-label="${esc(t('mob|Back'))}" title="${esc(parent[1])}">${icon('back')}</a>` : '';
   const tabOn = ['/admin', '/admin/pipeline', '/admin/calendar'].includes(best) ? best : 'more';
   const moreCount = menu.flatMap(([, items]) => items).filter((a) => !['/admin', '/admin/pipeline', '/admin/calendar'].includes(a.href)).reduce((s, a) => s + (a.count || 0), 0);
-  const tab = (href, ic, label, extra = '', attrs = '') => `<a href="${href}" class="tabbar__a${tabOn === href || (href === '#more' && tabOn === 'more') ? ' is-on' : ''}"${tabOn === href ? ' aria-current="page"' : ''} ${attrs}>${icon(ic)}<span>${esc(label)}</span>${extra}</a>`;
+  const tab = (href, ic, label, extra = '', attrs = '') => (href.startsWith('/admin') && !attrs.includes('data-cmdk-open') && !canOpen(user, href) ? '' : `<a href="${href}" class="tabbar__a${tabOn === href || (href === '#more' && tabOn === 'more') ? ' is-on' : ''}"${tabOn === href ? ' aria-current="page"' : ''} ${attrs}>${icon(ic)}<span>${esc(label)}</span>${extra}</a>`);
   const tasks = counts.tasks ? `<b class="tabbar__count">${counts.tasks}</b>` : '';
   const tabbar = `<nav class="tabbar" aria-label="${esc(t('mob|App navigation'))}">
     ${tab('/admin', 'home', t('mob|Home'))}
@@ -500,4 +536,5 @@ module.exports = {
   esc, attr, n0, money, local, m2, pct, date, dt, rel, initials, icon, logo, mark, setCurrency, pwaHead, ASSETS, docPanel, expiry, KB, fileIcon, curLabel, monthName, monthYear, weekdays, langLink, langForm, t, tn,
   layout, bare, badge, stageBadge, unitBadge, kpi, trend, card, table, empty, btn, hidden, form, input, select, textarea,
   bars, funnel, donut, meter, plan, planLegend, cellsOf, TONE, RANK,
+  NAV, NAV_ENTRIES, navFor, roleAllows, hiddenModules, isHidden, canOpen,
 };
