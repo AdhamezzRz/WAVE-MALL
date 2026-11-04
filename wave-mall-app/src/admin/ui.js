@@ -149,16 +149,16 @@ const mark = (cls = '') => `<svg class="mark ${cls}" viewBox="163 97 207 128" ar
 
 // ---------- shell ----------
 const NAV = [
-  ['Overview', [['/admin', 'Dashboard', 'dash']]],
+  ['Overview', [['/admin', 'Dashboard', 'dash'], ['/admin/work', 'nav|Approvals & tasks', 'check', 'work']]],
   ['Sales', [['/admin/inbox', 'Inbox', 'inbox', 'inbox'], ['/admin/leads', 'Leads', 'leads'], ['/admin/pipeline', 'Pipeline', 'pipe'], ['/admin/offers', 'Offers', 'offer', 'approvals'], ['/admin/conversations', 'nav|Conversations', 'chat', 'conversations'], ['/admin/calendar', 'Calendar & tasks', 'cal', 'tasks']]],
   ['Property', [['/admin/units', 'Units & plan', 'unit'], ['/admin/brands', 'Brands', 'brand'], ['/admin/tenants', 'Tenant files', 'tenant'], ['/admin/fitout', 'nav|Fit-out', 'hammer', 'fitout'], ['/admin/specialty', 'nav|Short-term space', 'store', 'specialty']]],
   ['Revenue', [['/admin/leases', 'Leases', 'lease'], ['/admin/billing', 'Billing', 'bill', 'overdue'], ['/admin/cheques', 'nav|Cheques', 'wallet', 'cheques'], ['/admin/collections', 'nav|Collections', 'phone', 'collect'], ['/admin/media', 'nav|Advertising', 'cam', 'media'], ['/admin/turnover', 'nav|Turnover & sales', 'percent', 'turnover'], ['/admin/service-charge', 'nav|Service charge', 'report'], ['/admin/utilities', 'nav|Utilities', 'gauge']]],
-  ['nav|Finance', [['/admin/accounting', 'nav|Accounting', 'coins', 'finance', 'finance'], ['/admin/approvals', 'nav|Approvals', 'check', 'approve'], ['/admin/purchasing', 'nav|Purchasing', 'file', 'purchase']]],
+  ['nav|Finance', [['/admin/accounting', 'nav|Accounting', 'coins', 'finance', 'finance'], ['/admin/purchasing', 'nav|Purchasing', 'file', 'purchase']]],
   ['nav|Operations', [['/admin/maintenance', 'nav|Maintenance', 'wrench', 'maintenance'], ['/admin/parking', 'nav|Parking', 'car', 'parking'], ['/admin/footfall', 'nav|Footfall', 'flow'], ['/admin/security', 'nav|Security & cleaning', 'shield', 'security'], ['/admin/compliance', 'nav|Safety & licences', 'contract', 'compliance'], ['/admin/energy', 'nav|Energy', 'gauge'], ['/admin/feedback', 'nav|Shopper feedback', 'chat', 'feedback'], ['/admin/website', 'nav|Website', 'globe']]],
   ['Records', [['/admin/documents', 'Documents', 'folder', 'docs'], ['/admin/contracts', 'Contracts', 'contract', 'renewals']]],
   ['People', [['/admin/hr', 'Employees', 'people', null, 'hr'], ['/admin/hr/leave', 'nav|Leave', 'leave', 'leave', 'hr'], ['/admin/hr/payroll', 'Payroll', 'wallet', null, 'hr'], ['/admin/hr/advances', 'nav|Salary advances', 'coins', null, 'hr']]],
   ['Insight', [['/admin/reports', 'Reports', 'report'], ['/admin/owner-report', 'nav|Owner report', 'report'], ['/admin/wallboard', 'nav|Wall screen', 'dash'], ['/admin/assistant', 'nav|Assistant', 'chat']]],
-  ['Office', [['/admin/team', 'Team & targets', 'team'], ['/admin/subscribers', 'Subscribers', 'mail'], ['/admin/integrations', 'nav|Integrations', 'plug', null, 'admin'], ['/admin/settings', 'Settings', 'gear', null, 'admin'], ['/admin/audit', 'Activity log', 'log', null, 'manager']]],
+  ['Office', [['/admin/team', 'Team & targets', 'team'], ['/admin/people', 'nav|Users & permissions', 'shield', 'people'], ['/admin/subscribers', 'Subscribers', 'mail'], ['/admin/integrations', 'nav|Integrations', 'plug', null, 'admin'], ['/admin/settings', 'Settings', 'gear', null, 'admin'], ['/admin/audit', 'Activity log', 'log', null, 'manager']]],
 ];
 const RANK = { viewer: 0, agent: 1, manager: 2, admin: 3 };
 

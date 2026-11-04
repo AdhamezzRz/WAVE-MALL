@@ -6,6 +6,8 @@ module.exports = {
   'nav|Collections': 'التحصيل',
   'nav|Advertising': 'الإعلانات',
   'nav|Approvals': 'الموافقات',
+  'nav|Approvals & tasks': 'الموافقات والمهام',
+  'nav|Users & permissions': 'المستخدمون والصلاحيات',
   'nav|Purchasing': 'المشتريات',
   'nav|Security & cleaning': 'الأمن والنظافة',
   'nav|Safety & licences': 'السلامة والتراخيص',
