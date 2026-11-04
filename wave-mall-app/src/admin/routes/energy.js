@@ -153,7 +153,7 @@ module.exports = function energy(router, h) {
   const { db, ui, M } = h;
   const R = h.R;
   ensure(db);
-  (h.auditTyped = h.auditTyped || []).push('SELECT name FROM nrg_meters', 'SELECT note FROM nrg_entries', 'SELECT file_name FROM nrg_imports');
+  (h.auditTyped = h.auditTyped || []).push('SELECT code, name FROM nrg_meters', 'SELECT note FROM nrg_entries', 'SELECT file_name FROM nrg_imports');
   const env = (k) => String((h.env && h.env[k]) || '');
   const now = () => new Date().toISOString();
   const hasTable = (name) => !!db.get("SELECT name FROM sqlite_master WHERE type = 'table' AND name = ?", name);

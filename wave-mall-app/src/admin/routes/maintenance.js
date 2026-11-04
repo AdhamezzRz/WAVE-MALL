@@ -508,7 +508,7 @@ ${w.description ? `<p class="mnt-desc">${ui.esc(tx(w.description))}</p>` : ''}
     ${ui.card(tr('mnt|History and comments'), `${timeline}${comment}`)}
     ${panel(req, 'work_order', w.id, { title: tr('mnt|Photos and reports') })}
   </div>
-  <div class="stack">${ui.card(tr('mnt|Details'), facts)}${forms}${edit}</div>
+  <div class="stack">${ui.card(tr('mnt|Details'), facts)}${h.purchasing && h.purchasing.partsCard ? h.purchasing.partsCard(req, w) || '' : ''}${forms}${edit}</div>
 </div>`;
     h.page(req, res, { title: tx(w.title), crumbs: crumbs(['/admin/maintenance/orders', tr('mnt|Work orders')], [null, w.ref]), active: '/admin/maintenance', wide: true, body });
   });

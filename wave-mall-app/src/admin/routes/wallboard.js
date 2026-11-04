@@ -112,7 +112,7 @@ module.exports = function wallboard(router, h) {
 
     // money in today
     const pk = has('pk_payments') ? db.value("SELECT COALESCE(SUM(amount), 0) FROM pk_payments WHERE status = 'ok' AND at >= ? AND at < ?", uFrom, uTo) : 0;
-    const coll = has('payments') ? db.value("SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = 'received' AND date = ?", today) : 0;
+    const coll = has('payments') ? db.value("SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = 'received' AND COALESCE(method, '') NOT IN ('writeoff', 'deposit') AND date = ?", today) : 0;
     tiles.takings = {
       label: tr('wall|Taken today'), value: bigTile(pk + coll), tone: 'forest',
       sub: ui.esc(tr('wall|Parking {a} · tenants {b}', { a: big(pk), b: big(coll) })),

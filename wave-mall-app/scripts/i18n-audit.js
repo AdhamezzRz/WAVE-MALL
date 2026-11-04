@@ -17,7 +17,7 @@ const ONLY = args.only ? String(args.only).split(',') : null;
 const MAX = Number(args.max) || 4000;
 
 // Latin words that are fine in Arabic UI: product names, file formats, codes.
-const OK_WORDS = new Set(['CSV', 'PDF', 'WALE', 'VAT', 'ID', 'The', 'Wave', 'K', 'English', 'EGP', 'JPG', 'PNG', 'WebP', 'Word', 'Excel', 'docx', 'xlsx', 'IBAN', 'EG', 'NFC', 'QR', 'EGYPT', 'UUID', 'EGS', 'GS', 'Node', 'js']);
+const OK_WORDS = new Set(['CSV', 'PDF', 'WALE', 'VAT', 'ID', 'The', 'Wave', 'K', 'English', 'EGP', 'JPG', 'PNG', 'WebP', 'Word', 'Excel', 'docx', 'xlsx', 'IBAN', 'EG', 'NFC', 'QR', 'EGYPT', 'UUID', 'EGS', 'GS', 'Node', 'js', 'ESG', 'Claude', 'AWS', 'Cloudflare', 'Backblaze', 'Wasabi', 'BMS', 'HMAC']);
 
 async function audit({ quiet = false } = {}) {
   const app = createApp({ env: { SITE_URL: 'https://thewavemall.com', ADMIN_DB: ':memory:' }, mail: async () => ({ delivered: true }) });
@@ -139,6 +139,8 @@ async function audit({ quiet = false } = {}) {
         // parking ticket codes (ABCD-2345) before typed values, which could cut a code in two
         s = s.replace(/\b[2-9A-HJ-NP-Z]{4}-?[2-9A-HJ-NP-Z]{4}\b/g, (m) => (/\d|-/.test(m) ? ' ' : m));
         for (const v of typedList) if (s.includes(v)) s = s.split(v).join(' ');
+        // environment variable names (ANTHROPIC_API_KEY), header names (X-Api-Key) and addresses (/ingest/energy) stay as they are
+        s = s.replace(/\b[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+\b/g, ' ').replace(/\bX(?:-[A-Z][a-z]*)+\b/g, ' ').replace(/(^|[\s\u200e\u200f(])\/[a-z][\w/-]*/g, '$1 ');
         s = s.replace(/\S+@\S+/g, ' ').replace(/https?:\/\/\S+/g, ' ').replace(/\b[A-Z]{2}-\d{4}(-\d+)?\b/g, ' ').replace(/\b[GS]\d{2}\b/g, ' ');
         const words = (s.match(/[A-Za-z][A-Za-z'’-]*[A-Za-z]|\b[A-Za-z]\b/g) || []).filter((w) => !OK_WORDS.has(w) && w.length > 1);
         if (/^[A-Z]{1,3}$/.test(s.trim())) continue; // avatar initials of Latin names

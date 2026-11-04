@@ -22,7 +22,7 @@ const BILL_TONES = { draft: 'mute', approved: 'sky', partial: 'amber', paid: 'ok
 const INV_KINDS = {
   rent: 'acckind|Base rent', service: 'acckind|Service charge', turnover: 'acckind|Turnover rent', service_recon: 'acckind|Service charge settlement',
   utility: 'acckind|Utility recharges', specialty: 'acckind|Specialty leasing', key: 'acckind|Key money', penalty: 'acckind|Penalties',
-  other: 'acckind|Other charges', deposit: 'acckind|Security deposits', fitout: 'acckind|Fit-out deposits', parking: 'acckind|Parking',
+  other: 'acckind|Other charges', deposit: 'acckind|Security deposits', fitout: 'acckind|Fit-out deposits', parking: 'acckind|Parking', media: 'acckind|Advertising',
 };
 const METHODS = { transfer: 'accm|Bank transfer', cheque: 'accm|Cheque', card: 'accm|Card', cash: 'accm|Cash', online: 'accm|Online payment', instapay: 'accm|InstaPay', fawry: 'accm|Fawry', wallet: 'accm|Mobile wallet' };
 const ASSET_CLASSES = { building: 'accfa|Buildings', fitout: 'accfa|Fit-out and improvements', mep: 'accfa|MEP and equipment', furniture: 'accfa|Furniture and fixtures', it: 'accfa|IT equipment', vehicles: 'accfa|Vehicles' };
@@ -552,7 +552,7 @@ module.exports = function accounting(router, h) {
     const t = today();
     const { a, rep } = agedRep('ar', t);
     const overdue = r2(a.totals.slice(1).reduce((s, x) => s + x, 0));
-    const collected = r2(db.value("SELECT COALESCE(SUM(amount),0) FROM payments WHERE status = 'received' AND substr(date, 1, 7) = ?", t.slice(0, 7)));
+    const collected = r2(db.value("SELECT COALESCE(SUM(amount),0) FROM payments WHERE status = 'received' AND COALESCE(method, '') NOT IN ('writeoff', 'deposit') AND substr(date, 1, 7) = ?", t.slice(0, 7)));
     const billed90 = r2(db.value("SELECT COALESCE(SUM(total),0) FROM invoices WHERE status != 'void' AND due_date > ? AND due_date <= ? AND kind NOT IN ('deposit','fitout')", M.addDays(t, -90), t));
     const dso = billed90 > 0 ? Math.round((a.total / billed90) * 90) : null;
     const kpis = [

@@ -56,7 +56,7 @@ module.exports = function ownerReport(router, h) {
       out.billed = bill.total;
       out.billedPaid = bill.paid;
     }
-    if (has('payments')) out.collected = db.value("SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = 'received' AND date >= ? AND date <= ?", a, b);
+    if (has('payments')) out.collected = db.value("SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = 'received' AND COALESCE(method, '') NOT IN ('writeoff', 'deposit') AND date >= ? AND date <= ?", a, b);
     const g = gla();
     if (g) out.occupancy = inForce(b).reduce((s, l) => s + area(l.id), 0) / g;
     if (has('tenant_sales')) out.sales = db.value("SELECT COALESCE(SUM(amount), 0) FROM tenant_sales WHERE period = ? AND status IN ('submitted','verified')", ym);
@@ -78,7 +78,7 @@ module.exports = function ownerReport(router, h) {
       R.billedByKind = db.all("SELECT kind, COALESCE(SUM(total), 0) total, COALESCE(SUM(paid), 0) paid, COUNT(*) n FROM invoices WHERE status != 'void' AND due_date >= ? AND due_date <= ? GROUP BY kind ORDER BY total DESC", a, b);
       R.trend = six.map((m) => ({ ym: m, ...headline(m) }));
     }
-    if (has('payments')) R.collectedByKind = db.all("SELECT COALESCE(i.kind, 'other') kind, COALESCE(SUM(p.amount), 0) amount FROM payments p LEFT JOIN invoices i ON i.id = p.invoice_id WHERE p.status = 'received' AND p.date >= ? AND p.date <= ? GROUP BY 1 ORDER BY amount DESC", a, b);
+    if (has('payments')) R.collectedByKind = db.all("SELECT COALESCE(i.kind, 'other') kind, COALESCE(SUM(p.amount), 0) amount FROM payments p LEFT JOIN invoices i ON i.id = p.invoice_id WHERE p.status = 'received' AND COALESCE(p.method, '') NOT IN ('writeoff', 'deposit') AND p.date >= ? AND p.date <= ? GROUP BY 1 ORDER BY amount DESC", a, b);
     if (h.ledger && has('acc_accounts')) R.pl = safe(() => h.ledger.profitLoss({ from: a, to: b }));
 
     // occupancy and leasing

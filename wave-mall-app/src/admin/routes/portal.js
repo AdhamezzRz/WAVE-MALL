@@ -557,7 +557,7 @@ ${quick}
     const body = `<div class="kpis kpis--3">
       ${ui.kpi({ label: tr('por|Balance due'), value: ui.money(due, { compact: true }), tone: overdue(bid) ? 'kpi--alert' : '' })}
       ${ui.kpi({ label: tr('invoice|Overdue'), value: ui.money(overdue(bid), { compact: true }) })}
-      ${ui.kpi({ label: tr('por|Paid this year'), value: ui.money(db.value("SELECT COALESCE(SUM(amount), 0) FROM payments WHERE brand_id = ? AND status = 'received' AND substr(date, 1, 4) = ?", bid, t.slice(0, 4)), { compact: true }) })}
+      ${ui.kpi({ label: tr('por|Paid this year'), value: ui.money(db.value("SELECT COALESCE(SUM(amount), 0) FROM payments WHERE brand_id = ? AND status = 'received' AND COALESCE(method, '') <> 'writeoff' AND substr(date, 1, 4) = ?", bid, t.slice(0, 4)), { compact: true }) })}
     </div><nav class="tabs">${tabsHtml}</nav>${ui.card(tn(rows.length, '{n} invoice', '{n} invoices'), table)}${payInstructions()}`;
     page(req, res, { title: tr('Invoices'), active: 'invoices', body });
   });

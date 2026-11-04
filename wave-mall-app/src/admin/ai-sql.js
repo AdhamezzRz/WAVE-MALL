@@ -38,7 +38,9 @@ const MODULE = {
   employees: '/admin/hr', departments: '/admin/hr', leave_requests: '/admin/hr/leave', payroll_runs: '/admin/hr/payroll', payroll_lines: '/admin/hr/payroll',
   hr_advances: '/admin/hr/advances', hr_advance_repayments: '/admin/hr/advances',
 };
-const MODULE_PREFIX = [['fitout_', '/admin/fitout'], ['turnover_', '/admin/turnover'], ['sc_', '/admin/service-charge'], ['utl_', '/admin/utilities'], ['acc_', '/admin/accounting'], ['eta_', '/admin/accounting'], ['pk_', '/admin/parking'], ['web_', '/admin/website']];
+const MODULE_PREFIX = [['fitout_', '/admin/fitout'], ['turnover_', '/admin/turnover'], ['sc_', '/admin/service-charge'], ['utl_', '/admin/utilities'], ['acc_', '/admin/accounting'], ['eta_', '/admin/accounting'], ['pk_', '/admin/parking'], ['web_', '/admin/website'],
+  ['col_', '/admin/collections'], ['lease_', '/admin/leases'], ['apr_', '/admin/approvals'], ['pur_', '/admin/purchasing'], ['inv_', '/admin/purchasing'],
+  ['media_', '/admin/media'], ['sec_', '/admin/security'], ['cmp_', '/admin/compliance'], ['fb_', '/admin/feedback'], ['nrg_', '/admin/energy'], ['users', '/admin/team']];
 
 const startsWithAny = (name, list) => list.some((p) => name.startsWith(p));
 
