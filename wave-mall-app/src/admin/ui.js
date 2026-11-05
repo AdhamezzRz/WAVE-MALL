@@ -140,6 +140,8 @@ const I = {
   car: 'M5 16V11l2-5h10l2 5v5M3 16h18v3H3zM7 19v2M17 19v2M5 11h14M7.5 13.5h1M15.5 13.5h1',
   cam: 'M4 8h3l2-3h6l2 3h3v11H4zM12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8',
   nfc: 'M6 8a8 8 0 0 1 0 8M9.5 6a11 11 0 0 1 0 12M13 4a14 14 0 0 1 0 16M17 2.5a17 17 0 0 1 0 19',
+  help: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM9.5 9.2a2.6 2.6 0 0 1 5 .9c0 1.7-2.5 2.2-2.5 3.9M12 17h.01',
+  play: 'M8 5v14l11-7z',
 };
 // Icons that point somewhere are mirrored in Arabic (see .ic--dir in admin.css).
 const DIRECTIONAL = new Set(['arrow', 'out', 'back']);
@@ -158,7 +160,7 @@ const NAV = [
   ['Records', [['/admin/documents', 'Documents', 'folder', 'docs'], ['/admin/contracts', 'Contracts', 'contract', 'renewals']]],
   ['People', [['/admin/hr', 'Employees', 'people', null, 'hr'], ['/admin/hr/leave', 'nav|Leave', 'leave', 'leave', 'hr'], ['/admin/hr/payroll', 'Payroll', 'wallet', null, 'hr'], ['/admin/hr/advances', 'nav|Salary advances', 'coins', null, 'hr']]],
   ['Insight', [['/admin/reports', 'Reports', 'report'], ['/admin/owner-report', 'nav|Owner report', 'report'], ['/admin/wallboard', 'nav|Wall screen', 'dash']]],
-  ['Office', [['/admin/team', 'Team & targets', 'team'], ['/admin/people', 'nav|Users & permissions', 'shield', 'people'], ['/admin/subscribers', 'Subscribers', 'mail'], ['/admin/integrations', 'nav|Integrations', 'plug', null, 'admin'], ['/admin/settings', 'Settings', 'gear', null, 'admin'], ['/admin/audit', 'Activity log', 'log', null, 'manager']]],
+  ['Office', [['/admin/team', 'Team & targets', 'team'], ['/admin/people', 'nav|Users & permissions', 'shield', 'people'], ['/admin/subscribers', 'Subscribers', 'mail'], ['/admin/integrations', 'nav|Integrations', 'plug', null, 'admin'], ['/admin/settings', 'Settings', 'gear', null, 'admin'], ['/admin/audit', 'Activity log', 'log', null, 'manager'], ['/admin/help', 'nav|Help & training', 'help', 'help']]],
 ];
 const RANK = { viewer: 0, agent: 1, manager: 2, admin: 3 };
 

@@ -7,6 +7,7 @@ module.exports = {
   'nav|Advertising': 'الإعلانات',
   'nav|Approvals': 'الموافقات',
   'nav|Approvals & tasks': 'الموافقات والمهام',
+  'nav|Help & training': 'المساعدة والتدريب',
   'nav|Users & permissions': 'المستخدمون والصلاحيات',
   'nav|Purchasing': 'المشتريات',
   'nav|Security & cleaning': 'الأمن والنظافة',
