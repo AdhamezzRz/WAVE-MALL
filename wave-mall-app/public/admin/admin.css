@@ -3081,7 +3081,8 @@ tr.is-picked td { background: rgb(162 197 185 / .16); }
 .wk-picks { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
 .wk-pick-p { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 4px; border: 1px solid var(--line); border-radius: 999px; cursor: pointer; font-size: 12.5px; background: var(--white); }
 [dir="rtl"] .wk-pick-p { padding: 3px 4px 3px 10px; }
-.wk-pick-p input { position: absolute; opacity: 0; pointer-events: none; }
+.wk-pick-p { position: relative; }
+.wk-pick-p input { position: absolute; inset-inline-start: 0; top: 0; width: 1px; height: 1px; margin: 0; opacity: 0; pointer-events: none; }
 .wk-pick-p.is-on, .wk-pick-p:has(input:checked) { border-color: var(--forest); background: rgb(40 56 51 / .07); font-weight: 600; }
 .wk-pick-p:focus-within { box-shadow: 0 0 0 3px rgb(40 56 51 / .14); }
 

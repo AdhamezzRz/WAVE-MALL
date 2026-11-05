@@ -100,6 +100,8 @@ module.exports = function work(router, h) {
   (h.auditTyped = h.auditTyped || []).push(
     'SELECT title, body, labels, link_label FROM wk_tasks', 'SELECT text FROM wk_checks', 'SELECT body FROM wk_events WHERE body IS NOT NULL',
     'SELECT title, body, labels, checklist FROM wk_templates',
+    // the quoted bit of a comment in a notification
+    "SELECT json_extract(params, '$.excerpt') excerpt FROM wk_notes WHERE params LIKE '%excerpt%'",
     // each label on its own (they show one by one)
     `SELECT DISTINCT trim(j.value) label FROM wk_tasks t, json_each('["' || replace(replace(t.labels, '"', ''), ',', '","') || '"]') j WHERE t.labels IS NOT NULL`,
     `SELECT DISTINCT trim(j.value) label FROM wk_templates t, json_each('["' || replace(replace(t.labels, '"', ''), ',', '","') || '"]') j WHERE t.labels IS NOT NULL`,

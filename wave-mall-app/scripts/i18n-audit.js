@@ -138,6 +138,8 @@ async function audit({ quiet = false } = {}) {
         if ((cut !== s || cut.length > 60) && cut.length > 15 && longTyped.some((v) => v.replace(/\s+/g, ' ').startsWith(cut.replace(/\s+/g, ' ')))) continue;
         // parking ticket codes (ABCD-2345) before typed values, which could cut a code in two
         s = s.replace(/\b[2-9A-HJ-NP-Z]{4}-?[2-9A-HJ-NP-Z]{4}\b/g, (m) => (/\d|-/.test(m) ? ' ' : m));
+        // addresses first: a short typed value (a label such as "leasing") must not cut an email or a link in two
+        s = s.replace(/[\w.+-]+@[\w-]+(?:\.[\w-]+)+/g, ' ').replace(/https?:\/\/\S+/g, ' ').replace(/\b[a-z][\w-]*(?:\.[a-z][\w-]*)+\.(?:com|net|org|eg|io|ai)\b/g, ' ');
         for (const v of typedList) if (s.includes(v)) s = s.split(v).join(' ');
         // environment variable names (ANTHROPIC_API_KEY), header names (X-Api-Key) and addresses (/ingest/energy) stay as they are
         s = s.replace(/\b[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+\b/g, ' ').replace(/\bX(?:-[A-Z][a-z]*)+\b/g, ' ').replace(/(^|[\s\u200e\u200f(])\/[a-z][\w/-]*/g, '$1 ');
