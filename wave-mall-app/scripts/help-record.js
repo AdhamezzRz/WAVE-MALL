@@ -485,10 +485,14 @@ async function playLesson(browser, office, lesson, lang, { record }) {
     await wait(500);
     if (record) {
       const next = lesson.nextTitle ? lesson.nextTitle[lang] : null;
+      const outroAt = now();
       await page.setContent(cardHtml(base, lang, 'outro', { title: T, next }), { waitUntil: 'load' });
       await ov('hide');
       sounds.push({ kind: 'done', t: now() + 0.4 });
       await sleep(3600);
+      // on a busy machine the screencast runs behind: wait until the card's frames have arrived,
+      // or the video would end on the last screen of the lesson instead of "Lesson complete"
+      for (let k = 0; k < 80 && !frames.some((f) => f.t >= outroAt + 1.6); k++) await sleep(100);
     }
   } finally {
     if (cdp) await cdp.send('Page.stopScreencast').catch(() => {});
@@ -522,6 +526,62 @@ async function playLesson(browser, office, lesson, lang, { record }) {
   return { duration, size };
 }
 
+// ---------------------------------------------------------------- --fix-outro
+// Videos recorded on a busy machine can lose the closing "Lesson complete" card (the screencast
+// stopped before its frames arrived), so they end on the lesson's last screen. This finds them by
+// comparing the last frame with the card and cross-fades the card in over the same seconds, keeping
+// the length, the sound and the transcript as they are.
+async function fixOutros(browser, todo) {
+  const office = await boot(PORT);
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'wave-help-outro-'));
+  const thumb = (input, extra = []) => execFileSync('ffmpeg', ['-loglevel', 'error', ...extra, '-i', input, '-frames:v', '1', '-vf', 'scale=48:27,format=gray', '-f', 'rawvideo', '-']);
+  const diff = (a, b) => { let d = 0; for (let i = 0; i < a.length; i++) d += Math.abs(a[i] - b[i]); return d / a.length; };
+  let fixed = 0;
+  let fine = 0;
+  try {
+    for (const lesson of todo) {
+      for (const lang of LANGS) {
+        const dir = path.join(help.MEDIA_DIR, lang);
+        const mp4 = path.join(dir, `${lesson.id}.mp4`);
+        const jsonFile = path.join(dir, `${lesson.id}.json`);
+        if (!fs.existsSync(mp4) || !fs.existsSync(jsonFile)) continue;
+        const doc = JSON.parse(fs.readFileSync(jsonFile, 'utf8'));
+        const ctx = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 1 });
+        const page = await ctx.newPage();
+        const next = lesson.nextTitle ? lesson.nextTitle[lang] : null;
+        await page.setContent(cardHtml(office.base, lang, 'outro', { title: lesson.title[lang], next }), { waitUntil: 'load' });
+        await sleep(2600);
+        const png = path.join(tmp, `${lesson.id}-${lang}.png`);
+        await page.screenshot({ path: png });
+        await ctx.close();
+        const d = diff(thumb(mp4, ['-sseof', '-0.6']), thumb(png));
+        if (d < 18) { fine++; if (VERBOSE) log(`ok    ${lesson.id} [${lang}] ends on the card (${d.toFixed(1)})`); continue; }
+        const T = doc.duration;
+        const last = doc.cues[doc.cues.length - 1];
+        const cut = Math.min(T - 2.5, Math.max(1, (last ? last.end : T - 4.2) + 0.6));
+        const L = T - cut + 0.5;
+        const out = path.join(tmp, `${lesson.id}-${lang}.mp4`);
+        execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', mp4, '-loop', '1', '-t', L.toFixed(2), '-i', png,
+          '-filter_complex', `[0:v]trim=0:${cut.toFixed(2)},setpts=PTS-STARTPTS,fps=${FPS},format=yuv420p[a];[1:v]scale=${W}:${H},fps=${FPS},format=yuv420p[b];[a][b]xfade=transition=fade:duration=0.5:offset=${(cut - 0.5).toFixed(2)}[v]`,
+          '-map', '[v]', '-map', '0:a?', '-c:v', 'libx264', '-preset', 'slow', '-crf', String(CRF), '-tune', 'animation', '-g', String(FPS * 4), '-c:a', 'copy', '-shortest', '-movflags', '+faststart', out]);
+        fs.copyFileSync(out, mp4);
+        const duration = Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'default=nw=1:nk=1', mp4]).toString().trim());
+        const size = fs.statSync(mp4).size;
+        const v = crypto.createHash('sha1').update(fs.readFileSync(mp4)).update(JSON.stringify(doc.cues)).digest('hex').slice(0, 10);
+        doc.duration = +duration.toFixed(2);
+        fs.writeFileSync(jsonFile, `${JSON.stringify(doc, null, 1)}\n`);
+        saveManifest(lesson.id, lang, { duration: doc.duration, size, v, cues: doc.cues.length, recorded_at: doc.recorded_at });
+        fixed++;
+        log(`card  ${lesson.id} [${lang}] closing card added (${d.toFixed(1)}), ${duration.toFixed(1)} s`);
+      }
+    }
+  } finally {
+    await office.close();
+    fs.rmSync(tmp, { recursive: true, force: true });
+  }
+  log(`\n${fixed} videos given their closing card, ${fine} already had it`);
+}
+
 // ---------------------------------------------------------------- main
 (async () => {
   const { lessons, errors } = help.load();
@@ -538,6 +598,7 @@ async function playLesson(browser, office, lesson, lang, { record }) {
   const { chromium } = require('playwright');
   const browser = await chromium.launch({ args: ['--font-render-hinting=none', '--disable-lcd-text'] });
   const started = Date.now();
+  if (args['fix-outro']) { await fixOutros(browser, todo); await browser.close(); return; }
   const report = [];
   let failed = 0;
   for (const lesson of todo) {
