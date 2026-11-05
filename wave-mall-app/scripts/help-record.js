@@ -431,12 +431,12 @@ async function playLesson(browser, office, lesson, lang, { record }) {
           await ov('down', false);
           const before = page.url();
           await page.evaluate(() => { window.__hlpMark = 1; }).catch(() => {});
-          const navP = s.nav ? page.waitForURL((u) => u.toString() !== before, { timeout: 15000 }).catch(() => fail(i, 'the click did not open another page (remove nav: true?)')) : null;
+          const navP = s.nav ? page.waitForURL((u) => u.toString() !== before, { timeout: 15000 }).then(() => true, () => false) : null;
           if (kind === 'check') await loc.check({ force: true }).catch((e) => fail(i, e.message));
           else await loc.click({ force: !!s.force }).catch((e) => fail(i, e.message));
           if (navP) {
             if (record) sounds.push({ kind: 'nav', t: now() });
-            await navP;
+            if (!(await navP)) fail(i, 'the click did not open another page (remove nav: true?)');
             await page.waitForLoadState('load');
             await placeCursor();
             await ov('spot', null);
