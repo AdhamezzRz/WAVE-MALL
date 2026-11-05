@@ -1,0 +1,83 @@
+'use strict';
+
+// Sales and leasing: leads and offers.
+
+module.exports = [
+  {
+    id: 'sales-lead-new',
+    area: 'sales',
+    module: '/admin/leads',
+    order: 10,
+    roles: ['leasing'],
+    title: { en: 'Adding a new lead', ar: 'إضافة فرصة جديدة' },
+    summary: {
+      en: 'Record a brand you are talking to: what they want, who to call and the next step.',
+      ar: 'سجّل علامة تجارية تتواصل معها: ما تريده، ومن تتصل به، والخطوة التالية.',
+    },
+    steps: [
+      { go: '/admin/leads', say: { en: 'Leads are every brand you are talking to, from the first call to the signed lease.', ar: 'الفرص هي كل علامة تجارية تتواصل معها، من أول اتصال حتى توقيع العقد.' } },
+      { point: '.tabs', say: { en: 'Ready-made views show your leads, the hot ones, deals closing soon and follow-ups that are late.', ar: 'تعرض العروض الجاهزة فرصك، والساخنة منها، والصفقات القريبة من الإغلاق، والمتابعات المتأخرة.' } },
+      { click: '.bar__actions a[href="/admin/leads/new"]', nav: true, say: { en: 'To add one, choose New lead.', ar: 'لإضافة فرصة، اختر «فرصة جديدة».' } },
+      { type: ['input[name=title]', { en: 'Maison Lune flagship', ar: 'ميزون لون، الفرع الرئيسي' }], say: { en: 'Name the lead, usually the brand and the concept.', ar: 'سمِّ الفرصة، عادةً باسم العلامة والمفهوم.' } },
+      { select: ['select[name=category]', 'fashion'], say: { en: 'Choose the category and where the lead came from.', ar: 'اختر الفئة ومصدر الفرصة.' } },
+      { select: ['select[name=source]', 'referral'] },
+      { type: ['input[name=contact_name]', { en: 'Sara Nabil', ar: 'سارة نبيل' }], say: { en: 'Add the person you talk to and how to reach them.', ar: 'أضف الشخص الذي تتواصل معه وطريقة الوصول إليه.' } },
+      { type: ['input[name=contact_phone]', { en: '+20 100 555 0199', ar: '+20 100 555 0199' }] },
+      { type: ['input[name=area_min]', { en: '120', ar: '120' }], say: { en: 'The size they want and their budget help the office suggest units that fit.', ar: 'المساحة المطلوبة والميزانية تساعد المكتب على اقتراح الوحدات المناسبة.' } },
+      { type: ['input[name=area_max]', { en: '180', ar: '180' }] },
+      { type: ['input[name=next_step]', { en: 'Site viewing', ar: 'معاينة الموقع' }], say: { en: 'Always write the next step and its date, so nothing is forgotten.', ar: 'اكتب دائمًا الخطوة التالية وتاريخها حتى لا يُنسى شيء.' } },
+      { click: 'form[action="/admin/leads"] button.btn--primary', nav: true, say: { en: 'Create the lead.', ar: 'أنشئ الفرصة.' } },
+      { point: '.stepper', say: { en: 'The lead page shows its stage, a score out of 100, the timeline and the units that fit.', ar: 'تعرض صفحة الفرصة مرحلتها وتقييمًا من 100 والسجل الزمني والوحدات المناسبة.' } },
+    ],
+  },
+  {
+    id: 'sales-lead-stages',
+    area: 'sales',
+    module: '/admin/leads',
+    also: ['/admin/pipeline'],
+    order: 20,
+    roles: ['leasing'],
+    title: { en: 'Moving a lead forward', ar: 'تحريك الفرصة إلى المرحلة التالية' },
+    summary: {
+      en: 'Move a lead through the stages and log calls, meetings and viewings on its timeline.',
+      ar: 'انقل الفرصة عبر المراحل وسجّل المكالمات والاجتماعات والمعاينات في سجلها الزمني.',
+    },
+    steps: [
+      { go: '/admin/leads?stage=new', say: { en: 'Here are the new leads. Open one.', ar: 'هذه هي الفرص الجديدة. افتح إحداها.' } },
+      { click: 'tr[data-href^="/admin/leads/"]', nav: true },
+      { point: '.stepper', say: { en: 'The stages run from New to Signed. Click a stage to move the lead there.', ar: 'تمتد المراحل من «جديدة» حتى «تم التوقيع». اضغط على أي مرحلة لنقل الفرصة إليها.' } },
+      { click: '.stepper li.is-on + li button', say: { en: 'We called them, so we move it to Contacted.', ar: 'تواصلنا معهم، لذا ننقلها إلى «تم التواصل».' } },
+      { point: '.stepper', say: { en: 'The stage changed, and the move is recorded on the timeline.', ar: 'تغيرت المرحلة، وسُجّل الانتقال في السجل الزمني.' } },
+      { select: ['form[action="/admin/activities"] select[name=type]', 'call'], say: { en: 'Log what happened: a call, an email, a meeting or a viewing.', ar: 'سجّل ما حدث: مكالمة أو بريد أو اجتماع أو معاينة.' } },
+      { type: ['form[action="/admin/activities"] input[name=subject]', { en: 'Called Sara, sending the floor plans', ar: 'اتصلت بسارة، سأرسل المخططات' }] },
+      { click: 'form[action="/admin/activities"] button.btn--primary', say: { en: 'Add it to the timeline.', ar: 'أضفه إلى السجل الزمني.' } },
+      { point: '.timeline', say: { en: 'The timeline keeps every call, email and change, so anyone on the team can pick up the deal.', ar: 'يحتفظ السجل الزمني بكل مكالمة وبريد وتغيير، فيستطيع أي زميل متابعة الصفقة.' } },
+      { go: '/admin/pipeline', say: { en: 'The pipeline shows the same leads as cards you can drag from stage to stage.', ar: 'يعرض مسار الصفقات الفرص نفسها كبطاقات يمكنك سحبها من مرحلة إلى أخرى.' } },
+    ],
+  },
+  {
+    id: 'sales-offer-new',
+    area: 'sales',
+    module: '/admin/offers',
+    also: ['/admin/leads'],
+    order: 30,
+    roles: ['leasing', 'management'],
+    title: { en: 'Building an offer', ar: 'إعداد عرض' },
+    summary: {
+      en: 'Pick the units, set the rent and terms, watch the deal calculator, and send it for approval when the discount is high.',
+      ar: 'اختر الوحدات وحدد الإيجار والشروط وتابع حاسبة الصفقة، ثم أرسله للموافقة عندما يكون الخصم كبيرًا.',
+    },
+    steps: [
+      { go: '/admin/leads?stage=open', say: { en: 'Offers start from a lead. Open the lead you are negotiating with.', ar: 'تبدأ العروض من فرصة. افتح الفرصة التي تتفاوض معها.' } },
+      { click: 'tr[data-href^="/admin/leads/"]', nav: true },
+      { click: '.bar__actions a[href^="/admin/offers/new"]', nav: true, say: { en: 'Choose New offer.', ar: 'اختر «عرض جديد».' } },
+      { click: '.grid--offer label.pick', nth: 1, say: { en: 'Tick the units in the offer. Their size and list rate are filled in.', ar: 'حدد الوحدات المشمولة في العرض، فتُملأ مساحتها وسعرها المعلن.' } },
+      { type: ['input[name=rent_m2]', { en: '1450', ar: '1450' }], say: { en: 'Set the rent per square metre a month.', ar: 'حدد الإيجار للمتر المربع شهريًا.' } },
+      { type: ['input[name=rent_free_months]', { en: '2', ar: '2' }], say: { en: 'Add a rent-free period if you agreed one.', ar: 'أضف فترة سماح من الإيجار إن اتفقتم عليها.' } },
+      { point: '.calc', say: { en: 'The deal calculator updates as you type: the monthly rent, the effective rate and the discount against the list rate. It also tells you when the discount needs a manager\'s approval.', ar: 'تتحدث حاسبة الصفقة أثناء الكتابة: الإيجار الشهري والسعر الفعلي والخصم مقارنةً بالسعر المعلن، وتخبرك أيضًا متى يحتاج الخصم إلى موافقة مدير.' } },
+      { click: 'form[action="/admin/offers"] button.btn--primary', nav: true, say: { en: 'Create the offer.', ar: 'أنشئ العرض.' } },
+      { point: '.bar__actions', say: { en: 'The offer is saved with its full rent schedule. If an agent goes below the allowed discount, it waits here for a manager to approve it or send it back.', ar: 'يُحفظ العرض مع جدول الإيجار الكامل. وإذا تجاوز المسؤول الخصم المسموح به، ينتظر العرض هنا موافقة مدير أو إعادته.' } },
+      { say: { en: 'Once approved, print the branded proposal or send it by email or WhatsApp with a signing link.', ar: 'بعد الموافقة، اطبع العرض بهوية ذا ويف أو أرسله بالبريد أو واتساب مع رابط للتوقيع.' } },
+    ],
+  },
+];

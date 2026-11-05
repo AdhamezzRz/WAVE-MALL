@@ -1,0 +1,151 @@
+{
+ "id": "overview-task",
+ "lang": "en",
+ "title": "Giving someone a task",
+ "duration": 72.56,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 8.95,
+   "text": "Create a task with a priority, an assignee, labels and a mention, and follow it on the board.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.95,
+   "end": 13.11,
+   "text": "Tasks live next to approvals, in Approvals & tasks.",
+   "step": 1,
+   "url": "/admin/work"
+  },
+  {
+   "start": 13.11,
+   "end": 18.17,
+   "text": "For a quick note to yourself, type here and press Enter.",
+   "step": 2,
+   "url": "/admin/work"
+  },
+  {
+   "start": 18.17,
+   "end": 22.4,
+   "text": "For a full task, choose New task.",
+   "step": 3,
+   "url": "/admin/work/tasks/new"
+  },
+  {
+   "start": 22.4,
+   "end": 26.92,
+   "text": "Give it a clear title.",
+   "step": 4,
+   "url": "/admin/work/tasks/new"
+  },
+  {
+   "start": 26.92,
+   "end": 36.07,
+   "text": "Type @ and a name to mention a colleague: they are told by email and in their inbox.",
+   "step": 5,
+   "url": "/admin/work/tasks/new"
+  },
+  {
+   "start": 36.07,
+   "end": 38.91,
+   "text": "Set the priority.",
+   "step": 6,
+   "url": "/admin/work/tasks/new"
+  },
+  {
+   "start": 38.91,
+   "end": 43.11,
+   "text": "Labels help you filter the board later.",
+   "step": 7,
+   "url": "/admin/work/tasks/new"
+  },
+  {
+   "start": 43.11,
+   "end": 51.97,
+   "text": "Choose who does it. You can pick several people, and add watchers who are kept informed.",
+   "step": 8,
+   "url": "/admin/work/tasks/new"
+  },
+  {
+   "start": 51.97,
+   "end": 55.2,
+   "text": "Create the task.",
+   "step": 9,
+   "url": "/admin/work/tasks/41"
+  },
+  {
+   "start": 55.2,
+   "end": 62.24,
+   "text": "The task has its own page: a checklist, files, comments and a timeline of everything that happens.",
+   "step": 10,
+   "url": "/admin/work/tasks/41"
+  },
+  {
+   "start": 62.24,
+   "end": 67.91,
+   "text": "On the board, drag cards between To do, In progress, Waiting and Done.",
+   "step": 11,
+   "url": "/admin/work/board"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/work"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/work"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/work/tasks/new"
+  },
+  {
+   "step": 4,
+   "kind": "type",
+   "url": "/admin/work/tasks/new"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/work/tasks/new"
+  },
+  {
+   "step": 6,
+   "kind": "select",
+   "url": "/admin/work/tasks/new"
+  },
+  {
+   "step": 7,
+   "kind": "type",
+   "url": "/admin/work/tasks/new"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/work/tasks/new"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/work/tasks/41"
+  },
+  {
+   "step": 10,
+   "kind": "say",
+   "url": "/admin/work/tasks/41"
+  },
+  {
+   "step": 11,
+   "kind": "go",
+   "url": "/admin/work/board"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:07:55.401Z"
+}

@@ -1,0 +1,120 @@
+{
+ "id": "office-invite",
+ "lang": "ar",
+ "title": "دعوة زميل جديد",
+ "duration": 56.24,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 6.8,
+   "text": "أرسل دعوة بالبريد الإلكتروني بالدور المناسب، ويختار الشخص كلمة مروره بنفسه.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 6.8,
+   "end": 13.16,
+   "text": "تعرض صفحة المستخدمين والصلاحيات كل من لديه حساب ودوره وآخر تسجيل دخول له.",
+   "step": 1,
+   "url": "/admin/people"
+  },
+  {
+   "start": 13.16,
+   "end": 18.42,
+   "text": "في الأعلى: الدعوات المنتظرة والصلاحيات المؤقتة والحسابات المقفلة وغير النشطة.",
+   "step": 2,
+   "url": "/admin/people"
+  },
+  {
+   "start": 18.42,
+   "end": 21.8,
+   "text": "اختر «دعوة شخص».",
+   "step": 3,
+   "url": "/admin/people/new"
+  },
+  {
+   "start": 21.8,
+   "end": 27.23,
+   "text": "أدخل بريده الإلكتروني للعمل، واسمه إن شئت.",
+   "step": 4,
+   "url": "/admin/people/new"
+  },
+  {
+   "start": 30.58,
+   "end": 37.78,
+   "text": "اختر الدور، فهو يحدد ما يمكنه رؤيته وفعله، ويشرح الدليل على اليمين كل دور.",
+   "step": 6,
+   "url": "/admin/people/new"
+  },
+  {
+   "start": 37.78,
+   "end": 40.62,
+   "text": "اختر لغة رسالة الدعوة.",
+   "step": 7,
+   "url": "/admin/people/new"
+  },
+  {
+   "start": 40.62,
+   "end": 46.33,
+   "text": "أرسل الدعوة. يعمل الرابط مرة واحدة وتنتهي صلاحيته بعد أسبوع.",
+   "step": 8,
+   "url": "/admin/people/invites"
+  },
+  {
+   "start": 46.33,
+   "end": 51.62,
+   "text": "يمكنك إعادة إرسال الدعوة أو إلغاؤها من تبويب «الدعوات» حتى تُستخدم.",
+   "step": 9,
+   "url": "/admin/people/invites"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/people"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/people"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/people/new"
+  },
+  {
+   "step": 4,
+   "kind": "type",
+   "url": "/admin/people/new"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/people/new"
+  },
+  {
+   "step": 6,
+   "kind": "select",
+   "url": "/admin/people/new"
+  },
+  {
+   "step": 7,
+   "kind": "select",
+   "url": "/admin/people/new"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/people/invites"
+  },
+  {
+   "step": 9,
+   "kind": "say",
+   "url": "/admin/people/invites"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:12:04.388Z"
+}

@@ -1,0 +1,96 @@
+{
+ "id": "office-role",
+ "lang": "ar",
+ "title": "تغيير صلاحيات شخص",
+ "duration": 51.6,
+ "cues": [
+  {
+   "start": 0.01,
+   "end": 8.54,
+   "text": "امنح شخصًا دورًا آخر، وراجع صلاحياته الفعلية، واعرف لماذا يستطيع أو لا يستطيع فتح صفحة.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.54,
+   "end": 11.82,
+   "text": "افتح الشخص الذي تريد تغيير صلاحياته.",
+   "step": 1,
+   "url": "/admin/people"
+  },
+  {
+   "start": 14.85,
+   "end": 21.74,
+   "text": "تعرض بطاقة الدور دوره الحالي. الأدوار الأساسية تتبع الرتبة، والأدوار المخصصة تتبع جدول صلاحياتها.",
+   "step": 3,
+   "url": "/admin/people/5"
+  },
+  {
+   "start": 21.74,
+   "end": 24.55,
+   "text": "اختر الدور الجديد.",
+   "step": 4,
+   "url": "/admin/people/5"
+  },
+  {
+   "start": 24.55,
+   "end": 33.21,
+   "text": "احفظ. لا يستطيع أحد منح صلاحيات أكثر مما لديه، وقد تحتاج التغييرات الحساسة إلى موافقة مسؤول ثانٍ.",
+   "step": 5,
+   "url": "/admin/people/5"
+  },
+  {
+   "start": 33.21,
+   "end": 39.05,
+   "text": "تعرض الصلاحيات الفعلية النتيجة النهائية لكل قسم، ومصدر كل مستوى.",
+   "step": 6,
+   "url": "/admin/people/5/access"
+  },
+  {
+   "start": 39.05,
+   "end": 47.39,
+   "text": "استخدم أداة الاختبار في هذه الصفحة لتعرف: هل يستطيع هذا الشخص فتح عنوان معين، وإن لم يستطع فلماذا؟",
+   "step": 7,
+   "url": "/admin/people/5/access"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/people"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/people/5"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/people/5"
+  },
+  {
+   "step": 4,
+   "kind": "select",
+   "url": "/admin/people/5"
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/people/5"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/people/5/access"
+  },
+  {
+   "step": 7,
+   "kind": "say",
+   "url": "/admin/people/5/access"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:18:09.347Z"
+}

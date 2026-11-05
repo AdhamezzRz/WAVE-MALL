@@ -1,0 +1,96 @@
+{
+ "id": "office-role",
+ "lang": "en",
+ "title": "Changing what someone can do",
+ "duration": 53.92,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 9.33,
+   "text": "Give a person another role, check their effective access, and see why they can or cannot open a page.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 9.33,
+   "end": 13.42,
+   "text": "Open the person whose access you want to change.",
+   "step": 1,
+   "url": "/admin/people"
+  },
+  {
+   "start": 16.37,
+   "end": 24.12,
+   "text": "The role card shows their current role. Built-in roles follow the rank; custom roles follow their permission grid.",
+   "step": 3,
+   "url": "/admin/people/5"
+  },
+  {
+   "start": 24.12,
+   "end": 26.94,
+   "text": "Choose the new role.",
+   "step": 4,
+   "url": "/admin/people/5"
+  },
+  {
+   "start": 26.94,
+   "end": 34.73,
+   "text": "Save. Nobody can give more than they hold, and sensitive changes can need a second administrator's approval.",
+   "step": 5,
+   "url": "/admin/people/5"
+  },
+  {
+   "start": 34.73,
+   "end": 41.93,
+   "text": "Effective access shows the final result for every module, and where each level comes from.",
+   "step": 6,
+   "url": "/admin/people/5/access"
+  },
+  {
+   "start": 41.93,
+   "end": 49.75,
+   "text": "Use the tester on this page to ask: can this person open a given address, and if not, why?",
+   "step": 7,
+   "url": "/admin/people/5/access"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/people"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/people/5"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/people/5"
+  },
+  {
+   "step": 4,
+   "kind": "select",
+   "url": "/admin/people/5"
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/people/5"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/people/5/access"
+  },
+  {
+   "step": 7,
+   "kind": "say",
+   "url": "/admin/people/5/access"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:17:03.033Z"
+}

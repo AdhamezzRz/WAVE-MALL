@@ -1,0 +1,154 @@
+{
+ "id": "sales-lead-new",
+ "lang": "ar",
+ "title": "إضافة فرصة جديدة",
+ "duration": 68.28,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 7.25,
+   "text": "سجّل علامة تجارية تتواصل معها: ما تريده، ومن تتصل به، والخطوة التالية.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.25,
+   "end": 13.63,
+   "text": "الفرص هي كل علامة تجارية تتواصل معها، من أول اتصال حتى توقيع العقد.",
+   "step": 1,
+   "url": "/admin/leads"
+  },
+  {
+   "start": 13.63,
+   "end": 19.81,
+   "text": "تعرض العروض الجاهزة فرصك، والساخنة منها، والصفقات القريبة من الإغلاق، والمتابعات المتأخرة.",
+   "step": 2,
+   "url": "/admin/leads"
+  },
+  {
+   "start": 19.81,
+   "end": 23.56,
+   "text": "لإضافة فرصة، اختر «فرصة جديدة».",
+   "step": 3,
+   "url": "/admin/leads/new"
+  },
+  {
+   "start": 23.56,
+   "end": 28.33,
+   "text": "سمِّ الفرصة، عادةً باسم العلامة والمفهوم.",
+   "step": 4,
+   "url": "/admin/leads/new"
+  },
+  {
+   "start": 28.33,
+   "end": 31.45,
+   "text": "اختر الفئة ومصدر الفرصة.",
+   "step": 5,
+   "url": "/admin/leads/new"
+  },
+  {
+   "start": 34.38,
+   "end": 38.67,
+   "text": "أضف الشخص الذي تتواصل معه وطريقة الوصول إليه.",
+   "step": 7,
+   "url": "/admin/leads/new"
+  },
+  {
+   "start": 42.62,
+   "end": 46.82,
+   "text": "المساحة المطلوبة والميزانية تساعد المكتب على اقتراح الوحدات المناسبة.",
+   "step": 9,
+   "url": "/admin/leads/new"
+  },
+  {
+   "start": 49.6,
+   "end": 54.68,
+   "text": "اكتب دائمًا الخطوة التالية وتاريخها حتى لا يُنسى شيء.",
+   "step": 11,
+   "url": "/admin/leads/new"
+  },
+  {
+   "start": 54.68,
+   "end": 57.89,
+   "text": "أنشئ الفرصة.",
+   "step": 12,
+   "url": "/admin/leads/24"
+  },
+  {
+   "start": 57.89,
+   "end": 63.75,
+   "text": "تعرض صفحة الفرصة مرحلتها وتقييمًا من 100 والسجل الزمني والوحدات المناسبة.",
+   "step": 13,
+   "url": "/admin/leads/24"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/leads"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/leads"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/leads/new"
+  },
+  {
+   "step": 4,
+   "kind": "type",
+   "url": "/admin/leads/new"
+  },
+  {
+   "step": 5,
+   "kind": "select",
+   "url": "/admin/leads/new"
+  },
+  {
+   "step": 6,
+   "kind": "select",
+   "url": "/admin/leads/new"
+  },
+  {
+   "step": 7,
+   "kind": "type",
+   "url": "/admin/leads/new"
+  },
+  {
+   "step": 8,
+   "kind": "type",
+   "url": "/admin/leads/new"
+  },
+  {
+   "step": 9,
+   "kind": "type",
+   "url": "/admin/leads/new"
+  },
+  {
+   "step": 10,
+   "kind": "type",
+   "url": "/admin/leads/new"
+  },
+  {
+   "step": 11,
+   "kind": "type",
+   "url": "/admin/leads/new"
+  },
+  {
+   "step": 12,
+   "kind": "click",
+   "url": "/admin/leads/24"
+  },
+  {
+   "step": 13,
+   "kind": "point",
+   "url": "/admin/leads/24"
+  }
+ ],
+ "recorded_at": "2026-11-05T20:59:46.501Z"
+}

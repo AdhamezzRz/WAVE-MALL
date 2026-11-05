@@ -1,0 +1,115 @@
+{
+ "id": "overview-approve",
+ "lang": "en",
+ "title": "Deciding an approval",
+ "duration": 69.25,
+ "cues": [
+  {
+   "start": 0.01,
+   "end": 8.55,
+   "text": "Find what waits for your decision, read the request, and approve, reject or ask for more information.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.55,
+   "end": 14.68,
+   "text": "Approvals & tasks opens on My day: everything on your plate in one place.",
+   "step": 1,
+   "url": "/admin/work"
+  },
+  {
+   "start": 14.68,
+   "end": 22.82,
+   "text": "Requests waiting for your decision come first, the most urgent at the top. Overdue ones are marked in red.",
+   "step": 2,
+   "url": "/admin/work"
+  },
+  {
+   "start": 22.82,
+   "end": 28.92,
+   "text": "Open a request to see the details, the amount and who asked.",
+   "step": 3,
+   "url": "/admin/approvals/4"
+  },
+  {
+   "start": 28.92,
+   "end": 35.4,
+   "text": "Your decision is here. On a phone these buttons are large and come first.",
+   "step": 4,
+   "url": "/admin/approvals/4"
+  },
+  {
+   "start": 35.4,
+   "end": 42.89,
+   "text": "Add a note. A note is required to reject or to ask a question.",
+   "step": 5,
+   "url": "/admin/approvals/4"
+  },
+  {
+   "start": 42.89,
+   "end": 51.39,
+   "text": "Not sure? Ask for more information: the request goes back to the person who asked, and the deadline clock pauses.",
+   "step": 6,
+   "url": "/admin/approvals/4"
+  },
+  {
+   "start": 51.39,
+   "end": 60.26,
+   "text": "Approve. The person who asked is told at once, and the next step, if any, goes to its approver.",
+   "step": 7,
+   "url": "/admin/approvals?tab=todo"
+  },
+  {
+   "start": 60.26,
+   "end": 64.61,
+   "text": "Every decision, comment and reminder stays in the request's history.",
+   "step": 8,
+   "url": "/admin/approvals?tab=todo"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/work"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/work"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/approvals/4"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/approvals/4"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/approvals/4"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/approvals/4"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/approvals?tab=todo"
+  },
+  {
+   "step": 8,
+   "kind": "say",
+   "url": "/admin/approvals?tab=todo"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:04:47.980Z"
+}

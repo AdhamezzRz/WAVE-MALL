@@ -1,0 +1,115 @@
+{
+ "id": "overview-approve",
+ "lang": "ar",
+ "title": "اتخاذ قرار في طلب موافقة",
+ "duration": 59.23,
+ "cues": [
+  {
+   "start": 0.04,
+   "end": 8.56,
+   "text": "اعثر على ما ينتظر قرارك، واقرأ الطلب، ثم وافق أو ارفض أو اطلب معلومات إضافية.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.56,
+   "end": 14.14,
+   "text": "تُفتح الموافقات والمهام على «يومي»: كل ما يخصك في مكان واحد.",
+   "step": 1,
+   "url": "/admin/work"
+  },
+  {
+   "start": 14.14,
+   "end": 21.04,
+   "text": "تأتي الطلبات التي تنتظر قرارك أولًا، والأكثر إلحاحًا في الأعلى، والمتأخرة مميزة باللون الأحمر.",
+   "step": 2,
+   "url": "/admin/work"
+  },
+  {
+   "start": 21.04,
+   "end": 25.71,
+   "text": "افتح الطلب لترى التفاصيل والمبلغ ومن قدّمه.",
+   "step": 3,
+   "url": "/admin/approvals/11"
+  },
+  {
+   "start": 25.71,
+   "end": 31.15,
+   "text": "قرارك هنا، وعلى الهاتف تظهر هذه الأزرار كبيرة وفي الأعلى.",
+   "step": 4,
+   "url": "/admin/approvals/11"
+  },
+  {
+   "start": 31.15,
+   "end": 36.73,
+   "text": "أضف ملاحظة، فهي مطلوبة عند الرفض أو طرح سؤال.",
+   "step": 5,
+   "url": "/admin/approvals/11"
+  },
+  {
+   "start": 36.73,
+   "end": 43.16,
+   "text": "لست متأكدًا؟ اطلب معلومات إضافية: يعود الطلب إلى مقدّمه ويتوقف حساب الموعد النهائي.",
+   "step": 6,
+   "url": "/admin/approvals/11"
+  },
+  {
+   "start": 43.16,
+   "end": 50.6,
+   "text": "اضغط موافقة. يُبلَّغ مقدّم الطلب فورًا، وتنتقل الخطوة التالية، إن وُجدت، إلى المسؤول عنها.",
+   "step": 7,
+   "url": "/admin/approvals?tab=todo"
+  },
+  {
+   "start": 50.6,
+   "end": 54.58,
+   "text": "يبقى كل قرار وتعليق وتذكير في سجل الطلب.",
+   "step": 8,
+   "url": "/admin/approvals?tab=todo"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/work"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/work"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/approvals/11"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/approvals/11"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/approvals/11"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/approvals/11"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/approvals?tab=todo"
+  },
+  {
+   "step": 8,
+   "kind": "say",
+   "url": "/admin/approvals?tab=todo"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:06:09.923Z"
+}

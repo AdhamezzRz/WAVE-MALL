@@ -13,7 +13,7 @@ const { t, tn, tx, isAr, lang, dir } = require('./i18n');
 
 const PUBLIC = path.join(__dirname, '..', '..', 'public');
 const v = (f) => crypto.createHash('sha1').update(fs.readFileSync(path.join(PUBLIC, f))).digest('hex').slice(0, 8);
-const ASSETS = { css: v('admin/admin.css'), js: v('admin/admin.js'), pwa: v('admin/app/pwa.js'), parking: v('admin/parking.js') };
+const ASSETS = { css: v('admin/admin.css'), js: v('admin/admin.js'), pwa: v('admin/app/pwa.js'), parking: v('admin/parking.js'), help: fs.existsSync(path.join(PUBLIC, 'admin/help.js')) ? v('admin/help.js') : '0' };
 
 const esc = (s) => (s === null || s === undefined ? '' : String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]));
 const attr = (o) => Object.entries(o).filter(([, x]) => x !== false && x !== null && x !== undefined).map(([k, x]) => (x === true ? k : `${k}="${esc(x)}"`)).join(' ');
@@ -193,7 +193,7 @@ function hiddenModules(user) {
   }
 }
 // hidden from this person by an administrator (not by their role)
-const isHidden = (user, href) => !!user && user.role !== 'admin' && href !== '/admin' && hiddenModules(user).has(href);
+const isHidden = (user, href) => !!user && user.role !== 'admin' && href !== '/admin' && href !== '/admin/help' && hiddenModules(user).has(href);
 // The permission engine (access.js) answers for a signed-in person: routes/core.js hands it to the
 // request's user (user.__access), so each office (and each test app) asks its own database. Without
 // it, the role and the modules hidden on the Team page decide.
@@ -298,6 +298,7 @@ ${pwaHead('admin')}
     <div class="bar__title">${crumb}<h1>${esc(title)}</h1></div>
     <button type="button" class="search" data-cmdk-open>${icon('search')}<span>${esc(t('Search leads, brands, units…'))}</span><kbd>⌘K</kbd></button>
     ${langForm(csrf, path)}
+    <a class="iconbtn bar__help" href="/admin/help?for=${esc(encodeURIComponent(String(path || '').split('?')[0]))}" title="${esc(t('hlp|Help for this page'))}" aria-label="${esc(t('hlp|Help for this page'))}" data-help-btn>${icon('help')}</a>
     <div class="bar__actions">${actions}</div>
   </header>
   ${toast}
@@ -313,6 +314,7 @@ ${more}
   </div>
 </div>
 <script src="/admin/admin.js?v=${ASSETS.js}" defer></script>
+<script src="/admin/help.js?v=${ASSETS.help}" defer></script>
 </body>
 </html>`;
 }

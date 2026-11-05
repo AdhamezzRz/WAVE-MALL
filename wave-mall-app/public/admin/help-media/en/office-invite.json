@@ -1,0 +1,120 @@
+{
+ "id": "office-invite",
+ "lang": "en",
+ "title": "Inviting a new colleague",
+ "duration": 62.4,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 7.8,
+   "text": "Send an invitation by email with the right role; the person sets their own password.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.8,
+   "end": 14.66,
+   "text": "Users & permissions lists everyone with an account, their role and when they last signed in.",
+   "step": 1,
+   "url": "/admin/people"
+  },
+  {
+   "start": 14.66,
+   "end": 19.74,
+   "text": "At the top: invitations waiting, temporary access, locked and dormant accounts.",
+   "step": 2,
+   "url": "/admin/people"
+  },
+  {
+   "start": 19.74,
+   "end": 23.15,
+   "text": "Choose Invite someone.",
+   "step": 3,
+   "url": "/admin/people/new"
+  },
+  {
+   "start": 23.15,
+   "end": 29.47,
+   "text": "Enter their work email and, if you like, their name.",
+   "step": 4,
+   "url": "/admin/people/new"
+  },
+  {
+   "start": 33.27,
+   "end": 41.71,
+   "text": "Pick the role. It decides what they can see and do; the guide on the right explains each role.",
+   "step": 6,
+   "url": "/admin/people/new"
+  },
+  {
+   "start": 41.71,
+   "end": 45.51,
+   "text": "Choose the language of the invitation email.",
+   "step": 7,
+   "url": "/admin/people/new"
+  },
+  {
+   "start": 45.51,
+   "end": 51.57,
+   "text": "Send the invitation. The link works once and expires after a week.",
+   "step": 8,
+   "url": "/admin/people/invites"
+  },
+  {
+   "start": 51.57,
+   "end": 57.84,
+   "text": "You can resend or cancel an invitation from the Invitations tab until it is used.",
+   "step": 9,
+   "url": "/admin/people/invites"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/people"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/people"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/people/new"
+  },
+  {
+   "step": 4,
+   "kind": "type",
+   "url": "/admin/people/new"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/people/new"
+  },
+  {
+   "step": 6,
+   "kind": "select",
+   "url": "/admin/people/new"
+  },
+  {
+   "step": 7,
+   "kind": "select",
+   "url": "/admin/people/new"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/people/invites"
+  },
+  {
+   "step": 9,
+   "kind": "say",
+   "url": "/admin/people/invites"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:10:52.747Z"
+}

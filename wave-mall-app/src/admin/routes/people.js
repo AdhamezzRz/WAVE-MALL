@@ -272,7 +272,7 @@ module.exports = function people(router, h) {
       matrix: {}, caps: {}, limits: {},
     };
     for (const e of engine.modules()) {
-      if (e.href === '/admin' || e.href === '/admin/people') continue;
+      if (e.href === '/admin' || e.href === '/admin/help' || e.href === '/admin/people') continue;
       const v = body[`m:${e.href}`];
       f.matrix[e.href] = engine.LEVELS.includes(v) ? v : 'none';
     }
@@ -754,7 +754,7 @@ module.exports = function people(router, h) {
     const groups = ui.NAV.map(([group, items]) => {
       const rows = items.map(([href]) => engine.moduleOf(href)).filter(Boolean).map((e) => {
         const m = eff.modules[e.href];
-        const fixed = e.href === '/admin' || e.href === '/admin/people';
+        const fixed = e.href === '/admin' || e.href === '/admin/help' || e.href === '/admin/people';
         const roleLvl = engine.roleLevel(role, e.href);
         const current = perm[e.href] || (hidden.has(e.href) ? 'none' : '');
         const sel = editable && !fixed
@@ -786,7 +786,7 @@ module.exports = function people(router, h) {
     const tempList = temps.length ? `<ul class="list ppl-temps">${temps.map((o) => `<li><span class="what"><b>${esc(o.subject === 'cap' ? capName(o.key) : moduleName(o.key))} · ${o.subject === 'cap' ? esc(tr('ppl|On')) : esc(tr(LEVEL[o.level] ? LEVEL[o.level][0] : 'ppl|View'))}</b><small>${until(o.expires_at)}${o.reason ? ` · ${esc(o.reason)}` : ''}${o.by_name ? ` · ${esc(o.by_name)}` : ''}</small></span>${editable ? ui.form(`/admin/people/${u.id}/temp/${o.id}/remove`, csrf, `<button class="iconbtn" title="${esc(tr('ppl|End it now'))}" aria-label="${esc(tr('ppl|End it now'))}">${ui.icon('x')}</button>`) : ''}</li>`).join('')}</ul>` : `<p class="muted pad">${esc(tr('ppl|No temporary access.'))}</p>`;
     const tomorrow = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
     const tempForm = editable ? ui.form(`/admin/people/${u.id}/temp`, csrf, `<div class="fields">${ui.select('key', tr('ppl|Module or permission'), [
-      ...engine.modules().filter((e) => e.href !== '/admin' && e.href !== '/admin/people').map((e) => [e.href, tr(e.label)]),
+      ...engine.modules().filter((e) => e.href !== '/admin' && e.href !== '/admin/help' && e.href !== '/admin/people').map((e) => [e.href, tr(e.label)]),
       ...['export', 'manage_users', 'grant'].map((c) => [`cap:${c}`, `${tr('ppl|Permission')}: ${capName(c)}`]),
     ], '')}${ui.select('level', tr('ppl|Level'), [['view', tr('ppl|View')], ['edit', tr('ppl|Edit')], ['full', tr('ppl|Full')]], 'view')}${ui.input('until', tr('ppl|Until'), tomorrow, { type: 'date', required: true, min: new Date().toISOString().slice(0, 10) })}${ui.input('reason', tr('ppl|Why'), '', { placeholder: tr('ppl|e.g. Covering for Salma during her leave') })}</div>${ui.btn(esc(tr('ppl|Give temporary access')), { cls: 'btn--primary btn--sm', ic: 'plus' })}<p class="muted small">${esc(tr('ppl|It ends by itself at the end of that day.'))}</p>`, { cls: 'stack' }) : '';
     // can this person open …?
@@ -817,7 +817,7 @@ module.exports = function people(router, h) {
     const modules = {};
     const caps = {};
     for (const e of engine.modules()) {
-      if (e.href === '/admin' || e.href === '/admin/people') continue;
+      if (e.href === '/admin' || e.href === '/admin/help' || e.href === '/admin/people') continue;
       const v = req.body.reset ? '' : req.body[`lvl:${e.href}`];
       if (v === undefined) continue;
       modules[e.href] = engine.LEVELS.includes(v) ? v : null;
@@ -848,7 +848,7 @@ module.exports = function people(router, h) {
     const key = String(req.body.key || '');
     const isCap = key.startsWith('cap:');
     const k = isCap ? key.slice(4) : key;
-    if (isCap ? !['export', 'manage_users', 'grant'].includes(k) : !engine.moduleOf(k) || k === '/admin' || k === '/admin/people') return h.back(req, res, `/admin/people/${u.id}/access`, 'error', tr('ppl|Choose a module or a permission.'));
+    if (isCap ? !['export', 'manage_users', 'grant'].includes(k) : !engine.moduleOf(k) || k === '/admin' || k === '/admin/help' || k === '/admin/people') return h.back(req, res, `/admin/people/${u.id}/access`, 'error', tr('ppl|Choose a module or a permission.'));
     const level = isCap ? 'on' : engine.LEVELS.includes(req.body.level) && req.body.level !== 'none' ? req.body.level : 'view';
     const day = /^\d{4}-\d{2}-\d{2}$/.test(String(req.body.until || '')) ? req.body.until : null;
     // the end of that day in Cairo (UTC+2/+3: end at 23:59 Cairo ≈ 21:59 UTC)
@@ -896,7 +896,7 @@ module.exports = function people(router, h) {
     const mine = engine.effective(req.user);
     const readOnly = !canGrant(req) || (role && role.builtin) || (role && !isAdmin(req.user) && req.user.role_id === role.id);
     const groups = ui.NAV.map(([group, items], gi) => {
-      const rows = items.map(([href]) => engine.moduleOf(href)).filter((e) => e && e.href !== '/admin' && e.href !== '/admin/people').map((e) => {
+      const rows = items.map(([href]) => engine.moduleOf(href)).filter((e) => e && e.href !== '/admin' && e.href !== '/admin/help' && e.href !== '/admin/people').map((e) => {
         const cur = start.matrix[e.href] || 'none';
         const orig = role && !role.builtin ? engine.roleLevel(role, e.href) : cur;
         const note = e.min ? `<small class="sub ppl-blocked">${esc(tr(BLOCK[e.min] || 'ppl|Closed'))}</small>` : '';

@@ -1,0 +1,132 @@
+{
+ "id": "start-getting-around",
+ "lang": "en",
+ "title": "Getting around the office",
+ "duration": 78.8,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 8.18,
+   "text": "The sidebar, quick search, switching language, help on every page and the office on your phone.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.18,
+   "end": 13.1,
+   "text": "Welcome to The Wave leasing office. Everything starts from the dashboard.",
+   "step": 1,
+   "url": "/admin"
+  },
+  {
+   "start": 13.1,
+   "end": 21.6,
+   "text": "The sidebar groups every module: sales, property, revenue, finance, operations and more. You only see what your role allows.",
+   "step": 2,
+   "url": "/admin"
+  },
+  {
+   "start": 21.6,
+   "end": 28.93,
+   "text": "A number next to a module means something is waiting for you, like approvals or overdue invoices.",
+   "step": 3,
+   "url": "/admin"
+  },
+  {
+   "start": 28.93,
+   "end": 38.73,
+   "text": "Search finds any lead, brand, unit, offer or lease. Press Ctrl and K from anywhere to open it.",
+   "step": 4,
+   "url": "/admin"
+  },
+  {
+   "start": 38.73,
+   "end": 41.71,
+   "text": "Start typing and the results appear instantly.",
+   "step": 5,
+   "url": "/admin"
+  },
+  {
+   "start": 42.32,
+   "end": 48.54,
+   "text": "This button switches the whole office between English and Arabic. Your choice is remembered.",
+   "step": 7,
+   "url": "/admin"
+  },
+  {
+   "start": 48.54,
+   "end": 56.23,
+   "text": "And this question mark opens the lessons for the page you are on, any time you need help.",
+   "step": 8,
+   "url": "/admin"
+  },
+  {
+   "start": 56.23,
+   "end": 63.07,
+   "text": "Your name, your role and signing out are at the bottom of the sidebar.",
+   "step": 9,
+   "url": "/admin"
+  },
+  {
+   "start": 63.07,
+   "end": 74.35,
+   "text": "On a phone, open the office in the browser and add it to your home screen: it works like an app, with a tab bar at the bottom.",
+   "step": 10,
+   "url": "/admin"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin"
+  },
+  {
+   "step": 6,
+   "kind": "key",
+   "url": "/admin"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin"
+  },
+  {
+   "step": 10,
+   "kind": "say",
+   "url": "/admin"
+  }
+ ],
+ "recorded_at": "2026-11-05T20:58:13.517Z"
+}

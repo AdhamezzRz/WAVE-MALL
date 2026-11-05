@@ -1,0 +1,125 @@
+{
+ "id": "sales-lead-stages",
+ "lang": "ar",
+ "title": "تحريك الفرصة إلى المرحلة التالية",
+ "duration": 58.25,
+ "cues": [
+  {
+   "start": 0.04,
+   "end": 6.83,
+   "text": "انقل الفرصة عبر المراحل وسجّل المكالمات والاجتماعات والمعاينات في سجلها الزمني.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 6.83,
+   "end": 10.13,
+   "text": "هذه هي الفرص الجديدة. افتح إحداها.",
+   "step": 1,
+   "url": "/admin/leads?stage=new"
+  },
+  {
+   "start": 13.35,
+   "end": 20.28,
+   "text": "تمتد المراحل من «جديدة» حتى «تم التوقيع». اضغط على أي مرحلة لنقل الفرصة إليها.",
+   "step": 3,
+   "url": "/admin/leads/20"
+  },
+  {
+   "start": 20.28,
+   "end": 24.69,
+   "text": "تواصلنا معهم، لذا ننقلها إلى «تم التواصل».",
+   "step": 4,
+   "url": "/admin/leads/20"
+  },
+  {
+   "start": 24.69,
+   "end": 28.56,
+   "text": "تغيرت المرحلة، وسُجّل الانتقال في السجل الزمني.",
+   "step": 5,
+   "url": "/admin/leads/20"
+  },
+  {
+   "start": 28.56,
+   "end": 34.24,
+   "text": "سجّل ما حدث: مكالمة أو بريد أو اجتماع أو معاينة.",
+   "step": 6,
+   "url": "/admin/leads/20"
+  },
+  {
+   "start": 38.58,
+   "end": 41.74,
+   "text": "أضفه إلى السجل الزمني.",
+   "step": 8,
+   "url": "/admin/leads/20"
+  },
+  {
+   "start": 41.74,
+   "end": 47.78,
+   "text": "يحتفظ السجل الزمني بكل مكالمة وبريد وتغيير، فيستطيع أي زميل متابعة الصفقة.",
+   "step": 9,
+   "url": "/admin/leads/20"
+  },
+  {
+   "start": 47.78,
+   "end": 53.62,
+   "text": "يعرض مسار الصفقات الفرص نفسها كبطاقات يمكنك سحبها من مرحلة إلى أخرى.",
+   "step": 10,
+   "url": "/admin/pipeline"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/leads?stage=new"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/leads/20"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/leads/20"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/leads/20"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/leads/20"
+  },
+  {
+   "step": 6,
+   "kind": "select",
+   "url": "/admin/leads/20"
+  },
+  {
+   "step": 7,
+   "kind": "type",
+   "url": "/admin/leads/20"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/leads/20"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/leads/20"
+  },
+  {
+   "step": 10,
+   "kind": "go",
+   "url": "/admin/pipeline"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:02:40.403Z"
+}

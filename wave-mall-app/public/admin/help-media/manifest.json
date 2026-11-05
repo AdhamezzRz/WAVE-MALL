@@ -1,0 +1,166 @@
+{
+ "lessons": {
+  "office-invite": {
+   "en": {
+    "duration": 62.4,
+    "size": 1303210,
+    "v": "956bb1676f",
+    "cues": 9,
+    "recorded_at": "2026-11-05T21:10:52.747Z"
+   },
+   "ar": {
+    "duration": 56.24,
+    "size": 1099861,
+    "v": "2bafb66891",
+    "cues": 9,
+    "recorded_at": "2026-11-05T21:12:04.388Z"
+   }
+  },
+  "office-role": {
+   "en": {
+    "duration": 53.92,
+    "size": 1203443,
+    "v": "2cb2a7fa1b",
+    "cues": 7,
+    "recorded_at": "2026-11-05T21:17:03.033Z"
+   },
+   "ar": {
+    "duration": 51.6,
+    "size": 1037281,
+    "v": "54a5ec0153",
+    "cues": 7,
+    "recorded_at": "2026-11-05T21:18:09.347Z"
+   }
+  },
+  "overview-approve": {
+   "en": {
+    "duration": 69.25,
+    "size": 1664741,
+    "v": "02e6431c0b",
+    "cues": 9,
+    "recorded_at": "2026-11-05T21:04:47.980Z"
+   },
+   "ar": {
+    "duration": 59.23,
+    "size": 1466599,
+    "v": "b6874d1bad",
+    "cues": 9,
+    "recorded_at": "2026-11-05T21:06:09.923Z"
+   }
+  },
+  "overview-dashboard": {
+   "en": {
+    "duration": 70.99,
+    "size": 1515606,
+    "v": "49ee90cbc8",
+    "cues": 9,
+    "recorded_at": "2026-11-05T21:01:38.205Z"
+   },
+   "ar": {
+    "duration": 67.33,
+    "size": 1453302,
+    "v": "5157d44af5",
+    "cues": 9,
+    "recorded_at": "2026-11-05T21:03:08.511Z"
+   }
+  },
+  "overview-task": {
+   "en": {
+    "duration": 72.56,
+    "size": 1651786,
+    "v": "673691c03b",
+    "cues": 12,
+    "recorded_at": "2026-11-05T21:07:55.401Z"
+   },
+   "ar": {
+    "duration": 64.47,
+    "size": 1408441,
+    "v": "0297a7e899",
+    "cues": 12,
+    "recorded_at": "2026-11-05T21:09:23.067Z"
+   }
+  },
+  "portal-tour": {
+   "en": {
+    "duration": 64.7,
+    "size": 1059482,
+    "v": "02ba49e84a",
+    "cues": 10,
+    "recorded_at": "2026-11-05T21:10:00.964Z"
+   },
+   "ar": {
+    "duration": 59.86,
+    "size": 983795,
+    "v": "48c5f6a4c4",
+    "cues": 10,
+    "recorded_at": "2026-11-05T21:11:19.161Z"
+   }
+  },
+  "sales-lead-new": {
+   "en": {
+    "duration": 78.36,
+    "size": 1398802,
+    "v": "036a3d7b87",
+    "cues": 11,
+    "recorded_at": "2026-11-05T20:58:13.628Z"
+   },
+   "ar": {
+    "duration": 68.28,
+    "size": 1229468,
+    "v": "6d62af5982",
+    "cues": 11,
+    "recorded_at": "2026-11-05T20:59:46.501Z"
+   }
+  },
+  "sales-lead-stages": {
+   "en": {
+    "duration": 62.91,
+    "size": 1346925,
+    "v": "bdcec018b8",
+    "cues": 9,
+    "recorded_at": "2026-11-05T21:01:19.787Z"
+   },
+   "ar": {
+    "duration": 58.25,
+    "size": 1187563,
+    "v": "2f369b33a8",
+    "cues": 9,
+    "recorded_at": "2026-11-05T21:02:40.403Z"
+   }
+  },
+  "sales-offer-new": {
+   "en": {
+    "duration": 76.76,
+    "size": 1663924,
+    "v": "5f9d40d493",
+    "cues": 10,
+    "recorded_at": "2026-11-05T21:14:21.694Z"
+   },
+   "ar": {
+    "duration": 66.52,
+    "size": 1521880,
+    "v": "3a14bc2e80",
+    "cues": 10,
+    "recorded_at": "2026-11-05T21:15:47.040Z"
+   }
+  },
+  "start-getting-around": {
+   "en": {
+    "duration": 78.8,
+    "size": 1252100,
+    "v": "bb8b7b8104",
+    "cues": 10,
+    "recorded_at": "2026-11-05T20:58:13.517Z"
+   },
+   "ar": {
+    "duration": 76.92,
+    "size": 1182571,
+    "v": "f331c83e59",
+    "cues": 10,
+    "recorded_at": "2026-11-05T20:59:56.171Z"
+   }
+  }
+ },
+ "recorded_at": "2026-11-05T21:18:09.350Z",
+ "app_version": "1.0.0"
+}

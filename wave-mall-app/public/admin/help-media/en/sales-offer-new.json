@@ -1,0 +1,132 @@
+{
+ "id": "sales-offer-new",
+ "lang": "en",
+ "title": "Building an offer",
+ "duration": 76.76,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 10.49,
+   "text": "Pick the units, set the rent and terms, watch the deal calculator, and send it for approval when the discount is high.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 10.49,
+   "end": 15.72,
+   "text": "Offers start from a lead. Open the lead you are negotiating with.",
+   "step": 1,
+   "url": "/admin/leads?stage=open"
+  },
+  {
+   "start": 18.7,
+   "end": 22.13,
+   "text": "Choose New offer.",
+   "step": 3,
+   "url": "/admin/offers/new?lead=12"
+  },
+  {
+   "start": 22.13,
+   "end": 30.38,
+   "text": "Tick the units in the offer. Their size and list rate are filled in.",
+   "step": 4,
+   "url": "/admin/offers/new?lead=12"
+  },
+  {
+   "start": 30.38,
+   "end": 33.81,
+   "text": "Set the rent per square metre a month.",
+   "step": 5,
+   "url": "/admin/offers/new?lead=12"
+  },
+  {
+   "start": 33.81,
+   "end": 36.94,
+   "text": "Add a rent-free period if you agreed one.",
+   "step": 6,
+   "url": "/admin/offers/new?lead=12"
+  },
+  {
+   "start": 36.94,
+   "end": 49.93,
+   "text": "The deal calculator updates as you type: the monthly rent, the effective rate and the discount against the list rate. It also tells you when the discount needs a manager's approval.",
+   "step": 7,
+   "url": "/admin/offers/new?lead=12"
+  },
+  {
+   "start": 49.93,
+   "end": 53,
+   "text": "Create the offer.",
+   "step": 8,
+   "url": "/admin/offers/12"
+  },
+  {
+   "start": 53,
+   "end": 65.53,
+   "text": "The offer is saved with its full rent schedule. If an agent goes below the allowed discount, it waits here for a manager to approve it or send it back.",
+   "step": 9,
+   "url": "/admin/offers/12"
+  },
+  {
+   "start": 65.53,
+   "end": 72.57,
+   "text": "Once approved, print the branded proposal or send it by email or WhatsApp with a signing link.",
+   "step": 10,
+   "url": "/admin/offers/12"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/leads?stage=open"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/leads/12"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/offers/new?lead=12"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/offers/new?lead=12"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/offers/new?lead=12"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/offers/new?lead=12"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/offers/new?lead=12"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/offers/12"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/offers/12"
+  },
+  {
+   "step": 10,
+   "kind": "say",
+   "url": "/admin/offers/12"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:14:21.694Z"
+}

@@ -1,0 +1,151 @@
+{
+ "id": "overview-task",
+ "lang": "ar",
+ "title": "إسناد مهمة إلى زميل",
+ "duration": 64.47,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 6.81,
+   "text": "أنشئ مهمة بأولوية ومسؤول ووسوم وإشارة إلى زميل، وتابعها على اللوحة.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 6.81,
+   "end": 10.54,
+   "text": "توجد المهام بجانب الموافقات، في الموافقات والمهام.",
+   "step": 1,
+   "url": "/admin/work"
+  },
+  {
+   "start": 10.54,
+   "end": 14.91,
+   "text": "لملاحظة سريعة لنفسك، اكتبها هنا واضغط مفتاح الإدخال.",
+   "step": 2,
+   "url": "/admin/work"
+  },
+  {
+   "start": 14.91,
+   "end": 18.64,
+   "text": "لمهمة كاملة، اختر «مهمة جديدة».",
+   "step": 3,
+   "url": "/admin/work/tasks/new"
+  },
+  {
+   "start": 18.64,
+   "end": 23.06,
+   "text": "اكتب لها عنوانًا واضحًا.",
+   "step": 4,
+   "url": "/admin/work/tasks/new"
+  },
+  {
+   "start": 23.06,
+   "end": 30.62,
+   "text": "اكتب @ ثم الاسم للإشارة إلى زميل، فيصله إشعار بالبريد وفي صندوقه.",
+   "step": 5,
+   "url": "/admin/work/tasks/new"
+  },
+  {
+   "start": 30.62,
+   "end": 33.46,
+   "text": "حدد الأولوية.",
+   "step": 6,
+   "url": "/admin/work/tasks/new"
+  },
+  {
+   "start": 33.46,
+   "end": 37.46,
+   "text": "تساعدك الوسوم على تصفية اللوحة لاحقًا.",
+   "step": 7,
+   "url": "/admin/work/tasks/new"
+  },
+  {
+   "start": 37.46,
+   "end": 45.39,
+   "text": "اختر من سينفذها. يمكنك اختيار أكثر من شخص، وإضافة متابعين يُبلَّغون بالمستجدات.",
+   "step": 8,
+   "url": "/admin/work/tasks/new"
+  },
+  {
+   "start": 45.39,
+   "end": 48.69,
+   "text": "أنشئ المهمة.",
+   "step": 9,
+   "url": "/admin/work/tasks/42"
+  },
+  {
+   "start": 48.69,
+   "end": 54.85,
+   "text": "للمهمة صفحة خاصة بها: قائمة تحقق وملفات وتعليقات وسجل زمني لكل ما يحدث.",
+   "step": 10,
+   "url": "/admin/work/tasks/42"
+  },
+  {
+   "start": 54.85,
+   "end": 59.83,
+   "text": "على اللوحة، اسحب البطاقات بين «للتنفيذ» و«قيد التنفيذ» و«بانتظار» و«تم».",
+   "step": 11,
+   "url": "/admin/work/board"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/work"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/work"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/work/tasks/new"
+  },
+  {
+   "step": 4,
+   "kind": "type",
+   "url": "/admin/work/tasks/new"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/work/tasks/new"
+  },
+  {
+   "step": 6,
+   "kind": "select",
+   "url": "/admin/work/tasks/new"
+  },
+  {
+   "step": 7,
+   "kind": "type",
+   "url": "/admin/work/tasks/new"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/work/tasks/new"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/work/tasks/42"
+  },
+  {
+   "step": 10,
+   "kind": "say",
+   "url": "/admin/work/tasks/42"
+  },
+  {
+   "step": 11,
+   "kind": "go",
+   "url": "/admin/work/board"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:09:23.067Z"
+}

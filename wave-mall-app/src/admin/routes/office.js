@@ -154,7 +154,7 @@ module.exports = function office(router, h) {
   // ---------- team & targets ----------
   router.get('/team', (req, res) => {
     const users = db.all('SELECT * FROM users ORDER BY active DESC, name');
-    const hiddenCount = (u) => (u.role === 'admin' ? 0 : [...ui.hiddenModules(u)].filter((href) => ui.NAV_ENTRIES.some((e) => e.href === href && ui.roleAllows(u, e.min))).length);
+    const hiddenCount = (u) => (u.role === 'admin' ? 0 : [...ui.hiddenModules(u)].filter((href) => href !== '/admin/help' && ui.NAV_ENTRIES.some((e) => e.href === href && ui.roleAllows(u, e.min))).length);
     const period = /^\d{4}-\d{2}$/.test(req.query.period || '') ? req.query.period : M.today().slice(0, 7);
     const isAdmin = h.can(req, 'admin');
     const csrf = req.session.csrf;
@@ -254,10 +254,10 @@ module.exports = function office(router, h) {
     const isAdminUser = u.role === 'admin';
     const groups = ui.NAV.map(([group, items]) => {
       const rows = items.map(([href]) => ui.NAV_ENTRIES.find((e) => e.href === href)).map((e) => {
-        const always = e.href === '/admin' || isAdminUser;
+        const always = e.href === '/admin' || e.href === '/admin/help' || isAdminUser;
         const roleOk = ui.roleAllows(u, e.min);
         const on = always || (roleOk && !hidden.has(e.href));
-        const note = e.href === '/admin' ? tr('acc2|Always available') : !roleOk ? tr(NEEDS[e.min] || 'acc2|Not for this role') : '';
+        const note = e.href === '/admin' || e.href === '/admin/help' ? tr('acc2|Always available') : !roleOk ? tr(NEEDS[e.min] || 'acc2|Not for this role') : '';
         return `<label class="modpick${!roleOk ? ' is-off' : ''}"><input type="checkbox" name="m" value="${ui.esc(e.href)}"${on ? ' checked' : ''}${always || !roleOk ? ' disabled' : ''}>${ui.icon(e.ic)}<span><b>${ui.esc(tr(e.label))}</b>${note ? `<small>${ui.esc(note)}</small>` : ''}</span></label>`;
       }).join('');
       return `<fieldset class="modgroup"><legend>${ui.esc(tr(group))}</legend><div class="modgroup__list">${rows}</div></fieldset>`;
@@ -281,7 +281,7 @@ module.exports = function office(router, h) {
     const ticked = new Set(h.list(req.body.m).map(String));
     const before = ui.hiddenModules(u);
     // modules outside the role keep their earlier choice (they are greyed out on the page)
-    const hidden = req.body.reset ? [] : ui.NAV_ENTRIES.filter((e) => e.href !== '/admin' && (ui.roleAllows(u, e.min) ? !ticked.has(e.href) : before.has(e.href))).map((e) => e.href);
+    const hidden = req.body.reset ? [] : ui.NAV_ENTRIES.filter((e) => e.href !== '/admin' && e.href !== '/admin/help' && (ui.roleAllows(u, e.min) ? !ticked.has(e.href) : before.has(e.href))).map((e) => e.href);
     db.run('UPDATE users SET hidden_modules = ? WHERE id = ?', hidden.length ? JSON.stringify(hidden) : null, u.id);
     const english = (href) => i18nEnglish((ui.NAV_ENTRIES.find((e) => e.href === href) || {}).label || href);
     h.log(req, 'Updated a team member', 'user', u.id, `${u.name}: module access${hidden.length ? `, hidden: ${hidden.map(english).join(', ')}` : ', every module open'}`.slice(0, 480));

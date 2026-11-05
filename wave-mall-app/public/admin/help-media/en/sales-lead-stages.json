@@ -1,0 +1,125 @@
+{
+ "id": "sales-lead-stages",
+ "lang": "en",
+ "title": "Moving a lead forward",
+ "duration": 62.91,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 7.8,
+   "text": "Move a lead through the stages and log calls, meetings and viewings on its timeline.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.8,
+   "end": 11.2,
+   "text": "Here are the new leads. Open one.",
+   "step": 1,
+   "url": "/admin/leads?stage=new"
+  },
+  {
+   "start": 14.25,
+   "end": 20.82,
+   "text": "The stages run from New to Signed. Click a stage to move the lead there.",
+   "step": 3,
+   "url": "/admin/leads/17"
+  },
+  {
+   "start": 20.82,
+   "end": 25.58,
+   "text": "We called them, so we move it to Contacted.",
+   "step": 4,
+   "url": "/admin/leads/17"
+  },
+  {
+   "start": 25.58,
+   "end": 30.62,
+   "text": "The stage changed, and the move is recorded on the timeline.",
+   "step": 5,
+   "url": "/admin/leads/17"
+  },
+  {
+   "start": 30.62,
+   "end": 36.42,
+   "text": "Log what happened: a call, an email, a meeting or a viewing.",
+   "step": 6,
+   "url": "/admin/leads/17"
+  },
+  {
+   "start": 40.9,
+   "end": 44.13,
+   "text": "Add it to the timeline.",
+   "step": 8,
+   "url": "/admin/leads/17"
+  },
+  {
+   "start": 44.13,
+   "end": 51.86,
+   "text": "The timeline keeps every call, email and change, so anyone on the team can pick up the deal.",
+   "step": 9,
+   "url": "/admin/leads/17"
+  },
+  {
+   "start": 51.86,
+   "end": 58.21,
+   "text": "The pipeline shows the same leads as cards you can drag from stage to stage.",
+   "step": 10,
+   "url": "/admin/pipeline"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/leads?stage=new"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/leads/17"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/leads/17"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/leads/17"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/leads/17"
+  },
+  {
+   "step": 6,
+   "kind": "select",
+   "url": "/admin/leads/17"
+  },
+  {
+   "step": 7,
+   "kind": "type",
+   "url": "/admin/leads/17"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/leads/17"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/leads/17"
+  },
+  {
+   "step": 10,
+   "kind": "go",
+   "url": "/admin/pipeline"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:01:19.787Z"
+}

@@ -1,0 +1,154 @@
+{
+ "id": "sales-lead-new",
+ "lang": "en",
+ "title": "Adding a new lead",
+ "duration": 78.36,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 8.55,
+   "text": "Record a brand you are talking to: what they want, who to call and the next step.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.56,
+   "end": 15.35,
+   "text": "Leads are every brand you are talking to, from the first call to the signed lease.",
+   "step": 1,
+   "url": "/admin/leads"
+  },
+  {
+   "start": 15.35,
+   "end": 22.34,
+   "text": "Ready-made views show your leads, the hot ones, deals closing soon and follow-ups that are late.",
+   "step": 2,
+   "url": "/admin/leads"
+  },
+  {
+   "start": 22.34,
+   "end": 26.41,
+   "text": "To add one, choose New lead.",
+   "step": 3,
+   "url": "/admin/leads/new"
+  },
+  {
+   "start": 26.41,
+   "end": 32.14,
+   "text": "Name the lead, usually the brand and the concept.",
+   "step": 4,
+   "url": "/admin/leads/new"
+  },
+  {
+   "start": 32.14,
+   "end": 37,
+   "text": "Choose the category and where the lead came from.",
+   "step": 5,
+   "url": "/admin/leads/new"
+  },
+  {
+   "start": 39.89,
+   "end": 45.04,
+   "text": "Add the person you talk to and how to reach them.",
+   "step": 7,
+   "url": "/admin/leads/new"
+  },
+  {
+   "start": 48.99,
+   "end": 54.66,
+   "text": "The size they want and their budget help the office suggest units that fit.",
+   "step": 9,
+   "url": "/admin/leads/new"
+  },
+  {
+   "start": 57.43,
+   "end": 63.13,
+   "text": "Always write the next step and its date, so nothing is forgotten.",
+   "step": 11,
+   "url": "/admin/leads/new"
+  },
+  {
+   "start": 63.13,
+   "end": 66.19,
+   "text": "Create the lead.",
+   "step": 12,
+   "url": "/admin/leads/23"
+  },
+  {
+   "start": 66.19,
+   "end": 73.96,
+   "text": "The lead page shows its stage, a score out of 100, the timeline and the units that fit.",
+   "step": 13,
+   "url": "/admin/leads/23"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/leads"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/leads"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/leads/new"
+  },
+  {
+   "step": 4,
+   "kind": "type",
+   "url": "/admin/leads/new"
+  },
+  {
+   "step": 5,
+   "kind": "select",
+   "url": "/admin/leads/new"
+  },
+  {
+   "step": 6,
+   "kind": "select",
+   "url": "/admin/leads/new"
+  },
+  {
+   "step": 7,
+   "kind": "type",
+   "url": "/admin/leads/new"
+  },
+  {
+   "step": 8,
+   "kind": "type",
+   "url": "/admin/leads/new"
+  },
+  {
+   "step": 9,
+   "kind": "type",
+   "url": "/admin/leads/new"
+  },
+  {
+   "step": 10,
+   "kind": "type",
+   "url": "/admin/leads/new"
+  },
+  {
+   "step": 11,
+   "kind": "type",
+   "url": "/admin/leads/new"
+  },
+  {
+   "step": 12,
+   "kind": "click",
+   "url": "/admin/leads/23"
+  },
+  {
+   "step": 13,
+   "kind": "point",
+   "url": "/admin/leads/23"
+  }
+ ],
+ "recorded_at": "2026-11-05T20:58:13.628Z"
+}

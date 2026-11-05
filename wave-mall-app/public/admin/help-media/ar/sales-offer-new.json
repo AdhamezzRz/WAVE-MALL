@@ -1,0 +1,132 @@
+{
+ "id": "sales-offer-new",
+ "lang": "ar",
+ "title": "إعداد عرض",
+ "duration": 66.52,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 8.54,
+   "text": "اختر الوحدات وحدد الإيجار والشروط وتابع حاسبة الصفقة، ثم أرسله للموافقة عندما يكون الخصم كبيرًا.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.54,
+   "end": 13.12,
+   "text": "تبدأ العروض من فرصة. افتح الفرصة التي تتفاوض معها.",
+   "step": 1,
+   "url": "/admin/leads?stage=open"
+  },
+  {
+   "start": 16.19,
+   "end": 19.42,
+   "text": "اختر «عرض جديد».",
+   "step": 3,
+   "url": "/admin/offers/new?lead=12"
+  },
+  {
+   "start": 19.42,
+   "end": 26.17,
+   "text": "حدد الوحدات المشمولة في العرض، فتُملأ مساحتها وسعرها المعلن.",
+   "step": 4,
+   "url": "/admin/offers/new?lead=12"
+  },
+  {
+   "start": 26.17,
+   "end": 29.09,
+   "text": "حدد الإيجار للمتر المربع شهريًا.",
+   "step": 5,
+   "url": "/admin/offers/new?lead=12"
+  },
+  {
+   "start": 29.09,
+   "end": 32.61,
+   "text": "أضف فترة سماح من الإيجار إن اتفقتم عليها.",
+   "step": 6,
+   "url": "/admin/offers/new?lead=12"
+  },
+  {
+   "start": 32.61,
+   "end": 42.8,
+   "text": "تتحدث حاسبة الصفقة أثناء الكتابة: الإيجار الشهري والسعر الفعلي والخصم مقارنةً بالسعر المعلن، وتخبرك أيضًا متى يحتاج الخصم إلى موافقة مدير.",
+   "step": 7,
+   "url": "/admin/offers/new?lead=12"
+  },
+  {
+   "start": 42.8,
+   "end": 45.93,
+   "text": "أنشئ العرض.",
+   "step": 8,
+   "url": "/admin/offers/13"
+  },
+  {
+   "start": 45.93,
+   "end": 55.2,
+   "text": "يُحفظ العرض مع جدول الإيجار الكامل. وإذا تجاوز المسؤول الخصم المسموح به، ينتظر العرض هنا موافقة مدير أو إعادته.",
+   "step": 9,
+   "url": "/admin/offers/13"
+  },
+  {
+   "start": 55.2,
+   "end": 62.24,
+   "text": "بعد الموافقة، اطبع العرض بهوية ذا ويف أو أرسله بالبريد أو واتساب مع رابط للتوقيع.",
+   "step": 10,
+   "url": "/admin/offers/13"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/leads?stage=open"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/leads/12"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/offers/new?lead=12"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/offers/new?lead=12"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/offers/new?lead=12"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/offers/new?lead=12"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/offers/new?lead=12"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/offers/13"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/offers/13"
+  },
+  {
+   "step": 10,
+   "kind": "say",
+   "url": "/admin/offers/13"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:15:47.040Z"
+}

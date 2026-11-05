@@ -33,6 +33,8 @@ const M = require('./model');
 const LEVELS = ['none', 'view', 'edit', 'full'];
 const RANKS = ['viewer', 'agent', 'manager', 'admin'];
 const RANK = { viewer: 0, agent: 1, manager: 2, admin: 3 };
+// the dashboard and Help & training are open to everyone signed in, whatever their role or changes
+const ALWAYS_OPEN = new Set(['/admin', '/admin/help']);
 const CAPS = ['export', 'hr', 'finance', 'manage_users', 'grant'];
 const BUILTIN = ['viewer', 'agent', 'manager', 'admin'];
 const lv = (l) => Math.max(0, LEVELS.indexOf(l));
@@ -284,7 +286,7 @@ function create({ db, ui }) {
     for (const e of modules()) {
       let level;
       let source;
-      if (admin) { level = 'full'; source = 'admin'; } else if (e.href === '/admin') { level = 'full'; source = 'always'; } else if (e.href === '/admin/people') {
+      if (admin) { level = 'full'; source = 'admin'; } else if (ALWAYS_OPEN.has(e.href)) { level = 'full'; source = 'always'; } else if (e.href === '/admin/people') {
         level = eff.caps.manage_users.on || eff.caps.grant.on ? 'full' : 'none';
         source = 'capability';
       } else {
@@ -295,7 +297,7 @@ function create({ db, ui }) {
       eff.modules[e.href] = { level, source, until: null, blocked: null };
     }
     if (!admin) {
-      for (const o of rows.filter((x) => x.subject === 'module' && eff.modules[x.key] && x.key !== '/admin' && x.key !== '/admin/people')) {
+      for (const o of rows.filter((x) => x.subject === 'module' && eff.modules[x.key] && !ALWAYS_OPEN.has(x.key) && x.key !== '/admin/people')) {
         const m = eff.modules[o.key];
         if (!LEVELS.includes(o.level)) continue;
         if (!o.expires_at) {
@@ -303,7 +305,7 @@ function create({ db, ui }) {
           eff.overrides.push(o);
         }
       }
-      for (const o of rows.filter((x) => x.subject === 'module' && x.expires_at && eff.modules[x.key] && x.key !== '/admin')) {
+      for (const o of rows.filter((x) => x.subject === 'module' && x.expires_at && eff.modules[x.key] && !ALWAYS_OPEN.has(x.key))) {
         const m = eff.modules[o.key];
         eff.temp.push(o);
         if (lv(o.level) > lv(m.level)) eff.modules[o.key] = { ...m, level: o.level, source: 'temporary', until: o.expires_at, id: o.id };

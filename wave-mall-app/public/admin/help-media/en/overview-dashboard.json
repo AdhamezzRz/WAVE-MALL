@@ -1,0 +1,115 @@
+{
+ "id": "overview-dashboard",
+ "lang": "en",
+ "title": "Reading the dashboard",
+ "duration": 70.99,
+ "cues": [
+  {
+   "start": 0.01,
+   "end": 8.94,
+   "text": "Occupancy, the pipeline, overdue rent, the plan of the mall and what needs your attention, at a glance.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.94,
+   "end": 14.58,
+   "text": "The dashboard is the first page you see. It always shows today's numbers.",
+   "step": 1,
+   "url": "/admin"
+  },
+  {
+   "start": 14.58,
+   "end": 23.58,
+   "text": "Occupancy is the share of the leasable area under an active lease. Click it to open the units and the plan.",
+   "step": 2,
+   "url": "/admin"
+  },
+  {
+   "start": 23.58,
+   "end": 32.11,
+   "text": "The weighted pipeline is the yearly rent of the open deals, weighted by how likely each stage is to sign.",
+   "step": 3,
+   "url": "/admin"
+  },
+  {
+   "start": 32.11,
+   "end": 39.86,
+   "text": "Overdue rent turns red when invoices are past due. It also shows how much was collected this month.",
+   "step": 4,
+   "url": "/admin"
+  },
+  {
+   "start": 39.86,
+   "end": 47.56,
+   "text": "The pipeline shows how many deals are in each stage and their value. Each row opens those leads.",
+   "step": 5,
+   "url": "/admin"
+  },
+  {
+   "start": 47.56,
+   "end": 54.28,
+   "text": "The plan draws the plaza level coloured by status: available, on hold, reserved or leased.",
+   "step": 6,
+   "url": "/admin"
+  },
+  {
+   "start": 54.28,
+   "end": 61.24,
+   "text": "Needs attention lists what to act on today: approvals, holds that end, overdue invoices, expiring documents.",
+   "step": 7,
+   "url": "/admin"
+  },
+  {
+   "start": 61.24,
+   "end": 66.35,
+   "text": "And the latest activity shows who did what, in your language.",
+   "step": 8,
+   "url": "/admin"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:01:38.205Z"
+}
