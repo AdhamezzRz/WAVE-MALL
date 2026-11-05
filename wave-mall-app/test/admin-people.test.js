@@ -93,7 +93,7 @@ function browser() {
 const nav = (html) => html.slice(html.indexOf('<nav class="nav"'), html.indexOf('</nav>'));
 
 test('people: the matrix decides view, edit, full and export on every request', async () => {
-  const rid = makeRole('Matrix tester', 'manager', { '/admin': 'view', '/admin/billing': 'view', '/admin/leads': 'edit', '/admin/maintenance': 'edit', '/admin/reports': 'view' }, { assistant: true });
+  const rid = makeRole('Matrix tester', 'manager', { '/admin': 'view', '/admin/billing': 'view', '/admin/leads': 'edit', '/admin/maintenance': 'edit', '/admin/reports': 'view' }, {});
   person('Matrix Person', 'ppl-matrix@thewave.test', 'manager', { roleId: rid });
   const p = browser();
   await p.signIn('ppl-matrix@thewave.test', 'long-enough-1');
@@ -134,7 +134,7 @@ test('people: the matrix decides view, edit, full and export on every request', 
 });
 
 test('people: nobody gives more than they have, and only administrators make administrators', async () => {
-  const rid = makeRole('People lead', 'manager', { '*': 'view', '/admin/leads': 'edit', '/admin/team': 'view' }, { manage_users: true, grant: true, assistant: true });
+  const rid = makeRole('People lead', 'manager', { '*': 'view', '/admin/leads': 'edit', '/admin/team': 'view' }, { manage_users: true, grant: true });
   person('People Lead', 'ppl-lead@thewave.test', 'manager', { roleId: rid });
   const target = person('Some Agent', 'ppl-target@thewave.test', 'agent');
   const lead = browser();

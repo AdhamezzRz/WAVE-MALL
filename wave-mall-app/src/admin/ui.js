@@ -157,7 +157,7 @@ const NAV = [
   ['nav|Operations', [['/admin/maintenance', 'nav|Maintenance', 'wrench', 'maintenance'], ['/admin/parking', 'nav|Parking', 'car', 'parking'], ['/admin/footfall', 'nav|Footfall', 'flow'], ['/admin/security', 'nav|Security & cleaning', 'shield', 'security'], ['/admin/compliance', 'nav|Safety & licences', 'contract', 'compliance'], ['/admin/energy', 'nav|Energy', 'gauge'], ['/admin/feedback', 'nav|Shopper feedback', 'chat', 'feedback'], ['/admin/website', 'nav|Website', 'globe']]],
   ['Records', [['/admin/documents', 'Documents', 'folder', 'docs'], ['/admin/contracts', 'Contracts', 'contract', 'renewals']]],
   ['People', [['/admin/hr', 'Employees', 'people', null, 'hr'], ['/admin/hr/leave', 'nav|Leave', 'leave', 'leave', 'hr'], ['/admin/hr/payroll', 'Payroll', 'wallet', null, 'hr'], ['/admin/hr/advances', 'nav|Salary advances', 'coins', null, 'hr']]],
-  ['Insight', [['/admin/reports', 'Reports', 'report'], ['/admin/owner-report', 'nav|Owner report', 'report'], ['/admin/wallboard', 'nav|Wall screen', 'dash'], ['/admin/assistant', 'nav|Assistant', 'chat']]],
+  ['Insight', [['/admin/reports', 'Reports', 'report'], ['/admin/owner-report', 'nav|Owner report', 'report'], ['/admin/wallboard', 'nav|Wall screen', 'dash']]],
   ['Office', [['/admin/team', 'Team & targets', 'team'], ['/admin/people', 'nav|Users & permissions', 'shield', 'people'], ['/admin/subscribers', 'Subscribers', 'mail'], ['/admin/integrations', 'nav|Integrations', 'plug', null, 'admin'], ['/admin/settings', 'Settings', 'gear', null, 'admin'], ['/admin/audit', 'Activity log', 'log', null, 'manager']]],
 ];
 const RANK = { viewer: 0, agent: 1, manager: 2, admin: 3 };

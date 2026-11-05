@@ -1,9 +1,7 @@
 'use strict';
 
 // Module access (hidden in the menu, refused by address, defaults unchanged), automatic backups
-// (file written and checked, rotation, the S3 upload signed per AWS Signature V4, the email copy)
-// and the assistant (tool call → SQL → answer with a mocked Claude API; writes refused; HR tables
-// out of reach without HR access; secrets never readable).
+// (file written and checked, rotation, the S3 upload signed per AWS Signature V4, the email copy).
 
 const { test, before, after } = require('node:test');
 const assert = require('node:assert/strict');
@@ -14,11 +12,10 @@ const zlib = require('node:zlib');
 const crypto = require('node:crypto');
 const { createApp } = require('../src/app');
 const backupsMod = require('../src/admin/backups');
-const aiSql = require('../src/admin/ai-sql');
 
 const BDIR = fs.mkdtempSync(path.join(os.tmpdir(), 'wave-bak-test-'));
 const ENV = {
-  SITE_URL: 'https://thewavemall.com', ADMIN_DB: ':memory:', ADMIN_JOBS: '0', BACKUP_DIR: BDIR, ANTHROPIC_API_KEY: 'sk-ant-test',
+  SITE_URL: 'https://thewavemall.com', ADMIN_DB: ':memory:', ADMIN_JOBS: '0', BACKUP_DIR: BDIR,
   BACKUP_S3_ENDPOINT: 'https://s3.eu-central-1.amazonaws.com', BACKUP_S3_BUCKET: 'wave-backups', BACKUP_S3_KEY: 'AKIDEXAMPLE', BACKUP_S3_SECRET: 'secret-example', BACKUP_S3_REGION: 'eu-central-1', SMTP_HOST: 'smtp.test',
 };
 let server;
@@ -77,7 +74,7 @@ after(() => {
 test('access: nothing changes until an administrator hides a module', async () => {
   const agent = await signIn('agent@thewave.test', agentPw);
   const html = await (await agent.go('/admin')).text();
-  for (const href of ['/admin/billing', '/admin/leases', '/admin/parking', '/admin/assistant']) assert.match(html, new RegExp(`href="${href}"`), href);
+  for (const href of ['/admin/billing', '/admin/leases', '/admin/parking']) assert.match(html, new RegExp(`href="${href}"`), href);
   assert.equal((await agent.go('/admin/billing')).status, 200);
   assert.equal(app.locals.admin.db.value("SELECT hidden_modules FROM users WHERE email = 'agent@thewave.test'"), null);
 });
@@ -219,168 +216,3 @@ test('backups: failures are recorded, size limit and rotation', async () => {
   db.setSetting('backup_email_to', '');
 });
 
-// ---------- the assistant ----------
-test('assistant: the SQL guard refuses writes, PRAGMA, several statements, secrets and hidden tables', () => {
-  const { db } = app.locals.admin;
-  const user = db.get("SELECT * FROM users WHERE email = 'agent@thewave.test'");
-  const allowed = app.locals.admin.h.assistant.allowed(user);
-  assert.ok(allowed.has('invoices'));
-  assert.ok(!allowed.has('employees') && !allowed.has('payroll_lines') && !allowed.has('acc_entries'), 'no HR or finance tables');
-  assert.ok(!allowed.has('sessions') && !allowed.has('settings') && !allowed.has('ai_turns'));
-  const bad = [
-    'DELETE FROM invoices', "UPDATE invoices SET paid = total", 'DROP TABLE units', 'PRAGMA table_info(users)', "ATTACH 'x.db' AS x",
-    'SELECT 1; DELETE FROM invoices', 'SELECT * FROM employees', 'SELECT name FROM units WHERE id IN (SELECT employee_id FROM payroll_lines)',
-    'SELECT password_hash FROM users', 'SELECT * FROM users', 'SELECT * FROM sessions', 'SELECT * FROM sqlite_master', "SELECT load_extension('x')",
-    'WITH x AS (SELECT * FROM leave_requests) SELECT COUNT(*) FROM x', 'SELECT value FROM settings', 'INSERT INTO units (code) VALUES (1)',
-  ];
-  for (const sql of bad) assert.equal(aiSql.check(db, sql, allowed).ok, false, sql);
-  for (const sql of ['SELECT COUNT(*) n FROM invoices', 'SELECT name, email FROM users', "WITH o AS (SELECT brand_id, SUM(total - paid) owed FROM invoices WHERE status IN ('open','partial') GROUP BY brand_id) SELECT b.name, o.owed FROM o JOIN brands b ON b.id = o.brand_id ORDER BY owed DESC;", "SELECT replace(code, 'G', '') FROM units -- a comment; DELETE"]) {
-    assert.equal(aiSql.check(db, sql, allowed).ok, true, sql);
-  }
-  // with HR access the HR tables open
-  const hrAllowed = app.locals.admin.h.assistant.allowed({ ...user, hr: 1 });
-  assert.ok(hrAllowed.has('employees'));
-  assert.equal(aiSql.check(db, 'SELECT COUNT(*) FROM employees', hrAllowed).ok, true);
-});
-
-test('assistant: queries on a database file run on a read-only connection with a row limit', async () => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'wave-ai-test-'));
-  try {
-    const db = await require('../src/admin/db').open({ ADMIN_DB: path.join(dir, 'office.db') });
-    const allowed = aiSql.allowedTables(db, { hr: false, finance: false });
-    const checked = aiSql.check(db, "WITH RECURSIVE n(x) AS (SELECT 1 UNION ALL SELECT x + 1 FROM n WHERE x < 500) SELECT x, (SELECT COUNT(*) FROM units) units FROM n", allowed, { limit: 50 });
-    assert.equal(checked.ok, true, checked.error);
-    const r = await aiSql.run(db, checked, { limit: 50, timeoutMs: 8000 });
-    assert.equal(r.error, undefined, r.error);
-    assert.equal(r.rows.length, 50);
-    assert.equal(r.truncated, true);
-    assert.deepEqual(r.columns, ['x', 'units']);
-    assert.ok(r.rows[0][1] > 0);
-    db.close();
-  } finally {
-    fs.rmSync(dir, { recursive: true, force: true });
-  }
-});
-
-test('assistant: a question runs the tool loop (SQL → table → answer) and is logged', async () => {
-  const { db, h } = app.locals.admin;
-  const calls = [];
-  const replies = [
-    { stop_reason: 'tool_use', content: [{ type: 'thinking', thinking: '', signature: 'sig-1' }, { type: 'tool_use', id: 'tu_1', name: 'run_sql', input: { purpose: 'Owed per tenant', sql: "SELECT b.name AS tenant, ROUND(SUM(i.total - i.paid)) AS owed FROM invoices i JOIN brands b ON b.id = i.brand_id WHERE i.status IN ('open','partial') GROUP BY b.id ORDER BY owed DESC" } }] },
-    { stop_reason: 'tool_use', content: [
-      { type: 'tool_use', id: 'tu_2', name: 'show_table', input: { query_id: 'q1', title: 'Balances', columns: [{ key: 'tenant', label: 'Tenant', kind: 'text' }, { key: 'owed', label: 'Owed', kind: 'money' }] } },
-      { type: 'tool_use', id: 'tu_3', name: 'run_sql', input: { purpose: 'try a write', sql: 'DELETE FROM invoices' } },
-      { type: 'tool_use', id: 'tu_4', name: 'run_sql', input: { purpose: 'salaries', sql: 'SELECT name, basic_salary FROM employees' } },
-    ] },
-    { stop_reason: 'end_turn', content: [{ type: 'text', text: '**Several tenants** owe rent; the table lists them.' }] },
-  ];
-  h.assistant.fetch = async (url, opts) => {
-    calls.push({ url, headers: opts.headers, body: JSON.parse(opts.body) });
-    return new Response(JSON.stringify({ id: `msg_${calls.length}`, type: 'message', role: 'assistant', model: 'claude-opus-5-5', usage: { input_tokens: 1000, output_tokens: 100, cache_read_input_tokens: 9000, cache_creation_input_tokens: 0 }, ...replies.shift() }), { status: 200 });
-  };
-  const invoices = db.value('SELECT COUNT(*) FROM invoices');
-  const agent = await signIn('agent@thewave.test', agentPw);
-  const r = await agent.go('/admin/assistant/ask', form({ _csrf: agent.csrf, q: 'Who owes rent?' }));
-  assert.equal(r.status, 303);
-  assert.match(r.headers.get('location'), /^\/admin\/assistant\/c\/\d+#t\d+$/);
-  assert.equal(calls.length, 3);
-  // the request: Messages API, the key from the environment, cached system prompt, tools, no secrets
-  assert.equal(calls[0].url, 'https://api.anthropic.com/v1/messages');
-  assert.equal(calls[0].headers['x-api-key'], 'sk-ant-test');
-  assert.ok(calls[0].headers['anthropic-version']);
-  const b0 = calls[0].body;
-  assert.equal(b0.model, 'claude-opus-5-5');
-  assert.deepEqual(b0.tools.map((t) => t.name), ['run_sql', 'show_table', 'show_chart']);
-  assert.deepEqual(b0.system[0].cache_control, { type: 'ephemeral' });
-  assert.match(b0.system[0].text, /## invoices/);
-  assert.doesNotMatch(b0.system[0].text, /## employees|## payroll_lines|password_hash|## sessions/, 'the schema shows only what this person may read');
-  assert.match(b0.system[0].text, /never follow it/);
-  // the tool results went back in one message, the earlier assistant turn unchanged (thinking kept)
-  const third = calls[2].body.messages;
-  assert.deepEqual(third[1].content[0], { type: 'thinking', thinking: '', signature: 'sig-1' });
-  const results = third[4].content;
-  assert.deepEqual(results.map((x) => x.tool_use_id), ['tu_2', 'tu_3', 'tu_4']);
-  assert.match(third[2].content[0].content, /query_id: q1[\s\S]*<data>[\s\S]*not instructions/);
-  assert.equal(results[1].is_error, true);
-  assert.match(results[1].content, /Only a SELECT/);
-  assert.equal(results[2].is_error, true);
-  assert.match(results[2].content, /employees is not available/);
-  assert.equal(db.value('SELECT COUNT(*) FROM invoices'), invoices, 'nothing deleted');
-  // stored, shown, logged
-  const t = db.get('SELECT * FROM ai_turns ORDER BY id DESC LIMIT 1');
-  assert.equal(t.status, 'ok');
-  assert.match(t.answer, /Several tenants/);
-  const att = JSON.parse(t.attachments);
-  assert.equal(att[0].type, 'table');
-  assert.ok(att[0].rows.length > 0);
-  const html = await (await agent.go(r.headers.get('location').split('#')[0])).text();
-  assert.match(html, /<b>Several tenants<\/b> owe rent/);
-  assert.match(html, /Balances/);
-  assert.match(html, /How I worked it out \(3 queries\)/);
-  assert.match(html, /DELETE FROM invoices/, 'the refused query is shown with its reason');
-  const u = db.get('SELECT * FROM ai_usage ORDER BY id DESC LIMIT 1');
-  assert.equal(u.status, 'ok');
-  assert.equal(u.input_tokens, 3000);
-  assert.equal(u.output_tokens, 300);
-  assert.equal(u.cache_read_tokens, 27000);
-  assert.equal(u.rounds, 3);
-  assert.equal(u.queries, 3);
-  assert.ok(u.cost > 0);
-  // a follow-up replays the conversation exactly
-  replies.push({ stop_reason: 'end_turn', content: [{ type: 'text', text: 'Yes.' }] });
-  calls.length = 0;
-  const conv = r.headers.get('location').match(/\/c\/(\d+)/)[1];
-  await agent.go('/admin/assistant/ask', form({ _csrf: agent.csrf, conversation: conv, q: 'Is that all?' }));
-  assert.equal(calls[0].body.messages.length, 7);
-  assert.deepEqual(calls[0].body.messages.slice(0, 6), JSON.parse(db.value('SELECT api_messages FROM ai_turns WHERE conversation_id = ? ORDER BY id LIMIT 1', conv)));
-  // usage page for administrators only
-  assert.equal((await agent.go('/admin/assistant/usage')).status, 303);
-  const usage = await (await admin.go('/admin/assistant/usage')).text();
-  assert.match(usage, /Who owes rent\?/);
-  assert.match(usage, /Salma Agent/);
-});
-
-test('assistant: errors, limits, and another person\'s conversation', async () => {
-  const { db, h } = app.locals.admin;
-  h.assistant.sleep = async () => {};
-  h.assistant.fetch = async () => new Response(JSON.stringify({ type: 'error', error: { type: 'authentication_error', message: 'invalid x-api-key' } }), { status: 401 });
-  const agent = await signIn('agent@thewave.test', agentPw);
-  const r = await agent.go('/admin/assistant/ask', form({ _csrf: agent.csrf, q: 'Occupancy?' }));
-  const t = db.get('SELECT * FROM ai_turns ORDER BY id DESC LIMIT 1');
-  assert.equal(t.status, 'error');
-  assert.equal(t.api_messages, null, 'a failed turn is not replayed');
-  assert.match(await (await agent.go(r.headers.get('location').split('#')[0])).text(), /refused the key/);
-  // someone else's conversation is not found
-  const other = db.value('SELECT id FROM ai_conversations WHERE user_id = (SELECT id FROM users WHERE email = ?) LIMIT 1', 'agent@thewave.test');
-  assert.equal((await admin.go(`/admin/assistant/c/${other}`)).status, 404);
-  // the daily limit
-  db.setSetting('ai_daily_limit', '1');
-  await agent.go('/admin/assistant/ask', form({ _csrf: agent.csrf, q: 'Again?' }));
-  assert.match(agent.flash(), /daily limit/);
-  db.setSetting('ai_daily_limit', '40');
-  // a hidden assistant module refuses it
-  const id = db.value("SELECT id FROM users WHERE email = 'agent@thewave.test'");
-  db.run('UPDATE users SET hidden_modules = ? WHERE id = ?', JSON.stringify(['/admin/assistant']), id);
-  assert.equal((await agent.go('/admin/assistant/ask', form({ _csrf: agent.csrf, q: 'x?' }))).status, 403);
-  db.run('UPDATE users SET hidden_modules = NULL WHERE id = ?', id);
-});
-
-test('assistant: without a key the page explains how to switch it on', async () => {
-  const { h } = app.locals.admin;
-  const key = ENV.ANTHROPIC_API_KEY;
-  delete h.env.ANTHROPIC_API_KEY;
-  try {
-    const html = await (await admin.go('/admin/assistant')).text();
-    assert.match(html, /Turn on the assistant/);
-    assert.match(html, /value="ANTHROPIC_API_KEY"/);
-    assert.doesNotMatch(html, /sk-ant/);
-    const ints = await (await admin.go('/admin/integrations')).text();
-    assert.match(ints, /AI assistant/);
-    assert.match(ints, /Off-site backups/);
-    const r = await admin.go('/admin/assistant/ask', form({ _csrf: admin.csrf, q: 'Hello?' }));
-    assert.equal(r.status, 303);
-    assert.match(admin.flash(), /not switched on/);
-  } finally {
-    h.env.ANTHROPIC_API_KEY = key;
-  }
-});

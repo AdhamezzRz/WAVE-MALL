@@ -6,7 +6,7 @@
 //               sign people out, unlock, see their sessions and sign-in history
 //   Roles       built-in roles, ready templates and custom roles with a permission matrix
 //               (every module × none / view / edit / full) and capabilities (export, HR, finance,
-//               manage people, give access, the assistant) and approval limits
+//               manage people, give access) and approval limits
 //   Access      per person: the final matrix with where each cell comes from, permanent changes,
 //               temporary access with an end date, and "can this person open …?"
 //   Review      every person × module, dormant accounts, powerful rights, the quarterly certification
@@ -37,13 +37,12 @@ const CAP = {
   finance: ['ppl|Finance', 'ppl|Accounting, banks and financial reports.'],
   manage_users: ['ppl|Manage people', 'ppl|Invite, edit, deactivate and sign out people.'],
   grant: ['ppl|Give access', 'ppl|Change roles, the permission matrix and what each person can open.'],
-  assistant: ['ppl|Use the assistant', 'ppl|Ask the AI assistant about the records they can see.'],
 };
 const SOURCE = {
   admin: 'ppl|Administrator', always: 'ppl|Always open', capability: 'ppl|From Manage people or Give access', role: 'ppl|From the role',
   hidden: 'ppl|Hidden on the Team page', override: 'ppl|Set for this person', temporary: 'ppl|Temporary', flag: 'ppl|Switched on for this person',
 };
-const BLOCK = { hr: 'ppl|Needs HR & salaries', finance: 'ppl|Needs Finance', manager: 'ppl|Needs the manager rank', admin: 'ppl|Administrators only', assistant: 'ppl|Needs Use the assistant' };
+const BLOCK = { hr: 'ppl|Needs HR & salaries', finance: 'ppl|Needs Finance', manager: 'ppl|Needs the manager rank', admin: 'ppl|Administrators only' };
 const RANK = { viewer: 'ppl|Viewer', agent: 'ppl|Agent', manager: 'ppl|Manager', admin: 'ppl|Administrator' };
 const RANK_HINT = { viewer: 'ppl|Reads only, whatever the matrix says', agent: 'ppl|Works leads, offers and day-to-day records', manager: 'ppl|Also approves offers, signs leases and takes payments' };
 const STATUS = { active: ['ppl|Active', 'ok'], deactivated: ['ppl|Deactivated', 'mute'], locked: ['ppl|Locked', 'rose'], invited: ['ppl|Invited', 'amber'] };
@@ -80,16 +79,8 @@ module.exports = function people(router, h) {
   const dormantDays = () => setting('ppl_dormant_days', 60);
   const inviteDays = () => setting('ppl_invite_days', 7);
 
-  // ---------- typed fields, the assistant, housekeeping ----------
+  // ---------- typed fields, housekeeping ----------
   (h.auditTyped = h.auditTyped || []).push('SELECT name, description FROM ppl_roles', 'SELECT reason FROM ppl_overrides', 'SELECT note FROM ppl_history', 'SELECT note FROM ppl_reviews', 'SELECT name, title, email FROM ppl_invites');
-  h.assistantTables = h.assistantTables || {};
-  Object.assign(h.assistantTables, {
-    ppl_invites: { never: true }, ppl_logins: { never: true },
-    ppl_roles: { module: '/admin/people', note: 'Custom roles: base rank, permission matrix (JSON module → level) and capabilities (JSON).' },
-    ppl_overrides: { module: '/admin/people', note: 'Per-person access changes; expires_at set = temporary access.' },
-    ppl_history: { module: '/admin/people', note: 'Permission change history (changes is JSON before → after).' },
-    ppl_reviews: { module: '/admin/people', note: 'Quarterly access certification decisions.' },
-  });
   if (h.every) h.every('access-expiry', 5 * 60 * 1000, () => engine.sweep(), { first: 60 * 1000 });
   const canManage = (req) => engine.has(req.user, 'manage_users');
   const canGrant = (req) => engine.has(req.user, 'grant');
@@ -796,7 +787,7 @@ module.exports = function people(router, h) {
     const tomorrow = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
     const tempForm = editable ? ui.form(`/admin/people/${u.id}/temp`, csrf, `<div class="fields">${ui.select('key', tr('ppl|Module or permission'), [
       ...engine.modules().filter((e) => e.href !== '/admin' && e.href !== '/admin/people').map((e) => [e.href, tr(e.label)]),
-      ...['export', 'assistant', 'manage_users', 'grant'].map((c) => [`cap:${c}`, `${tr('ppl|Permission')}: ${capName(c)}`]),
+      ...['export', 'manage_users', 'grant'].map((c) => [`cap:${c}`, `${tr('ppl|Permission')}: ${capName(c)}`]),
     ], '')}${ui.select('level', tr('ppl|Level'), [['view', tr('ppl|View')], ['edit', tr('ppl|Edit')], ['full', tr('ppl|Full')]], 'view')}${ui.input('until', tr('ppl|Until'), tomorrow, { type: 'date', required: true, min: new Date().toISOString().slice(0, 10) })}${ui.input('reason', tr('ppl|Why'), '', { placeholder: tr('ppl|e.g. Covering for Salma during her leave') })}</div>${ui.btn(esc(tr('ppl|Give temporary access')), { cls: 'btn--primary btn--sm', ic: 'plus' })}<p class="muted small">${esc(tr('ppl|It ends by itself at the end of that day.'))}</p>`, { cls: 'stack' }) : '';
     // can this person open …?
     const testUrl = h.str(req.query.test, 300);
@@ -831,7 +822,7 @@ module.exports = function people(router, h) {
       if (v === undefined) continue;
       modules[e.href] = engine.LEVELS.includes(v) ? v : null;
     }
-    for (const c of ['export', 'manage_users', 'grant', 'assistant']) {
+    for (const c of ['export', 'manage_users', 'grant']) {
       const v = req.body.reset ? '' : req.body[`cap:${c}`];
       if (v === undefined) continue;
       caps[c] = v === 'on' || v === 'off' ? v : null;
@@ -857,7 +848,7 @@ module.exports = function people(router, h) {
     const key = String(req.body.key || '');
     const isCap = key.startsWith('cap:');
     const k = isCap ? key.slice(4) : key;
-    if (isCap ? !['export', 'assistant', 'manage_users', 'grant'].includes(k) : !engine.moduleOf(k) || k === '/admin' || k === '/admin/people') return h.back(req, res, `/admin/people/${u.id}/access`, 'error', tr('ppl|Choose a module or a permission.'));
+    if (isCap ? !['export', 'manage_users', 'grant'].includes(k) : !engine.moduleOf(k) || k === '/admin' || k === '/admin/people') return h.back(req, res, `/admin/people/${u.id}/access`, 'error', tr('ppl|Choose a module or a permission.'));
     const level = isCap ? 'on' : engine.LEVELS.includes(req.body.level) && req.body.level !== 'none' ? req.body.level : 'view';
     const day = /^\d{4}-\d{2}-\d{2}$/.test(String(req.body.until || '')) ? req.body.until : null;
     // the end of that day in Cairo (UTC+2/+3: end at 23:59 Cairo ≈ 21:59 UTC)
@@ -908,7 +899,7 @@ module.exports = function people(router, h) {
       const rows = items.map(([href]) => engine.moduleOf(href)).filter((e) => e && e.href !== '/admin' && e.href !== '/admin/people').map((e) => {
         const cur = start.matrix[e.href] || 'none';
         const orig = role && !role.builtin ? engine.roleLevel(role, e.href) : cur;
-        const note = e.min ? `<small class="sub ppl-blocked">${esc(tr(BLOCK[e.min] || 'ppl|Closed'))}</small>` : e.href === '/admin/assistant' ? `<small class="sub ppl-blocked">${esc(tr(BLOCK.assistant))}</small>` : '';
+        const note = e.min ? `<small class="sub ppl-blocked">${esc(tr(BLOCK[e.min] || 'ppl|Closed'))}</small>` : '';
         return `<tr data-ppl-row="${esc(tr(e.label).toLowerCase())}"><th scope="row"><span class="ppl-mod">${ui.icon(e.ic)}<span>${esc(tr(e.label))}</span></span>${note}</th>${engine.LEVELS.map((l) => {
           const over = !mine.admin && engine.lv(l) > engine.lv((mine.modules[e.href] || {}).level || 'none') && engine.lv(l) > engine.lv(orig);
           return `<td class="ppl-cell"><label class="ppl-radio ppl-radio--${l}" title="${esc(tr(LEVEL[l][0]))}: ${esc(tr(LEVEL_HINT[l]))}"><input type="radio" name="m:${esc(e.href)}" value="${l}"${cur === l ? ' checked' : ''}${readOnly || over ? ' disabled' : ''} data-orig="${orig === l ? '1' : ''}"><span>${esc(tr(LEVEL[l][0]))}</span></label></td>`;
@@ -956,7 +947,7 @@ module.exports = function people(router, h) {
   };
   router.get('/people/roles/new', RG, (req, res) => {
     const t = engine.templateRole(String(req.query.template || ''));
-    const blank = { name: '', description: '', base: 'agent', default_level: 'none', color: 'sea', matrix: Object.fromEntries(engine.modules().map((e) => [e.href, e.href === '/admin' ? 'view' : 'none'])), caps: { ...Object.fromEntries(engine.CAPS.map((c) => [c, c === 'assistant'])), limits: {} } };
+    const blank = { name: '', description: '', base: 'agent', default_level: 'none', color: 'sea', matrix: Object.fromEntries(engine.modules().map((e) => [e.href, e.href === '/admin' ? 'view' : 'none'])), caps: { ...Object.fromEntries(engine.CAPS.map((c) => [c, false])), limits: {} } };
     const base = t ? { ...blank, name: t.en, template: t.key, description: i18n.english(t.desc), base: t.base, matrix: t.matrix, caps: t.caps } : blank;
     roleEditor(req, res, { start: startFrom(req, base), title: t ? tr(t.name) : tr('ppl|New role'), action: '/admin/people/roles' });
   });
@@ -1029,11 +1020,11 @@ module.exports = function people(router, h) {
     const r = engine.builtinRole(req.params.key);
     const asLevel = ({ viewer: 'view', agent: 'edit', manager: 'full' })[r.key];
     const matrix = Object.fromEntries(engine.modules().map((e) => [e.href, engine.roleLevel(r, e.href) === 'none' ? 'none' : asLevel]));
-    const want = { base: r.key, modules: matrix, caps: { export: true, assistant: true } };
+    const want = { base: r.key, modules: matrix, caps: { export: true } };
     if (engine.escalation(req.user, want).length) return h.back(req, res, '/admin/people/roles', 'error', tr('ppl|You cannot give more than you have yourself: {what}.', { what: engine.roleName(r) }));
     let name = `${engine.roleName(r)} (2)`;
     for (let i = 3; db.get('SELECT id FROM ppl_roles WHERE name = ? COLLATE NOCASE', name); i++) name = `${engine.roleName(r)} (${i})`;
-    const id = saveRole(null, { name, description: null, base: r.key, default_level: 'none', color: 'sea', template: null, matrix, caps: { export: true, assistant: true }, limits: {} }, req.user);
+    const id = saveRole(null, { name, description: null, base: r.key, default_level: 'none', color: 'sea', template: null, matrix, caps: { export: true }, limits: {} }, req.user);
     h.back(req, res, `/admin/people/roles/${id}`, 'ok', tr('ppl|A copy was made: {role}. Change it and save.', { role: name }));
   });
   router.post('/people/roles/:id(\\d+)/archive', RG, (req, res, next) => {

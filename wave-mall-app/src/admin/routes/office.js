@@ -239,10 +239,13 @@ module.exports = function office(router, h) {
     h.back(req, res, '/admin/team', 'ok', msg);
   });
 
+  // the AI assistant was taken out of the office: its conversations and usage log go with it
+  db.ensure('assistant-removed', 'DROP TABLE IF EXISTS ai_turns; DROP TABLE IF EXISTS ai_usage; DROP TABLE IF EXISTS ai_conversations;');
+
   // ---------- module access ----------
   // Which sidebar modules a person may open, on top of what their role allows. Unticking hides the
-  // module from their sidebar, refuses its pages by address (routes/core.js) and keeps its tables
-  // out of the assistant's reach. Administrators always keep everything.
+  // module from their sidebar, refuses its pages by address (routes/core.js).
+  // Administrators always keep everything.
   const NEEDS = { hr: 'acc2|Needs HR access', finance: 'acc2|Needs finance access', admin: 'acc2|Administrators only', manager: 'acc2|Managers and administrators' };
   router.get('/team/:id/access', R('admin'), (req, res, next) => {
     const u = db.get('SELECT * FROM users WHERE id = ?', req.params.id);
@@ -263,7 +266,7 @@ module.exports = function office(router, h) {
     const openN = ui.NAV_ENTRIES.filter((e) => ui.canOpen(u, e.href)).length;
     const intro = isAdminUser
       ? `<p class="notice">${ui.icon('shield')}<span>${ui.esc(tr('acc2|{name} is an administrator. Administrators always have every module; change the role on the Team page to limit what they see.', { name: u.name }))}</span></p>`
-      : `<p class="muted">${ui.esc(tr('acc2|Untick a module to hide it from {name}: it leaves their menu, its pages answer "no access" even by direct link, and the assistant cannot read its records for them. Greyed modules are outside their role.', { name: u.name }))}</p>`;
+      : `<p class="muted">${ui.esc(tr('acc2|Untick a module to hide it from {name}: it leaves their menu, its pages answer "no access" even by direct link. Greyed modules are outside their role.', { name: u.name }))}</p>`;
     const form = isAdminUser
       ? groups.replace(/<input /g, '<input disabled ')
       : ui.form(`/admin/team/${u.id}/access`, req.session.csrf, `${groups}<div class="row">${ui.btn(ui.esc(tr('Save')), { cls: 'btn--primary' })}${ui.btn(ui.esc(tr('acc2|Open every module')), { cls: 'btn--ghost', attrs: { name: 'reset', value: '1' } })}</div>`, { cls: 'stack modaccess' });

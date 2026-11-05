@@ -15,5 +15,4 @@ module.exports = {
   'nav|Shopper feedback': 'آراء الزوار',
   'nav|Owner report': 'تقرير المالك',
   'nav|Wall screen': 'شاشة العرض',
-  'nav|Assistant': 'المساعد الذكي',
 };

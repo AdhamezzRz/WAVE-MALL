@@ -106,16 +106,6 @@ module.exports = function work(router, h) {
     `SELECT DISTINCT trim(j.value) label FROM wk_tasks t, json_each('["' || replace(replace(t.labels, '"', ''), ',', '","') || '"]') j WHERE t.labels IS NOT NULL`,
     `SELECT DISTINCT trim(j.value) label FROM wk_templates t, json_each('["' || replace(replace(t.labels, '"', ''), ',', '","') || '"]') j WHERE t.labels IS NOT NULL`,
   );
-  h.assistantTables = h.assistantTables || {};
-  Object.assign(h.assistantTables, {
-    wk_tasks: { module: '/admin/work', note: 'Tasks in the work hub (status todo/doing/waiting/done/cancelled; priority urgent/high/normal/low; due_date YYYY-MM-DD, Cairo time).', cols: { labels: 'comma-separated labels', private: '1 = only the people on it and managers see it', link: 'office page the task is about' } },
-    wk_people: { module: '/admin/work', note: 'Who is on each task: role assignee or watcher.' },
-    wk_checks: { module: '/admin/work', note: 'Checklist items of tasks (done_at set when ticked).' },
-    wk_events: { module: '/admin/work', note: 'Timeline of each task (kind created/status/assigned/comment/check/...).' },
-    wk_templates: { module: '/admin/work', note: 'Recurring task templates (every daily/weekly/monthly; next_on is the next date a task is made).' },
-    wk_delegations: { module: '/admin/work', note: 'Out-of-office delegations: delegate_id decides approvals and sees tasks of user_id between starts and ends.' },
-    wk_notes: { never: true },
-  });
   const esc = ui.esc;
   const A = () => h.approvals;
   const now = () => new Date().toISOString();

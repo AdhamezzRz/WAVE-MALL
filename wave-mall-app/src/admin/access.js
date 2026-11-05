@@ -11,7 +11,7 @@
 //
 // and capabilities sit beside the matrix: export (CSV and print), hr (staff files, salaries), finance
 // (accounting, banks), manage_users (invite, edit, deactivate people), grant (change roles and access),
-// assistant (the AI assistant), plus approval limits per kind of approval request.
+// plus approval limits per kind of approval request.
 //
 // Where a person's access comes from, in order:
 //   1. Administrators: everything, always.
@@ -33,7 +33,7 @@ const M = require('./model');
 const LEVELS = ['none', 'view', 'edit', 'full'];
 const RANKS = ['viewer', 'agent', 'manager', 'admin'];
 const RANK = { viewer: 0, agent: 1, manager: 2, admin: 3 };
-const CAPS = ['export', 'hr', 'finance', 'manage_users', 'grant', 'assistant'];
+const CAPS = ['export', 'hr', 'finance', 'manage_users', 'grant'];
 const BUILTIN = ['viewer', 'agent', 'manager', 'admin'];
 const lv = (l) => Math.max(0, LEVELS.indexOf(l));
 const maxLevel = (a, b) => (lv(a) >= lv(b) ? a : b);
@@ -57,37 +57,37 @@ const TEMPLATES = {
     name: 'ppl|Finance officer', en: 'Finance officer', base: 'manager',
     desc: 'ppl|Accounts, billing, cheques, collections and purchasing; reads leases and tenants.',
     matrix: { '*': 'v', '/admin/accounting': 'f', '/admin/billing': 'f', '/admin/cheques': 'f', '/admin/collections': 'f', '/admin/purchasing': 'f', '/admin/work': 'f', '/admin/reports': 'v', '/admin/owner-report': 'v', '/admin/hr': 'n', '/admin/hr/leave': 'n', '/admin/hr/payroll': 'n', '/admin/hr/advances': 'n' },
-    caps: { export: 1, finance: 1, assistant: 1 }, limits: { writeoff: 50000, refund: 100000, purchase: 250000 },
+    caps: { export: 1, finance: 1 }, limits: { writeoff: 50000, refund: 100000, purchase: 250000 },
   },
   hr_officer: {
     name: 'ppl|HR officer', en: 'HR officer', base: 'agent',
     desc: 'ppl|Employees, leave, payroll and salary advances; nothing financial beyond pay.',
     matrix: { '*': 'n', '/admin': 'v', '/admin/work': 'e', '/admin/hr': 'f', '/admin/hr/leave': 'f', '/admin/hr/payroll': 'e', '/admin/hr/advances': 'e', '/admin/documents': 'e', '/admin/team': 'v' },
-    caps: { export: 1, hr: 1, assistant: 1 }, limits: { advance: 20000 },
+    caps: { export: 1, hr: 1 }, limits: { advance: 20000 },
   },
   collections_officer: {
     name: 'ppl|Collections officer', en: 'Collections officer', base: 'agent',
     desc: 'ppl|Chases what tenants owe: reminders, calls, plans and cheques; reads leases and billing.',
     matrix: { '*': 'n', '/admin': 'v', '/admin/work': 'e', '/admin/collections': 'e', '/admin/cheques': 'e', '/admin/billing': 'v', '/admin/leases': 'v', '/admin/tenants': 'v', '/admin/brands': 'v', '/admin/documents': 'v' },
-    caps: { export: 1, assistant: 1 }, limits: {},
+    caps: { export: 1 }, limits: {},
   },
   leasing_agent: {
     name: 'ppl|Leasing agent', en: 'Leasing agent', base: 'agent',
     desc: 'ppl|Leads, offers, conversations and the plan; reads leases and tenant files.',
-    matrix: { '*': 'n', '/admin': 'v', '/admin/work': 'e', '/admin/inbox': 'e', '/admin/leads': 'e', '/admin/pipeline': 'e', '/admin/offers': 'e', '/admin/conversations': 'e', '/admin/calendar': 'e', '/admin/units': 'v', '/admin/brands': 'e', '/admin/tenants': 'v', '/admin/specialty': 'e', '/admin/leases': 'v', '/admin/reports': 'v', '/admin/assistant': 'e' },
-    caps: { assistant: 1 }, limits: {},
+    matrix: { '*': 'n', '/admin': 'v', '/admin/work': 'e', '/admin/inbox': 'e', '/admin/leads': 'e', '/admin/pipeline': 'e', '/admin/offers': 'e', '/admin/conversations': 'e', '/admin/calendar': 'e', '/admin/units': 'v', '/admin/brands': 'e', '/admin/tenants': 'v', '/admin/specialty': 'e', '/admin/leases': 'v', '/admin/reports': 'v' },
+    caps: {}, limits: {},
   },
   security_supervisor: {
     name: 'ppl|Security supervisor', en: 'Security supervisor', base: 'agent',
     desc: 'ppl|Patrols, cleaning, incidents, keys, safety and licences, parking incidents and shopper feedback.',
     matrix: { '*': 'n', '/admin': 'v', '/admin/work': 'e', '/admin/security': 'f', '/admin/compliance': 'e', '/admin/feedback': 'e', '/admin/parking': 'v', '/admin/maintenance': 'v', '/admin/footfall': 'v' },
-    caps: { assistant: 1 }, limits: {},
+    caps: {}, limits: {},
   },
   maintenance_coordinator: {
     name: 'ppl|Maintenance coordinator', en: 'Maintenance coordinator', base: 'agent',
     desc: 'ppl|Work orders, planned maintenance, the parts store, energy and safety checks.',
     matrix: { '*': 'n', '/admin': 'v', '/admin/work': 'e', '/admin/maintenance': 'f', '/admin/purchasing': 'e', '/admin/energy': 'e', '/admin/compliance': 'e', '/admin/utilities': 'e', '/admin/feedback': 'v', '/admin/units': 'v', '/admin/tenants': 'v', '/admin/fitout': 'e' },
-    caps: { export: 1, assistant: 1 }, limits: { purchase: 25000 },
+    caps: { export: 1 }, limits: { purchase: 25000 },
   },
   parking_cashier: {
     name: 'ppl|Parking cashier', en: 'Parking cashier', base: 'agent',
@@ -99,13 +99,13 @@ const TEMPLATES = {
     name: 'ppl|Marketing & media', en: 'Marketing & media', base: 'agent',
     desc: 'ppl|Advertising sales, the website, short-term space, footfall and feedback.',
     matrix: { '*': 'n', '/admin': 'v', '/admin/work': 'e', '/admin/media': 'f', '/admin/website': 'f', '/admin/specialty': 'e', '/admin/footfall': 'v', '/admin/feedback': 'v', '/admin/subscribers': 'e', '/admin/brands': 'v', '/admin/reports': 'v' },
-    caps: { export: 1, assistant: 1 }, limits: { media_discount: 15 },
+    caps: { export: 1 }, limits: { media_discount: 15 },
   },
   owner_readonly: {
     name: 'ppl|Owner (read only)', en: 'Owner (read only)', base: 'viewer',
     desc: 'ppl|Sees everything that matters, changes nothing: reports, the owner report, revenue and operations.',
     matrix: { '*': 'v', '/admin/hr': 'n', '/admin/hr/leave': 'n', '/admin/hr/payroll': 'n', '/admin/hr/advances': 'n', '/admin/integrations': 'n', '/admin/settings': 'n', '/admin/audit': 'n', '/admin/people': 'n' },
-    caps: { export: 1, finance: 1, assistant: 1 }, limits: {},
+    caps: { export: 1, finance: 1 }, limits: {},
   },
 };
 const LETTER = { n: 'none', v: 'view', e: 'edit', f: 'full' };
@@ -221,7 +221,7 @@ function create({ db, ui }) {
     for (const e of modules()) matrix[e.href] = key === 'admin' || !e.min || ['hr', 'finance'].includes(e.min) || RANK[key] >= RANK[e.min] ? 'full' : 'none';
     return {
       id: null, key, builtin: true, base: key, name: key, matrix, default_level: 'full',
-      caps: { export: true, hr: key === 'admin', finance: key === 'admin', manage_users: key === 'admin', grant: key === 'admin', assistant: true, limits: {} },
+      caps: { export: true, hr: key === 'admin', finance: key === 'admin', manage_users: key === 'admin', grant: key === 'admin', limits: {} },
     };
   }
   const roles = ({ archived = false } = {}) => [
@@ -308,8 +308,6 @@ function create({ db, ui }) {
         eff.temp.push(o);
         if (lv(o.level) > lv(m.level)) eff.modules[o.key] = { ...m, level: o.level, source: 'temporary', until: o.expires_at, id: o.id };
       }
-      // the assistant needs its capability
-      if (eff.modules['/admin/assistant'] && !eff.caps.assistant.on) eff.modules['/admin/assistant'] = { ...eff.modules['/admin/assistant'], level: 'none', blocked: 'assistant' };
       for (const e of modules()) {
         const why = ceiling(eff, e);
         if (why) eff.modules[e.href] = { ...eff.modules[e.href], level: 'none', blocked: why };
