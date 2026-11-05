@@ -91,7 +91,13 @@ module.exports = function cashRoutes(router, h, c) {
       { label: tr('prk|Drops'), num: true, render: (x) => (x.drops ? c.money(x.drops) : '—') },
       { label: tr('prk|To the bank'), num: true, render: (x) => (x.out ? c.money(x.out) : '—') },
     ], rows, { empty: esc(tr('prk|No cash in the last two weeks.')) });
-    const list = db.all('SELECT s.*, u.name user_name, t.ref till_ref FROM pk_safe s LEFT JOIN users u ON u.id = s.user_id LEFT JOIN pk_tills t ON t.id = s.till_id ORDER BY s.at DESC LIMIT 30');
+    // the movements: a range of days and the sort order (the latest 30 unless filtered)
+    const lf = h.listFilters(req, {
+      cols: { date: 's.at' }, dateLabel: tr('prk|When'),
+      sorts: [['newest', 'sort|Newest first', 's.at DESC'], ['oldest', 'sort|Oldest first', 's.at'], ['amount_desc', 'sort|Amount: highest first', 'ABS(s.amount) DESC, s.at DESC'], ['amount_asc', 'sort|Amount: lowest first', 'ABS(s.amount), s.at DESC']],
+    });
+    const dr = c.dayRange('s.at', lf);
+    const list = db.all(`SELECT s.*, u.name user_name, t.ref till_ref FROM pk_safe s LEFT JOIN users u ON u.id = s.user_id LEFT JOIN pk_tills t ON t.id = s.till_id WHERE 1 = 1${dr.sql} ORDER BY ${lf.order} LIMIT ${lf.active ? 500 : 30}`, ...dr.args);
     const table = ui.table([
       { label: tr('prk|When'), render: (x) => `${esc(ui.dt(x.at))}<small class="sub">${esc(x.ref)}</small>` },
       { label: tr('prk|What'), render: (x) => `${kindBadge(x.kind)}${x.till_ref ? ` <a href="/admin/parking/tills/${x.till_id}">${esc(x.till_ref)}</a>` : ''}${x.bag ? ` · <span class="ltr">${esc(x.bag)}</span>` : ''}` },
@@ -106,7 +112,7 @@ module.exports = function cashRoutes(router, h, c) {
     const adjust = h.can(req, 'manager') ? `<details class="upload-box"><summary>${ui.icon('gear')}<span>${esc(tr('prk|Adjust the safe'))}</span></summary>${ui.form('/admin/parking/safe/adjust', csrf, `<div class="fields">${ui.input('amount', tr('prk|Amount (minus to take out)'), '', { type: 'number', step: '0.01', required: true })}${ui.input('note', tr('prk|Why'), '', { required: true, placeholder: tr('prk|e.g. Count of the safe at the start') })}</div>${ui.btn(esc(tr('Save')), { cls: 'btn--ghost btn--sm' })}`, { cls: 'stack' })}</details>` : '';
     c.page(req, res, {
       title: tr('prk|Safe'), crumbs: c.crumbs([null, tr('prk|Safe')]),
-      body: `${c.tabs('/admin/parking/safe')}${c.subtabs('/admin/parking/safe', SUB)}<div class="kpis kpis--4">${kpis}</div><div class="grid grid--side"><div class="stack">${ui.card(tr('prk|Day by day'), dayTable)}</div><div class="stack">${collect}${confirm}${adjust}</div></div>${ui.card(tr('prk|Movements'), table)}`,
+      body: `${c.tabs('/admin/parking/safe')}${c.subtabs('/admin/parking/safe', SUB)}<div class="kpis kpis--4">${kpis}</div><div class="grid grid--side"><div class="stack">${ui.card(tr('prk|Day by day'), dayTable)}</div><div class="stack">${collect}${confirm}${adjust}</div></div>${lf.html}${ui.card(tr('prk|Movements'), table)}`,
     });
   });
   router.post('/parking/safe/collect', RMF, (req, res) => {

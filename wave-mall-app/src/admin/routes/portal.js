@@ -544,7 +544,12 @@ ${quick}
       upcoming: all.filter((i) => ['open', 'partial'].includes(i.status) && i.due_date > t && i.due_date <= M.addDays(t, 120)),
       paid: all.filter((i) => i.status === 'paid').reverse(),
     };
-    const rows = lists[view];
+    const f = h.listFilters(req, { cols: { date: 'x' }, dateLabel: tr('Due'), keep: ['view'], sorts: [['default', 'sort|Suggested order', ''], ['due', 'sort|Due date: soonest first', ''], ['due_late', 'sort|Due date: latest first', ''], ['amount_desc', 'sort|Amount: highest first', ''], ['amount_asc', 'sort|Amount: lowest first', '']] });
+    const rows = lists[view].filter((i) => (!f.from || i.due_date >= f.from) && (!f.to || i.due_date <= f.to));
+    if (f.sortKey === 'due') rows.sort((a, b) => String(a.due_date).localeCompare(String(b.due_date)) || a.id - b.id);
+    else if (f.sortKey === 'due_late') rows.sort((a, b) => String(b.due_date).localeCompare(String(a.due_date)) || b.id - a.id);
+    else if (f.sortKey === 'amount_desc') rows.sort((a, b) => b.total - a.total);
+    else if (f.sortKey === 'amount_asc') rows.sort((a, b) => a.total - b.total);
     const tabsHtml = [['due', tr('por|To pay')], ['upcoming', tr('Upcoming')], ['paid', tr('invoice|Paid')]].map(([k, l]) => `<a class="tab${view === k ? ' is-on' : ''}" href="/portal/invoices?view=${k}">${ui.esc(l)}${lists[k].length && k !== 'paid' ? ` <b class="nav__count">${lists[k].length}</b>` : ''}</a>`).join('');
     const table = ui.table([
       { label: tr('Invoice'), render: (i) => `<b>${ui.esc(i.ref)}</b><small class="sub">${ui.esc(invoiceFor_(i))}</small>` },
@@ -558,7 +563,7 @@ ${quick}
       ${ui.kpi({ label: tr('por|Balance due'), value: ui.money(due, { compact: true }), tone: overdue(bid) ? 'kpi--alert' : '' })}
       ${ui.kpi({ label: tr('invoice|Overdue'), value: ui.money(overdue(bid), { compact: true }) })}
       ${ui.kpi({ label: tr('por|Paid this year'), value: ui.money(db.value("SELECT COALESCE(SUM(amount), 0) FROM payments WHERE brand_id = ? AND status = 'received' AND COALESCE(method, '') <> 'writeoff' AND substr(date, 1, 4) = ?", bid, t.slice(0, 4)), { compact: true }) })}
-    </div><nav class="tabs">${tabsHtml}</nav>${ui.card(tn(rows.length, '{n} invoice', '{n} invoices'), table)}${payInstructions()}`;
+    </div><nav class="tabs">${tabsHtml}</nav>${f.html}${ui.card(tn(rows.length, '{n} invoice', '{n} invoices'), table)}${payInstructions()}`;
     page(req, res, { title: tr('Invoices'), active: 'invoices', body });
   });
 
@@ -615,14 +620,15 @@ ${quick}
 
   // ---------- receipts ----------
   pr.get('/payments', requireTenant, (req, res) => {
-    const pays = db.all("SELECT p.*, i.ref invoice_ref FROM payments p LEFT JOIN invoices i ON i.id = p.invoice_id WHERE p.brand_id = ? AND p.status = 'received' ORDER BY p.date DESC, p.id DESC LIMIT 400", brandId(req));
+    const f = h.listFilters(req, { cols: { date: 'p.date' }, dateLabel: tr('Date'), sort: { date: 'p.date', amount: 'p.amount' } });
+    const pays = db.all(`SELECT p.*, i.ref invoice_ref FROM payments p LEFT JOIN invoices i ON i.id = p.invoice_id WHERE p.brand_id = ? AND p.status = 'received'${f.sql} ORDER BY ${f.order}, p.id DESC LIMIT 400`, brandId(req), ...f.args);
     const table = ui.table([
       { label: tr('por|Receipt'), render: (p) => `<b>${ui.esc(p.ref)}</b>${p.invoice_ref ? `<small class="sub">${ui.esc(p.invoice_ref)}</small>` : ''}` },
       { label: tr('Date'), render: (p) => ui.date(p.date) },
       { label: tr('Method'), render: (p) => ui.esc(M.PAY_METHODS[p.method] || p.method || '—') },
       { label: tr('Amount'), num: true, render: (p) => `<b>${ui.money(p.amount, { cur: false })}</b>` },
     ], pays, { empty: ui.esc(tr('No payments yet.')), href: (p) => `/portal/payments/${p.id}/receipt` });
-    page(req, res, { title: tr('por|Receipts'), active: 'payments', body: ui.card(tn(pays.length, 'por|{n} payment', 'por|{n} payments'), table) });
+    page(req, res, { title: tr('por|Receipts'), active: 'payments', body: f.html + ui.card(tn(pays.length, 'por|{n} payment', 'por|{n} payments'), table) });
   });
   pr.get('/payments/:id/receipt', requireTenant, (req, res, next) => {
     const p = db.get("SELECT * FROM payments WHERE id = ? AND brand_id = ? AND status = 'received'", h.int(req.params.id), brandId(req));
@@ -658,7 +664,8 @@ ${quick}
         ${isLease ? (x.state === 'ok' ? '' : `<p class="muted small">${ui.esc(tr('por|The leasing office files the signed lease.'))}</p>`) : x.state === 'ok' ? '' : `<details class="upload-box"${x.state === 'missing' || x.state === 'expired' ? ' open' : ''}><summary>${ui.icon('upload')}<span>${ui.esc(x.state === 'missing' ? tr('por|Upload') : tr('por|Upload the renewal'))}</span></summary>${uploader(x.kind)}</details>`}
       </li>`;
     }).join('');
-    const mine = db.all("SELECT d.* FROM documents d WHERE d.entity = 'brand' AND d.entity_id = ? AND d.archived = 0 AND d.confidential = 0 ORDER BY d.created_at DESC LIMIT 60", brandId(req));
+    const f = h.listFilters(req, { cols: { date: 'd.created_at' }, dateLabel: tr('Date'), sort: { date: 'd.created_at', name: 'd.title' } });
+    const mine = db.all(`SELECT d.* FROM documents d WHERE d.entity = 'brand' AND d.entity_id = ? AND d.archived = 0 AND d.confidential = 0${f.sql} ORDER BY ${f.order} LIMIT ${f.active ? 300 : 60}`, brandId(req), ...f.args);
     const list = mine.length
       ? `<ul class="doclist">${mine.map((d) => `<li>${ui.fileIcon(d.mime)}<div class="doclist__what"><a href="/portal/documents/${d.id}/file" target="_blank" rel="noopener"><b>${ui.esc(tx(d.title))}</b></a><small>${ui.esc(M.DOC_KINDS[d.kind] || d.kind)} · ${ui.KB(d.size)} · ${ui.date(d.created_at)}${d.portal_user_id ? ` · ${ui.esc(tr('por|sent by you'))}` : ''}</small></div><div class="doclist__end">${ui.expiry(d.expires_on)}</div></li>`).join('')}</ul>`
       : `<p class="muted pad">${ui.esc(tr('No documents yet.'))}</p>`;
@@ -672,7 +679,7 @@ ${quick}
   ${ui.card(tr('por|What the mall needs'), `<ul class="pdocs">${items}</ul>`, { sub: ui.esc(tr('por|Upload a clear scan or photo. The leasing office checks each document.')) })}
   <div class="stack">
     ${ui.card(tr('por|Send another document'), `<details class="upload-box"><summary>${ui.icon('plus')}<span>${ui.esc(tr('Add a document'))}</span></summary>${uploader('any')}</details>`)}
-    ${ui.card(tr('por|Your documents'), list)}
+    ${ui.card(tr('por|Your documents'), `${f.html}${list}`)}
   </div>
 </div>`;
     page(req, res, { title: tr('Documents'), active: 'documents', body });
@@ -719,11 +726,15 @@ ${quick}
 
   // ---------- notices ----------
   pr.get('/notices', requireTenant, (req, res) => {
-    const list = noticesFor(req);
+    const f = h.listFilters(req, { cols: { date: 'x' }, dateLabel: tr('Date'), sorts: [['newest', 'sort|Newest first', ''], ['oldest', 'sort|Oldest first', ''], ['unread', 'sort|Unread first', '']] });
+    const day = (n) => String(n.publish_at || n.created_at).slice(0, 10);
+    const list = noticesFor(req, { limit: f.active ? 300 : 50 }).filter((n) => (!f.from || day(n) >= f.from) && (!f.to || day(n) <= f.to));
+    if (f.sortKey === 'oldest') list.reverse();
+    else if (f.sortKey === 'unread') list.sort((a, b) => (a.read_at ? 1 : 0) - (b.read_at ? 1 : 0));
     const body = list.length
       ? `<div class="pnotices">${list.map((n) => `<a class="pnotice${n.read_at ? '' : ' is-new'}" href="/portal/notices/${n.id}"><span class="eyebrow">${ui.date(n.publish_at || n.created_at)}${n.read_at ? '' : ` · ${ui.esc(tr('por|New'))}`}</span><b>${ui.esc(noticeTitle(n))}</b><p>${ui.esc(String(noticeBody(n)).slice(0, 180))}${String(noticeBody(n)).length > 180 ? '…' : ''}</p></a>`).join('')}</div>`
       : ui.empty(tr('por|No notices right now.'));
-    page(req, res, { title: tr('por|Notices'), active: 'notices', body });
+    page(req, res, { title: tr('por|Notices'), active: 'notices', body: f.html + body });
   });
   pr.get('/notices/:id', requireTenant, (req, res, next) => {
     const n = noticesFor(req).find((x) => x.id === h.int(req.params.id));
@@ -807,7 +818,8 @@ ${quick}
   router.get('/portal', (req, res) => {
     const csrf = req.session.csrf;
     const users = db.all('SELECT u.*, b.name brand FROM portal_users u JOIN brands b ON b.id = u.brand_id ORDER BY b.name, u.name');
-    const notices = db.all("SELECT n.*, (SELECT COUNT(*) FROM portal_notice_reads r WHERE r.notice_id = n.id) reads FROM portal_notices n WHERE n.kind = 'notice' ORDER BY n.id DESC LIMIT 100");
+    const nf = h.listFilters(req, { cols: { date: 'n.created_at' }, dateLabel: tr('por|Notices'), sorts: [['newest', 'sort|Newest first', 'n.id DESC'], ['oldest', 'sort|Oldest first', 'n.id ASC'], ['name', 'sort|Name: A to Z', 'n.title_en COLLATE NOCASE']] });
+    const notices = db.all(`SELECT n.*, (SELECT COUNT(*) FROM portal_notice_reads r WHERE r.notice_id = n.id) reads FROM portal_notices n WHERE n.kind = 'notice'${nf.sql} ORDER BY ${nf.order} LIMIT 100`, ...nf.args);
     const sent = db.all("SELECT * FROM portal_notices WHERE kind != 'notice' ORDER BY id DESC LIMIT 15");
     const s = db.settings();
     const demoPw = db.value('SELECT COUNT(*) FROM portal_users WHERE demo = 1') ? db.setting('portal_demo_password') : '';
@@ -850,7 +862,7 @@ ${quick}
 <div class="grid grid--side">
   <div class="stack">
     ${ui.card(tr('por|Tenant accounts'), usersTable(req, users, { csrf }), { action: ui.btn(tr('por|Open the portal'), { href: '/portal', cls: 'btn--ghost btn--sm', ic: 'arrow', attrs: { target: '_blank', rel: 'noopener' } }) })}
-    ${ui.card(tr('por|Notices'), `${noticeRows}${noticeForm}`, { sub: ui.esc(tr('por|Announcements tenants see on their home page.')) })}
+    ${ui.card(tr('por|Notices'), `${nf.html}${noticeRows}${noticeForm}`, { sub: ui.esc(tr('por|Announcements tenants see on their home page.')) })}
     ${sent.length ? ui.card(tr('por|Notifications sent'), `<ul class="list">${sent.map((n) => { const r = receipts(n)[0]; return `<li><a href="/admin/portal/notices/${n.id}"><span class="what"><b>${ui.esc(noticeTitle(n))}</b><small>${ui.esc([r ? r.brand : '', ui.dt(n.created_at)].filter(Boolean).join(' · '))}</small></span>${seenBadge(r && r.seen)}</a></li>`; }).join('')}</ul>`, { sub: ui.esc(tr('por|Cheques deposited or returned, and other messages to one tenant, with whether they saw them.')) }) : ''}
   </div>
   <div class="stack">${invite}${instructions}${h.payments && h.payments.adminCard ? h.payments.adminCard(req) : ''}</div>

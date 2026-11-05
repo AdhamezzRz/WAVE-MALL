@@ -310,11 +310,18 @@ module.exports = function maintenance(router, h) {
 
   // ---------- work orders ----------
   const PER = 25;
-  router.get('/maintenance/orders', (req, res) => {
-    generate(req.user);
+  // The work-order list as filtered: view tab, status, category, priority, source, the date it was
+  // raised, tenant or lease, and the sort order. The page and its CSV export share it.
+  function woQuery(req) {
     const t = now();
     const q = req.query;
     const view = ['open', 'late', 'mine', 'closed', 'all'].includes(q.view) ? q.view : 'open';
+    const lf = h.listFilters(req, {
+      cols: { date: 'w.created_at' }, dateLabel: tr('mnt|Raised'), defaultSort: view === 'closed' ? 'resolved' : 'priority',
+      sorts: [['priority', 'sort|Priority', "CASE WHEN w.status IN ('resolved','closed') THEN 1 ELSE 0 END, w.priority, w.resolve_due"],
+        ['resolved', 'sort|Recently resolved', 'w.resolved_at DESC'], ['newest', 'sort|Newest first', 'w.created_at DESC'], ['oldest', 'sort|Oldest first', 'w.created_at'],
+        ['due', 'sort|Due date: soonest first', 'w.resolve_due IS NULL, w.resolve_due'], ['ref', 'sort|Reference', 'w.ref DESC']],
+    });
     const conds = [];
     const args = [];
     if (OPEN.concat(['resolved', 'closed']).includes(q.status)) { conds.push('w.status = ?'); args.push(q.status); } else if (view === 'open') conds.push("w.status IN ('new','assigned','in_progress','on_hold','reopened')");
@@ -325,29 +332,32 @@ module.exports = function maintenance(router, h) {
     if (PRIORITY[q.priority]) { conds.push('w.priority = ?'); args.push(Number(q.priority)); }
     if (SOURCES[q.source]) { conds.push('w.source = ?'); args.push(q.source); }
     // the date it was raised, and the tenant or its lease
-    const isDate = (d) => /^\d{4}-\d{2}-\d{2}$/.test(String(d || ''));
-    if (isDate(q.from)) { conds.push('substr(w.created_at, 1, 10) >= ?'); args.push(q.from); }
-    if (isDate(q.to)) { conds.push('substr(w.created_at, 1, 10) <= ?'); args.push(q.to); }
+    conds.push(...lf.where);
+    args.push(...lf.args);
     if (h.int(q.brand)) { conds.push('w.brand_id = ?'); args.push(h.int(q.brand)); }
     if (h.int(q.lease)) { conds.push('w.unit_id IN (SELECT unit_id FROM lease_units WHERE lease_id = ?)'); args.push(h.int(q.lease)); }
     const sql = conds.length ? `WHERE ${conds.join(' AND ')}` : '';
+    return { q, view, lf, sql, args };
+  }
+  router.get('/maintenance/orders', (req, res) => {
+    generate(req.user);
+    const { q, view, lf, sql, args } = woQuery(req);
     const total = db.value(`SELECT COUNT(*) FROM work_orders w ${sql}`, ...args);
     const pages = Math.max(1, Math.ceil(total / PER));
     const page = Math.min(pages, Math.max(1, h.int(q.page) || 1));
     const rows = db.all(`SELECT w.*, a.code asset_code, a.name asset_name, u.code unit_code, b.name brand_name, us.name assignee FROM work_orders w LEFT JOIN assets a ON a.id = w.asset_id
       LEFT JOIN units u ON u.id = w.unit_id LEFT JOIN brands b ON b.id = w.brand_id LEFT JOIN users us ON us.id = w.assignee_id ${sql}
-      ORDER BY ${view === 'closed' ? 'w.resolved_at DESC' : "CASE WHEN w.status IN ('resolved','closed') THEN 1 ELSE 0 END, w.priority, w.resolve_due"} LIMIT ? OFFSET ?`, ...args, PER, (page - 1) * PER);
+      ORDER BY ${lf.order}, w.id DESC LIMIT ? OFFSET ?`, ...args, PER, (page - 1) * PER);
     const viewTabs = [['open', tr('mnt|Open')], ['late', tr('mnt|Past SLA')], ['mine', tr('mnt|Assigned to me')], ['closed', tr('mnt|Resolved and closed')], ['all', tr('mnt|All')]]
       .map(([k, l]) => `<a class="tab${view === k && !q.status ? ' is-on' : ''}" href="/admin/maintenance/orders${k === 'open' ? '' : `?view=${k}`}">${ui.esc(l)}</a>`).join('');
     const filters = `<form method="get" class="filters" action="/admin/maintenance/orders"><input type="hidden" name="view" value="${ui.esc(view)}">
       ${ui.select('category', tr('mnt|Category'), cats(), q.category || '', { blank: tr('mnt|All categories') })}
       ${ui.select('priority', tr('mnt|Priority'), pris(), q.priority || '', { blank: tr('mnt|All priorities') })}
       ${ui.select('source', tr('mnt|Raised by'), tmap(SOURCES), q.source || '', { blank: tr('mnt|Anyone') })}
-      ${ui.input('from', `${tr('mnt|Raised')} · ${tr('From')}`, /^\d{4}-\d{2}-\d{2}$/.test(String(q.from || '')) ? q.from : '', { type: 'date' })}
-      ${ui.input('to', tr('To'), /^\d{4}-\d{2}-\d{2}$/.test(String(q.to || '')) ? q.to : '', { type: 'date' })}
       ${ui.select('brand', tr('Tenant'), db.all('SELECT DISTINCT b.id, b.name FROM brands b JOIN leases s ON s.brand_id = b.id ORDER BY b.name').map((b) => [b.id, b.name]), q.brand || '', { blank: tr('All') })}
       ${ui.select('lease', tr('Contract'), db.all("SELECT s.id, s.ref, b.name FROM leases s JOIN brands b ON b.id = s.brand_id WHERE s.status IN ('active','draft') ORDER BY s.ref DESC").map((l) => [l.id, `${l.ref} · ${l.name}`]), q.lease || '', { blank: tr('All') })}
-      ${ui.btn(tr('mnt|Filter'), { cls: 'btn--ghost btn--sm' })}</form>`;
+      ${lf.fields}
+      ${ui.btn(tr('mnt|Filter'), { cls: 'btn--ghost btn--sm' })}${lf.quick}</form>`;
     const table = ui.table([
       { label: tr('mnt|Work order'), render: (w) => `<b>${ui.esc(tx(w.title))}</b><small class="sub">${ui.esc(w.ref)} · ${ui.esc(tr(CATEGORIES[w.category]))}${w.brand_name ? ` · ${ui.esc(w.brand_name)}` : ''}</small>` },
       { label: tr('mnt|Priority'), render: (w) => pBadge(w.priority) },
@@ -356,17 +366,20 @@ module.exports = function maintenance(router, h) {
       { label: tr('Status'), render: (w) => `${sBadge(w.status)}<small class="sub">${slaChip(w)}</small>` },
       { label: tr('mnt|Raised'), render: (w) => `${ui.esc(ago(w.created_at))}<small class="sub">${ui.esc(tr(SOURCES[w.source]))}</small>` },
     ], rows, { empty: ui.esc(tr('mnt|No work orders here.')), href: (w) => `/admin/maintenance/orders/${w.id}` });
-    const keep = Object.fromEntries(Object.entries({ view, status: q.status, category: q.category, priority: q.priority, source: q.source, from: q.from, to: q.to, brand: q.brand, lease: q.lease }).filter(([, v]) => v));
+    const keep = Object.fromEntries(Object.entries({ view, status: q.status, category: q.category, priority: q.priority, source: q.source, from: lf.from, to: lf.to, brand: q.brand, lease: q.lease, sort: q.sort }).filter(([, v]) => v));
+    const csvHref = `/admin/maintenance/orders.csv${Object.keys(keep).length ? `?${new URLSearchParams(keep).toString()}` : ''}`;
     h.page(req, res, {
       title: tr('mnt|Work orders'), crumbs: crumbs([null, tr('mnt|Work orders')]), active: '/admin/maintenance', wide: true,
-      body: `${tabs('/admin/maintenance/orders', req)}<nav class="tabs">${viewTabs}</nav>${ui.card(tn(total, 'mnt|{n} work order', 'mnt|{n} work orders'), `${filters}${table}${pager(ui, '/admin/maintenance/orders', keep, page, pages)}`, { action: ui.btn(tr('Export CSV'), { href: '/admin/maintenance/orders.csv', cls: 'btn--ghost btn--sm', ic: 'dl' }) })}`,
+      body: `${tabs('/admin/maintenance/orders', req)}<nav class="tabs">${viewTabs}</nav>${ui.card(tn(total, 'mnt|{n} work order', 'mnt|{n} work orders'), `${filters}${table}${pager(ui, '/admin/maintenance/orders', keep, page, pages)}`, { action: ui.btn(tr('Export CSV'), { href: csvHref, cls: 'btn--ghost btn--sm', ic: 'dl' }) })}`,
       actions: h.can(req, 'agent') ? ui.btn(tr('mnt|New work order'), { href: '/admin/maintenance/orders/new', cls: 'btn--primary', ic: 'plus' }) : '',
     });
   });
 
   router.get('/maintenance/orders.csv', (req, res) => {
+    // with the list's filters (from its Export button): those work orders in that order; otherwise all of them
+    const filtered = Object.keys(req.query || {}).length ? woQuery(req) : null;
     const rows = db.all(`SELECT w.*, a.code asset_code, u.code unit_code, b.name brand_name, us.name assignee FROM work_orders w LEFT JOIN assets a ON a.id = w.asset_id
-      LEFT JOIN units u ON u.id = w.unit_id LEFT JOIN brands b ON b.id = w.brand_id LEFT JOIN users us ON us.id = w.assignee_id ORDER BY w.created_at`);
+      LEFT JOIN units u ON u.id = w.unit_id LEFT JOIN brands b ON b.id = w.brand_id LEFT JOIN users us ON us.id = w.assignee_id ${filtered ? `${filtered.sql} ORDER BY ${filtered.lf.order}, w.id DESC` : 'ORDER BY w.created_at'}`, ...(filtered ? filtered.args : []));
     const cols = [['ref', tr('Ref')], ['title', tr('Title')], [(w) => tr(CATEGORIES[w.category]), tr('mnt|Category')], [(w) => `P${w.priority}`, tr('mnt|Priority')], [(w) => tr(STATUS[w.status]), tr('Status')],
       [(w) => tr(SOURCES[w.source]), tr('mnt|Raised by')], ['unit_code', tr('mnt|Unit')], ['asset_code', tr('mnt|Asset')], ['brand_name', tr('Brand')], [(w) => w.assignee || w.contractor, tr('mnt|With')],
       ['created_at', tr('mnt|Raised')], ['response_due', tr('mnt|Respond by')], ['responded_at', tr('mnt|Responded')], ['resolve_due', tr('mnt|Fix by')], ['resolved_at', tr('mnt|Resolved')],
@@ -592,13 +605,22 @@ ${w.description ? `<p class="mnt-desc">${ui.esc(tx(w.description))}</p>` : ''}
     if (CATEGORIES[q.category]) { conds.push('a.category = ?'); args.push(q.category); }
     if (CRIT[q.criticality]) { conds.push('a.criticality = ?'); args.push(q.criticality); }
     if (q.warranty === 'soon') { conds.push('a.warranty_until IS NOT NULL AND a.warranty_until <= ?'); args.push(M.addDays(today(), 90)); }
+    // the installation date range and the sort order (most critical first unless chosen)
+    const lf = h.listFilters(req, {
+      cols: { date: 'a.install_date' }, dateLabel: tr('mnt|Installed'),
+      sorts: [['critical', 'sort|Most critical first', "CASE a.criticality WHEN 'high' THEN 0 WHEN 'medium' THEN 1 ELSE 2 END, a.code"], ['ref', 'sort|Reference', 'a.code'],
+        ['name', 'sort|Name: A to Z', 'a.name COLLATE NOCASE, a.code'], ['newest', 'sort|Newest first', 'a.install_date IS NULL, a.install_date DESC, a.code'], ['oldest', 'sort|Oldest first', 'a.install_date IS NULL, a.install_date, a.code'],
+        ['warranty', 'sort|Warranty: ending soonest', 'a.warranty_until IS NULL, a.warranty_until, a.code'], ['open', 'sort|Most open work orders', 'open_wos DESC, a.code']],
+    });
+    conds.push(...lf.where);
+    args.push(...lf.args);
     const sql = conds.length ? `WHERE ${conds.join(' AND ')}` : '';
     const total = db.value(`SELECT COUNT(*) FROM assets a ${sql}`, ...args);
     const pages = Math.max(1, Math.ceil(total / PER));
     const page = Math.min(pages, Math.max(1, h.int(q.page) || 1));
     const rows = db.all(`SELECT a.*, u.code unit_code, c.counterparty, (SELECT COUNT(*) FROM work_orders w WHERE w.asset_id = a.id AND w.status IN ('new','assigned','in_progress','on_hold','reopened')) open_wos
-      FROM assets a LEFT JOIN units u ON u.id = a.unit_id LEFT JOIN contracts c ON c.id = a.contract_id ${sql} ORDER BY CASE a.criticality WHEN 'high' THEN 0 WHEN 'medium' THEN 1 ELSE 2 END, a.code LIMIT ? OFFSET ?`, ...args, PER, (page - 1) * PER);
-    const filters = `<form method="get" class="filters" action="/admin/maintenance/assets">${ui.select('category', tr('mnt|Category'), cats(), q.category || '', { blank: tr('mnt|All categories') })}${ui.select('criticality', tr('mnt|Criticality'), tmap(CRIT), q.criticality || '', { blank: tr('mnt|Any') })}${ui.select('warranty', tr('mnt|Warranty'), { soon: tr('mnt|Ended or ending in 90 days') }, q.warranty || '', { blank: tr('mnt|Any') })}${ui.btn(tr('mnt|Filter'), { cls: 'btn--ghost btn--sm' })}</form>`;
+      FROM assets a LEFT JOIN units u ON u.id = a.unit_id LEFT JOIN contracts c ON c.id = a.contract_id ${sql} ORDER BY ${lf.order} LIMIT ? OFFSET ?`, ...args, PER, (page - 1) * PER);
+    const filters = `<form method="get" class="filters" action="/admin/maintenance/assets">${ui.select('category', tr('mnt|Category'), cats(), q.category || '', { blank: tr('mnt|All categories') })}${ui.select('criticality', tr('mnt|Criticality'), tmap(CRIT), q.criticality || '', { blank: tr('mnt|Any') })}${ui.select('warranty', tr('mnt|Warranty'), { soon: tr('mnt|Ended or ending in 90 days') }, q.warranty || '', { blank: tr('mnt|Any') })}${lf.fields}${ui.btn(tr('mnt|Filter'), { cls: 'btn--ghost btn--sm' })}${lf.quick}</form>`;
     const table = ui.table([
       { label: tr('mnt|Asset'), render: (a) => `<b>${ui.esc(a.code)} · ${ui.esc(tx(a.name))}</b><small class="sub">${ui.esc(tr(CATEGORIES[a.category]))}${a.make ? ` · ${ui.esc(tx(a.make))}${a.model ? ` ${ui.esc(a.model)}` : ''}` : ''}</small>` },
       { label: tr('mnt|Where'), render: (a) => ui.esc([a.unit_code, a.location ? tx(a.location) : null].filter(Boolean).join(' · ') || '—') },
@@ -607,7 +629,7 @@ ${w.description ? `<p class="mnt-desc">${ui.esc(tx(w.description))}</p>` : ''}
       { label: tr('mnt|Service contract'), render: (a) => ui.esc(a.counterparty || '—') },
       { label: tr('mnt|Open'), num: true, render: (a) => ui.n0(a.open_wos) },
     ], rows, { empty: ui.esc(tr('mnt|No assets yet.')), href: (a) => `/admin/maintenance/assets/${a.id}` });
-    const keep = Object.fromEntries(Object.entries({ category: q.category, criticality: q.criticality, warranty: q.warranty }).filter(([, v]) => v));
+    const keep = Object.fromEntries(Object.entries({ category: q.category, criticality: q.criticality, warranty: q.warranty, from: lf.from, to: lf.to, sort: q.sort }).filter(([, v]) => v));
     h.page(req, res, {
       title: tr('mnt|Assets'), crumbs: crumbs([null, tr('mnt|Assets')]), active: '/admin/maintenance', wide: true,
       body: `${tabs('/admin/maintenance/assets', req)}${ui.card(tn(total, 'mnt|{n} asset', 'mnt|{n} assets'), `${filters}${table}${pager(ui, '/admin/maintenance/assets', keep, page, pages)}`)}`,
@@ -738,14 +760,23 @@ ${w.description ? `<p class="mnt-desc">${ui.esc(tx(w.description))}</p>` : ''}
     const nav = `<form method="get" action="/admin/maintenance/ppm" class="row spc-nav"><button class="btn btn--ghost btn--sm" name="month" value="${prev}" aria-label="${ui.esc(tr('spc|Previous month'))}">‹</button><b>${ui.esc(ui.monthYear(key))}</b><button class="btn btn--ghost btn--sm" name="month" value="${next}" aria-label="${ui.esc(tr('spc|Next month'))}">›</button></form>`;
     const legend = `<ul class="legend legend--row">${[['planned', tr('mnt|Planned')], ['open', tr('mnt|Work order open')], ['done', tr('mnt|Done')], ['late', tr('mnt|Overdue')]].map(([k, l]) => `<li><i class="mnt-dot mnt-dot--${k}"></i><span>${ui.esc(l)}</span></li>`).join('')}</ul>`;
     const cal = `<div class="mnt-cal"><div class="mnt-cal__h">${ui.weekdays().map((x) => `<span>${ui.esc(x)}</span>`).join('')}</div><div class="mnt-cal__g">${cells.join('')}</div></div>${legend}`;
+    // the plan list: a next-due range and the sort order (the calendar above shows every plan)
+    const lf = h.listFilters(req, {
+      cols: { date: 'p.next_due' }, dateLabel: tr('mnt|Next due'), keep: ['month'],
+      sorts: [['due', 'sort|Due date: soonest first', 'p.active DESC, p.next_due'], ['due_late', 'sort|Due date: latest first', 'p.active DESC, p.next_due DESC'],
+        ['name', 'sort|Name: A to Z', 'p.title COLLATE NOCASE'], ['done', 'sort|Last done: most recent', 'p.last_done IS NULL, p.last_done DESC']],
+    });
+    const listed = lf.active || lf.sortKey !== 'due'
+      ? db.all(`SELECT p.*, a.code asset_code, a.name asset_name, u.name assignee FROM ppm_plans p LEFT JOIN assets a ON a.id = p.asset_id LEFT JOIN users u ON u.id = p.assignee_id WHERE 1 = 1${lf.sql} ORDER BY ${lf.order}`, ...lf.args)
+      : plans;
     const table = ui.table([
       { label: tr('mnt|Plan'), render: (p) => `<b>${ui.esc(tx(p.title))}</b><small class="sub">${p.asset_code ? `${ui.esc(p.asset_code)} · ${ui.esc(tx(p.asset_name))}` : ui.esc(tr(CATEGORIES[p.category]))}</small>` },
       { label: tr('mnt|How often'), render: (p) => ui.esc(every(p)) },
       { label: tr('mnt|Next due'), render: (p) => (p.active ? ui.date(p.next_due) : ui.badge('off', tr('mnt|Paused'), 'mute')) },
       { label: tr('mnt|Last done'), render: (p) => ui.date(p.last_done) },
       { label: tr('mnt|With'), render: (p) => ui.esc(p.assignee || (p.contractor ? tx(p.contractor) : '—')) },
-    ], plans, { empty: ui.esc(tr('mnt|No preventive plans yet.')), href: (p) => `/admin/maintenance/ppm/${p.id}` });
-    const body = `${tabs('/admin/maintenance/ppm', req)}${ui.card(tr('mnt|Preventive calendar'), cal, { action: nav, sub: ui.esc(tr('mnt|Work orders are raised {n} days before each date.', { n: PPM_LOOKAHEAD })) })}${ui.card(tn(plans.length, 'mnt|{n} plan', 'mnt|{n} plans'), table)}`;
+    ], listed, { empty: ui.esc(plans.length ? tr('sort|No plans match these filters.') : tr('mnt|No preventive plans yet.')), href: (p) => `/admin/maintenance/ppm/${p.id}` });
+    const body = `${tabs('/admin/maintenance/ppm', req)}${ui.card(tr('mnt|Preventive calendar'), cal, { action: nav, sub: ui.esc(tr('mnt|Work orders are raised {n} days before each date.', { n: PPM_LOOKAHEAD })) })}${lf.html}${ui.card(tn(listed.length, 'mnt|{n} plan', 'mnt|{n} plans'), table)}`;
     h.page(req, res, {
       title: tr('mnt|Preventive maintenance'), crumbs: crumbs([null, tr('mnt|Preventive')]), active: '/admin/maintenance', wide: true, body,
       actions: h.can(req, 'manager') ? ui.btn(tr('mnt|Add a plan'), { href: '/admin/maintenance/ppm/new', cls: 'btn--primary', ic: 'plus' }) : '',

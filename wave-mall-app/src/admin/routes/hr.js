@@ -160,6 +160,27 @@ module.exports = function hr(router, h) {
   const money = (n) => ui.money(n, { cur: false });
 
   // ---------- the people overview and directory ----------
+  // The employee directory as filtered: search, department, type, status, a hire-date range and
+  // the sort order (by name unless chosen). The page and its CSV export share it.
+  function directory(req) {
+    const q = req.query;
+    const lf = h.listFilters(req, {
+      cols: { date: 'e.hire_date' }, dateLabel: tr('hr|Hired'),
+      sorts: [['name', 'sort|Name: A to Z', 'e.name'], ['name_desc', 'sort|Name: Z to A', 'e.name DESC'],
+        ['newest', 'sort|Newest first', 'e.hire_date DESC, e.name'], ['oldest', 'sort|Oldest first', 'e.hire_date, e.name'],
+        ['amount_desc', 'sort|Salary: highest first', 'e.basic_salary + e.allowances DESC, e.name'], ['ref', 'sort|Reference', 'e.code']],
+    });
+    const where = [...lf.where];
+    const args = [...lf.args];
+    if (q.q) { where.push('(e.name LIKE ? OR e.name_ar LIKE ? OR e.code LIKE ? OR e.phone LIKE ? OR e.position LIKE ?)'); args.push(...Array(5).fill(`%${h.str(q.q, 80)}%`)); }
+    if (q.dept === 'none') where.push('e.department_id IS NULL');
+    else if (h.int(q.dept)) { where.push('e.department_id = ?'); args.push(h.int(q.dept)); }
+    if (TYPES[q.type]) { where.push('e.employment_type = ?'); args.push(q.type); }
+    const st = ['active', 'left', 'all'].includes(q.status) ? q.status : 'active';
+    if (st !== 'all') { where.push('e.status = ?'); args.push(st); }
+    const list = db.all(`SELECT e.*, d.name dept FROM employees e LEFT JOIN departments d ON d.id = e.department_id ${where.length ? `WHERE ${where.join(' AND ')}` : ''} ORDER BY ${lf.order}`, ...args);
+    return { list, st, lf };
+  }
   router.get('/hr', RH, (req, res) => {
     const q = req.query;
     const t = today();
@@ -214,21 +235,16 @@ module.exports = function hr(router, h) {
       : `<p class="muted pad">${esc(tr('Nothing in the next 60 days.'))}</p>`;
 
     // the directory
-    const where = [];
-    const args = [];
-    if (q.q) { where.push('(e.name LIKE ? OR e.name_ar LIKE ? OR e.code LIKE ? OR e.phone LIKE ? OR e.position LIKE ?)'); args.push(...Array(5).fill(`%${h.str(q.q, 80)}%`)); }
-    if (q.dept === 'none') where.push('e.department_id IS NULL');
-    else if (h.int(q.dept)) { where.push('e.department_id = ?'); args.push(h.int(q.dept)); }
-    if (TYPES[q.type]) { where.push('e.employment_type = ?'); args.push(q.type); }
-    const st = ['active', 'left', 'all'].includes(q.status) ? q.status : 'active';
-    if (st !== 'all') { where.push('e.status = ?'); args.push(st); }
-    const list = emps(where.length ? `WHERE ${where.join(' AND ')}` : '', ...args);
+    const { list, st, lf } = directory(req);
     const filters = `<form class="filters" method="get" action="/admin/hr">
       <input type="search" name="q" value="${esc(q.q || '')}" placeholder="${esc(tr('Search name, code, phone, position'))}" aria-label="${esc(tr('Search'))}">
       ${ui.select('dept', tr('hr|Department'), [...depts().map((d) => [d.id, deptName(d.name)]), ['none', tr('hr|No department')]], q.dept, { blank: tr('All departments'), cls: 'f--inline' })}
       ${ui.select('type', tr('hr|Employment type'), labels(TYPES), q.type, { blank: tr('Any type'), cls: 'f--inline' })}
       ${ui.select('status', tr('Status'), [['active', tr('hr|Active')], ['left', tr('hr|Left')], ['all', tr('All')]], st, { cls: 'f--inline' })}
+      ${lf.fields}
       ${ui.btn(esc(tr('hr|Filter')), { cls: 'btn--ghost btn--sm' })}
+      ${lf.active || q.q || q.dept || q.type || (q.status && q.status !== 'active') ? `<a class="btn btn--ghost btn--sm" href="/admin/hr">${esc(tr('Clear'))}</a>` : ''}
+      ${lf.quick}
     </form>`;
     const table = ui.table(
       [
@@ -248,7 +264,7 @@ module.exports = function hr(router, h) {
   ${ui.card(tr('hr|This month'), momentList, { sub: esc(tr('Birthdays and work anniversaries')) })}
   ${ui.card(tr('Coming up'), soonList, { sub: esc(tr('Contracts, probation and leave')) })}
 </div>
-<div class="hr-dir">${filters}${ui.card(tn(list.length, '{n} person', '{n} people'), table, { action: ui.btn(esc(tr('Export CSV')), { href: '/admin/hr/employees.csv', cls: 'btn--ghost btn--sm', ic: 'dl' }) })}</div>`;
+<div class="hr-dir">${filters}${ui.card(tn(list.length, '{n} person', '{n} people'), table, { action: ui.btn(esc(tr('Export CSV')), { href: `/admin/hr/employees.csv${String(req.originalUrl).includes('?') ? `?${String(req.originalUrl).split('?')[1]}` : ''}`, cls: 'btn--ghost btn--sm', ic: 'dl' }) })}</div>`;
     h.page(req, res, {
       title: tr('Employees'), active: '/admin/hr', wide: true, body,
       actions: `${ui.btn(esc(tr('hr|Departments')), { href: '/admin/hr/departments', cls: 'btn--ghost' })}${ui.btn(esc(tr('New employee')), { href: '/admin/hr/employees/new', cls: 'btn--primary', ic: 'plus' })}`,
@@ -476,7 +492,8 @@ module.exports = function hr(router, h) {
     h.back(req, res, `/admin/hr/employees/${e.id}`, 'ok', tr('{name} is active again.', { name: nm(e) }));
   });
   router.get('/hr/employees.csv', RH, (req, res) => {
-    const rows = emps();
+    // the directory as filtered and sorted on the page (no filters: every employee, by name)
+    const rows = Object.keys(req.query || {}).length ? directory(req).list : emps();
     const cols = [['code', tr('hr|Employee code')], ['name', tr('Full name (English)')], ['name_ar', tr('Full name (Arabic)')], [(e) => deptName(e.dept), tr('hr|Department')], [(e) => tx(e.position), tr('hr|Position')], [(e) => lbl(TYPES, e.employment_type), tr('hr|Employment type')], ['hire_date', tr('hr|Hire date')], ['contract_end', tr('hr|Contract ends')], ['phone', tr('Phone')], ['email', tr('Email')], ['national_id', tr('National ID')], ['basic_salary', tr('hr|Basic salary')], ['allowances', tr('hr|Allowances')], ['insurance_no', tr('hr|Social insurance number')], ['bank_name', tr('hr|Bank')], ['iban', tr('hr|IBAN')], [(e) => (e.status === 'left' ? tr('hr|Left') : tr('hr|Active')), tr('Status')]];
     h.log(req, 'Exported', 'export', null, 'Employees');
     res.set('Content-Disposition', `attachment; filename="employees-${today()}.csv"`).type('text/csv; charset=utf-8').send(csv(rows, cols));
@@ -548,7 +565,14 @@ module.exports = function hr(router, h) {
     if (tab === 'rejected') where.push("l.status IN ('rejected','cancelled')");
     else if (tab !== 'all') { where.push('l.status = ?'); args.push(tab); }
     if (empId) { where.push('l.employee_id = ?'); args.push(empId); }
-    const rows = db.all(`SELECT l.*, e.name, e.name_ar, e.code, u.name decider FROM leave_requests l JOIN employees e ON e.id = l.employee_id LEFT JOIN users u ON u.id = l.decided_by ${where.length ? `WHERE ${where.join(' AND ')}` : ''} ORDER BY ${tab === 'pending' ? 'l.start_date' : 'l.start_date DESC'} LIMIT 300`, ...args);
+    // a start-date range and the sort order: to approve, the soonest first; otherwise the latest first
+    const lf = h.listFilters(req, {
+      cols: { date: 'l.start_date' }, dateLabel: tr('hr|Dates'), keep: ['tab', 'employee', 'month'], defaultSort: tab === 'pending' ? 'oldest' : 'newest',
+      sort: { date: 'l.start_date', name: 'e.name' }, sorts: [['days', 'sort|Longest first', 'l.days DESC, l.start_date']],
+    });
+    where.push(...lf.where);
+    args.push(...lf.args);
+    const rows = db.all(`SELECT l.*, e.name, e.name_ar, e.code, u.name decider FROM leave_requests l JOIN employees e ON e.id = l.employee_id LEFT JOIN users u ON u.id = l.decided_by ${where.length ? `WHERE ${where.join(' AND ')}` : ''} ORDER BY ${lf.order} LIMIT 300`, ...args);
     const counts = Object.fromEntries(db.all('SELECT status, COUNT(*) n FROM leave_requests GROUP BY status').map((r) => [r.status, r.n]));
     const base = empId ? `/admin/hr/leave?employee=${empId}&` : '/admin/hr/leave?';
     const tabNav = tabs([[`${base}tab=pending`, tr('To approve'), 'pending', counts.pending], [`${base}tab=approved`, tr('leave|Approved'), 'approved'], [`${base}tab=rejected`, tr('Declined or cancelled'), 'rejected'], [`${base}tab=all`, tr('All'), 'all']], tab);
@@ -608,7 +632,7 @@ module.exports = function hr(router, h) {
         ${ui.input('reason', tr('Reason'), '', { cls: 'span-all' })}
       </div><label class="check"><input type="checkbox" name="approve" value="1"> ${esc(tr('hr|Approve now'))}</label>${ui.btn(esc(tr('hr|Add request')), { cls: 'btn--primary btn--sm' })}`, { cls: 'stack', attrs: { id: 'new' } }) : `<p class="muted pad">${esc(tr('Add employees first.'))}</p>`);
     const filterEmp = empId ? `<p class="hint">${esc(tr('Showing one person.'))} <a href="/admin/hr/leave?tab=${tab}">${esc(tr('Show everyone'))}</a></p>` : '';
-    const body = `${tabNav}${filterEmp}<div class="grid grid--side"><div class="stack">${ui.card(tn(rows.length, '{n} request', '{n} requests'), table)}${ui.card(tr('Who is off in {month}', { month: ui.monthYear(month) }), strip, { action: monthNav, cls: 'offcard', sub: '' }).replace('<section class="card offcard', '<section id="off" class="card offcard')}</div><div class="stack">${newForm}</div></div>
+    const body = `${tabNav}${filterEmp}<div class="grid grid--side"><div class="stack">${lf.html}${ui.card(tn(rows.length, '{n} request', '{n} requests'), table)}${ui.card(tr('Who is off in {month}', { month: ui.monthYear(month) }), strip, { action: monthNav, cls: 'offcard', sub: '' }).replace('<section class="card offcard', '<section id="off" class="card offcard')}</div><div class="stack">${newForm}</div></div>
 ${ui.card(tr('Balances {year}', { year: year() }), balTable, { sub: esc(tr('Annual leave in working days. Casual leave counts within annual leave, up to {n} days a year.', { n: CASUAL_MAX })) })}`;
     h.page(req, res, { title: tr('nav|Leave'), active: '/admin/hr/leave', wide: true, body });
   });
@@ -693,10 +717,20 @@ ${ui.card(tr('Balances {year}', { year: year() }), balTable, { sub: esc(tr('Annu
   router.get('/hr/payroll', RH, (req, res) => {
     const csrf = req.session.csrf;
     const runs = db.all('SELECT * FROM payroll_runs ORDER BY period DESC');
-    const rows = runs.map((r) => ({ ...r, lines: linesOf(r.id) })).map((r) => ({ ...r, tot: totals(r.lines) }));
+    const all = runs.map((r) => ({ ...r, lines: linesOf(r.id) })).map((r) => ({ ...r, tot: totals(r.lines) }));
+    // the list: a month range and the sort order (the newest month first unless chosen)
+    const lf = h.listFilters(req, {
+      cols: { date: "period || '-01'" }, dateLabel: tr('hr|Month'),
+      sorts: [['newest', 'sort|Newest first', 'period DESC'], ['oldest', 'sort|Oldest first', 'period'], ['amount_desc', 'sort|Amount: highest first', 'period DESC'], ['amount_asc', 'sort|Amount: lowest first', 'period DESC']],
+    });
+    const keepIds = lf.active ? new Set(db.all(`SELECT id FROM payroll_runs WHERE 1 = 1${lf.sql}`, ...lf.args).map((r) => r.id)) : null;
+    const rows = all.filter((r) => !keepIds || keepIds.has(r.id));
+    if (lf.sortKey === 'oldest') rows.reverse();
+    else if (lf.sortKey === 'amount_desc') rows.sort((a, b) => b.tot.net - a.tot.net);
+    else if (lf.sortKey === 'amount_asc') rows.sort((a, b) => a.tot.net - b.tot.net);
     const t = today().slice(0, 7);
     const next = runs.some((r) => r.period === t) ? M.addMonths(`${t}-01`, 1).slice(0, 7) : t;
-    const last = rows.find((r) => r.status !== 'draft');
+    const last = all.find((r) => r.status !== 'draft');
     const kpis = last ? [
       ui.kpi({ label: tr('hr|Last payroll'), value: esc(ui.monthYear(last.period)), sub: esc(lbl(RUN_STATUS, last.status)), href: `/admin/hr/payroll/${last.id}` }),
       ui.kpi({ label: tr('hr|Net paid'), value: ui.money(last.tot.net, { compact: true }), sub: esc(tn(last.lines.length, '{n} person', '{n} people')) }),
@@ -722,7 +756,7 @@ ${ui.card(tr('Balances {year}', { year: year() }), balTable, { sub: esc(tr('Annu
       <div><dt>${esc(tr('hr|Employer share'))}</dt><dd>${esc(s.si_employer_pct)}%</dd></div>
       <div><dt>${esc(tr('hr|Insured wage'))}</dt><dd>${ui.money(Number(s.si_min_wage))} – ${ui.money(Number(s.si_max_wage))}</dd></div>
       <div><dt>${esc(tr('hr|Working days a month'))}</dt><dd>${esc(s.work_days_month)}</dd></div></dl>${h.can(req, 'admin') ? `<p class="small"><a href="/admin/settings#people">${esc(tr('Change in Settings'))}</a></p>` : ''}`);
-    h.page(req, res, { title: tr('Payroll'), active: '/admin/hr/payroll', wide: true, body: `${kpis ? `<div class="kpis kpis--4">${kpis}</div>` : ''}<div class="grid grid--side">${ui.card(tn(rows.length, '{n} payroll', '{n} payrolls'), table)}<div class="stack">${create}${rules}</div></div>` });
+    h.page(req, res, { title: tr('Payroll'), active: '/admin/hr/payroll', wide: true, body: `${kpis ? `<div class="kpis kpis--4">${kpis}</div>` : ''}<div class="grid grid--side"><div class="stack">${lf.html}${ui.card(tn(rows.length, '{n} payroll', '{n} payrolls'), table)}</div><div class="stack">${create}${rules}</div></div>` });
   });
 
   router.post('/hr/payroll', RH, (req, res) => {

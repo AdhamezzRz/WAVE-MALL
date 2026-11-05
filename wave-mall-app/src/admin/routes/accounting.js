@@ -265,8 +265,10 @@ module.exports = function accounting(router, h) {
   // Journal
   // =====================================================================================
   router.get('/accounting/journal', RF, (req, res) => {
+    // date range, quick ranges and the sort order (h.listFilters); the default is the newest first
+    const lf = h.listFilters(req, { cols: { date: 'e.date' }, dateLabel: tr('acc|Date'), sort: { date: 'e.date', amount: 'amount', ref: 'e.ref' } });
     const q = {
-      q: h.str(req.query.q, 80), from: isDate(req.query.from) ? req.query.from : '', to: isDate(req.query.to) ? req.query.to : '',
+      q: h.str(req.query.q, 80), from: lf.from, to: lf.to,
       kind: ENTRY_KINDS[req.query.kind] ? req.query.kind : '', account: h.int(req.query.account) || '',
     };
     const where = [];
@@ -281,16 +283,16 @@ module.exports = function accounting(router, h) {
     const total = db.value(`SELECT COUNT(*) FROM acc_entries e ${W}`, ...args);
     const pages = Math.max(1, Math.ceil(total / PER));
     const pg = Math.min(pages, Math.max(1, h.int(req.query.page) || 1));
-    const rows = db.all(`SELECT e.*, (SELECT SUM(debit) FROM acc_lines WHERE entry_id = e.id) amount, u.name user_name FROM acc_entries e LEFT JOIN users u ON u.id = e.user_id ${W} ORDER BY e.date DESC, e.id DESC LIMIT ${PER} OFFSET ${(pg - 1) * PER}`, ...args);
-    const link = (n) => `/admin/accounting/journal?${qs({ ...q, page: n > 1 ? n : '' })}`.replace(/\?$/, '');
+    const rows = db.all(`SELECT e.*, (SELECT SUM(debit) FROM acc_lines WHERE entry_id = e.id) amount, u.name user_name FROM acc_entries e LEFT JOIN users u ON u.id = e.user_id ${W} ORDER BY ${lf.order}, e.id ${lf.sortKey === 'oldest' || lf.sortKey === 'amount_asc' ? 'ASC' : 'DESC'} LIMIT ${PER} OFFSET ${(pg - 1) * PER}`, ...args);
+    const link = (n) => `/admin/accounting/journal?${qs({ ...q, sort: lf.sortKey !== 'newest' ? lf.sortKey : '', page: n > 1 ? n : '' })}`.replace(/\?$/, '');
     const filters = `<form class="filters" method="get" action="/admin/accounting/journal">
       <input type="search" name="q" value="${esc(q.q)}" placeholder="${esc(tr('acc|Search references and descriptions…'))}" aria-label="${esc(tr('Search'))}">
-      ${ui.input('from', tr('acc|From'), q.from, { type: 'date', cls: 'f--inline' })}
-      ${ui.input('to', tr('acc|To'), q.to, { type: 'date', cls: 'f--inline' })}
       ${ui.select('kind', tr('acc|Type'), Object.keys(ENTRY_KINDS).map((k) => [k, lbl(ENTRY_KINDS, k)]), q.kind, { blank: tr('acc|All types'), cls: 'f--inline', attrs: { 'data-autosubmit': true } })}
       ${ui.select('account', tr('acc|Account'), accOptions(), q.account, { blank: tr('acc|All accounts'), cls: 'f--inline', attrs: { 'data-autosubmit': true } })}
+      ${lf.fields}
       ${ui.btn(esc(tr('Filter')), { cls: 'btn--ghost btn--sm' })}
       ${Object.values(q).some(Boolean) ? `<a class="btn btn--ghost btn--sm" href="/admin/accounting/journal">${esc(tr('acc|Clear'))}</a>` : ''}
+      ${lf.quick}
     </form>`;
     const table = ui.table([
       { label: tr('acc|Date'), render: (e) => ui.date(e.date) },
@@ -641,7 +643,12 @@ module.exports = function accounting(router, h) {
     const unpaidN = (counts.approved || 0) + (counts.partial || 0);
     const tab = ['draft', 'unpaid', 'paid', 'all'].includes(req.query.tab) ? req.query.tab : counts.draft && !unpaidN ? 'draft' : 'unpaid';
     const cond = { draft: "b.status = 'draft'", unpaid: "b.status IN ('approved','partial')", paid: "b.status = 'paid'", all: '1 = 1' }[tab];
-    const bills = db.all(`SELECT b.*, v.name vendor FROM acc_bills b JOIN acc_vendors v ON v.id = b.vendor_id WHERE ${cond} ORDER BY ${tab === 'unpaid' ? 'b.due_date' : 'b.date DESC, b.id DESC'} LIMIT 200`);
+    // date range on the bill date and the sort order; to pay: soonest due first, otherwise newest first
+    const lf = h.listFilters(req, {
+      cols: { date: 'b.date' }, dateLabel: tr('acc|Date'), keep: ['tab'], defaultSort: tab === 'unpaid' ? 'due' : 'newest',
+      sort: { date: 'b.date', due: 'b.due_date', amount: 'b.total', name: 'v.name', ref: 'b.ref' },
+    });
+    const bills = db.all(`SELECT b.*, v.name vendor FROM acc_bills b JOIN acc_vendors v ON v.id = b.vendor_id WHERE ${cond}${lf.sql} ORDER BY ${lf.order}, b.id ${['oldest', 'due', 'amount_asc', 'name'].includes(lf.sortKey) ? 'ASC' : 'DESC'} LIMIT 200`, ...lf.args);
     const owed = r2(db.value("SELECT COALESCE(SUM(total - paid),0) FROM acc_bills WHERE status IN ('approved','partial')"));
     const late = r2(db.value("SELECT COALESCE(SUM(total - paid),0) FROM acc_bills WHERE status IN ('approved','partial') AND due_date < ?", t));
     const soon = r2(db.value("SELECT COALESCE(SUM(total - paid),0) FROM acc_bills WHERE status IN ('approved','partial') AND due_date >= ? AND due_date <= ?", t, M.addDays(t, 14)));
@@ -651,7 +658,8 @@ module.exports = function accounting(router, h) {
       ui.kpi({ label: tr('acc|Due in 14 days'), value: fmt(soon), sub: esc(tr('acc|Plan the transfers')) }),
       ui.kpi({ label: tr('acc|To approve'), value: ui.n0(counts.draft || 0), sub: esc(tr('acc|Draft bills, incl. maintenance costs')), href: '/admin/accounting/payables?tab=draft', tone: counts.draft ? 'kpi--alert' : '' }),
     ].join('');
-    const subTabs = `<nav class="tabs tabs--sub">${[['unpaid', tr('acc|To pay'), unpaidN], ['draft', tr('acc|To approve'), counts.draft], ['paid', tr('accbill|Paid'), 0], ['all', tr('acc|All'), 0]].map(([k, l, n]) => `<a class="tab${tab === k ? ' is-on' : ''}" href="/admin/accounting/payables?tab=${k}">${esc(l)}${n ? ` <b class="nav__count">${n}</b>` : ''}</a>`).join('')}</nav>`;
+    const keepQ = ['from', 'to'].filter((k) => lf[k]).map((k) => `&${k}=${lf[k]}`).join('');
+    const subTabs = `<nav class="tabs tabs--sub">${[['unpaid', tr('acc|To pay'), unpaidN], ['draft', tr('acc|To approve'), counts.draft], ['paid', tr('accbill|Paid'), 0], ['all', tr('acc|All'), 0]].map(([k, l, n]) => `<a class="tab${tab === k ? ' is-on' : ''}" href="/admin/accounting/payables?tab=${k}${keepQ}">${esc(l)}${n ? ` <b class="nav__count">${n}</b>` : ''}</a>`).join('')}</nav>`;
     const table = ui.table([
       { label: tr('acc|Bill'), render: (b) => `<b><bdi>${esc(b.ref)}</bdi></b>${b.vendor_ref ? sub(`<bdi>${esc(b.vendor_ref)}</bdi>`) : ''}` },
       { label: tr('acc|Supplier'), render: (b) => `${esc(b.vendor)}${b.memo ? sub(esc(txt(b.memo))) : ''}` },
@@ -670,7 +678,7 @@ module.exports = function accounting(router, h) {
     const ym = t.slice(0, 7);
     const recurring = ui.form('/admin/accounting/payables/contracts', csrf, `<input type="hidden" name="month" value="${ym}">${ui.btn(esc(tr('acc|Bills from contracts')), { cls: 'btn--ghost', ic: 'contract', attrs: { title: tr('acc|Draft this month’s bills for active service contracts'), 'data-confirm': tr('acc|Draft {month} bills for every active service contract?', { month: ui.monthYear(ym) }) } })}`);
     const body = `<div class="kpis kpis--4">${kpis}</div>
-<div class="grid grid--side"><div class="stack">${subTabs}${ui.card(tn(bills.length, 'acc|{n} bill', 'acc|{n} bills'), table)}</div>
+<div class="grid grid--side"><div class="stack">${subTabs}${lf.html}${ui.card(tn(bills.length, 'acc|{n} bill', 'acc|{n} bills'), table)}</div>
 <div class="stack">${ui.card(tr('acc|Suppliers'), vendorList, { action: newVendor })}${ui.card(tr('acc|Aged payables'), reportHtml(aged, { cls: 'acc-mini' }), { action: ui.btn(esc(tr('acc|Report')), { href: '/admin/accounting/reports/ap', cls: 'btn--ghost btn--sm' }) })}</div></div>`;
     page(req, res, { tab: 'payables', title: tr('acc|Payables'), body, actions: `${recurring}${ui.btn(esc(tr('acc|New bill')), { href: '/admin/accounting/bills/new', cls: 'btn--primary', ic: 'plus' })}` });
   });
@@ -1028,8 +1036,17 @@ module.exports = function accounting(router, h) {
   router.get('/accounting/assets', RF, (req, res) => {
     const t = today();
     const fy = L.fiscalYear(t);
-    const list = db.all('SELECT * FROM acc_assets ORDER BY status, acquired_on, id').map((a) => ({ ...a, acc: L.depreciated(a.id) }));
-    const live = list.filter((a) => a.status === 'active');
+    const all = db.all('SELECT * FROM acc_assets ORDER BY status, acquired_on, id').map((a) => ({ ...a, acc: L.depreciated(a.id) }));
+    const live = all.filter((a) => a.status === 'active');
+    // the register: acquisition date range and sort order (the totals above stay for every asset)
+    const lf = h.listFilters(req, {
+      cols: { date: 'acquired_on' }, dateLabel: tr('acc|Acquired'),
+      sorts: [['status', 'sort|Status', 'status, acquired_on, id'], ['newest', 'sort|Newest first', 'acquired_on DESC, id DESC'], ['oldest', 'sort|Oldest first', 'acquired_on, id'],
+        ['amount_desc', 'sort|Amount: highest first', 'cost DESC, id'], ['amount_asc', 'sort|Amount: lowest first', 'cost, id'], ['name', 'sort|Name: A to Z', 'name COLLATE NOCASE, id']],
+    });
+    const list = lf.active || lf.sortKey !== 'status'
+      ? db.all(`SELECT * FROM acc_assets WHERE 1 = 1${lf.sql} ORDER BY ${lf.order}`, ...lf.args).map((a) => ({ ...a, acc: L.depreciated(a.id) }))
+      : all;
     const cost = r2(live.reduce((s, a) => s + a.cost, 0));
     const accum = r2(live.reduce((s, a) => s + a.acc, 0));
     const yearDep = r2(db.value('SELECT COALESCE(SUM(amount),0) FROM acc_depreciation WHERE period >= ? AND period <= ?', fy.from.slice(0, 7), fy.to.slice(0, 7)));
@@ -1061,7 +1078,7 @@ module.exports = function accounting(router, h) {
       ${ui.input('location', tr('acc|Location'), '')}
       ${ui.select('pay_from', tr('acc|Paid from'), cashOptions(), '', { blank: tr('acc|Already in the books (no entry)') })}
     </div>${ui.btn(esc(tr('acc|Register asset')), { cls: 'btn--primary' })}`, { cls: 'stack' });
-    const body = `<div class="kpis kpis--4">${kpis}</div><div class="grid grid--side">${ui.card(tr('acc|Fixed asset register'), table)}<div class="stack">${ui.card(tr('acc|Monthly depreciation'), run)}${ui.card(tr('acc|New asset'), add)}</div></div>`;
+    const body = `<div class="kpis kpis--4">${kpis}</div><div class="grid grid--side"><div class="stack">${lf.html}${ui.card(tr('acc|Fixed asset register'), table)}</div><div class="stack">${ui.card(tr('acc|Monthly depreciation'), run)}${ui.card(tr('acc|New asset'), add)}</div></div>`;
     page(req, res, { tab: 'assets', title: tr('acc|Assets'), body });
   });
   router.post('/accounting/assets', RF, (req, res) => {

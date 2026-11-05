@@ -38,10 +38,19 @@ module.exports = function deals(router, h) {
   // ---------- offers ----------
   router.get('/offers', (req, res) => {
     const st = M.OFFER_STATUS[req.query.status] ? req.query.status : '';
-    const rows = db.all(`SELECT o.*, l.title lead_title FROM offers o JOIN leads l ON l.id = o.lead_id ${st ? 'WHERE o.status = ?' : ''} ORDER BY o.id DESC LIMIT 400`, ...(st ? [st] : []))
+    const f = h.listFilters(req, {
+      cols: { date: 'o.created_at' }, dateLabel: tr('sort|Created'), keep: ['status'],
+      sorts: [['newest', 'sort|Newest first', 'o.id DESC'], ['oldest', 'sort|Oldest first', 'o.id ASC'], ['valid', 'sort|Valid until: soonest first', 'o.valid_until IS NULL, o.valid_until ASC, o.id DESC'],
+        ['amount_desc', 'sort|Contract value: highest first', 'o.id DESC'], ['amount_asc', 'sort|Contract value: lowest first', 'o.id DESC'], ['rate', 'sort|Rate per m²: highest first', 'o.rent_m2 DESC, o.id DESC']],
+    });
+    const where = [...(st ? ['o.status = ?'] : []), ...f.where];
+    const rows = db.all(`SELECT o.*, l.title lead_title FROM offers o JOIN leads l ON l.id = o.lead_id ${where.length ? `WHERE ${where.join(' AND ')}` : ''} ORDER BY ${f.order} LIMIT 400`, ...(st ? [st] : []), ...f.args)
       .map((o) => ({ ...o, units: M.offerUnits(db, o.id) }))
       .map((o) => ({ ...o, sc: M.schedule(terms(o), o.units) }));
-    const tabs = [['', tr('All')], ...Object.entries(M.OFFER_STATUS)].map(([k, l]) => `<a class="tab${st === k ? ' is-on' : ''}" href="/admin/offers${k ? `?status=${k}` : ''}">${l}${k === 'pending' && db.value("SELECT COUNT(*) FROM offers WHERE status = 'pending'") ? ` <b class="nav__count">${db.value("SELECT COUNT(*) FROM offers WHERE status = 'pending'")}</b>` : ''}</a>`).join('');
+    if (f.sortKey === 'amount_desc') rows.sort((a, b) => b.sc.total - a.sc.total);
+    if (f.sortKey === 'amount_asc') rows.sort((a, b) => a.sc.total - b.sc.total);
+    const fq = ['from', 'to', 'sort'].filter((k) => req.query[k]).map((k) => `${k}=${encodeURIComponent(req.query[k])}`).join('&');
+    const tabs = [['', tr('All')], ...Object.entries(M.OFFER_STATUS)].map(([k, l]) => `<a class="tab${st === k ? ' is-on' : ''}" href="/admin/offers${k || fq ? `?${[k ? `status=${k}` : '', fq].filter(Boolean).join('&')}` : ''}">${l}${k === 'pending' && db.value("SELECT COUNT(*) FROM offers WHERE status = 'pending'") ? ` <b class="nav__count">${db.value("SELECT COUNT(*) FROM offers WHERE status = 'pending'")}</b>` : ''}</a>`).join('');
     const table = ui.table(
       [
         { label: tr('Offer'), render: (o) => `<b>${ui.esc(o.ref)}</b><small class="sub">${ui.esc(o.lead_title)}</small>` },
@@ -57,7 +66,7 @@ module.exports = function deals(router, h) {
       rows,
       { empty: tr('No offers yet. Open a lead and choose New offer.'), href: (o) => `/admin/offers/${o.id}` },
     );
-    h.page(req, res, { title: tr('Offers'), active: '/admin/offers', wide: true, body: `<nav class="tabs">${tabs}</nav>${ui.card(tn(rows.length, '{n} offer', '{n} offers'), table)}` });
+    h.page(req, res, { title: tr('Offers'), active: '/admin/offers', wide: true, body: `<nav class="tabs">${tabs}</nav>${f.html}${ui.card(tn(rows.length, '{n} offer', '{n} offers'), table)}` });
   });
 
   function offerForm(req, lead, o = {}) {
@@ -380,11 +389,18 @@ module.exports = function deals(router, h) {
   // ---------- leases ----------
   router.get('/leases', (req, res) => {
     const st = M.LEASE_STATUS[req.query.status] ? req.query.status : '';
-    const f = h.listFilters(req, { cols: { date: 's.start_date', brand: 's.brand_id', lease: 's.id' }, dateLabel: tr('Start date'), keep: ['status'] });
+    const f = h.listFilters(req, {
+      cols: { date: 's.start_date', brand: 's.brand_id', lease: 's.id' }, dateLabel: tr('Start date'), keep: ['status'],
+      sorts: [['default', 'sort|Active first, newest start', "s.status = 'active' DESC, s.start_date DESC"], ['newest', 'sort|Start date: newest first', 's.start_date DESC'], ['oldest', 'sort|Start date: oldest first', 's.start_date ASC'],
+        ['expiry', 'sort|Ending soonest', 's.end_date ASC'], ['name', 'sort|Name: A to Z', 'b.name COLLATE NOCASE ASC'], ['name_desc', 'sort|Name: Z to A', 'b.name COLLATE NOCASE DESC'],
+        ['amount_desc', 'sort|Annual rent: highest first', "s.status = 'active' DESC, s.start_date DESC"], ['amount_asc', 'sort|Annual rent: lowest first', "s.status = 'active' DESC, s.start_date DESC"]],
+    });
     const where = [...(st ? ['s.status = ?'] : []), ...f.where];
-    const rows = db.all(`SELECT s.*, b.name brand_name FROM leases s JOIN brands b ON b.id = s.brand_id ${where.length ? `WHERE ${where.join(' AND ')}` : ''} ORDER BY s.status = 'active' DESC, s.start_date DESC`, ...(st ? [st] : []), ...f.args)
+    const rows = db.all(`SELECT s.*, b.name brand_name FROM leases s JOIN brands b ON b.id = s.brand_id ${where.length ? `WHERE ${where.join(' AND ')}` : ''} ORDER BY ${f.order}, s.id DESC`, ...(st ? [st] : []), ...f.args)
       .map((s) => ({ ...s, signed: !!db.value("SELECT COUNT(*) FROM documents WHERE entity = 'lease' AND entity_id = ? AND kind = 'lease_contract' AND archived = 0", s.id), units: M.leaseUnits(db, s.id), annual: s.status === 'active' ? M.currentAnnualRent(db, s) : null, next: db.get("SELECT due_date, total FROM invoices WHERE lease_id = ? AND status IN ('open','partial') ORDER BY due_date LIMIT 1", s.id) }));
-    const fq = ['brand', 'lease', 'from', 'to'].filter((k) => req.query[k]).map((k) => `${k}=${encodeURIComponent(req.query[k])}`).join('&');
+    if (f.sortKey === 'amount_desc') rows.sort((a, b) => (b.annual ?? -1) - (a.annual ?? -1));
+    if (f.sortKey === 'amount_asc') rows.sort((a, b) => (a.annual ?? Infinity) - (b.annual ?? Infinity));
+    const fq = ['brand', 'lease', 'from', 'to', 'sort'].filter((k) => req.query[k]).map((k) => `${k}=${encodeURIComponent(req.query[k])}`).join('&');
     const tabs = [['', tr('All')], ...Object.entries(M.LEASE_STATUS)].map(([k, l]) => `<a class="tab${st === k ? ' is-on' : ''}" href="/admin/leases${k || fq ? `?${[k ? `status=${k}` : '', fq].filter(Boolean).join('&')}` : ''}">${l}</a>`).join('');
     const table = ui.table(
       [
@@ -627,8 +643,14 @@ module.exports = function deals(router, h) {
     const t = M.today();
     const st = ['open', 'overdue', 'paid', 'all', 'upcoming'].includes(req.query.status) ? req.query.status : 'open';
     const where = { open: "i.status IN ('open','partial') AND i.due_date <= ?", overdue: "i.status IN ('open','partial') AND i.due_date < ?", paid: "i.status = 'paid' AND ? IS NOT NULL", all: "i.status != 'void' AND ? IS NOT NULL", upcoming: "i.status IN ('open','partial') AND i.due_date > ?" }[st];
-    const f = h.listFilters(req, { cols: { date: 'i.due_date', brand: 'i.brand_id', lease: 'i.lease_id' }, dateLabel: tr('Due'), keep: ['status'] });
-    const rows = db.all(`SELECT i.*, s.ref lease_ref, COALESCE(b.name, i.customer) brand_name FROM invoices i LEFT JOIN leases s ON s.id = i.lease_id LEFT JOIN brands b ON b.id = i.brand_id WHERE ${[where, ...f.where].join(' AND ')} ORDER BY ${st === 'paid' ? 'i.paid_at DESC' : 'i.due_date'} LIMIT ${f.active ? 2000 : 400}`, st === 'open' && !f.active ? M.addDays(t, 30) : st === 'open' ? '9999-12-31' : t, ...f.args);
+    const f = h.listFilters(req, {
+      cols: { date: 'i.due_date', brand: 'i.brand_id', lease: 'i.lease_id' }, dateLabel: tr('Due'), keep: ['status'],
+      sorts: [['default', st === 'paid' ? 'sort|Paid most recently' : 'sort|Due date: soonest first', st === 'paid' ? 'i.paid_at DESC' : 'i.due_date'], ['due_late', 'sort|Due date: latest first', 'i.due_date DESC'],
+        ['newest', 'sort|Newest first', 'i.created_at DESC, i.id DESC'], ['oldest', 'sort|Oldest first', 'i.created_at ASC, i.id ASC'],
+        ['amount_desc', 'sort|Amount: highest first', 'i.total DESC'], ['amount_asc', 'sort|Amount: lowest first', 'i.total ASC'],
+        ['balance', 'sort|Outstanding: highest first', '(i.total - i.paid) DESC'], ['name', 'sort|Name: A to Z', 'COALESCE(b.name, i.customer) COLLATE NOCASE ASC']],
+    });
+    const rows = db.all(`SELECT i.*, s.ref lease_ref, COALESCE(b.name, i.customer) brand_name FROM invoices i LEFT JOIN leases s ON s.id = i.lease_id LEFT JOIN brands b ON b.id = i.brand_id WHERE ${[where, ...f.where].join(' AND ')} ORDER BY ${f.order} LIMIT ${f.active ? 2000 : 400}`, st === 'open' && !f.active ? M.addDays(t, 30) : st === 'open' ? '9999-12-31' : t, ...f.args);
     const R2 = M.reports(db);
     const outstanding = db.value("SELECT COALESCE(SUM(total - paid), 0) FROM invoices WHERE status IN ('open','partial') AND due_date <= ?", t);
     const overdue = db.value("SELECT COALESCE(SUM(total - paid), 0) FROM invoices WHERE status IN ('open','partial') AND due_date < ?", t);
@@ -641,7 +663,7 @@ module.exports = function deals(router, h) {
       ui.kpi({ label: tr('Due in 30 days'), value: ui.money(next30, { compact: true }), href: '/admin/billing?status=upcoming' }),
       ui.kpi({ label: tr('Collected this month'), value: ui.money(collected, { compact: true }), bar: billedMonth ? Math.min(1, collected / billedMonth) : 0, sub: tr('of {amount} billed this month', { amount: ui.money(billedMonth, { compact: true }) }) }),
     ].join('');
-    const fq = ['brand', 'lease', 'from', 'to'].filter((k) => req.query[k]).map((k) => `&${k}=${encodeURIComponent(req.query[k])}`).join('');
+    const fq = ['brand', 'lease', 'from', 'to', 'sort'].filter((k) => req.query[k]).map((k) => `&${k}=${encodeURIComponent(req.query[k])}`).join('');
     const tabs = [['open', f.active ? tr('Open') : tr('Due within 30 days')], ['overdue', tr('Overdue')], ['upcoming', tr('Upcoming')], ['paid', tr('invoice|Paid')], ['all', tr('All')]].map(([k, l]) => `<a class="tab${st === k ? ' is-on' : ''}" href="/admin/billing?status=${k}${fq}">${l}</a>`).join('');
     const table = ui.table(
       [

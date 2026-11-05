@@ -288,8 +288,15 @@ module.exports = function website(router, h) {
       ui.kpi({ label: tr('web|Promotions running'), value: String(counts.promos), href: '/admin/website?tab=promos' }),
     ].join('')}</div>`;
     let body = '';
+    let listFilter = '';
     if (tab === 'stores') {
-      const listings = db.all(`${STORE_SELECT} ORDER BY s.published DESC, s.name COLLATE NOCASE`);
+      const f = h.listFilters(req, {
+        cols: { date: 's.updated_at' }, dateLabel: tr('sort|Last changed'), keep: ['tab'],
+        sorts: [['default', 'sort|Published first', 's.published DESC, s.name COLLATE NOCASE'], ['name', 'sort|Name: A to Z', 's.name COLLATE NOCASE'], ['name_desc', 'sort|Name: Z to A', 's.name COLLATE NOCASE DESC'],
+          ['updated', 'sort|Recently updated', 's.updated_at DESC'], ['newest', 'sort|Newest first', 's.created_at DESC, s.id DESC'], ['oldest', 'sort|Oldest first', 's.created_at ASC, s.id ASC']],
+      });
+      const listings = db.all(`${STORE_SELECT}${f.where.length ? ` WHERE ${f.where.join(' AND ')}` : ''} ORDER BY ${f.order}`, ...f.args);
+      listFilter = f.html;
       const ready = db.all(`SELECT b.id, b.name, b.category, (SELECT COUNT(*) FROM leases l WHERE l.brand_id = b.id AND l.status = 'active') active
         FROM brands b WHERE EXISTS (SELECT 1 FROM leases l WHERE l.brand_id = b.id AND l.status IN ('active','draft')) AND NOT EXISTS (SELECT 1 FROM web_stores s WHERE s.brand_id = b.id) ORDER BY active DESC, b.name`);
       const readyCard = ready.length ? ui.card(tr('web|Ready to list'), `<ul class="list">${ready.map((b) => `<li><span class="what"><b>${ui.esc(b.name)}</b><small>${ui.esc(M.CATEGORIES[b.category] || b.category)} · ${ui.esc(tr(b.active ? 'web|Lease active' : 'web|Lease in draft'))}</small></span>${agent ? ui.form('/admin/website/stores', csrf, `<input type="hidden" name="brand_id" value="${b.id}">${ui.btn(tr('web|Create listing'), { cls: 'btn--ghost btn--sm', ic: 'plus' })}`) : ''}</li>`).join('')}</ul>`, { sub: tr('web|Tenants with a lease and no listing yet. The listing starts from the tenant file.') }) : '';
@@ -300,18 +307,28 @@ module.exports = function website(router, h) {
         { label: tr('Status'), render: (s) => `${stateBadge(s)}${s.opening_soon ? ` ${ui.badge('soon', tr('web|Opening soon'), 'sea')}` : ''}${s.featured ? ` ${ui.badge('featured', tr('web|Featured'), 'cocoa')}` : ''}` },
         { label: tr('web|Updated'), render: (s) => ui.rel(s.updated_at) },
       ], listings, { empty: tr('web|No store listings yet. Create one from a tenant with a lease.'), href: (s) => `/admin/website/stores/${s.id}` });
-      body = `${kpis}${tabsNav(tab)}<div class="stack">${readyCard}${ui.card(tn(listings.length, 'web|{n} listing', 'web|{n} listings'), table, { action: counts.live ? ui.btn(tr('web|View the directory'), { href: '/stores/', cls: 'btn--ghost btn--sm', ic: 'globe', attrs: { target: '_blank', rel: 'noopener' } }) : '' })}</div>`;
+      body = `${kpis}${tabsNav(tab)}${listFilter}<div class="stack">${readyCard}${ui.card(tn(listings.length, 'web|{n} listing', 'web|{n} listings'), table, { action: counts.live ? ui.btn(tr('web|View the directory'), { href: '/stores/', cls: 'btn--ghost btn--sm', ic: 'globe', attrs: { target: '_blank', rel: 'noopener' } }) : '' })}</div>`;
     } else if (tab === 'events') {
-      const list = db.all('SELECT * FROM web_events ORDER BY starts_on DESC, id DESC');
+      const f = h.listFilters(req, {
+        cols: { date: 'starts_on' }, dateLabel: tr('sort|Starts'), keep: ['tab'],
+        sorts: [['newest', 'sort|Start date: newest first', 'starts_on DESC, id DESC'], ['oldest', 'sort|Start date: oldest first', 'starts_on ASC, id ASC'], ['name', 'sort|Name: A to Z', 'title COLLATE NOCASE'], ['updated', 'sort|Recently updated', 'updated_at DESC']],
+      });
+      const list = db.all(`SELECT * FROM web_events${f.where.length ? ` WHERE ${f.where.join(' AND ')}` : ''} ORDER BY ${f.order}`, ...f.args);
+      listFilter = f.html;
       const table = ui.table([
         { label: tr('web|Event'), render: (e) => `<span class="webrow">${thumb(imageOf(e.cover_id))}<span><b>${ui.esc(pick(e.title, e.title_ar))}</b><small class="sub">${ui.esc(pick(e.location, e.location_ar) || '')}</small></span></span>` },
         { label: tr('Date'), render: (e) => `${ui.date(e.starts_on)}${e.ends_on && e.ends_on !== e.starts_on ? ` – ${ui.date(e.ends_on)}` : ''}${e.time_from ? `<small class="sub ltr">${ui.esc(e.time_from)}${e.time_to ? `–${ui.esc(e.time_to)}` : ''}</small>` : ''}` },
         { label: tr('Status'), render: (e) => (e.published ? ((e.ends_on || e.starts_on) < t ? ui.badge('past', tr('web|Past'), 'mute') : ui.badge('live', tr('web|Live'), 'ok')) : ui.badge('draft', tr('web|Draft'), 'mute')) },
       ], list, { empty: tr('web|No events yet.'), href: (e) => `/admin/website/events/${e.id}` });
       const add = agent ? ui.form('/admin/website/events', csrf, `<div class="fields">${ui.input('title', tr('web|Title (English)'), '', { required: true })}${ui.input('starts_on', tr('web|Date'), M.addDays(t, 14), { type: 'date', required: true })}</div>${ui.btn(tr('web|Create event'), { cls: 'btn--primary btn--sm', ic: 'plus' })}`, { cls: 'stack' }) : '';
-      body = `${kpis}${tabsNav(tab)}<div class="grid grid--side"><div>${ui.card(tr('web|Events'), table)}</div><div>${add ? ui.card(tr('web|New event'), add) : ''}</div></div>`;
+      body = `${kpis}${tabsNav(tab)}${listFilter}<div class="grid grid--side"><div>${ui.card(tr('web|Events'), table)}</div><div>${add ? ui.card(tr('web|New event'), add) : ''}</div></div>`;
     } else if (tab === 'promos') {
-      const list = db.all('SELECT p.*, b.name brand_name FROM web_promos p LEFT JOIN brands b ON b.id = p.brand_id ORDER BY p.ends_on DESC, p.id DESC');
+      const f = h.listFilters(req, {
+        cols: { date: 'p.starts_on' }, dateLabel: tr('sort|Starts'), keep: ['tab'],
+        sorts: [['default', 'sort|Ending latest', 'p.ends_on DESC, p.id DESC'], ['ends', 'sort|Ending soonest', 'p.ends_on ASC, p.id DESC'], ['newest', 'sort|Start date: newest first', 'p.starts_on DESC, p.id DESC'], ['oldest', 'sort|Start date: oldest first', 'p.starts_on ASC, p.id ASC'], ['name', 'sort|Name: A to Z', 'COALESCE(b.name, p.title) COLLATE NOCASE']],
+      });
+      const list = db.all(`SELECT p.*, b.name brand_name FROM web_promos p LEFT JOIN brands b ON b.id = p.brand_id${f.where.length ? ` WHERE ${f.where.join(' AND ')}` : ''} ORDER BY ${f.order}`, ...f.args);
+      listFilter = f.html;
       const table = ui.table([
         { label: tr('web|Promotion'), render: (p) => `<span class="webrow">${thumb(imageOf(p.image_id))}<span><b>${ui.esc(pick(p.title, p.title_ar))}</b><small class="sub">${ui.esc(p.brand_name || tr('web|The Wave'))}</small></span></span>` },
         { label: tr('web|Valid'), render: (p) => `${ui.date(p.starts_on)} – ${ui.date(p.ends_on)}` },
@@ -319,7 +336,7 @@ module.exports = function website(router, h) {
       ], list, { empty: tr('web|No promotions yet.'), href: (p) => `/admin/website/promos/${p.id}` });
       const brands = db.all("SELECT DISTINCT b.id, b.name FROM brands b JOIN leases l ON l.brand_id = b.id AND l.status = 'active' ORDER BY b.name");
       const add = agent ? ui.form('/admin/website/promos', csrf, `<div class="fields">${ui.select('brand_id', tr('web|Store'), brands.map((b) => [b.id, b.name]), h.int(req.query.brand) || '', { blank: tr('web|The Wave (mall-wide)') })}${ui.input('title', tr('web|Title (English)'), '', { required: true })}${ui.input('starts_on', tr('web|From'), t, { type: 'date', required: true })}${ui.input('ends_on', tr('web|Until'), M.addDays(t, 30), { type: 'date', required: true })}</div>${ui.btn(tr('web|Create promotion'), { cls: 'btn--primary btn--sm', ic: 'plus' })}`, { cls: 'stack' }) : '';
-      body = `${kpis}${tabsNav(tab)}<div class="grid grid--side"><div>${ui.card(tr('web|Promotions'), table)}</div><div>${add ? ui.card(tr('web|New promotion'), add) : ''}</div></div>`;
+      body = `${kpis}${tabsNav(tab)}${listFilter}<div class="grid grid--side"><div>${ui.card(tr('web|Promotions'), table)}</div><div>${add ? ui.card(tr('web|New promotion'), add) : ''}</div></div>`;
     } else {
       const mgr = h.can(req, 'manager');
       const form = `<div class="fields fields--2">

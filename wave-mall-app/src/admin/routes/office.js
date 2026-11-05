@@ -133,6 +133,8 @@ module.exports = function office(router, h) {
 
   // ---------- CSV exports ----------
   // Column headers follow the reader's language; values that are labels go through the label maps.
+  // the subscribers list and its CSV share the date range and the order
+  const subFilters = (req) => h.listFilters(req, { cols: { date: 'created_at' }, dateLabel: tr('Joined'), sort: { date: 'created_at' }, sorts: [['email', 'sort|Email: A to Z', 'email COLLATE NOCASE']] });
   const EXPORTS = {
     leads: () => [db.all('SELECT l.*, b.name brand, u.name owner FROM leads l LEFT JOIN brands b ON b.id = l.brand_id LEFT JOIN users u ON u.id = l.owner_id ORDER BY l.id'), [['ref', 'Ref'], ['title', 'Lead'], ['brand', 'Brand'], [(r) => M.CATEGORIES[r.category], 'Category'], [(r) => M.SOURCES[r.source], 'Source'], [(r) => M.stage(r.stage).label, 'Stage'], ['probability', 'Probability %'], ['area_min', 'Area from'], ['area_max', 'Area to'], ['budget_m2', 'Budget / m²'], ['value_est', 'Annual value'], ['owner', 'Owner'], [(r) => tx(r.next_step), 'Next step'], ['next_step_at', 'Next step due'], [(r) => tx(r.lost_reason), 'Lost reason'], ['created_at', 'Created']]],
     units: () => [db.all("SELECT * FROM units WHERE status != 'retired' ORDER BY sort"), [['code', 'Unit'], [(u) => M.ZONES[u.zone], 'Level'], ['indoor_m2', 'Indoor m²'], ['terrace_m2', 'Terrace m²'], [(u) => M.UNIT_STATUS[u.status], 'Status'], [(u) => M.listRates(db, u).rent, 'List rent / m²'], [(u) => M.listRates(db, u).terrace, 'Terrace / m²'], ['hold_until', 'Hold until']]],
@@ -140,12 +142,12 @@ module.exports = function office(router, h) {
     invoices: () => [db.all('SELECT i.*, s.ref lease, COALESCE(b.name, i.customer) tenant FROM invoices i LEFT JOIN leases s ON s.id = i.lease_id LEFT JOIN brands b ON b.id = i.brand_id ORDER BY i.due_date'), [['ref', 'Invoice'], ['tenant', 'Tenant'], ['lease', 'Lease'], [(i) => tr(INVOICE_KINDS[i.kind] || i.kind), 'Kind'], ['period_start', 'From'], ['period_end', 'To'], ['due_date', 'Due'], ['rent', 'Rent'], ['service', 'Service'], ['other', 'Other'], ['total', 'Total'], ['paid', 'Paid'], [(i) => M.INVOICE_STATUS[i.status], 'Status'], ['paid_at', 'Paid on']]],
     offers: () => [db.all('SELECT o.*, l.title lead FROM offers o JOIN leads l ON l.id = o.lead_id ORDER BY o.id'), [['ref', 'Offer'], ['lead', 'Lead'], [(o) => M.offerUnits(db, o.id).map((u) => u.code).join(' '), 'Units'], ['rent_m2', 'Rent / m²'], ['term_years', 'Years'], ['escalation_pct', 'Increase %'], ['rent_free_months', 'Rent-free'], [(o) => M.OFFER_STATUS[o.status], 'Status'], ['valid_until', 'Valid until'], ['created_at', 'Created']]],
     activities: () => [db.all('SELECT a.*, l.title lead, u.name user FROM activities a LEFT JOIN leads l ON l.id = a.lead_id LEFT JOIN users u ON u.id = a.user_id ORDER BY a.id'), [[(a) => M.ACTIVITY_TYPES[a.type] || a.type, 'Type'], [(a) => tx(a.subject), 'Subject'], ['lead', 'Lead'], ['user', 'By'], ['due_at', 'Due'], ['done_at', 'Done'], ['created_at', 'Created']]],
-    subscribers: () => [db.all('SELECT * FROM subscribers ORDER BY created_at DESC'), [['email', 'Email'], [(x) => (x.lang === 'ar' ? tr('o|Arabic') : tr('English')), 'Language'], [(x) => (x.source === 'website' ? tr('Website') : x.source), 'Source'], ['created_at', 'Joined']]],
+    subscribers: (req) => [(() => { const f = subFilters(req); return db.all(`SELECT * FROM subscribers ${f.where.length ? `WHERE ${f.where.join(' AND ')}` : ''} ORDER BY ${f.order}`, ...f.args); })(), [['email', 'Email'], [(x) => (x.lang === 'ar' ? tr('o|Arabic') : tr('English')), 'Language'], [(x) => (x.source === 'website' ? tr('Website') : x.source), 'Source'], ['created_at', 'Joined']]],
   };
   router.get('/export/:what.csv', (req, res, next) => {
     const make = EXPORTS[req.params.what];
     if (!make) return next();
-    const [rows, raw] = make();
+    const [rows, raw] = make(req);
     const cols = raw.map(([k, l]) => [k, tr(`o|${l}`)]);
     h.log(req, 'Exported', 'export', null, EXPORT_LABELS[req.params.what] || req.params.what);
     res.set('Content-Disposition', `attachment; filename="the-wave-${req.params.what}-${M.today()}.csv"`).type('text/csv; charset=utf-8').send(csv(rows, cols));
@@ -154,6 +156,8 @@ module.exports = function office(router, h) {
   // ---------- team & targets ----------
   router.get('/team', (req, res) => {
     const users = db.all('SELECT * FROM users ORDER BY active DESC, name');
+    const f = h.listFilters(req, { cols: { date: 'last_login_at' }, dateLabel: tr('Last sign-in'), keep: ['period'], sorts: [['name', 'sort|Name: A to Z', 'active DESC, name COLLATE NOCASE'], ['name_desc', 'sort|Name: Z to A', 'active DESC, name COLLATE NOCASE DESC'], ['login', 'sort|Last sign-in: most recent first', 'last_login_at IS NULL, last_login_at DESC'], ['newest', 'sort|Newest first', 'created_at DESC'], ['oldest', 'sort|Oldest first', 'created_at ASC']] });
+    const listed = db.all(`SELECT * FROM users WHERE 1 = 1${f.sql} ORDER BY ${f.order}`, ...f.args);
     const hiddenCount = (u) => (u.role === 'admin' ? 0 : [...ui.hiddenModules(u)].filter((href) => href !== '/admin/help' && ui.NAV_ENTRIES.some((e) => e.href === href && ui.roleAllows(u, e.min))).length);
     const period = /^\d{4}-\d{2}$/.test(req.query.period || '') ? req.query.period : M.today().slice(0, 7);
     const isAdmin = h.can(req, 'admin');
@@ -172,7 +176,7 @@ module.exports = function office(router, h) {
         { label: tr('Status'), render: (u) => (u.active ? ui.badge('active', tr('user|Active')) : ui.badge('void', tr('user|Disabled'))) },
         ...(isAdmin ? [{ label: '', render: (u) => (u.id === req.user.id ? `<span class="muted">${tr('You')}</span>` : `<details class="pop"><summary class="btn btn--ghost btn--xs">${tr('Manage')}</summary>${ui.form(`/admin/team/${u.id}`, csrf, `${ui.select('role', tr('Role'), M.ROLES, u.role)}<label class="check"><input type="checkbox" name="hr" value="1" ${u.hr ? 'checked' : ''}> ${tr('HR access (staff, pay, leave)')}</label><label class="check"><input type="checkbox" name="finance" value="1" ${u.finance ? 'checked' : ''}> ${tr('Finance access (accounting, banks, reports)')}</label><label class="check"><input type="checkbox" name="active" value="1" ${u.active ? 'checked' : ''}> ${tr('Can sign in')}</label><label class="check"><input type="checkbox" name="reset" value="1"> ${tr('Reset password')}</label>${ui.btn(tr('Save'), { cls: 'btn--primary btn--sm' })}`, { cls: 'stack' })}<p class="pop__more">${ui.btn(ui.esc(tr('acc2|Module access')), { href: `/admin/team/${u.id}/access`, cls: 'btn--ghost btn--sm btn--block', ic: 'shield' })}</p></details>`) }] : []),
       ],
-      users,
+      listed,
     );
     const invite = isAdmin
       ? ui.card(tr('Add someone'), ui.form('/admin/team', csrf, `<div class="fields">${ui.input('name', tr('Name'), '', { required: true })}${ui.input('email', tr('Email'), '', { type: 'email', required: true })}${ui.select('role', tr('Role'), M.ROLES, 'agent')}${ui.input('title', tr('Job title'), '', { placeholder: tr('e.g. Leasing executive') })}</div><label class="check"><input type="checkbox" name="hr" value="1"> ${tr('HR access (staff, pay, leave)')}</label><label class="check"><input type="checkbox" name="finance" value="1"> ${tr('Finance access (accounting, banks, reports)')}</label><p class="muted">${tr('A password is generated and shown to you once, to pass on securely.')}</p>${ui.btn(tr('Add to the team'), { cls: 'btn--primary' })}`, { cls: 'stack' }), { sub: tr('<b>Agents</b> work their leads and offers. <b>Managers</b> approve discounts, sign leases and record payments. <b>Viewers</b> can only look.') + ` ${tr('<b>HR access</b> opens the People section (salaries, leave, employee files); administrators always have it.')}` })
@@ -185,7 +189,7 @@ module.exports = function office(router, h) {
         }).join('')}</tbody></table></div><div class="row">${ui.btn(tr('Save targets'), { cls: 'btn--primary btn--sm' })}<a class="btn btn--ghost btn--sm" href="/admin/team?period=${M.addMonths(`${period}-01`, -1).slice(0, 7)}#targets">${isAr() ? '→' : '←'} ${tr('o|Previous month')}</a><a class="btn btn--ghost btn--sm" href="/admin/team?period=${M.addMonths(`${period}-01`, 1).slice(0, 7)}#targets">${tr('o|Next month')} ${isAr() ? '←' : '→'}</a></div>`, { cls: 'stack', attrs: { id: 'targets' } }))
       : '';
     const peopleLink = h.access && (h.access.has(req.user, 'manage_users') || h.access.has(req.user, 'grant')) ? ui.btn(ui.esc(tr('nav|Users & permissions')), { href: '/admin/people', cls: 'btn--ghost', ic: 'shield' }) : '';
-    h.page(req, res, { title: tr('Team & targets'), active: '/admin/team', wide: true, actions: peopleLink, body: `<div class="grid grid--side"><div class="stack">${ui.card(tr('The leasing team'), table)}${targets}</div><div class="stack">${invite}${ui.card(tr('Your account'), `<p>${ui.btn(tr('Change your password'), { href: '/admin/me', cls: 'btn--ghost btn--sm' })}</p>`)}</div></div>` });
+    h.page(req, res, { title: tr('Team & targets'), active: '/admin/team', wide: true, actions: peopleLink, body: `${f.html}<div class="grid grid--side"><div class="stack">${ui.card(tr('The leasing team'), table)}${targets}</div><div class="stack">${invite}${ui.card(tr('Your account'), `<p>${ui.btn(tr('Change your password'), { href: '/admin/me', cls: 'btn--ghost btn--sm' })}</p>`)}</div></div>` });
   });
 
   router.post('/team', R('admin'), (req, res) => {
@@ -290,12 +294,14 @@ module.exports = function office(router, h) {
 
   // ---------- subscribers ----------
   router.get('/subscribers', (req, res) => {
-    const rows = db.all('SELECT * FROM subscribers ORDER BY created_at DESC LIMIT 1000');
+    const f = subFilters(req);
+    const rows = db.all(`SELECT * FROM subscribers ${f.where.length ? `WHERE ${f.where.join(' AND ')}` : ''} ORDER BY ${f.order} LIMIT 1000`, ...f.args);
+    const qs = new URLSearchParams(Object.entries(req.query).filter(([k, v]) => ['from', 'to', 'sort'].includes(k) && typeof v === 'string' && v)).toString();
     const total = db.value('SELECT COUNT(*) FROM subscribers');
     const month = db.value('SELECT COUNT(*) FROM subscribers WHERE substr(created_at, 1, 7) = ?', M.today().slice(0, 7));
     const ar = db.value("SELECT COUNT(*) FROM subscribers WHERE lang = 'ar'");
     const body = `<div class="kpis kpis--3">${ui.kpi({ label: tr('Subscribers'), value: ui.n0(total) })}${ui.kpi({ label: tr('Joined this month'), value: ui.n0(month) })}${ui.kpi({ label: tr('Arabic / English'), value: `${ui.pct(total ? ar / total : 0)} <small>${tr('o|Arabic')}</small>` })}</div>
-${ui.card(tr('Opening news list'), ui.table([{ label: tr('Email'), render: (s) => `<a href="mailto:${ui.esc(s.email)}">${ui.esc(s.email)}</a>` }, { label: tr('o|Language'), render: (s) => (s.lang === 'ar' ? tr('o|Arabic') : tr('English')) }, { label: tr('Source'), render: (s) => ui.esc(!s.source || s.source === 'website' ? tr('Website') : s.source) }, { label: tr('Joined'), render: (s) => ui.date(s.created_at) }], rows, { empty: ui.esc(tr('Sign-ups from the website footer appear here.')) }), { action: ui.btn(tr('Export CSV'), { href: '/admin/export/subscribers.csv', cls: 'btn--ghost btn--sm', ic: 'dl' }) })}`;
+${f.html}${ui.card(tr('Opening news list'), ui.table([{ label: tr('Email'), render: (s) => `<a href="mailto:${ui.esc(s.email)}">${ui.esc(s.email)}</a>` }, { label: tr('o|Language'), render: (s) => (s.lang === 'ar' ? tr('o|Arabic') : tr('English')) }, { label: tr('Source'), render: (s) => ui.esc(!s.source || s.source === 'website' ? tr('Website') : s.source) }, { label: tr('Joined'), sort: (s) => s.created_at, render: (s) => ui.date(s.created_at) }], rows, { empty: ui.esc(tr('Sign-ups from the website footer appear here.')) }), { action: ui.btn(tr('Export CSV'), { href: `/admin/export/subscribers.csv${qs ? `?${qs}` : ''}`, cls: 'btn--ghost btn--sm', ic: 'dl' }) })}`;
     h.page(req, res, { title: tr('Subscribers'), active: '/admin/subscribers', body });
   });
 
@@ -488,9 +494,11 @@ ${ui.card(tr('Opening news list'), ui.table([{ label: tr('Email'), render: (s) =
   // ---------- activity log ----------
   router.get('/audit', R('manager'), (req, res) => {
     const who = h.int(req.query.user);
-    const rows = db.all(`SELECT a.*, u.name user_name FROM audit a LEFT JOIN users u ON u.id = a.user_id ${who ? 'WHERE a.user_id = ?' : ''} ORDER BY a.id DESC LIMIT 400`, ...(who ? [who] : []));
+    const f = h.listFilters(req, { cols: { date: 'a.created_at' }, dateLabel: tr('log|When'), sorts: [['newest', 'sort|Newest first', 'a.id DESC'], ['oldest', 'sort|Oldest first', 'a.id ASC'], ['person', 'sort|Person: A to Z', 'u.name IS NULL, u.name COLLATE NOCASE, a.id DESC']] });
+    const where = [...(who ? ['a.user_id = ?'] : []), ...f.where];
+    const rows = db.all(`SELECT a.*, u.name user_name FROM audit a LEFT JOIN users u ON u.id = a.user_id ${where.length ? `WHERE ${where.join(' AND ')}` : ''} ORDER BY ${f.order} LIMIT 400`, ...(who ? [who] : []), ...f.args);
     const link = (a) => ({ lead: `/admin/leads/${a.entity_id}`, offer: `/admin/offers/${a.entity_id}`, lease: `/admin/leases/${a.entity_id}`, unit: `/admin/units/${a.entity_id}`, brand: `/admin/brands/${a.entity_id}`, invoice: `/admin/invoices/${a.entity_id}` })[a.entity];
-    const filter = `<form class="filters" method="get">${ui.select('user', tr('Person'), db.all('SELECT id, name FROM users ORDER BY name').map((u) => [u.id, u.name]), who, { blank: tr('o|Everyone'), cls: 'f--inline' })}${ui.btn(tr('o|Filter'), { cls: 'btn--ghost btn--sm' })}</form>`;
+    const filter = `<form class="filters" method="get">${ui.select('user', tr('Person'), db.all('SELECT id, name FROM users ORDER BY name').map((u) => [u.id, u.name]), who, { blank: tr('o|Everyone'), cls: 'f--inline' })}${f.fields}${ui.btn(tr('o|Filter'), { cls: 'btn--ghost btn--sm' })}${f.quick}</form>`;
     const detail = (a) => (a.entity === 'export' && EXPORT_LABELS[a.detail] ? tr(EXPORT_LABELS[a.detail]) : a.entity === 'export' ? tr(a.detail) : tx(a.detail));
     const table = ui.table(
       [

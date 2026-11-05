@@ -623,7 +623,7 @@ module.exports = function work(router, h) {
     const state = ['open', 'todo', 'doing', 'waiting', 'done', 'cancelled', 'any'].includes(q.state) ? q.state : 'open';
     const due = ['late', 'today', 'week', 'none'].includes(q.due) ? q.due : '';
     const search = String(q.q || '').trim().slice(0, 80);
-    const f = h.listFilters(req, { cols: { date: 'x' }, dateLabel: tr('wk|Due'), keep: ['type', 'who', 'priority', 'label', 'state', 'due', 'q'] });
+    const f = h.listFilters(req, { cols: { date: 'x' }, dateLabel: tr('wk|Due'), keep: ['type', 'who', 'priority', 'label', 'state', 'due', 'q'], sorts: [['priority', 'sort|Priority', ''], ['due', 'sort|Due date: soonest first', ''], ['due_late', 'sort|Due date: latest first', ''], ['updated', 'sort|Recently updated', ''], ['name', 'sort|Name: A to Z', '']] });
     const statuses = state === 'open' ? OPEN : state === 'any' ? Object.keys(STATUS) : [state];
     let rows = [];
     if (type !== 'approvals') {
@@ -641,7 +641,14 @@ module.exports = function work(router, h) {
     if (due) rows = rows.filter((x) => (due === 'none' ? !x.due : due === 'late' ? x.dueState === 'late' : due === 'today' ? x.dueState === 'today' || (x.kind === 'task' && x.t.due_date === today()) : x.due && x.due.slice(0, 10) <= M.addDays(today(), 7)));
     if (f.from) rows = rows.filter((x) => x.due && x.due.slice(0, 10) >= f.from);
     if (f.to) rows = rows.filter((x) => x.due && x.due.slice(0, 10) <= f.to);
-    rows.sort((a, b) => P_ORDER[a.prio] - P_ORDER[b.prio] || (a.due || '9999').localeCompare(b.due || '9999'));
+    const SORTS = {
+      priority: (a, b) => P_ORDER[a.prio] - P_ORDER[b.prio] || (a.due || '9999').localeCompare(b.due || '9999'),
+      due: (a, b) => (a.due || '9999').localeCompare(b.due || '9999') || P_ORDER[a.prio] - P_ORDER[b.prio],
+      due_late: (a, b) => (b.due || '').localeCompare(a.due || '') || P_ORDER[a.prio] - P_ORDER[b.prio],
+      updated: (a, b) => String(b.updated || '').localeCompare(String(a.updated || '')),
+      name: (a, b) => String(a.title).localeCompare(String(b.title)),
+    };
+    rows.sort(SORTS[f.sortKey] || SORTS.priority);
     const ids = rows.filter((x) => x.kind === 'task').map((x) => x.id);
     const peopleBy = {};
     if (ids.length) for (const p of db.all(`SELECT p.task_id, p.user_id, p.role, u.name FROM wk_people p JOIN users u ON u.id = p.user_id WHERE p.task_id IN (${ids.map(() => '?').join(',')}) AND p.role = 'assignee'`, ...ids)) (peopleBy[p.task_id] = peopleBy[p.task_id] || []).push(p.name);
@@ -660,9 +667,9 @@ module.exports = function work(router, h) {
       ${prioSelect(priority)}
       ${ui.select('due', tr('wk|Due'), [['late', tr('wk|Overdue')], ['today', tr('wk|Today')], ['week', tr('wk|This week')], ['none', tr('wk|No date')]], due, { blank: tr('All'), attrs: { 'data-autosubmit': '' } })}
       ${labels.length ? ui.select('label', tr('wk|Label'), labels.map((l) => [l, l]), label, { blank: tr('All'), attrs: { 'data-autosubmit': '' } }) : ''}
-      ${ui.input('from', `${tr('wk|Due')} · ${tr('From')}`, f.from, { type: 'date' })}${ui.input('to', tr('To'), f.to, { type: 'date' })}
+      ${f.fields}
       ${ui.input('q', tr('wk|Search'), search, { type: 'search', cls: 'wk-search' })}
-      <div class="filters__go">${ui.btn(esc(tr('Filter')), { cls: 'btn--ghost btn--sm', ic: 'search' })}</div></form>`;
+      <div class="filters__go">${ui.btn(esc(tr('Filter')), { cls: 'btn--ghost btn--sm', ic: 'search' })}</div>${f.quick}</form>`;
     const userOpts = users().map((x) => [x.id, x.name]);
     const bulk = canUse(u) || (A() && A().waitingFor(u).length) ? ui.form('/admin/work/bulk', req.session.csrf, `<input type="hidden" name="back" value="${esc(req.originalUrl)}">
       <label class="check wk-all"><input type="checkbox" data-wk-all> <span>${esc(tr('wk|All'))}</span></label><b class="wk-sel" data-wk-selected>0</b>
@@ -817,13 +824,14 @@ module.exports = function work(router, h) {
   }
   router.get('/work/inbox', (req, res) => {
     const u = req.user;
-    const all = req.query.all === '1';
-    const list = db.all(`SELECT * FROM wk_notes WHERE user_id = ? ${all ? '' : 'AND (read_at IS NULL OR created_at >= ?)'} ORDER BY id DESC LIMIT 200`, u.id, ...(all ? [] : [new Date(Date.now() - 14 * 86400000).toISOString()]));
+    const f = h.listFilters(req, { cols: { date: 'created_at' }, dateLabel: tr('wk|Notifications'), keep: ['all'], sorts: [['newest', 'sort|Newest first', 'id DESC'], ['oldest', 'sort|Oldest first', 'id ASC'], ['unread', 'sort|Unread first', 'read_at IS NOT NULL, id DESC']] });
+    const all = req.query.all === '1' || !!(f.from || f.to);
+    const list = db.all(`SELECT * FROM wk_notes WHERE user_id = ? ${all ? '' : 'AND (read_at IS NULL OR created_at >= ?)'}${f.sql} ORDER BY ${f.order} LIMIT 200`, u.id, ...(all ? [] : [new Date(Date.now() - 14 * 86400000).toISOString()]), ...f.args);
     const n = unread(u);
     const actions = n ? ui.form('/admin/work/inbox/read', req.session.csrf, ui.btn(esc(tr('wk|Mark all as read')), { cls: 'btn--ghost btn--sm', ic: 'check' })) : '';
     frame(req, res, {
       tab: '/admin/work/inbox', title: tr('wk|Inbox'),
-      body: ui.card(tr('wk|Notifications'), list.length ? `<ul class="list wk-notes">${list.map(noteItem).join('')}</ul>${all ? '' : `<p class="pad"><a href="/admin/work/inbox?all=1">${esc(tr('wk|Show older'))}</a></p>`}` : `<div class="wk-zero">${ui.icon('inbox')}<p>${esc(tr('wk|All caught up.'))}</p></div>`, { sub: esc(tn(n, 'wk|{n} unread', 'wk|{n} unread')), action: actions }),
+      body: f.html + ui.card(tr('wk|Notifications'), list.length ? `<ul class="list wk-notes">${list.map(noteItem).join('')}</ul>${all ? '' : `<p class="pad"><a href="/admin/work/inbox?all=1">${esc(tr('wk|Show older'))}</a></p>`}` : `<div class="wk-zero">${ui.icon('inbox')}<p>${esc(tr('wk|All caught up.'))}</p></div>`, { sub: esc(tn(n, 'wk|{n} unread', 'wk|{n} unread')), action: actions }),
     });
   });
   router.post('/work/inbox/read', (req, res) => {
@@ -880,7 +888,8 @@ module.exports = function work(router, h) {
   // ---------- recurring tasks ----------
   router.get('/work/recurring', (req, res) => {
     const u = req.user;
-    const list = db.all('SELECT t.*, a.name assignee FROM wk_templates t LEFT JOIN users a ON a.id = t.assignee_id ORDER BY t.active DESC, t.next_on');
+    const f = h.listFilters(req, { cols: { date: 't.next_on' }, dateLabel: tr('wk|Next'), sorts: [['next', 'sort|Due date: soonest first', 't.active DESC, t.next_on'], ['next_late', 'sort|Due date: latest first', 't.active DESC, t.next_on DESC'], ['name', 'sort|Name: A to Z', 't.title COLLATE NOCASE'], ['newest', 'sort|Newest first', 't.created_at DESC']] });
+    const list = db.all(`SELECT t.*, a.name assignee FROM wk_templates t LEFT JOIN users a ON a.id = t.assignee_id ${f.where.length ? `WHERE ${f.where.join(' AND ')}` : ''} ORDER BY ${f.order}`, ...f.args);
     const opts = users().map((x) => [x.id, x.name]);
     const when = (t) => (t.every === 'weekly' ? `${tr(EVERY.weekly)} · ${tr(DOW[t.weekday || 0])}` : t.every === 'monthly' ? tr('wk|Every month on day {n}', { n: t.monthday || 1 }) : tr(EVERY.daily));
     const rows = ui.table([
@@ -902,7 +911,7 @@ module.exports = function work(router, h) {
       ${ui.textarea('checklist', tr('wk|Checklist (one item a line)'), '', { rows: 4, cls: 'span-all' })}
       ${ui.textarea('body', tr('wk|Details'), '', { rows: 3, cls: 'span-all' })}
     </div>${ui.btn(esc(tr('wk|Add the recurring task')), { cls: 'btn--primary' })}`, { cls: 'stack' }) : '';
-    frame(req, res, { tab: '/admin/work/recurring', title: tr('wk|Recurring tasks'), body: `${ui.card(tr('wk|Recurring tasks'), rows, { sub: esc(tr('wk|A task is made on each date, given to the person chosen, with its checklist.')) })}${form ? ui.card(tr('wk|New recurring task'), form) : ''}` });
+    frame(req, res, { tab: '/admin/work/recurring', title: tr('wk|Recurring tasks'), body: `${f.html}${ui.card(tr('wk|Recurring tasks'), rows, { sub: esc(tr('wk|A task is made on each date, given to the person chosen, with its checklist.')) })}${form ? ui.card(tr('wk|New recurring task'), form) : ''}` });
   });
   router.post('/work/recurring', (req, res) => {
     if (!canUse(req.user)) return h.auth.denied(req, res);

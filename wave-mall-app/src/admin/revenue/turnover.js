@@ -375,7 +375,11 @@ ${ui.card(tr('trn|Tenant ranking'), ranking, { sub: ui.esc(tr('trn|Occupancy cos
 
   // lease terms list
   router.get('/turnover/terms', (req, res) => {
-    const leases = db.all("SELECT s.*, b.name brand_name, b.category FROM leases s JOIN brands b ON b.id = s.brand_id WHERE s.status IN ('draft','active') ORDER BY b.name");
+    const f = h.listFilters(req, {
+      cols: { date: 's.start_date' }, dateLabel: tr('Start date'),
+      sorts: [['name', 'sort|Name: A to Z', 'b.name'], ['name_desc', 'sort|Name: Z to A', 'b.name DESC'], ['newest', 'sort|Start date: newest first', 's.start_date DESC'], ['oldest', 'sort|Start date: oldest first', 's.start_date ASC'], ['end', 'sort|Ending soonest', 's.end_date ASC']],
+    });
+    const leases = db.all(`SELECT s.*, b.name brand_name, b.category FROM leases s JOIN brands b ON b.id = s.brand_id WHERE s.status IN ('draft','active')${f.sql} ORDER BY ${f.order}`, ...f.args);
     const table = ui.table(
       [
         { label: tr('trn|Tenant'), render: (s) => `<b>${ui.esc(s.brand_name)}</b><small class="sub">${ui.esc(s.ref)} · ${ui.esc(M.LEASE_STATUS[s.status])}</small>` },
@@ -386,7 +390,7 @@ ${ui.card(tr('trn|Tenant ranking'), ranking, { sub: ui.esc(tr('trn|Occupancy cos
       leases,
       { empty: ui.esc(tr('trn|No leases yet.')), href: (s) => `/admin/turnover/leases/${s.id}` },
     );
-    h.page(req, res, { title: tr('trn|Lease terms'), crumbs: [['/admin/turnover', tr('trn|Turnover & sales')], [null, tr('trn|Lease terms')]], active: '/admin/turnover', wide: true, body: `${nav('/admin/turnover/terms')}${ui.card(tr('trn|Turnover clauses'), table, { sub: ui.esc(tr('trn|Open a lease to set its percentage, breakpoint and reporting.')) })}` });
+    h.page(req, res, { title: tr('trn|Lease terms'), crumbs: [['/admin/turnover', tr('trn|Turnover & sales')], [null, tr('trn|Lease terms')]], active: '/admin/turnover', wide: true, body: `${nav('/admin/turnover/terms')}${f.html}${ui.card(tr('trn|Turnover clauses'), table, { sub: ui.esc(tr('trn|Open a lease to set its percentage, breakpoint and reporting.')) })}` });
   });
 
   // billing: what can be billed now, and what was billed
@@ -410,7 +414,12 @@ ${ui.card(tr('trn|Tenant ranking'), ranking, { sub: ui.esc(tr('trn|Occupancy cos
       ready,
       { empty: ui.esc(tr('trn|Nothing to bill: every ended period is billed.')) },
     );
-    const done = db.all('SELECT t.*, b.name brand_name, s.ref lease_ref, i.ref invoice_ref, c.ref credit_ref FROM turnover_bills t JOIN leases s ON s.id = t.lease_id JOIN brands b ON b.id = s.brand_id LEFT JOIN invoices i ON i.id = t.invoice_id LEFT JOIN revenue_credits c ON c.id = t.credit_id ORDER BY t.created_at DESC, t.id DESC LIMIT 60');
+    // what was billed: a range on when, and its order
+    const f = h.listFilters(req, {
+      cols: { date: 't.created_at', brand: 's.brand_id', lease: 't.lease_id' }, dateLabel: tr('trn|Invoiced'),
+      sorts: [['newest', 'sort|Newest first', 't.created_at DESC, t.id DESC'], ['oldest', 'sort|Oldest first', 't.created_at ASC, t.id ASC'], ['amount_desc', 'sort|Amount: highest first', 't.due DESC'], ['amount_asc', 'sort|Amount: lowest first', 't.due ASC'], ['name', 'sort|Name: A to Z', 'b.name COLLATE NOCASE']],
+    });
+    const done = db.all(`SELECT t.*, b.name brand_name, s.ref lease_ref, i.ref invoice_ref, c.ref credit_ref FROM turnover_bills t JOIN leases s ON s.id = t.lease_id JOIN brands b ON b.id = s.brand_id LEFT JOIN invoices i ON i.id = t.invoice_id LEFT JOIN revenue_credits c ON c.id = t.credit_id${f.where.length ? ` WHERE ${f.where.join(' AND ')}` : ''} ORDER BY ${f.order} LIMIT ${f.active ? 500 : 60}`, ...f.args);
     const doneTable = ui.table(
       [
         { label: tr('trn|Tenant'), render: (b) => `<b>${ui.esc(b.brand_name)}</b><small class="sub">${ui.esc(b.lease_ref)}</small>` },
@@ -423,7 +432,7 @@ ${ui.card(tr('trn|Tenant ranking'), ranking, { sub: ui.esc(tr('trn|Occupancy cos
       done,
       { empty: ui.esc(tr('trn|No turnover rent billed yet.')) },
     );
-    const body = `${nav('/admin/turnover/billing')}${ui.card(tr('trn|Ready to bill'), readyTable, { sub: ui.esc(tr('trn|Ended periods with all sales in. Turnover rent = sales above the breakpoint × the percentage.')) })}${ui.card(tr('trn|Billed'), doneTable)}`;
+    const body = `${nav('/admin/turnover/billing')}${ui.card(tr('trn|Ready to bill'), readyTable, { sub: ui.esc(tr('trn|Ended periods with all sales in. Turnover rent = sales above the breakpoint × the percentage.')) })}${f.html}${ui.card(tr('trn|Billed'), doneTable)}`;
     h.page(req, res, { title: tr('trn|Turnover rent billing'), crumbs: [['/admin/turnover', tr('trn|Turnover & sales')], [null, tr('trn|Billing')]], active: '/admin/turnover', wide: true, body });
   });
 

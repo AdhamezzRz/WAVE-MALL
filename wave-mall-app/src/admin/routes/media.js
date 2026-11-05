@@ -558,7 +558,12 @@ ${ui.card(view === 'weeks' ? tr('med|Thirteen weeks') : tr('med|Availability'), 
     const t = today();
     const type = TYPES[req.query.type] ? req.query.type : '';
     const status = ITEM_STATUS[req.query.status] ? req.query.status : '';
-    const items = db.all(`SELECT i.*, u.code unit_code FROM media_items i LEFT JOIN units u ON u.id = i.unit_id WHERE 1 = 1${type ? ' AND i.type = ?' : ''}${status ? ' AND i.status = ?' : " AND i.status != 'retired'"} ORDER BY i.sort, i.code`, ...[type, status].filter(Boolean));
+    const f = h.listFilters(req, {
+      cols: { date: 'i.created_at' }, dateLabel: tr('sort|Added'),
+      sorts: [['default', 'sort|Plan order', 'i.sort, i.code'], ['code', 'sort|Code', 'i.code'], ['rate_desc', 'sort|Day rate: highest first', 'i.rate_day DESC'], ['rate_asc', 'sort|Day rate: lowest first', 'i.rate_day ASC'],
+        ['newest', 'sort|Newest first', 'i.created_at DESC, i.id DESC'], ['oldest', 'sort|Oldest first', 'i.created_at ASC, i.id ASC']],
+    });
+    const items = db.all(`SELECT i.*, u.code unit_code FROM media_items i LEFT JOIN units u ON u.id = i.unit_id WHERE 1 = 1${type ? ' AND i.type = ?' : ''}${status ? ' AND i.status = ?' : " AND i.status != 'retired'"}${f.sql} ORDER BY ${f.order}`, ...[type, status].filter(Boolean), ...f.args);
     const next30 = addDays(t, 29);
     const sold = taking(t, next30);
     const rate = (v) => (v ? ui.money(v, { cur: false }) : '—');
@@ -575,7 +580,8 @@ ${ui.card(view === 'weeks' ? tr('med|Thirteen weeks') : tr('med|Availability'), 
     const filters = `<form method="get" action="/admin/media/inventory" class="filters med-filters">
       ${ui.select('type', tr('Type'), types(), type, { blank: tr('med|All types'), attrs: { 'data-autosubmit': '' } })}
       ${ui.select('status', tr('med|Status'), tmap(ITEM_STATUS), status, { blank: tr('med|On sale and in maintenance'), attrs: { 'data-autosubmit': '' } })}
-      ${ui.btn(esc(tr('med|Show')), { cls: 'btn--ghost btn--sm' })}</form>`;
+      ${f.fields}
+      ${ui.btn(esc(tr('med|Show')), { cls: 'btn--ghost btn--sm' })}${f.quick}</form>`;
     const byType = Object.keys(TYPES).map((k) => ({ k, n: items.filter((i) => i.type === k).length })).filter((x) => x.n);
     const body = `${tabs('/admin/media/inventory')}${filters}
 ${ui.card(tn(items.length, 'med|{n} advertising space', 'med|{n} advertising spaces'), table, { sub: esc(`${byType.map((x) => `${tr(TYPES[x.k])}: ${x.n}`).join(' · ')}${dailyVisitors() ? ` · ${tr('med|about {n} visitors a day', { n: ui.n0(dailyVisitors()) })}` : ''}`) })}`;
@@ -804,8 +810,13 @@ ${ui.card(tr('med|The next six weeks'), calendar([i], t, addDays(t, 41), { book:
   // ---------- advertisers (outside the tenants: agencies and companies) ----------
   router.get('/media/clients', (req, res) => {
     const t = today();
+    const f = h.listFilters(req, {
+      cols: { date: 'k.created_at' }, dateLabel: tr('sort|Added'),
+      sorts: [['name', 'sort|Name: A to Z', 'k.name'], ['name_desc', 'sort|Name: Z to A', 'k.name DESC'], ['amount_desc', 'sort|Spend: highest first', 'spend DESC, k.name'], ['busy', 'sort|Most campaigns first', 'n DESC, k.name'],
+        ['newest', 'sort|Newest first', 'k.created_at DESC, k.id DESC'], ['oldest', 'sort|Oldest first', 'k.created_at ASC, k.id ASC']],
+    });
     const clients = db.all(`SELECT k.*, (SELECT COUNT(*) FROM media_campaigns c WHERE c.client_id = k.id AND c.status != 'cancelled') n,
-      (SELECT COALESCE(SUM(total), 0) FROM media_campaigns c WHERE c.client_id = k.id AND c.status IN ('confirmed','live','ended') AND substr(c.start_date, 1, 4) = ?) spend FROM media_clients k ORDER BY k.name`, t.slice(0, 4));
+      (SELECT COALESCE(SUM(total), 0) FROM media_campaigns c WHERE c.client_id = k.id AND c.status IN ('confirmed','live','ended') AND substr(c.start_date, 1, 4) = ?) spend FROM media_clients k${f.where.length ? ` WHERE ${f.where.join(' AND ')}` : ''} ORDER BY ${f.order}`, t.slice(0, 4), ...f.args);
     const brands = db.all(`SELECT b.id, b.name, COUNT(c.id) n, COALESCE(SUM(CASE WHEN c.status IN ('confirmed','live','ended') AND substr(c.start_date, 1, 4) = ? THEN c.total END), 0) spend
       FROM brands b JOIN media_campaigns c ON c.brand_id = b.id WHERE c.status != 'cancelled' GROUP BY b.id ORDER BY spend DESC`, t.slice(0, 4));
     const table = ui.table([
@@ -819,7 +830,7 @@ ${ui.card(tr('med|The next six weeks'), calendar([i], t, addDays(t, 41), { book:
       { label: tr('med|Campaigns'), num: true, render: (b) => ui.n0(b.n) },
       { label: tr('med|This year'), num: true, render: (b) => ui.money(b.spend, { compact: true }) },
     ], brands, { empty: esc(tr('med|No tenant has advertised yet.')), href: (b) => `/admin/tenants/${b.id}` });
-    const body = `${tabs('/admin/media/clients')}<div class="grid grid--side">
+    const body = `${tabs('/admin/media/clients')}${f.html}<div class="grid grid--side">
   ${ui.card(tr('med|Agencies and companies'), table)}
   <div class="stack">${h.can(req, 'agent') ? ui.card(tr('med|Add an advertiser'), clientForm(req)) : ''}${ui.card(tr('med|Tenants who advertise'), brandTable)}</div>
 </div>`;
@@ -897,12 +908,20 @@ ${ui.card(tr('med|The next six weeks'), calendar([i], t, addDays(t, 41), { book:
     const args = [];
     if (status === 'attention') { cond.push("((c.status IN ('held','confirmed','live') AND c.artwork_status != 'approved' AND c.start_date <= ?) OR c.approval_state = 'pending')"); args.push(addDays(t, 7)); } else if (status) { cond.push('c.status = ?'); args.push(status); }
     if (q) { cond.push('(c.ref LIKE ? OR c.title LIKE ? OR b.name LIKE ? OR k.name LIKE ?)'); args.push(...Array(4).fill(`%${q}%`)); }
+    const f = h.listFilters(req, {
+      cols: { date: 'c.start_date' }, dateLabel: tr('sort|Starts'),
+      sorts: [['default', 'sort|Live first', "CASE c.status WHEN 'live' THEN 0 WHEN 'confirmed' THEN 1 WHEN 'held' THEN 2 WHEN 'proposal' THEN 3 ELSE 4 END, c.start_date DESC"],
+        ['newest', 'sort|Start date: newest first', 'c.start_date DESC'], ['oldest', 'sort|Start date: oldest first', 'c.start_date ASC'], ['created', 'sort|Newest first', 'c.id DESC'],
+        ['amount_desc', 'sort|Amount: highest first', 'c.total DESC'], ['amount_asc', 'sort|Amount: lowest first', 'c.total ASC'], ['name', 'sort|Name: A to Z', 'c.title COLLATE NOCASE']],
+    });
+    cond.push(...f.where); args.push(...f.args);
     const rows = db.all(`SELECT c.*, ${PARTY}, (SELECT COUNT(*) FROM media_lines l WHERE l.campaign_id = c.id) n_lines FROM media_campaigns c ${JOINS}
-      ${cond.length ? `WHERE ${cond.join(' AND ')}` : ''} ORDER BY CASE c.status WHEN 'live' THEN 0 WHEN 'confirmed' THEN 1 WHEN 'held' THEN 2 WHEN 'proposal' THEN 3 ELSE 4 END, c.start_date DESC LIMIT 300`, ...args);
+      ${cond.length ? `WHERE ${cond.join(' AND ')}` : ''} ORDER BY ${f.order}, c.id DESC LIMIT 300`, ...args);
+    const fq = ['q', 'from', 'to', 'sort'].filter((x) => req.query[x]).map((x) => `${x}=${encodeURIComponent(req.query[x])}`).join('&');
     const counts = Object.fromEntries(db.all('SELECT status, COUNT(*) n FROM media_campaigns GROUP BY status').map((r) => [r.status, r.n]));
-    const pill = (s, label, n) => `<a class="tab${status === s ? ' is-on' : ''}" href="/admin/media/campaigns${s ? `?status=${s}` : ''}">${esc(label)}${n ? ` <small>${ui.n0(n)}</small>` : ''}</a>`;
+    const pill = (s, label, n) => `<a class="tab${status === s ? ' is-on' : ''}" href="/admin/media/campaigns${s || fq ? `?${[s ? `status=${s}` : '', fq].filter(Boolean).join('&')}` : ''}">${esc(label)}${n ? ` <small>${ui.n0(n)}</small>` : ''}</a>`;
     const sub = `<nav class="tabs tabs--sub">${pill('', tr('med|All'), 0)}${pill('attention', tr('med|Needs attention'), 0)}${Object.keys(STATUS).map((s) => pill(s, tr(STATUS[s]), counts[s])).join('')}</nav>`;
-    const search = `<form method="get" action="/admin/media/campaigns" class="filters med-filters">${status ? `<input type="hidden" name="status" value="${esc(status)}">` : ''}${ui.input('q', tr('med|Search'), q, { placeholder: tr('med|Reference, title or advertiser') })}${ui.btn(esc(tr('med|Show')), { cls: 'btn--ghost btn--sm' })}<a class="btn btn--ghost btn--sm" href="/admin/media/reports.csv">${ui.icon('dl')}<span>${esc(tr('med|Export'))}</span></a></form>`;
+    const search = `<form method="get" action="/admin/media/campaigns" class="filters med-filters">${status ? `<input type="hidden" name="status" value="${esc(status)}">` : ''}${ui.input('q', tr('med|Search'), q, { placeholder: tr('med|Reference, title or advertiser') })}${f.fields}${ui.btn(esc(tr('med|Show')), { cls: 'btn--ghost btn--sm' })}<a class="btn btn--ghost btn--sm" href="/admin/media/reports.csv">${ui.icon('dl')}<span>${esc(tr('med|Export'))}</span></a>${f.quick}</form>`;
     const body = `${tabs('/admin/media/campaigns')}${sub}${search}${ui.card(tn(rows.length, 'med|{n} campaign', 'med|{n} campaigns'), campaignTable(rows))}`;
     h.page(req, res, { title: tr('med|Campaigns'), crumbs: crumbs([null, tr('med|Campaigns')]), active: '/admin/media', wide: true, body, actions: quoteBtn(req) });
   });

@@ -143,7 +143,7 @@ async function audit({ quiet = false } = {}) {
         for (const v of typedList) if (s.includes(v)) s = s.split(v).join(' ');
         // environment variable names (ANTHROPIC_API_KEY), header names (X-Api-Key) and addresses (/ingest/energy) stay as they are
         s = s.replace(/\b[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+\b/g, ' ').replace(/\bX(?:-[A-Z][a-z]*)+\b/g, ' ').replace(/(^|[\s\u200e\u200f(])\/[a-z][\w/-]*/g, '$1 ');
-        s = s.replace(/\S+@\S+/g, ' ').replace(/https?:\/\/\S+/g, ' ').replace(/\b[A-Z]{2}-\d{4}(-\d+)?\b/g, ' ').replace(/\b[GS]\d{2}\b/g, ' ');
+        s = s.replace(/\S+@\S+/g, ' ').replace(/https?:\/\/\S+/g, ' ').replace(/\b[A-Z]{2,4}-\d{4}(-\d+)?\b/g, ' ').replace(/\b[GS]\d{2}\b/g, ' ');
         const words = (s.match(/[A-Za-z][A-Za-z'’-]*[A-Za-z]|\b[A-Za-z]\b/g) || []).filter((w) => !OK_WORDS.has(w) && w.length > 1);
         if (/^[A-Z]{1,3}$/.test(s.trim())) continue; // avatar initials of Latin names
         if (words.length) left.push(s.replace(/\s+/g, ' ').trim().slice(0, 140));

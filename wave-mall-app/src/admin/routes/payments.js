@@ -626,10 +626,17 @@ ${refresh ? `<meta http-equiv="refresh" content="${ui.esc(refresh)}">` : ''}
       ${ui.kpi({ label: tr('por|Failed this month'), value: String(k("SELECT COUNT(*) FROM payment_intents WHERE status = 'failed' AND substr(updated_at, 1, 7) = ?", m)) })}
       ${ui.kpi({ label: tr('por|Paid, not applied'), value: String(k("SELECT COUNT(*) FROM payment_intents WHERE status = 'paid_unapplied'")), tone: k("SELECT COUNT(*) FROM payment_intents WHERE status = 'paid_unapplied'") ? 'kpi--alert' : '' })}
     </div>`;
-    const tabs = [['intents', tr('por|Payments')], ['links', tr('por|Payment links')], ['events', tr('por|Provider messages')]].map(([x, l]) => `<a class="tab${view === x ? ' is-on' : ''}" href="/admin/payments/online?view=${x}">${ui.esc(l)}</a>`).join('');
+    const tabs = [['intents', tr('por|Payments')], ['links', tr('por|Payment links')], ['events', tr('por|Provider messages')]].map(([x, l]) => `<a class="tab${view === x ? ' is-on' : ''}" href="/admin/payments/online?view=${x}${['from', 'to'].filter((q) => req.query[q]).map((q) => `&${q}=${encodeURIComponent(req.query[q])}`).join('')}">${ui.esc(l)}</a>`).join('');
     let table;
+    // each view: a range on the date, and its order (newest first by default)
+    const tb = { intents: 'p', links: 'l', events: 'e' }[view];
+    const f = h.listFilters(req, {
+      cols: { date: `${tb}.created_at` }, keep: ['view'],
+      sorts: [['newest', 'sort|Newest first', `${tb}.id DESC`], ['oldest', 'sort|Oldest first', `${tb}.id ASC`], ...(view === 'events' ? [] : [['amount_desc', 'sort|Amount: highest first', `${tb}.amount DESC`], ['amount_asc', 'sort|Amount: lowest first', `${tb}.amount ASC`]])],
+    });
+    const fw = f.where.length ? `WHERE ${f.where.join(' AND ')}` : '';
     if (view === 'intents') {
-      const rows = db.all('SELECT p.*, i.ref invoice_ref, COALESCE(b.name, i.customer) party FROM payment_intents p JOIN invoices i ON i.id = p.invoice_id LEFT JOIN brands b ON b.id = i.brand_id ORDER BY p.id DESC LIMIT 300');
+      const rows = db.all(`SELECT p.*, i.ref invoice_ref, COALESCE(b.name, i.customer) party FROM payment_intents p JOIN invoices i ON i.id = p.invoice_id LEFT JOIN brands b ON b.id = i.brand_id ${fw} ORDER BY ${f.order} LIMIT 300`, ...f.args);
       table = ui.table([
         { label: tr('Date'), render: (r) => ui.dt(r.created_at) },
         { label: tr('Invoice'), render: (r) => `<b>${ui.esc(r.invoice_ref)}</b><small class="sub">${ui.esc(r.party || '')}</small>` },
@@ -638,7 +645,7 @@ ${refresh ? `<meta http-equiv="refresh" content="${ui.esc(refresh)}">` : ''}
         { label: tr('Status'), render: (r) => `${statusBadge(r.status)}${r.error ? `<small class="sub">${ui.esc(tx(r.error))}</small>` : ''}` },
       ], rows, { empty: ui.esc(tr('por|No online payments yet.')), href: (r) => `/admin/invoices/${r.invoice_id}#online` });
     } else if (view === 'links') {
-      const rows = db.all('SELECT l.*, i.ref invoice_ref, i.total - i.paid due, COALESCE(b.name, i.customer) party, u.name author FROM payment_links l JOIN invoices i ON i.id = l.invoice_id LEFT JOIN brands b ON b.id = i.brand_id LEFT JOIN users u ON u.id = l.created_by ORDER BY l.id DESC LIMIT 300');
+      const rows = db.all(`SELECT l.*, i.ref invoice_ref, i.total - i.paid due, COALESCE(b.name, i.customer) party, u.name author FROM payment_links l JOIN invoices i ON i.id = l.invoice_id LEFT JOIN brands b ON b.id = i.brand_id LEFT JOIN users u ON u.id = l.created_by ${fw} ORDER BY ${f.order} LIMIT 300`, ...f.args);
       const t = now();
       table = ui.table([
         { label: tr('Date'), render: (r) => ui.date(r.created_at) },
@@ -648,7 +655,7 @@ ${refresh ? `<meta http-equiv="refresh" content="${ui.esc(refresh)}">` : ''}
         { label: tr('Status'), render: (r) => (r.cancelled ? ui.badge('void', tr('por|Cancelled')) : r.expires_at <= t ? ui.badge('expired', tr('offer|Expired'), 'mute') : ui.badge('active', r.opened_at ? tr('por|Opened') : tr('por|Sent'), r.opened_at ? 'ok' : 'amber')) },
       ], rows, { empty: ui.esc(tr('por|No payment links yet.')), href: (r) => `/admin/invoices/${r.invoice_id}#online` });
     } else {
-      const rows = db.all('SELECT * FROM payment_events ORDER BY id DESC LIMIT 200');
+      const rows = db.all(`SELECT e.* FROM payment_events e ${fw} ORDER BY ${f.order} LIMIT 200`, ...f.args);
       table = ui.table([
         { label: tr('Date'), render: (r) => ui.dt(r.created_at) },
         { label: tr('Type'), render: (r) => ui.esc(r.kind === 'callback' ? tr('por|Server callback') : tr('por|Payer returned')) },
@@ -666,7 +673,7 @@ ${refresh ? `<meta http-equiv="refresh" content="${ui.esc(refresh)}">` : ''}
     </dl><p class="muted small pad">${ui.esc(tr('por|Paymob is set up on the server (PAYMOB_API_KEY, PAYMOB_HMAC_SECRET, PAYMOB_IFRAME_ID and an integration ID per method). Keys never appear on screen.'))}</p>`);
     h.page(req, res, {
       title: tr('por|Online payments'), active: '/admin/billing', wide: true, crumbs: [['/admin/billing', tr('Billing')], [null, tr('por|Online payments')]],
-      body: `${kpis}<div class="grid grid--side"><div class="stack"><nav class="tabs">${tabs}</nav>${ui.card(tr('por|Online payments'), table)}</div><div class="stack">${setup}</div></div>`,
+      body: `${kpis}<div class="grid grid--side"><div class="stack"><nav class="tabs">${tabs}</nav>${f.html}${ui.card(tr('por|Online payments'), table)}</div><div class="stack">${setup}</div></div>`,
     });
   });
 

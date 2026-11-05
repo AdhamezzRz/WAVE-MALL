@@ -141,15 +141,25 @@ module.exports = function bookingRoutes(router, h, c) {
         return `<a class="pkb-slot pkb-slot--${b.status}" href="/admin/parking/bookings/${b.id}" style="inset-inline-start:${(((a - H0) / (H1 - H0)) * 100).toFixed(2)}%;width:${(((e - a) / (H1 - H0)) * 100).toFixed(2)}%" title="${esc(`${b.plate} · ${ui.local(b.starts_at).slice(11, 16)}–${ui.local(b.ends_at).slice(11, 16)}`)}"><bdi>${esc(b.plate || '')}</bdi></a>`;
       }).join('')}</div></div>`;
     }).join('')}<div class="pkb-row pkb-row--hours"><span></span><div class="pkb-track">${Array.from({ length: (H1 - H0) / 2 + 1 }, (_, i) => `<i style="inset-inline-start:${((i * 2 / (H1 - H0)) * 100).toFixed(2)}%">${String(H0 + i * 2).padStart(2, '0')}</i>`).join('')}</div></div></div>` : ui.empty(tr('prk|Set some bays aside "for bookings" on the floor plan first.'), ui.btn(esc(tr('prk|Open the floor plan')), { href: '/admin/parking/floor', cls: 'btn--ghost btn--sm' }));
+    // the list under the timeline: that day's bookings, or a from/to range of days, in the chosen order
+    const lf = h.listFilters(req, {
+      cols: { date: 'b.starts_at' }, dateLabel: tr('prk|Day'), keep: ['day'],
+      sorts: [['time', 'sort|Soonest first', 'b.starts_at'], ['newest', 'sort|Latest first', 'b.starts_at DESC'], ['made', 'sort|Recently booked', 'b.id DESC'],
+        ['amount_desc', 'sort|Amount: highest first', 'b.price DESC, b.starts_at'], ['name', 'sort|Name: A to Z', 'b.name, b.starts_at']],
+    });
+    const dr = c.dayRange('b.starts_at', lf);
+    const listed = lf.active
+      ? db.all(`SELECT b.*, y.code bay_code FROM pk_bookings b LEFT JOIN pk_bays y ON y.id = b.bay_id WHERE 1 = 1${dr.sql} ORDER BY ${lf.order} LIMIT 500`, ...dr.args)
+      : lf.sortKey === 'time' ? rows : db.all(`SELECT b.*, y.code bay_code FROM pk_bookings b LEFT JOIN pk_bays y ON y.id = b.bay_id WHERE b.starts_at < ? AND b.ends_at > ? ORDER BY ${lf.order}`, to, from);
     const table = ui.table([
       { label: tr('prk|Booking'), render: (b) => `<b>${esc(b.name)}</b><small class="sub">${esc(b.ref)}</small>` },
       { label: tr('prk|Plate'), render: (b) => c.plate(b.plate, 'pk-plate--sm') },
-      { label: tr('prk|Time'), render: (b) => esc(`${ui.local(b.starts_at).slice(11, 16)}–${ui.local(b.ends_at).slice(11, 16)}`) },
+      { label: tr('prk|Time'), render: (b) => esc(`${lf.active ? `${ui.date(ui.local(b.starts_at).slice(0, 10))} ` : ''}${ui.local(b.starts_at).slice(11, 16)}–${ui.local(b.ends_at).slice(11, 16)}`) },
       { label: tr('prk|Bay'), render: (b) => esc(b.bay_code || '—') },
       { label: tr('prk|Price'), num: true, render: (b) => c.money(b.price) },
       { label: tr('Status'), render: (b) => badge(b.status) },
-    ], rows, { href: (b) => `/admin/parking/bookings/${b.id}`, empty: esc(tr('prk|No bookings this day.')) });
-    const pick = `<form method="get" class="filters">${ui.input('day', tr('prk|Day'), day, { type: 'date' })}${ui.btn(esc(tr('prk|Show')), { cls: 'btn--ghost btn--sm' })}</form>`;
+    ], listed, { href: (b) => `/admin/parking/bookings/${b.id}`, empty: esc(lf.active ? tr('sort|No bookings in these dates.') : tr('prk|No bookings this day.')) });
+    const pick = `<form method="get" class="filters">${ui.input('day', tr('prk|Day'), day, { type: 'date' })}${lf.fields}${ui.btn(esc(tr('prk|Show')), { cls: 'btn--ghost btn--sm' })}${lf.active ? `<a class="btn btn--ghost btn--sm" href="/admin/parking/bookings${req.query.day ? `?day=${esc(day)}` : ''}">${esc(tr('Clear'))}</a>` : ''}${lf.quick}</form>`;
     const form = h.can(req, 'agent') ? ui.card(tr('prk|Book for a guest'), ui.form('/admin/parking/bookings', req.session.csrf, `<div class="fields">
       ${ui.input('date', tr('prk|Day'), day, { type: 'date', required: true })}${ui.select('time', tr('prk|Arrives at'), SLOTS.map((x) => [x, x]), '19:00')}
       ${ui.input('hours', tr('prk|Hours'), 3, { type: 'number', min: 1, max: maxHours(), step: '0.5', required: true })}${ui.input('plate', tr('prk|Plate'), '', { required: true })}

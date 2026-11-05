@@ -176,11 +176,31 @@ function helpers(db) {
     // The filter bar of a list: a date range, a tenant and a contract (lease), kept in the query string.
     // cols maps them to the list's columns, e.g. { date: 'i.due_date', brand: 'i.brand_id', lease: 'i.lease_id' }.
     // Returns { where: [...], args: [...], html, active, from, to, brand, lease }.
-    listFilters(req, { cols = {}, dateLabel = null, keep = [] } = {}) {
+    //
+    // Sorting: sort maps the standard orders to SQL expressions, e.g.
+    //   sort: { date: 'i.issue_date', amount: 'i.total', name: 'b.name', due: 'i.due_date', ref: 'i.ref' }
+    // and sorts adds custom ones as [key, label, 'SQL ORDER BY'] (label is an i18n key). The first
+    // option is the default unless defaultSort names another. Returns order (an ORDER BY expression
+    // without the words ORDER BY) and sortKey. fields is the same inputs without the <form>, for a
+    // list that already has its own filter form (put it inside that form; it keeps the other params).
+    listFilters(req, { cols = {}, dateLabel = null, keep = [], sort = null, sorts = [], defaultSort = null } = {}) {
       const q = req.query || {};
       const isDate = (d) => /^\d{4}-\d{2}-\d{2}$/.test(String(d || ''));
-      const from = isDate(q.from) ? q.from : '';
-      const to = isDate(q.to) ? q.to : '';
+      let from = isDate(q.from) ? q.from : '';
+      let to = isDate(q.to) ? q.to : '';
+      if (from && to && from > to) [from, to] = [to, from];
+      const opts = [];
+      const s = sort || {};
+      if (s.date) opts.push(['newest', 'sort|Newest first', `${s.date} DESC`], ['oldest', 'sort|Oldest first', `${s.date} ASC`]);
+      if (s.due) opts.push(['due', 'sort|Due date: soonest first', `${s.due} IS NULL, ${s.due} ASC`], ['due_late', 'sort|Due date: latest first', `${s.due} DESC`]);
+      if (s.amount) opts.push(['amount_desc', 'sort|Amount: highest first', `${s.amount} DESC`], ['amount_asc', 'sort|Amount: lowest first', `${s.amount} ASC`]);
+      if (s.name) opts.push(['name', 'sort|Name: A to Z', `${s.name} COLLATE NOCASE ASC`], ['name_desc', 'sort|Name: Z to A', `${s.name} COLLATE NOCASE DESC`]);
+      if (s.ref) opts.push(['ref', 'sort|Reference', `${s.ref} DESC`]);
+      for (const o of sorts || []) opts.push(o);
+      const pick = opts.find((o) => o[0] === q.sort) || opts.find((o) => o[0] === defaultSort) || opts[0] || null;
+      const sortKey = pick ? pick[0] : '';
+      const order = pick ? pick[2] : '';
+      const sortField = opts.length > 1 ? ui.select('sort', ui.t('sort|Sort by'), opts.map((o) => [o[0], ui.t(o[1])]), sortKey, { attrs: { 'data-autosubmit': '' } }) : '';
       const brand = cols.brand && Number(q.brand) > 0 ? Number(q.brand) : null;
       const lease = cols.lease && Number(q.lease) > 0 ? Number(q.lease) : null;
       const where = [];
@@ -194,12 +214,33 @@ function helpers(db) {
       const active = !!(from || to || brand || lease);
       const path = String(req.originalUrl || '').split('?')[0];
       const kept = keep.filter((k) => q[k] !== undefined && q[k] !== '').map((k) => `<input type="hidden" name="${ui.esc(k)}" value="${ui.esc(q[k])}">`).join('');
-      const html = `<form method="get" action="${ui.esc(path)}" class="filters">${kept}
-        ${cols.date ? `${ui.input('from', `${dateLabel || ui.t('Date')} · ${ui.t('From')}`, from, { type: 'date' })}${ui.input('to', ui.t('To'), to, { type: 'date' })}` : ''}
+      // quick ranges: this month, last month, this year (the date inputs stay editable)
+      const today = M.today();
+      const ym = today.slice(0, 7);
+      const lastDay = (y, m) => new Date(Date.UTC(y, m, 0)).getUTCDate();
+      const [Y, Mo] = ym.split('-').map(Number);
+      const prev = Mo === 1 ? [Y - 1, 12] : [Y, Mo - 1];
+      const prevYm = `${prev[0]}-${String(prev[1]).padStart(2, '0')}`;
+      const quick = [
+        ['sort|This month', `${ym}-01`, `${ym}-${String(lastDay(Y, Mo)).padStart(2, '0')}`],
+        ['sort|Last month', `${prevYm}-01`, `${prevYm}-${String(lastDay(prev[0], prev[1])).padStart(2, '0')}`],
+        ['sort|This year', `${Y}-01-01`, `${Y}-12-31`],
+      ];
+      const qs = (extra) => {
+        const p = new URLSearchParams();
+        for (const [k, v] of Object.entries(q)) if (!['from', 'to', 'page'].includes(k) && v !== undefined && v !== '' && typeof v === 'string') p.set(k, v);
+        for (const [k, v] of Object.entries(extra)) p.set(k, v);
+        return `${path}?${p.toString()}`;
+      };
+      const quickHtml = cols.date ? `<div class="filters__quick">${quick.map(([label, f, t2]) => `<a class="chip${from === f && to === t2 ? ' is-on' : ''}" href="${ui.esc(qs({ from: f, to: t2 }))}">${ui.esc(ui.t(label))}</a>`).join('')}</div>` : '';
+      const fields = `${cols.date ? `${ui.input('from', `${dateLabel || ui.t('Date')} · ${ui.t('From')}`, from, { type: 'date' })}${ui.input('to', ui.t('To'), to, { type: 'date' })}` : ''}
         ${cols.brand ? ui.select('brand', ui.t('Tenant'), brands.map((b) => [b.id, b.name]), brand || '', { blank: ui.t('All'), attrs: { 'data-autosubmit': '' } }) : ''}
-        ${cols.lease ? ui.select('lease', ui.t('Contract'), leases.map((l) => [l.id, `${l.ref} · ${l.name}`]), lease || '', { blank: ui.t('All') }) : ''}
-        <div class="filters__go">${ui.btn(ui.esc(ui.t('Filter')), { cls: 'btn--ghost btn--sm', ic: 'search' })}${active ? `<a class="btn btn--ghost btn--sm" href="${ui.esc(path)}${keep.filter((k) => q[k]).length ? `?${keep.filter((k) => q[k]).map((k) => `${k}=${encodeURIComponent(q[k])}`).join('&')}` : ''}">${ui.esc(ui.t('Clear'))}</a>` : ''}</div></form>`;
-      return { where, args, html, active, from, to, brand, lease };
+        ${cols.lease ? ui.select('lease', ui.t('Contract'), leases.map((l) => [l.id, `${l.ref} · ${l.name}`]), lease || '', { blank: ui.t('All') }) : ''}${sortField}`;
+      const clearHref = `${path}${keep.filter((k) => q[k]).length ? `?${keep.filter((k) => q[k]).map((k) => `${k}=${encodeURIComponent(q[k])}`).join('&')}` : ''}`;
+      const html = cols.date || cols.brand || cols.lease || sortField ? `<form method="get" action="${ui.esc(path)}" class="filters">${kept}
+        ${fields}
+        <div class="filters__go">${ui.btn(ui.esc(ui.t('Filter')), { cls: 'btn--ghost btn--sm', ic: 'search' })}${active ? `<a class="btn btn--ghost btn--sm" href="${ui.esc(clearHref)}">${ui.esc(ui.t('Clear'))}</a>` : ''}</div>${quickHtml}</form>` : '';
+      return { where, args, html, fields, quick: quickHtml, active, from, to, brand, lease, order, sortKey, sql: where.length ? ` AND ${where.join(' AND ')}` : '' };
     },
     RF: (req, res, next) => (req.user && (req.user.role === 'admin' || req.user.finance) ? next() : auth.denied(req, res)),
     // HR: administrators, and anyone given HR access on the Team page

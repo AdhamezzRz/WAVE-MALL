@@ -237,7 +237,13 @@ module.exports = function ereceiptRoutes(router, h, c) {
   // ---------- the page ----------
   router.get('/parking/ereceipts', (req, res) => {
     const st = STATUS[req.query.status] ? req.query.status : '';
-    const rows = db.all(`SELECT r.*, p.ref pay_ref, p.amount, p.method FROM pk_ereceipts r JOIN pk_payments p ON p.id = r.payment_id ${st ? 'WHERE r.status = ?' : ''} ORDER BY r.id DESC LIMIT 50`, ...(st ? [st] : []));
+    // the day issued (a range) and the sort order (the latest first unless chosen)
+    const lf = h.listFilters(req, {
+      cols: { date: 'r.issued_at' }, dateLabel: tr('prk|Receipt'), keep: ['status'],
+      sorts: [['newest', 'sort|Newest first', 'r.id DESC'], ['oldest', 'sort|Oldest first', 'r.id'], ['amount_desc', 'sort|Amount: highest first', 'p.amount DESC, r.id DESC'], ['amount_asc', 'sort|Amount: lowest first', 'p.amount, r.id DESC']],
+    });
+    const dr = c.dayRange('r.issued_at', lf);
+    const rows = db.all(`SELECT r.*, p.ref pay_ref, p.amount, p.method FROM pk_ereceipts r JOIN pk_payments p ON p.id = r.payment_id WHERE 1 = 1${st ? ' AND r.status = ?' : ''}${dr.sql} ORDER BY ${lf.order} LIMIT ${lf.active ? 500 : 50}`, ...(st ? [st] : []), ...dr.args);
     const count = (s) => db.value('SELECT COUNT(*) FROM pk_ereceipts WHERE status = ?', s);
     const dayFrom = c.dayStart(c.today());
     const kpis = [
@@ -272,7 +278,7 @@ module.exports = function ereceiptRoutes(router, h, c) {
     </div>${ui.btn(esc(tr('Save')), { cls: 'btn--ghost btn--sm' })}`, { cls: 'stack' }), { sub: esc(tr('prk|The issuer (tax number, name, address) comes from the ETA settings under Payments. Check the receipt layout in pre-production before going live.')) }) : '';
     c.page(req, res, {
       title: tr('prk|E-receipts'), crumbs: c.crumbs(['/admin/parking/tills', tr('prk|Cash')], [null, tr('prk|E-receipts')]),
-      body: `${c.tabs('/admin/parking/ereceipts')}${c.subtabs('/admin/parking/ereceipts', SUB)}${state}<div class="kpis kpis--4">${kpis}</div>${filters}${ui.card(tr('prk|Receipts'), table, { sub: esc(`${tr('prk|Each parking payment, sent to the Egyptian Tax Authority as an e-receipt. A refund sends a return receipt.')} ${tr('prk|The latest 50 are shown.')}`) })}${actions}${settings}`,
+      body: `${c.tabs('/admin/parking/ereceipts')}${c.subtabs('/admin/parking/ereceipts', SUB)}${state}<div class="kpis kpis--4">${kpis}</div>${filters}${lf.html}${ui.card(tr('prk|Receipts'), table, { sub: esc(`${tr('prk|Each parking payment, sent to the Egyptian Tax Authority as an e-receipt. A refund sends a return receipt.')}${lf.active ? '' : ` ${tr('prk|The latest 50 are shown.')}`}`) })}${actions}${settings}`,
     });
   });
   const RMF = (req, res, next) => (h.can(req, 'manager') || h.canFinance(req) ? next() : h.auth.denied(req, res));

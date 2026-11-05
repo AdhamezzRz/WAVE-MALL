@@ -190,10 +190,15 @@ module.exports = function cheques(router, h) {
   // ---------- the portfolio ----------
   router.get('/cheques', (req, res) => {
     const st = STATUS[req.query.status] ? req.query.status : req.query.status === 'all' ? 'all' : 'held';
-    const f = h.listFilters(req, { cols: { date: 'c.due_date', brand: 'c.brand_id', lease: 'c.lease_id' }, dateLabel: tr('chq|Due'), keep: ['status'] });
+    const f = h.listFilters(req, {
+      cols: { date: 'c.due_date', brand: 'c.brand_id', lease: 'c.lease_id' }, dateLabel: tr('chq|Due'), keep: ['status'],
+      sorts: [['default', st === 'held' ? 'sort|Due date: soonest first' : 'sort|Recently updated', st === 'held' ? 'c.due_date' : 'c.updated_at DESC'],
+        ['due', 'sort|Due date: soonest first', 'c.due_date'], ['due_late', 'sort|Due date: latest first', 'c.due_date DESC'], ['received', 'sort|Received: newest first', 'c.received_on DESC'],
+        ['amount', 'sort|Amount: highest first', 'c.amount DESC'], ['amount_asc', 'sort|Amount: lowest first', 'c.amount ASC'], ['tenant', 'sort|Name: A to Z', 'b.name COLLATE NOCASE']],
+    });
     const where = [...(st === 'all' ? [] : ['c.status = ?']), ...f.where];
     const args = [...(st === 'all' ? [] : [st]), ...f.args];
-    const sort = { due: 'c.due_date', amount: 'c.amount DESC', tenant: 'b.name', received: 'c.received_on DESC' }[req.query.sort] || (st === 'held' ? 'c.due_date' : 'c.updated_at DESC');
+    const sort = f.order;
     const rows = db.all(`SELECT c.*, b.name brand_name, s.ref lease_ref FROM cheques c LEFT JOIN brands b ON b.id = c.brand_id LEFT JOIN leases s ON s.id = c.lease_id
       ${where.length ? `WHERE ${where.join(' AND ')}` : ''} ORDER BY ${sort} LIMIT 500`, ...args);
     const t = M.today();
@@ -205,7 +210,7 @@ module.exports = function cheques(router, h) {
       ui.kpi({ label: tr('chq|Bounced'), value: ui.money(sum("status = 'bounced'"), { compact: true }), tone: sum("status = 'bounced'") ? 'kpi--alert' : '', href: '/admin/cheques?status=bounced' }),
     ].join('');
     const keep = (k) => (req.query[k] ? `&${k}=${encodeURIComponent(req.query[k])}` : '');
-    const qs = `${keep('brand')}${keep('lease')}${keep('from')}${keep('to')}`;
+    const qs = `${keep('brand')}${keep('lease')}${keep('from')}${keep('to')}${keep('sort')}`;
     const tabs = `<nav class="tabs">${[...Object.keys(STATUS), 'all'].map((k) => `<a class="tab${st === k ? ' is-on' : ''}" href="/admin/cheques?status=${k}${qs}">${esc(k === 'all' ? tr('All') : tr(STATUS[k][0]))}${k === 'bounced' && db.value("SELECT COUNT(*) FROM cheques WHERE status = 'bounced'") ? ` <b class="nav__count">${db.value("SELECT COUNT(*) FROM cheques WHERE status = 'bounced'")}</b>` : ''}</a>`).join('')}</nav>`;
     const csrf = req.session.csrf;
     const selectable = st === 'held' && canMoney(req);

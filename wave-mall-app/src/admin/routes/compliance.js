@@ -183,7 +183,11 @@ module.exports = function compliance(router, h) {
     const t = today();
     const cat = CATS[req.query.cat] ? req.query.cat : '';
     const all = items();
-    const list = cat ? all.filter((i) => i.category === cat) : all;
+    const f = h.listFilters(req, { cols: { date: 'x' }, dateLabel: tr('cmp|Next due'), keep: ['cat'], sorts: [['due', 'sort|Due date: soonest first', ''], ['due_late', 'sort|Due date: latest first', ''], ['name', 'sort|Name: A to Z', ''], ['last', 'sort|Last done: newest first', '']] });
+    const list = (cat ? all.filter((i) => i.category === cat) : all).filter((i) => (!f.from || (i.next_due && i.next_due >= f.from)) && (!f.to || (i.next_due && i.next_due <= f.to)));
+    if (f.sortKey === 'due_late') list.sort((a, b) => String(b.next_due || '').localeCompare(String(a.next_due || '')));
+    else if (f.sortKey === 'name') list.sort((a, b) => String(a.title).localeCompare(String(b.title)));
+    else if (f.sortKey === 'last') list.sort((a, b) => String(b.last_done || '').localeCompare(String(a.last_done || '')));
     const n = (s) => all.filter((i) => stateOf(i, t) === s).length;
     const ins = insurance(t);
     const insBad = ins.filter((x) => ['missing', 'expired'].includes(x.state)).length;
@@ -204,7 +208,7 @@ module.exports = function compliance(router, h) {
     ], list, { href: (i) => `/admin/compliance/items/${i.id}`, empty: esc(tr('cmp|Nothing in the register yet.')) });
     const filters = `<nav class="sec-chips"><a class="sec-chip${!cat ? ' is-on' : ''}" href="/admin/compliance">${esc(tr('All'))} <b>${all.length}</b></a>${Object.keys(CATS).filter((k) => all.some((i) => i.category === k)).map((k) => `<a class="sec-chip${cat === k ? ' is-on' : ''}" href="/admin/compliance?cat=${k}">${esc(tr(CATS[k]))} <b>${all.filter((i) => i.category === k).length}</b></a>`).join('')}</nav>`;
     const add = h.can(req, 'manager') ? `<details class="card cmp-add"><summary class="card__head"><h2>${esc(tr('cmp|Add to the register'))}</h2></summary><div class="card__body">${ui.form('/admin/compliance/items', req.session.csrf, `${itemForm(req)}${ui.btn(esc(tr('cmp|Add')), { cls: 'btn--primary btn--sm', ic: 'plus' })}`, { cls: 'stack' })}</div></details>` : '';
-    page(req, res, { title: tr('nav|Safety & licences'), on: '/admin/compliance', body: `<div class="kpis kpis--4">${kpis}</div>${filters}${ui.card(tr('cmp|Register'), table, { sub: esc(tr('cmp|The responsible person and the managers get an email when an item comes due, a week before, and when it is overdue.')) })}${add}` });
+    page(req, res, { title: tr('nav|Safety & licences'), on: '/admin/compliance', body: `<div class="kpis kpis--4">${kpis}</div>${filters}${f.html}${ui.card(tr('cmp|Register'), table, { sub: esc(tr('cmp|The responsible person and the managers get an email when an item comes due, a week before, and when it is overdue.')) })}${add}` });
   });
   router.post('/compliance/items', R('manager'), (req, res) => {
     const v = readItem(req.body);
@@ -292,8 +296,9 @@ module.exports = function compliance(router, h) {
 
   // ================= done (history) =================
   router.get('/compliance/history', (req, res) => {
-    const from = M.addMonths(today(), -12);
-    const rows = db.all('SELECT d.*, i.title, i.category, i.id item, u.name user_name FROM cmp_done d JOIN cmp_items i ON i.id = d.item_id LEFT JOIN users u ON u.id = d.user_id WHERE d.done_on >= ? ORDER BY d.done_on DESC, d.id DESC LIMIT 500', from);
+    const f = h.listFilters(req, { cols: { date: 'd.done_on' }, dateLabel: tr('cmp|Done on'), sort: { date: 'd.done_on', name: 'i.title' } });
+    const from = f.from || M.addMonths(today(), -12);
+    const rows = db.all(`SELECT d.*, i.title, i.category, i.id item, u.name user_name FROM cmp_done d JOIN cmp_items i ON i.id = d.item_id LEFT JOIN users u ON u.id = d.user_id WHERE d.done_on >= ?${f.sql} ORDER BY ${f.order}, d.id DESC LIMIT 500`, from, ...f.args);
     const byMonth = Array.from({ length: 12 }, (_, i) => M.addMonths(`${today().slice(0, 7)}-01`, i - 11).slice(0, 7)).map((m) => ({ m: ui.monthYear ? ui.monthYear(m) : m, n: rows.filter((r) => r.done_on.slice(0, 7) === m).length }));
     const table = ui.table([
       { label: tr('cmp|Done on'), sort: (d) => d.done_on, render: (d) => esc(ui.date(d.done_on)) },
@@ -302,14 +307,19 @@ module.exports = function compliance(router, h) {
       { label: tr('cmp|By'), render: (d) => `${esc(d.by_name || '—')}${d.cert_no ? `<small class="sub ltr">${esc(d.cert_no)}</small>` : ''}` },
       { label: tr('cmp|Recorded by'), render: (d) => esc(d.user_name || '—') },
     ], rows, { href: (d) => `/admin/compliance/items/${d.item}`, empty: esc(tr('cmp|Nothing done in the last 12 months.')) });
-    page(req, res, { title: tr('cmp|Done'), on: '/admin/compliance/history', crumbs: [[null, tr('cmp|Done')]], body: `${ui.card(tr('cmp|Tests and renewals per month'), ui.bars(byMonth, { key: 'n', label: 'm', h: 130 }))}${ui.card(tr('cmp|The last 12 months'), table, { sub: esc(tn(rows.length, 'cmp|{n} test or renewal', 'cmp|{n} tests and renewals')) })}` });
+    page(req, res, { title: tr('cmp|Done'), on: '/admin/compliance/history', crumbs: [[null, tr('cmp|Done')]], body: `${f.html}${ui.card(tr('cmp|Tests and renewals per month'), ui.bars(byMonth, { key: 'n', label: 'm', h: 130 }))}${ui.card(f.active ? tr('sort|In the chosen dates') : tr('cmp|The last 12 months'), table, { sub: esc(tn(rows.length, 'cmp|{n} test or renewal', 'cmp|{n} tests and renewals')) })}` });
   });
 
   // ================= tenant insurance =================
   router.get('/compliance/insurance', (req, res) => {
     const list = insurance();
     const st = INS[req.query.state] ? req.query.state : '';
-    const rows = st ? list.filter((r) => r.state === st) : list;
+    const f = h.listFilters(req, { cols: { date: 'x' }, dateLabel: tr('cmp|Expires'), keep: ['state'], sorts: [['name', 'sort|Name: A to Z', ''], ['expires', 'sort|Expiry: soonest first', ''], ['expires_late', 'sort|Expiry: latest first', ''], ['status', 'sort|Status', '']] });
+    const exp = (r) => (r.doc && r.doc.expires_on) || '';
+    const rows = (st ? list.filter((r) => r.state === st) : list).filter((r) => (!f.from || (exp(r) && exp(r) >= f.from)) && (!f.to || (exp(r) && exp(r) <= f.to)));
+    if (f.sortKey === 'expires') rows.sort((a, b) => (exp(a) || '9999').localeCompare(exp(b) || '9999'));
+    else if (f.sortKey === 'expires_late') rows.sort((a, b) => exp(b).localeCompare(exp(a)));
+    else if (f.sortKey === 'status') rows.sort((a, b) => Object.keys(INS).indexOf(a.state) - Object.keys(INS).indexOf(b.state));
     const csrf = req.session.csrf;
     const order = Object.keys(INS);
     const n = (s) => list.filter((r) => r.state === s).length;
@@ -325,7 +335,7 @@ module.exports = function compliance(router, h) {
     const filters = `<nav class="sec-chips"><a class="sec-chip${!st ? ' is-on' : ''}" href="/admin/compliance/insurance">${esc(tr('All'))} <b>${list.length}</b></a>${order.filter((s) => n(s)).map((s) => `<a class="sec-chip${st === s ? ' is-on' : ''}" href="/admin/compliance/insurance?state=${s}">${esc(tr(INS[s][0]))} <b>${n(s)}</b></a>`).join('')}</nav>`;
     const bulkN = list.filter((r) => r.state !== 'ok').length;
     const bulk = h.can(req, 'agent') && bulkN ? ui.form('/admin/compliance/insurance/remind', csrf, ui.btn(esc(tn(bulkN, 'cmp|Remind {n} tenant', 'cmp|Remind {n} tenants')), { cls: 'btn--primary', ic: 'mail', attrs: { 'data-confirm': tr('cmp|Send a reminder to every tenant whose certificate is missing, expired or expiring?') } })) : '';
-    page(req, res, { title: tr('cmp|Tenant insurance'), on: '/admin/compliance/insurance', crumbs: [[null, tr('cmp|Tenant insurance')]], actions: bulk, body: `<div class="kpis kpis--4">${kpis}</div>${filters}${ui.card(tr('cmp|Insurance certificates of tenants with an active lease'), table, { sub: esc(tr('cmp|From the documents on each tenant’s file (type: insurance policy). A reminder reaches the tenant in the portal and by email.')) })}` });
+    page(req, res, { title: tr('cmp|Tenant insurance'), on: '/admin/compliance/insurance', crumbs: [[null, tr('cmp|Tenant insurance')]], actions: bulk, body: `<div class="kpis kpis--4">${kpis}</div>${filters}${f.html}${ui.card(tr('cmp|Insurance certificates of tenants with an active lease'), table, { sub: esc(tr('cmp|From the documents on each tenant’s file (type: insurance policy). A reminder reaches the tenant in the portal and by email.')) })}` });
   });
   router.post('/compliance/insurance/remind', R('agent'), (req, res) => {
     const list = insurance().filter((r) => r.state !== 'ok');

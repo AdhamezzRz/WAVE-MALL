@@ -525,7 +525,12 @@ module.exports = function security(router, h) {
       g.lateStart += r.slot_at && Date.parse(r.started_at) > Date.parse(r.slot_at) + GRACE_MIN * 60000 ? 1 : 0;
       by.set(key, g);
     }
+    const sf = h.listFilters(req, { sorts: [['guard', 'sort|Name: A to Z', ''], ['rounds', 'sort|Most rounds first', ''], ['reach', 'sort|Lowest checkpoint reach first', ''], ['late', 'sort|Most late first', '']] });
+    const rate = (g) => (g.expected ? g.scanned / g.expected : 0);
     const rows = [...by.values()].sort((a, b) => a.guard.localeCompare(b.guard) || Object.keys(SHIFTS).indexOf(a.shift) - Object.keys(SHIFTS).indexOf(b.shift));
+    if (sf.sortKey === 'rounds') rows.sort((a, b) => b.rounds - a.rounds);
+    else if (sf.sortKey === 'reach') rows.sort((a, b) => rate(a) - rate(b));
+    else if (sf.sortKey === 'late') rows.sort((a, b) => (b.late + b.lateStart) - (a.late + a.lateStart));
     // rounds nobody walked, per shift
     const missed = { morning: 0, evening: 0, night: 0 };
     for (let d = from; d <= to; d = M.addDays(d, 1)) for (const r of patrolDay(d).routes) for (const s of r.slots) if (s.due && !s.rounds.length) missed[shiftOf(s.at)]++;
@@ -536,7 +541,7 @@ module.exports = function security(router, h) {
       { label: tr('sec|Checkpoints reached'), num: true, sort: (g) => (g.expected ? g.scanned / g.expected : 0), render: (g) => `<b>${pctTxt(g.expected ? g.scanned / g.expected : null)}</b><small class="sub">${esc(tr('sec|{done} of {all}', { done: g.scanned, all: g.expected }))}</small>` },
       { label: tr('sec|Late'), num: true, sort: (g) => g.late + g.lateStart, render: (g) => `<span class="${g.late + g.lateStart ? 'late' : ''}">${ui.n0(g.late + g.lateStart)}</span>` },
     ], rows, { empty: esc(tr('sec|No rounds in these days.')) });
-    const filters = `<form method="get" class="filters">${ui.input('from', tr('From'), from, { type: 'date' })}${ui.input('to', tr('To'), to, { type: 'date' })}${ui.btn(esc(tr('sec|Show')), { cls: 'btn--ghost btn--sm' })}</form>`;
+    const filters = `<form method="get" class="filters">${ui.input('from', tr('From'), from, { type: 'date' })}${ui.input('to', tr('To'), to, { type: 'date' })}${sf.fields}${ui.btn(esc(tr('sec|Show')), { cls: 'btn--ghost btn--sm' })}${h.listFilters(req, { cols: { date: 'x' } }).quick}</form>`;
     const missedCard = `<ul class="list">${Object.keys(SHIFTS).map((k) => `<li><span class="what"><b>${esc(tr(SHIFTS[k][0]))}</b></span><b class="${missed[k] ? 'late' : ''}">${esc(tn(missed[k], 'sec|{n} round missed', 'sec|{n} rounds missed'))}</b></li>`).join('')}</ul>`;
     page(req, res, { title: tr('sec|Guards and shifts'), on: '/admin/security/patrols', crumbs: [['/admin/security/patrols', tr('sec|Patrols')], [null, tr('sec|Guards and shifts')]], body: `${filters}<div class="grid grid--side"><div>${ui.card(tr('sec|Per guard and shift'), table)}</div><div>${ui.card(tr('sec|Rounds nobody walked'), missedCard)}</div></div>` });
   });
@@ -674,7 +679,9 @@ module.exports = function security(router, h) {
     const kind = I_KINDS[req.query.kind] ? req.query.kind : '';
     const where = [st === 'all' ? '1 = 1' : st === 'open' ? "status IN ('open','investigating')" : 'status = ?', ...(kind ? ['kind = ?'] : [])];
     const args = [...(['all', 'open'].includes(st) ? [] : [st]), ...(kind ? [kind] : [])];
-    const rows = db.all(`SELECT * FROM sec_incidents WHERE ${where.join(' AND ')} ORDER BY at DESC LIMIT 300`, ...args);
+    const f = h.listFilters(req, { cols: { date: 'at' }, dateLabel: tr('sec|When'), sort: { date: 'at' }, sorts: [['severity', 'sort|Severity: highest first', "CASE severity WHEN 'critical' THEN 0 WHEN 'high' THEN 1 WHEN 'medium' THEN 2 ELSE 3 END, at DESC"]] });
+    where.push(...f.where); args.push(...f.args);
+    const rows = db.all(`SELECT * FROM sec_incidents WHERE ${where.join(' AND ')} ORDER BY ${f.order} LIMIT 300`, ...args);
     const since = new Date(Date.now() - 30 * 86400000).toISOString();
     const by = db.all('SELECT kind, COUNT(*) n FROM sec_incidents WHERE at >= ? GROUP BY kind ORDER BY n DESC', since);
     const kpis = [
@@ -689,7 +696,7 @@ module.exports = function security(router, h) {
       { label: tr('sec|Severity'), sort: (i) => Object.keys(SEVERITY).indexOf(i.severity), render: (i) => badge(SEVERITY, i.severity) },
       { label: tr('Status'), render: (i) => badge(I_STATUS, i.status) },
     ], rows, { href: (i) => `/admin/security/incidents/${i.id}`, empty: esc(tr('sec|No incidents.')) });
-    const filters = `<form method="get" class="filters">${ui.select('status', tr('Status'), [['open', tr('sec|Not finished')], ...Object.entries(I_STATUS).map(([k, v]) => [k, tr(v[0])]), ['all', tr('All')]], st)}${ui.select('kind', tr('sec|Kind'), tmap(I_KINDS), kind, { blank: tr('All') })}${ui.btn(esc(tr('sec|Show')), { cls: 'btn--ghost btn--sm' })}</form>`;
+    const filters = `<form method="get" class="filters">${ui.select('status', tr('Status'), [['open', tr('sec|Not finished')], ...Object.entries(I_STATUS).map(([k, v]) => [k, tr(v[0])]), ['all', tr('All')]], st)}${ui.select('kind', tr('sec|Kind'), tmap(I_KINDS), kind, { blank: tr('All') })}${f.fields}${ui.btn(esc(tr('sec|Show')), { cls: 'btn--ghost btn--sm' })}${f.quick}</form>`;
     page(req, res, { title: tr('sec|Incidents'), on: '/admin/security/incidents', crumbs: [[null, tr('sec|Incidents')]], actions: h.can(req, 'agent') ? ui.btn(esc(tr('sec|Report an incident')), { href: '/admin/security/incidents/new', cls: 'btn--primary', ic: 'plus' }) : '', body: `<div class="kpis kpis--3">${kpis}</div>${filters}${ui.card(tr('sec|Incidents'), table, { sub: esc(tr('sec|Car park incidents are under Parking.')) })}` });
   });
   router.get('/security/incidents/new', R('agent'), (req, res) => {
@@ -758,7 +765,9 @@ module.exports = function security(router, h) {
     const q = h.str(req.query.q, 80);
     const where = [...(st === 'all' ? [] : ['status = ?']), ...(q ? ['(item LIKE ? OR description LIKE ? OR ref LIKE ?)'] : [])];
     const args = [...(st === 'all' ? [] : [st]), ...(q ? [`%${q}%`, `%${q}%`, `%${q}%`] : [])];
-    const rows = db.all(`SELECT * FROM sec_lost ${where.length ? `WHERE ${where.join(' AND ')}` : ''} ORDER BY found_at DESC LIMIT 300`, ...args);
+    const f = h.listFilters(req, { cols: { date: 'found_at' }, dateLabel: tr('sec|Found'), sort: { date: 'found_at', name: 'item' } });
+    where.push(...f.where); args.push(...f.args);
+    const rows = db.all(`SELECT * FROM sec_lost ${where.length ? `WHERE ${where.join(' AND ')}` : ''} ORDER BY ${f.order} LIMIT 300`, ...args);
     const table = ui.table([
       { label: tr('sec|Item'), render: (l) => `<b>${esc(l.item)}</b><small class="sub">${esc(l.ref)} · ${esc(tr(L_CATS[l.category] || l.category))}</small>` },
       { label: tr('sec|Found'), sort: (l) => l.found_at, render: (l) => `${esc(ui.dt(l.found_at))}${l.found_where ? `<small class="sub">${esc(l.found_where)}</small>` : ''}` },
@@ -766,7 +775,7 @@ module.exports = function security(router, h) {
       { label: tr('sec|Returned to'), render: (l) => (l.returned_to ? `${esc(l.returned_to)}<small class="sub">${esc(ui.dt(l.returned_at))}</small>` : '—') },
       { label: tr('Status'), render: (l) => badge(L_STATUS, l.status) },
     ], rows, { href: (l) => `/admin/security/lost/${l.id}`, empty: esc(tr('sec|Nothing here.')) });
-    const filters = `<form method="get" class="filters">${ui.select('status', tr('Status'), [...Object.entries(L_STATUS).map(([k, v]) => [k, tr(v[0])]), ['all', tr('All')]], st)}${ui.input('q', tr('sec|Search'), q, { placeholder: tr('sec|e.g. black wallet') })}${ui.btn(esc(tr('sec|Show')), { cls: 'btn--ghost btn--sm' })}</form>`;
+    const filters = `<form method="get" class="filters">${ui.select('status', tr('Status'), [...Object.entries(L_STATUS).map(([k, v]) => [k, tr(v[0])]), ['all', tr('All')]], st)}${ui.input('q', tr('sec|Search'), q, { placeholder: tr('sec|e.g. black wallet') })}${f.fields}${ui.btn(esc(tr('sec|Show')), { cls: 'btn--ghost btn--sm' })}${f.quick}</form>`;
     const add = h.can(req, 'agent') ? ui.form('/admin/security/lost', req.session.csrf, `<div class="fields">${ui.input('item', tr('sec|Item'), '', { required: true, placeholder: tr('sec|e.g. Black leather wallet') })}${ui.select('category', tr('sec|Kind'), tmap(L_CATS), 'wallet')}${ui.input('found_at', tr('sec|Found'), ui.local(now()).slice(0, 16), { type: 'datetime-local' })}${ui.input('found_where', tr('sec|Found where'), '', { placeholder: tr('sec|e.g. Food court, table 12') })}${ui.input('found_by', tr('sec|Found by'), '')}${ui.input('stored_at', tr('sec|Kept at'), db.setting('sec_lost_store') || '', { placeholder: tr('sec|e.g. Security office, locker 3') })}${ui.textarea('description', tr('sec|Description'), '', { rows: 2, cls: 'span-all', placeholder: tr('sec|Colour, brand, what is inside (do not write card numbers)') })}</div>${ui.btn(esc(tr('sec|Log the item')), { cls: 'btn--primary btn--sm', ic: 'plus' })}`, { cls: 'stack' }) : '';
     page(req, res, { title: tr('sec|Lost & found'), on: '/admin/security/lost', crumbs: [[null, tr('sec|Lost & found')]], actions: ui.btn(esc(tr('sec|Car park lost & found')), { href: '/admin/parking/lost', cls: 'btn--ghost', ic: 'car' }), body: `${filters}<div class="grid grid--side"><div>${ui.card(tr('sec|Items'), table, { sub: esc(tr('sec|Write down who an item is returned to, with their ID.')) })}</div><div>${add ? ui.card(tr('sec|An item was found'), add) : ''}</div></div>` });
   });
@@ -810,7 +819,8 @@ module.exports = function security(router, h) {
   const keyOut = (id) => db.value('SELECT COUNT(*) FROM sec_key_loans WHERE key_id = ? AND returned_at IS NULL', id);
   router.get('/security/keys', (req, res) => {
     const keys = db.all('SELECT * FROM sec_keys WHERE active = 1 ORDER BY code');
-    const loans = db.all('SELECT l.*, k.code, k.opens, u.name issuer FROM sec_key_loans l JOIN sec_keys k ON k.id = l.key_id LEFT JOIN users u ON u.id = l.issued_by WHERE l.returned_at IS NULL ORDER BY l.due_at');
+    const f = h.listFilters(req, { cols: { date: 'l.issued_at' }, dateLabel: tr('sec|Issued'), sort: { due: 'l.due_at', date: 'l.issued_at', name: 'l.issued_to' }, defaultSort: 'due' });
+    const loans = db.all(`SELECT l.*, k.code, k.opens, u.name issuer FROM sec_key_loans l JOIN sec_keys k ON k.id = l.key_id LEFT JOIN users u ON u.id = l.issued_by WHERE l.returned_at IS NULL${f.sql} ORDER BY ${f.order}`, ...f.args);
     const t = now();
     const csrf = req.session.csrf;
     const loanTable = ui.table([
@@ -830,7 +840,7 @@ module.exports = function security(router, h) {
     const add = h.can(req, 'manager') ? `<details class="pad"><summary>${esc(tr('sec|Register a key'))}</summary>${ui.form('/admin/security/keys', csrf, `<div class="fields">${ui.input('code', tr('sec|Code'), `K-${String(db.value('SELECT COUNT(*) FROM sec_keys') + 1).padStart(3, '0')}`, { required: true })}${ui.select('kind', tr('sec|Kind'), tmap(K_KINDS), 'key')}${ui.input('opens', tr('sec|Opens'), '', { required: true, placeholder: tr('sec|e.g. Roof plant room door') })}${ui.input('place', tr('sec|Floor or zone'), '')}${ui.input('copies', tr('sec|Copies'), 1, { type: 'number', min: 1, max: 50 })}${ui.input('kept_at', tr('sec|Kept at'), '', { placeholder: tr('sec|e.g. Key cabinet, hook 14') })}</div>${ui.btn(esc(tr('sec|Register')), { cls: 'btn--primary btn--sm', ic: 'plus' })}`, { cls: 'stack' })}</details>` : '';
     const overdue = loans.filter((l) => l.due_at < t).length;
     page(req, res, { title: tr('sec|Keys'), on: '/admin/security/keys', crumbs: [[null, tr('sec|Keys')]], body: `<div class="kpis kpis--3">${ui.kpi({ label: tr('sec|Keys out'), value: ui.n0(loans.length) })}${ui.kpi({ label: tr('sec|Overdue'), value: ui.n0(overdue), tone: overdue ? 'kpi--alert' : '' })}${ui.kpi({ label: tr('sec|Master keys out'), value: ui.n0(loans.filter((l) => db.value('SELECT kind FROM sec_keys WHERE id = ?', l.key_id) === 'master').length) })}</div>
-      <div class="grid grid--side"><div class="stack">${ui.card(tr('sec|Keys out'), loanTable)}${ui.card(tr('sec|Key register'), `${keyTable}${add}`)}</div><div>${issue ? ui.card(tr('sec|Issue a key'), issue) : ''}</div></div>` });
+      ${f.html}<div class="grid grid--side"><div class="stack">${ui.card(tr('sec|Keys out'), loanTable)}${ui.card(tr('sec|Key register'), `${keyTable}${add}`)}</div><div>${issue ? ui.card(tr('sec|Issue a key'), issue) : ''}</div></div>` });
   });
   router.post('/security/keys', R('manager'), (req, res) => {
     const code = h.str(req.body.code, 20).toUpperCase();
@@ -876,7 +886,8 @@ module.exports = function security(router, h) {
 
   // ================= handover log =================
   router.get('/security/handover', (req, res) => {
-    const rows = db.all('SELECT x.*, u.name user_name, a.name ack_name FROM sec_handover x LEFT JOIN users u ON u.id = x.user_id LEFT JOIN users a ON a.id = x.ack_by ORDER BY x.at DESC LIMIT 60');
+    const f = h.listFilters(req, { cols: { date: 'x.at' }, dateLabel: tr('sec|Handover log'), sort: { date: 'x.at' } });
+    const rows = db.all(`SELECT x.*, u.name user_name, a.name ack_name FROM sec_handover x LEFT JOIN users u ON u.id = x.user_id LEFT JOIN users a ON a.id = x.ack_by ${f.where.length ? `WHERE ${f.where.join(' AND ')}` : ''} ORDER BY ${f.order} LIMIT 60`, ...f.args);
     const shift = shiftOf(now());
     const day = localDay();
     const p = patrolDay(day);
@@ -890,7 +901,7 @@ module.exports = function security(router, h) {
     const form = h.can(req, 'agent') ? ui.form('/admin/security/handover', csrf, `<div class="fields">${ui.select('shift', tr('sec|Shift ending'), Object.entries(SHIFTS).map(([k, v]) => [k, tr(v[0])]), shift)}${ui.input('to_name', tr('sec|Handed to'), '', { attrs: { list: 'sec-users' } })}</div><datalist id="sec-users">${h.users().map((u) => `<option value="${esc(u.name)}">`).join('')}</datalist>
       <ul class="sec-facts">${facts.map((f) => `<li>${esc(f)}</li>`).join('')}</ul>${ui.textarea('summary', tr('sec|What happened on the shift'), '', { rows: 5 })}${ui.textarea('open_items', tr('sec|Open items for the next shift'), '', { rows: 3 })}${ui.btn(esc(tr('sec|Write the handover')), { cls: 'btn--primary btn--sm' })}`, { cls: 'stack' }) : '';
     const list = rows.length ? `<ol class="sec-log">${rows.map((x) => `<li><header><b>${esc(tr(SHIFTS[x.shift] ? SHIFTS[x.shift][0] : x.shift))}</b><span class="muted">${esc(ui.dt(x.at))} · ${esc(x.user_name || '—')}${x.to_name ? ` → ${esc(x.to_name)}` : ''}</span>${x.ack_at ? ui.badge('ok', tr('sec|Read by {name}', { name: x.ack_name || '—' }), 'ok') : h.can(req, 'agent') && x.user_id !== req.user.id ? ui.form(`/admin/security/handover/${x.id}/ack`, csrf, ui.btn(esc(tr('sec|I have read it')), { cls: 'btn--ghost btn--sm', ic: 'check' })) : ui.badge('pending', tr('sec|Not read yet'), 'amber')}</header><p class="sec-pre">${esc(x.summary)}</p>${x.open_items ? `<p class="sec-pre sec-open"><b>${esc(tr('sec|Open items'))}:</b> ${esc(x.open_items)}</p>` : ''}</li>`).join('')}</ol>` : `<p class="muted pad">${esc(tr('sec|No handover written yet.'))}</p>`;
-    page(req, res, { title: tr('sec|Handover log'), on: '/admin/security/handover', crumbs: [[null, tr('sec|Handover log')]], body: `<div class="grid grid--side"><div>${ui.card(tr('sec|Handover log'), list)}</div><div>${form ? ui.card(tr('sec|Write the handover'), form) : ''}</div></div>` });
+    page(req, res, { title: tr('sec|Handover log'), on: '/admin/security/handover', crumbs: [[null, tr('sec|Handover log')]], body: `${f.html}<div class="grid grid--side"><div>${ui.card(tr('sec|Handover log'), list)}</div><div>${form ? ui.card(tr('sec|Write the handover'), form) : ''}</div></div>` });
   });
   router.post('/security/handover', R('agent'), (req, res) => {
     const summary = h.str(req.body.summary, 4000);

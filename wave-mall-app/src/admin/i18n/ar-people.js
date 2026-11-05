@@ -38,6 +38,7 @@ module.exports = {
   'ppl|Switched on for this person': 'مفعّل لهذا الشخص',
   'ppl|Needs HR & salaries': 'يحتاج صلاحية الموارد البشرية والرواتب',
   'ppl|Needs Finance': 'يحتاج صلاحية المالية',
+  'ppl|{module} stays closed for {name} until this changes: {why}.': 'سيبقى قسم {module} مغلقًا أمام {name} إلى أن يتغير هذا: {why}.',
   'ppl|Needs the manager rank': 'يحتاج رتبة مدير',
   'ppl|Administrators only': 'لمديري النظام فقط',
   'ppl|Closed': 'مغلق',

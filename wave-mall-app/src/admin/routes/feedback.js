@@ -259,7 +259,9 @@ module.exports = function feedback(router, h) {
     const rating = h.int(req.query.rating);
     const where = [st === 'all' ? '1 = 1' : st === 'open' ? "e.status != 'resolved'" : 'e.status = ?', ...(loc ? ['e.location_id = ?'] : []), ...(cat ? ['e.category = ?'] : []), ...(rating ? ['e.rating = ?'] : [])];
     const args = [...(['all', 'open'].includes(st) ? [] : [st]), ...(loc ? [loc] : []), ...(cat ? [cat] : []), ...(rating ? [rating] : [])];
-    const rows = db.all(`SELECT e.*, l.name loc_name, l.name_ar loc_ar, u.name assignee FROM fb_entries e LEFT JOIN fb_locations l ON l.id = e.location_id LEFT JOIN users u ON u.id = e.assignee_id WHERE ${where.join(' AND ')} ORDER BY e.created_at DESC LIMIT 400`, ...args);
+    const f = h.listFilters(req, { cols: { date: 'e.created_at' }, dateLabel: tr('fb|Received'), sort: { date: 'e.created_at' }, sorts: [['rating', 'sort|Lowest rating first', 'e.rating ASC, e.created_at DESC'], ['rating_desc', 'sort|Highest rating first', 'e.rating DESC, e.created_at DESC']] });
+    where.push(...f.where); args.push(...f.args);
+    const rows = db.all(`SELECT e.*, l.name loc_name, l.name_ar loc_ar, u.name assignee FROM fb_entries e LEFT JOIN fb_locations l ON l.id = e.location_id LEFT JOIN users u ON u.id = e.assignee_id WHERE ${where.join(' AND ')} ORDER BY ${f.order} LIMIT 400`, ...args);
     const table = ui.table([
       { label: tr('fb|Rating'), sort: (e) => e.rating, render: (e) => rateTxt(e.rating) },
       { label: tr('fb|Feedback'), render: (e) => `<b dir="auto">${esc(e.comment || '—')}</b><small class="sub">${esc([e.ref, tr(CATS[e.category]), e.phone ? tr('fb|wants a call back') : null].filter(Boolean).join(' · '))}</small>` },
@@ -268,7 +270,7 @@ module.exports = function feedback(router, h) {
       { label: tr('fb|Handled by'), render: (e) => esc(e.assignee || '—') },
       { label: tr('Status'), render: (e) => `${badge(e.status)}${e.routed_kind ? `<small class="sub">${esc(tr(e.routed_kind === 'cleaning' ? 'fb|sent to cleaning' : 'fb|work order opened'))}</small>` : ''}` },
     ], rows, { href: (e) => `/admin/feedback/${e.id}`, empty: esc(tr('fb|No tickets here.')) });
-    const filters = `<form method="get" class="filters">${ui.select('status', tr('Status'), [['open', tr('fb|Not resolved')], ...Object.entries(STATUS).map(([k, v]) => [k, tr(v[0])]), ['all', tr('All')]], st)}${ui.select('location', tr('fb|Location'), db.all('SELECT id, name, name_ar FROM fb_locations ORDER BY name').map((l) => [l.id, lname(l)]), loc || '', { blank: tr('All') })}${ui.select('category', tr('fb|Subject'), tmap(CATS), cat, { blank: tr('All') })}${ui.select('rating', tr('fb|Rating'), [5, 4, 3, 2, 1].map((n) => [n, `${n} · ${tr(RATE[n])}`]), rating || '', { blank: tr('All') })}${ui.btn(esc(tr('fb|Show')), { cls: 'btn--ghost btn--sm' })}</form>`;
+    const filters = `<form method="get" class="filters">${ui.select('status', tr('Status'), [['open', tr('fb|Not resolved')], ...Object.entries(STATUS).map(([k, v]) => [k, tr(v[0])]), ['all', tr('All')]], st)}${ui.select('location', tr('fb|Location'), db.all('SELECT id, name, name_ar FROM fb_locations ORDER BY name').map((l) => [l.id, lname(l)]), loc || '', { blank: tr('All') })}${ui.select('category', tr('fb|Subject'), tmap(CATS), cat, { blank: tr('All') })}${ui.select('rating', tr('fb|Rating'), [5, 4, 3, 2, 1].map((n) => [n, `${n} · ${tr(RATE[n])}`]), rating || '', { blank: tr('All') })}${f.fields}${ui.btn(esc(tr('fb|Show')), { cls: 'btn--ghost btn--sm' })}${f.quick}</form>`;
     page(req, res, { title: tr('fb|Tickets'), on: '/admin/feedback/tickets', crumbs: [[null, tr('fb|Tickets')]], body: `${filters}${ui.card(tn(rows.length, 'fb|{n} ticket', 'fb|{n} tickets'), table)}` });
   });
 

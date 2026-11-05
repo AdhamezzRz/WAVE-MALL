@@ -499,11 +499,18 @@ module.exports = function amendments(router, h) {
   router.get('/leases/renewals', (req, res) => {
     const t = today();
     const within = [3, 6, 12, 24].includes(h.int(req.query.months)) ? h.int(req.query.months) : 12;
-    const rows = db.all("SELECT s.*, b.name brand_name FROM leases s JOIN brands b ON b.id = s.brand_id WHERE s.status = 'active' AND s.end_date <= ? ORDER BY s.end_date", M.addMonths(t, within))
+    const f = h.listFilters(req, {
+      cols: { date: 's.end_date' }, dateLabel: tr('amd|Ends'), keep: ['months'],
+      sorts: [['end', 'sort|Ending soonest', 's.end_date'], ['end_late', 'sort|Ending latest', 's.end_date DESC'], ['amount_desc', 'sort|Annual rent: highest first', 's.end_date'], ['amount_asc', 'sort|Annual rent: lowest first', 's.end_date'],
+        ['name', 'sort|Name: A to Z', 'b.name COLLATE NOCASE'], ['name_desc', 'sort|Name: Z to A', 'b.name COLLATE NOCASE DESC']],
+    });
+    const rows = db.all(`SELECT s.*, b.name brand_name FROM leases s JOIN brands b ON b.id = s.brand_id WHERE s.status = 'active' AND s.end_date <= ?${f.sql} ORDER BY ${f.order}, s.id`, M.addMonths(t, within), ...f.args)
       .map((s) => ({ ...s, left: dayDiff(t, s.end_date), renewal: db.get('SELECT * FROM lease_renewals WHERE lease_id = ? ORDER BY id DESC LIMIT 1', s.id), option: db.get("SELECT * FROM lease_options WHERE lease_id = ? AND status = 'open' ORDER BY notice_by LIMIT 1", s.id), annual: M.currentAnnualRent(db, s) }));
+    if (f.sortKey === 'amount_desc') rows.sort((a, b) => b.annual - a.annual);
+    if (f.sortKey === 'amount_asc') rows.sort((a, b) => a.annual - b.annual);
     const options = db.all("SELECT o.*, s.ref, s.brand_id, b.name brand_name FROM lease_options o JOIN leases s ON s.id = o.lease_id JOIN brands b ON b.id = s.brand_id WHERE o.status = 'open' AND s.status = 'active' ORDER BY o.notice_by LIMIT 60");
     const offers = db.all("SELECT r.*, s.ref lease_ref, b.name brand_name FROM lease_renewals r JOIN leases s ON s.id = r.lease_id JOIN brands b ON b.id = s.brand_id WHERE r.status = 'offered' ORDER BY r.valid_until");
-    const sub = `<nav class="tabs tabs--sub">${[3, 6, 12, 24].map((m) => `<a class="tab${within === m ? ' is-on' : ''}" href="/admin/leases/renewals?months=${m}">${esc(tn(m, 'amd|Next {n} month', 'amd|Next {n} months'))}</a>`).join('')}</nav>`;
+    const sub = `<nav class="tabs tabs--sub">${[3, 6, 12, 24].map((m) => `<a class="tab${within === m ? ' is-on' : ''}" href="/admin/leases/renewals?months=${m}${['from', 'to', 'sort'].filter((x) => req.query[x]).map((x) => `&${x}=${encodeURIComponent(req.query[x])}`).join('')}">${esc(tn(m, 'amd|Next {n} month', 'amd|Next {n} months'))}</a>`).join('')}</nav>`;
     const kpis = [
       ui.kpi({ label: tr('amd|Ending in 6 months'), value: String(rows.filter((s) => s.left <= 183).length), sub: esc(ui.money(rows.filter((s) => s.left <= 183).reduce((a, s) => a + s.annual, 0), { compact: true })) + ' ' + esc(tr('amd|a year at stake')) }),
       ui.kpi({ label: tr('amd|Ending in 12 months'), value: String(db.value("SELECT COUNT(*) FROM leases WHERE status = 'active' AND end_date <= ?", M.addMonths(t, 12))) }),
@@ -519,7 +526,7 @@ module.exports = function amendments(router, h) {
     ], rows, { empty: esc(tr('amd|No leases end in this period.')), href: (s) => `/admin/leases/${s.id}#renewal` });
     const optList = options.length ? `<ul class="list">${options.map((o) => { const d = dayDiff(t, o.notice_by); return `<li class="${d <= 30 ? 'is-late' : ''}"><a href="/admin/leases/${o.lease_id}#options"><span class="what"><b>${esc(o.brand_name)}</b><small>${esc(tr(O_KIND[o.kind]))} · ${esc(tr(O_PARTY[o.party]))} · ${esc(ui.date(o.notice_by))}</small></span><b>${esc(tn(d, 'amd|{n} day', 'amd|{n} days'))}</b></a></li>`; }).join('')}</ul>` : `<p class="muted pad">${esc(tr('amd|No open options.'))}</p>`;
     const offerList = offers.length ? `<ul class="list">${offers.map((r) => `<li><a href="/admin/leases/${r.lease_id}#renewal"><span class="what"><b>${esc(r.brand_name)}</b><small><bdi>${esc(r.ref)}</bdi> · ${esc(tr('amd|open until {date}', { date: ui.date(r.valid_until) }))}</small></span><b>${ui.money(r.rent_m2, { cur: false })}</b></a></li>`).join('')}</ul>` : `<p class="muted pad">${esc(tr('amd|No offers waiting.'))}</p>`;
-    h.page(req, res, { title: tr('amd|Renewals and notice dates'), active: '/admin/leases', wide: true, crumbs: [['/admin/leases', tr('Leases')], [null, tr('amd|Renewals')]], body: `<div class="kpis kpis--4">${kpis}</div>${sub}<div class="grid grid--side"><div>${ui.card(tr('amd|Leases ending'), table)}</div><div class="stack">${ui.card(tr('amd|Notice deadlines'), optList, { sub: esc(tr('amd|Renewal options and break clauses still open. The office is emailed 90, 60 and 30 days before.')) })}${ui.card(tr('amd|Offers waiting'), offerList)}</div></div>` });
+    h.page(req, res, { title: tr('amd|Renewals and notice dates'), active: '/admin/leases', wide: true, crumbs: [['/admin/leases', tr('Leases')], [null, tr('amd|Renewals')]], body: `<div class="kpis kpis--4">${kpis}</div>${sub}${f.html}<div class="grid grid--side"><div>${ui.card(tr('amd|Leases ending'), table)}</div><div class="stack">${ui.card(tr('amd|Notice deadlines'), optList, { sub: esc(tr('amd|Renewal options and break clauses still open. The office is emailed 90, 60 and 30 days before.')) })}${ui.card(tr('amd|Offers waiting'), offerList)}</div></div>` });
   });
 
   // ---------- settlement ----------

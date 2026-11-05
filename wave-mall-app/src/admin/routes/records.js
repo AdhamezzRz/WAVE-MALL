@@ -74,13 +74,18 @@ module.exports = function records(router, h) {
     if (q.status === 'valid') { where.push('(d.expires_on > ?)'); args.push(warn); }
     if (q.status === 'none') where.push('d.expires_on IS NULL');
     if (q.q) { where.push('(d.title LIKE ? OR d.ref LIKE ? OR d.file_name LIKE ? OR d.notes LIKE ?)'); args.push(...Array(4).fill(`%${q.q}%`)); }
+    const f = h.listFilters(req, {
+      cols: { date: 'd.created_at' }, dateLabel: tr('sort|Filed'),
+      sorts: [['newest', 'sort|Newest first', 'd.created_at DESC, d.id DESC'], ['oldest', 'sort|Oldest first', 'd.created_at ASC, d.id ASC'], ['expiry', 'sort|Expiring soonest', 'd.expires_on IS NULL, d.expires_on ASC, d.id DESC'], ['name', 'sort|Name: A to Z', 'd.title COLLATE NOCASE, d.id DESC']],
+    });
+    where.push(...f.where); args.push(...f.args);
     const PER = 40;
     const filtered = `${where.length ? ` AND ${where.join(' AND ')}` : ''}`;
     const matching = db.value(`SELECT COUNT(*) FROM documents d WHERE d.archived = 0${vis(req)}${filtered}`, ...args);
     const pages = Math.max(1, Math.ceil(matching / PER));
     const page = Math.min(pages, Math.max(1, h.int(req.query.page) || 1));
-    const rows = db.all(`${DOC_SELECT(req)} AND d.archived = 0${filtered} ORDER BY d.created_at DESC, d.id DESC LIMIT ${PER} OFFSET ${(page - 1) * PER}`, ...args);
-    const link = (n) => `/admin/documents?${new URLSearchParams({ ...Object.fromEntries(Object.entries(q).filter(([, v]) => v)), ...(n > 1 ? { page: n } : {}) })}`.replace(/\?$/, '');
+    const rows = db.all(`${DOC_SELECT(req)} AND d.archived = 0${filtered} ORDER BY ${f.order} LIMIT ${PER} OFFSET ${(page - 1) * PER}`, ...args);
+    const link = (n) => `/admin/documents?${new URLSearchParams({ ...Object.fromEntries(Object.entries(q).filter(([, v]) => v)), ...Object.fromEntries(['from', 'to', 'sort'].filter((k) => req.query[k]).map((k) => [k, String(req.query[k])])), ...(n > 1 ? { page: n } : {}) })}`.replace(/\?$/, '');
     const pager = pages > 1
       ? `<nav class="pager" aria-label="${ui.esc(tr('Pages'))}">${page > 1 ? `<a class="btn btn--ghost btn--sm" href="${ui.esc(link(page - 1))}">${ui.esc(tr('Newer'))}</a>` : '<span></span>'}<span class="muted small">${ui.esc(tr('{from}–{to} of {total}', { from: (page - 1) * PER + 1, to: Math.min(page * PER, matching), total: matching }))}</span>${page < pages ? `<a class="btn btn--ghost btn--sm" href="${ui.esc(link(page + 1))}">${ui.esc(tr('Older'))}</a>` : '<span></span>'}</nav>`
       : '';
@@ -103,8 +108,9 @@ module.exports = function records(router, h) {
       ${ui.select('entity', tr('Belongs to'), entities.map((e) => [e, M.DOC_ENTITIES[e]]), q.entity, { blank: tr('All records'), cls: 'f--inline', attrs: { 'data-autosubmit': true } })}
       ${ui.select('kind', tr('Type'), Object.keys(M.DOC_KINDS).map((k) => [k, M.DOC_KINDS[k]]), q.kind, { blank: tr('All types'), cls: 'f--inline', attrs: { 'data-autosubmit': true } })}
       ${ui.select('status', tr('Status'), [['valid', tr('rec|Valid')], ['expiring', tr('rec|Expiring soon')], ['expired', tr('rec|Expired')], ['none', tr('No expiry date')]], q.status, { blank: tr('Any status'), cls: 'f--inline', attrs: { 'data-autosubmit': true } })}
+      ${f.fields}
       ${ui.btn(tr('Filter'), { cls: 'btn--ghost btn--sm' })}
-      ${q.q || q.entity || q.kind || q.status ? `<a class="btn btn--ghost btn--sm" href="/admin/documents">${tr('rec|Clear')}</a>` : ''}
+      ${q.q || q.entity || q.kind || q.status || f.active ? `<a class="btn btn--ghost btn--sm" href="/admin/documents">${tr('rec|Clear')}</a>` : ''}${f.quick}
     </form>`;
     const table = ui.table(
       [
@@ -115,7 +121,7 @@ module.exports = function records(router, h) {
         { label: tr('rec|Filed'), render: (d) => `${ui.date(d.created_at)}<small class="sub">${ui.esc(d.uploader || tr('System'))}</small>` },
       ],
       rows,
-      { empty: ui.esc(q.q || q.entity || q.kind || q.status ? tr('No documents match these filters.') : tr('Nothing on file yet. Upload papers from a tenant, lease, contract or the mall panel below.')), href: (d) => `/admin/documents/${d.id}` },
+      { empty: ui.esc(q.q || q.entity || q.kind || q.status || f.active ? tr('No documents match these filters.') : tr('Nothing on file yet. Upload papers from a tenant, lease, contract or the mall panel below.')), href: (d) => `/admin/documents/${d.id}` },
     );
 
     // what expires next, across everything this person may see
@@ -261,11 +267,22 @@ ${ui.card(tn(matching, '{n} document', '{n} documents'), `${table}${pager}`, { s
       expired: (r) => r.state === 'expired',
     }[tab];
     // the filter bar: when it ends, and the tenant or lease
-    const f = h.listFilters(req, { cols: { date: 'x', brand: 'x', lease: 'x' }, dateLabel: tr('Ends'), keep: ['tab'] });
+    const f = h.listFilters(req, {
+      cols: { date: 'x', brand: 'x', lease: 'x' }, dateLabel: tr('Ends'), keep: ['tab'],
+      sorts: [['end', 'sort|Ending soonest', ''], ['end_late', 'sort|Ending latest', ''], ['start', 'sort|Start date: newest first', ''], ['amount_desc', 'sort|Value a year: highest first', ''], ['amount_asc', 'sort|Value a year: lowest first', ''], ['name', 'sort|Name: A to Z', '']],
+    });
     const leaseBrand = Object.fromEntries(leases.map((s) => [s.id, s.brand_id]));
     const inRange = (r) => (!f.from || (r.end && r.end >= f.from)) && (!f.to || (r.end && r.end <= f.to))
       && (!f.brand || (r.type === 'lease' && leaseBrand[r.id] === f.brand)) && (!f.lease || (r.type === 'lease' && r.id === f.lease));
-    const list = rows.filter(pick).filter(inRange).sort((a, b) => (a.end || '9999').localeCompare(b.end || '9999'));
+    const by = {
+      end: (a, b) => (a.end || '9999').localeCompare(b.end || '9999'),
+      end_late: (a, b) => (b.end || '').localeCompare(a.end || ''),
+      start: (a, b) => (b.start || '').localeCompare(a.start || ''),
+      amount_desc: (a, b) => (b.annual || 0) - (a.annual || 0),
+      amount_asc: (a, b) => (a.annual || 0) - (b.annual || 0),
+      name: (a, b) => String(a.title || '').localeCompare(String(b.title || '')),
+    };
+    const list = rows.filter(pick).filter(inRange).sort(by[f.sortKey] || by.end);
 
     const activeSvc = services.filter((c) => stateOf(c, t) === 'active');
     const kpis = [

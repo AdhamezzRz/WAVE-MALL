@@ -138,6 +138,8 @@ module.exports = function helpRoutes(router, h) {
     const q = String(req.query.q || '').trim();
     if (q) return searchPage(req, res, q);
     const forPath = String(req.query.for || '').slice(0, 200);
+    // the page's name from the sidebar (the longest matching address), not the raw address
+    const pageName = (p) => { const e = ui.NAV_ENTRIES.filter((x) => p === x.href || p.startsWith(`${x.href}/`)).sort((a, b) => b.href.length - a.href.length)[0]; return e ? tr(e.label) : ''; };
     const here = forPath && forPath !== '/admin/help' ? help.forPage(forPath).filter((l) => l.area !== 'portal') : [];
     const done = all.filter((l) => (prog.get(l.id) || {}).done_at).length;
     const totalMin = Math.round(all.reduce((s, l) => s + seconds(l, lang), 0) / 60);
@@ -150,7 +152,7 @@ module.exports = function helpRoutes(router, h) {
         <div class="hlp-stat">${ring(all.length ? done / all.length : 0, 92)}<b>${all.length ? Math.round((done / all.length) * 100) : 0}%</b><small>${esc(tr('hlp|your progress'))}</small></div>
         <div class="hlp-stat__list"><p><b>${all.length}</b> ${esc(tn(all.length, 'hlp|lesson', 'hlp|lessons'))}</p><p><b>${totalMin}</b> ${esc(tn(totalMin, 'hlp|minute of video', 'hlp|minutes of video'))}</p><p><b>${done}</b> ${esc(tr('hlp|watched'))}</p></div>
       </div></section>`;
-    const hereCard = here.length ? ui.card(tr('hlp|Help for the page you were on'), `<div class="hlp-grid">${here.map((l) => lessonCard(req, l, prog)).join('')}</div>`, { cls: 'hlp-here', sub: `<span class="ltr">${esc(forPath)}</span>`, action: supportBtn(req, forPath) })
+    const hereCard = here.length ? ui.card(tr('hlp|Help for the page you were on'), `<div class="hlp-grid">${here.map((l) => lessonCard(req, l, prog)).join('')}</div>`, { cls: 'hlp-here', sub: esc(pageName(forPath)), action: supportBtn(req, forPath) })
       : forPath && forPath !== '/admin/help' ? ui.card(tr('hlp|Help for the page you were on'), `<p class="muted">${esc(tr('hlp|There is no lesson for that page yet. Browse the lessons below, or ask support.'))}</p>`, { cls: 'hlp-here', action: supportBtn(req, forPath) }) : '';
     const goingCard = going.length ? ui.card(tr('hlp|Continue watching'), `<div class="hlp-grid hlp-grid--4">${going.map((l) => lessonCard(req, l, prog)).join('')}</div>`) : '';
     const paths = help.PATHS.map((p) => {
@@ -438,7 +440,9 @@ module.exports = function helpRoutes(router, h) {
     const args = [];
     if (which === 'mine') { where.push('t.user_id = ?'); args.push(req.user.id); }
     if (st) { where.push('t.status = ?'); args.push(st); }
-    const rows = db.all(`SELECT t.*, u.name person, (SELECT COUNT(*) FROM hlp_replies r WHERE r.ticket_id = t.id) replies FROM hlp_tickets t LEFT JOIN users u ON u.id = t.user_id ${where.length ? `WHERE ${where.join(' AND ')}` : ''} ORDER BY t.status = 'closed', t.updated_at DESC LIMIT 300`, ...args);
+    const f = h.listFilters(req, { cols: { date: 't.created_at' }, dateLabel: tr('sort|Sent'), keep: ['status', 'mine'], sorts: [['default', 'sort|Suggested order', "t.status = 'closed', t.updated_at DESC"], ['updated', 'sort|Recently updated', 't.updated_at DESC'], ['newest', 'sort|Newest first', 't.created_at DESC'], ['oldest', 'sort|Oldest first', 't.created_at ASC']] });
+    where.push(...f.where); args.push(...f.args);
+    const rows = db.all(`SELECT t.*, u.name person, (SELECT COUNT(*) FROM hlp_replies r WHERE r.ticket_id = t.id) replies FROM hlp_tickets t LEFT JOIN users u ON u.id = t.user_id ${where.length ? `WHERE ${where.join(' AND ')}` : ''} ORDER BY ${f.order} LIMIT 300`, ...args);
     const table = ui.table([
       { label: tr('hlp|Request'), render: (t) => `<b>${esc(t.subject)}</b><small class="sub"><span class="ltr">${esc(t.ref)}</span> · ${esc(tr(CATEGORIES[t.category] || CATEGORIES.other))}</small>`, sort: (t) => t.subject },
       ...(which === 'all' ? [{ label: tr('hlp|From'), render: (t) => esc(t.person || '—'), sort: (t) => t.person }] : []),
@@ -448,7 +452,7 @@ module.exports = function helpRoutes(router, h) {
     ], rows, { href: (t) => `/admin/help/support/${t.id}`, empty: esc(tr('hlp|No support requests yet.')) });
     const filt = `<nav class="tabs tabs--sub">${[['', 'hlp|All'], ['open', 'hlp|Waiting for support'], ['answered', 'hlp|Answered'], ['closed', 'hlp|Closed']].map(([k, label]) => `<a class="tab${st === k ? ' is-on' : ''}" href="/admin/help/support?${new URLSearchParams({ ...(k ? { status: k } : {}), ...(which === 'mine' && staff ? { mine: '1' } : {}) })}">${esc(tr(label))}</a>`).join('')}${staff ? `<a class="tab${which === 'mine' ? ' is-on' : ''}" href="/admin/help/support?mine=1">${esc(tr('hlp|Only mine'))}</a>` : ''}</nav>`;
     const intro = `<section class="hlp-supporthero">${ui.icon('chat')}<div><h2>${esc(tr('hlp|How can we help?'))}</h2><p>${esc(staff ? tr('hlp|Requests from the team come here. Reply, and the person is told by email and in Help & training.') : tr('hlp|Ask a question, report a problem or suggest an idea. The administrators reply here and by email.'))}</p></div>${ui.btn(esc(tr('hlp|New request')), { href: '/admin/help/support/new', cls: 'btn--primary', ic: 'plus' })}</section>`;
-    page(req, res, { title: tr('hlp|Support'), active: '/admin/help/support', body: `${intro}${filt}${ui.card(staff && which === 'all' ? tr('hlp|All requests') : tr('hlp|Your requests'), table)}` });
+    page(req, res, { title: tr('hlp|Support'), active: '/admin/help/support', body: `${intro}${filt}${f.html}${ui.card(staff && which === 'all' ? tr('hlp|All requests') : tr('hlp|Your requests'), table)}` });
   });
   router.get('/help/support/new', (req, res) => {
     const pageFrom = h.str(req.query.page, 300) || h.str(String(req.get('referer') || '').replace(/^https?:\/\/[^/]+/, ''), 300);
@@ -547,8 +551,19 @@ module.exports = function helpRoutes(router, h) {
     });
     return { rows, paths, total: all.length };
   };
+  const trainingFilters = (req) => h.listFilters(req, { cols: { date: 'x' }, dateLabel: tr('hlp|Last watched'), sorts: [['name', 'sort|Name: A to Z', ''], ['most', 'sort|Most lessons watched first', ''], ['least', 'sort|Fewest lessons watched first', ''], ['recent', 'sort|Last watched: most recent first', '']] });
+  const trainingView = (req) => {
+    const r = trainingRows();
+    const f = trainingFilters(req);
+    let rows = r.rows.filter((u) => (!f.from || (u.last && u.last.slice(0, 10) >= f.from)) && (!f.to || (u.last && u.last.slice(0, 10) <= f.to)));
+    if (f.sortKey === 'most') rows = rows.sort((a, b) => b.done - a.done || a.name.localeCompare(b.name));
+    else if (f.sortKey === 'least') rows = rows.sort((a, b) => a.done - b.done || a.name.localeCompare(b.name));
+    else if (f.sortKey === 'recent') rows = rows.sort((a, b) => String(b.last || '').localeCompare(String(a.last || '')));
+    return { ...r, rows, f };
+  };
   router.get('/help/training', h.R('manager'), (req, res) => {
-    const { rows, paths, total } = trainingRows();
+    const { rows, paths, total, f } = trainingView(req);
+    const qs = new URLSearchParams(Object.entries(req.query).filter(([k, v]) => ['from', 'to', 'sort'].includes(k) && typeof v === 'string' && v)).toString();
     const fb = db.all('SELECT lesson_id, SUM(helpful) yes, COUNT(*) n FROM hlp_feedback GROUP BY lesson_id ORDER BY n DESC LIMIT 12');
     const pct = (x) => `${Math.round(x * 100)}%`;
     const table = ui.table([
@@ -563,10 +578,10 @@ module.exports = function helpRoutes(router, h) {
       { label: tr('hlp|Lesson'), render: (f) => { const l = help.load().byId.get(f.lesson_id); return l ? `<a href="/admin/help/l/${esc(l.id)}">${esc(T(req, l.title))}</a>` : esc(f.lesson_id); } },
       { label: tr('hlp|Helpful'), num: true, render: (f) => `${Math.round((f.yes / f.n) * 100)}% <small class="muted">(${f.n})</small>` },
     ], fb)) : '';
-    page(req, res, { title: tr('hlp|Team training'), active: '/admin/help', crumbs: [['/admin/help', tr('nav|Help & training')]], actions: ui.btn(esc(tr('Export CSV')), { href: '/admin/help/training/export.csv', cls: 'btn--ghost', ic: 'dl' }), body: `${kpis}${ui.card(tr('hlp|Who watched what'), table, { sub: esc(tr('hlp|A lesson counts as watched at 90% of the video, or when the person marks it.')) })}${fbCard}` });
+    page(req, res, { title: tr('hlp|Team training'), active: '/admin/help', crumbs: [['/admin/help', tr('nav|Help & training')]], actions: ui.btn(esc(tr('Export CSV')), { href: `/admin/help/training/export.csv${qs ? `?${qs}` : ''}`, cls: 'btn--ghost', ic: 'dl' }), body: `${kpis}${f.html}${ui.card(tr('hlp|Who watched what'), table, { sub: esc(tr('hlp|A lesson counts as watched at 90% of the video, or when the person marks it.')) })}${fbCard}` });
   });
   router.get('/help/training/export.csv', h.R('manager'), (req, res) => {
-    const { rows, paths } = trainingRows();
+    const { rows, paths } = trainingView(req);
     const q = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
     const head = ['Person', 'Role', 'Lessons watched', 'Lessons', ...paths.map((p) => p.label.split('|')[1]), 'Last watched'];
     const lines = rows.map((u) => [u.name, u.role, u.done, u.total, ...u.paths.map((x) => `${Math.round(x * 100)}%`), u.last || ''].map(q).join(','));

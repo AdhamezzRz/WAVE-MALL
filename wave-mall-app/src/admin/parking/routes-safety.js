@@ -69,8 +69,14 @@ module.exports = function safetyRoutes(router, h, c) {
 
   router.get('/parking/violations', (req, res) => {
     const status = V_STATUS[req.query.status] ? req.query.status : '';
+    // the day of the fine (a range) and the sort order (the latest first unless chosen)
+    const lf = h.listFilters(req, {
+      cols: { date: 'v.at' }, dateLabel: tr('prk|When'),
+      sorts: [['newest', 'sort|Newest first', 'v.at DESC'], ['oldest', 'sort|Oldest first', 'v.at'], ['amount_desc', 'sort|Amount: highest first', 'v.fine DESC, v.at DESC'], ['amount_asc', 'sort|Amount: lowest first', 'v.fine, v.at DESC']],
+    });
+    const dr = c.dayRange('v.at', lf);
     const rows = db.all(`SELECT v.*, t.name tname, t.name_ar tname_ar, b.code bay_code FROM pk_violations v LEFT JOIN pk_violation_types t ON t.id = v.type_id LEFT JOIN pk_bays b ON b.id = v.bay_id
-      ${status ? 'WHERE v.status = ?' : ''} ORDER BY v.at DESC LIMIT 200`, ...(status ? [status] : []));
+      WHERE 1 = 1${status ? ' AND v.status = ?' : ''}${dr.sql} ORDER BY ${lf.order} LIMIT 200`, ...(status ? [status] : []), ...dr.args);
     const month = c.today().slice(0, 7);
     const st = db.get("SELECT COUNT(*) n, COALESCE(SUM(CASE WHEN status = 'paid' THEN fine END), 0) paid, COALESCE(SUM(CASE WHEN status IN ('charged','unpaid') THEN fine END), 0) open FROM pk_violations WHERE substr(at, 1, 7) = ?", month);
     const kpis = [
@@ -86,7 +92,7 @@ module.exports = function safetyRoutes(router, h, c) {
       { label: tr('prk|Amount'), num: true, render: (v) => c.money(v.fine) },
       { label: tr('Status'), render: (v) => vBadge(v.status) },
     ], rows, { href: (v) => `/admin/parking/violations/${v.id}`, empty: esc(tr('prk|No fines.')) });
-    const filters = `<form method="get" class="filters">${ui.select('status', tr('Status'), c.tmap(V_STATUS), status, { blank: tr('prk|All') })}${ui.btn(esc(tr('prk|Show')), { cls: 'btn--ghost btn--sm' })}</form>`;
+    const filters = `<form method="get" class="filters">${ui.select('status', tr('Status'), c.tmap(V_STATUS), status, { blank: tr('prk|All') })}${lf.fields}${ui.btn(esc(tr('prk|Show')), { cls: 'btn--ghost btn--sm' })}${lf.quick}</form>`;
     c.page(req, res, { title: tr('prk|Fines'), crumbs: c.crumbs([null, tr('prk|Fines')]), actions: h.can(req, 'agent') ? ui.btn(esc(tr('prk|New fine')), { href: '/admin/parking/violations/new', cls: 'btn--primary', ic: 'plus' }) : '', body: `${head('/admin/parking/violations')}<div class="kpis kpis--4">${kpis}</div>${filters}${ui.card(tr('prk|Fines'), table, { sub: esc(tr('prk|A fine on a car inside is paid at the exit. If the car has left, it comes back with its next visit.')) })}` });
   });
   router.get('/parking/violations/new', c.RA, (req, res) => {
@@ -165,7 +171,10 @@ module.exports = function safetyRoutes(router, h, c) {
   router.get('/parking/incidents', (req, res) => {
     const status = I_STATUS[req.query.status] ? req.query.status : req.query.status === 'all' ? 'all' : 'open';
     const where = status === 'all' ? "i.kind NOT IN ('lost','found')" : status === 'open' ? "i.kind NOT IN ('lost','found') AND i.status IN ('open','investigating')" : "i.kind NOT IN ('lost','found') AND i.status = ?";
-    const rows = db.all(`SELECT i.*, b.code bay_code, z.code zone_code FROM pk_incidents i LEFT JOIN pk_bays b ON b.id = i.bay_id LEFT JOIN pk_zones z ON z.id = i.zone_id WHERE ${where} ORDER BY i.at DESC LIMIT 200`, ...(['all', 'open'].includes(status) ? [] : [status]));
+    // the day it happened (a range) and the sort order (the latest first unless chosen)
+    const lf = h.listFilters(req, { cols: { date: 'i.at' }, dateLabel: tr('prk|When'), sorts: [['newest', 'sort|Newest first', 'i.at DESC'], ['oldest', 'sort|Oldest first', 'i.at'], ['ref', 'sort|Reference', 'i.ref DESC']] });
+    const dr = c.dayRange('i.at', lf);
+    const rows = db.all(`SELECT i.*, b.code bay_code, z.code zone_code FROM pk_incidents i LEFT JOIN pk_bays b ON b.id = i.bay_id LEFT JOIN pk_zones z ON z.id = i.zone_id WHERE ${where}${dr.sql} ORDER BY ${lf.order} LIMIT 200`, ...(['all', 'open'].includes(status) ? [] : [status]), ...dr.args);
     const since = new Date(Date.now() - 30 * 86400000).toISOString();
     const by = db.all("SELECT kind, COUNT(*) n FROM pk_incidents WHERE at >= ? AND kind NOT IN ('lost','found') GROUP BY kind ORDER BY n DESC", since);
     const kpis = [
@@ -180,7 +189,7 @@ module.exports = function safetyRoutes(router, h, c) {
       { label: tr('prk|Plates'), render: (i) => (i.plates ? `<bdi>${esc(i.plates)}</bdi>` : '—') },
       { label: tr('Status'), render: (i) => iBadge(i.status) },
     ], rows, { href: (i) => `/admin/parking/incidents/${i.id}`, empty: esc(tr('prk|No incidents.')) });
-    const filters = `<form method="get" class="filters">${ui.select('status', tr('Status'), [['open', tr('prk|Not finished')], ...c.tmap(I_STATUS), ['all', tr('prk|All')]], status)}${ui.btn(esc(tr('prk|Show')), { cls: 'btn--ghost btn--sm' })}</form>`;
+    const filters = `<form method="get" class="filters">${ui.select('status', tr('Status'), [['open', tr('prk|Not finished')], ...c.tmap(I_STATUS), ['all', tr('prk|All')]], status)}${lf.fields}${ui.btn(esc(tr('prk|Show')), { cls: 'btn--ghost btn--sm' })}${lf.quick}</form>`;
     c.page(req, res, { title: tr('prk|Incidents'), crumbs: c.crumbs([null, tr('prk|Incidents')]), actions: h.can(req, 'agent') ? ui.btn(esc(tr('prk|Report an incident')), { href: '/admin/parking/incidents/new', cls: 'btn--primary', ic: 'plus' }) : '', body: `${head('/admin/parking/incidents')}<div class="kpis kpis--3">${kpis}</div>${filters}${ui.card(tr('prk|Incidents'), table)}` });
   });
   router.get('/parking/incidents/new', c.RA, (req, res) => {
@@ -282,7 +291,13 @@ module.exports = function safetyRoutes(router, h, c) {
 
   // ================= lost and found =================
   router.get('/parking/lost', (req, res) => {
-    const rows = db.all("SELECT * FROM pk_incidents WHERE kind IN ('lost','found') ORDER BY CASE WHEN status IN ('open','investigating') THEN 0 ELSE 1 END, at DESC LIMIT 200");
+    // the day it was reported (a range) and the sort order (still open first unless chosen)
+    const lf = h.listFilters(req, {
+      cols: { date: 'at' }, dateLabel: tr('prk|When'),
+      sorts: [['open', 'sort|Open first', "CASE WHEN status IN ('open','investigating') THEN 0 ELSE 1 END, at DESC"], ['newest', 'sort|Newest first', 'at DESC'], ['oldest', 'sort|Oldest first', 'at']],
+    });
+    const dr = c.dayRange('at', lf);
+    const rows = db.all(`SELECT * FROM pk_incidents WHERE kind IN ('lost','found')${dr.sql} ORDER BY ${lf.order} LIMIT 200`, ...dr.args);
     const table = ui.table([
       { label: tr('prk|Item'), render: (i) => `<b>${esc((i.item || i.title))}</b><small class="sub">${esc(i.ref)} · ${esc(tr(I_KINDS[i.kind]))}</small>` },
       { label: tr('prk|When'), render: (i) => esc(ui.dt(i.at)) },
@@ -291,7 +306,7 @@ module.exports = function safetyRoutes(router, h, c) {
       { label: tr('Status'), render: (i) => iBadge(i.status) },
     ], rows, { href: (i) => `/admin/parking/incidents/${i.id}`, empty: esc(tr('prk|Nothing lost or found.')) });
     const actions = h.can(req, 'agent') ? `${ui.btn(esc(tr('prk|An item was found')), { href: '/admin/parking/incidents/new?kind=found', cls: 'btn--primary', ic: 'plus' })}${ui.btn(esc(tr('prk|A visitor lost something')), { href: '/admin/parking/incidents/new?kind=lost', cls: 'btn--ghost' })}` : '';
-    c.page(req, res, { title: tr('prk|Lost and found'), crumbs: c.crumbs([null, tr('prk|Lost and found')]), actions, body: `${head('/admin/parking/lost')}${ui.card(tr('prk|Lost and found'), table, { sub: esc(tr('prk|Write down who an item is returned to, with their ID.')) })}` });
+    c.page(req, res, { title: tr('prk|Lost and found'), crumbs: c.crumbs([null, tr('prk|Lost and found')]), actions, body: `${head('/admin/parking/lost')}${lf.html}${ui.card(tr('prk|Lost and found'), table, { sub: esc(tr('prk|Write down who an item is returned to, with their ID.')) })}` });
   });
 
 };

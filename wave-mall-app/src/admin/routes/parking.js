@@ -359,17 +359,40 @@ ${ui.card(tr('prk|At the gates'), feedHtml, { action: ui.btn(esc(tr('prk|All car
   });
 
   // ---------- cars (every visit) ----------
+  // a from/to range of Cairo days on a UTC timestamp column (h.listFilters reads the dates)
+  const dayRange = (col, lf) => {
+    const where = [];
+    const args = [];
+    if (lf.from) { where.push(`${col} >= ?`); args.push(dayStart(lf.from)); }
+    if (lf.to) { where.push(`${col} < ?`); args.push(dayStart(P.addDays(lf.to, 1))); }
+    return { sql: where.map((x) => ` AND ${x}`).join(''), args };
+  };
+  // the sort orders of the cars list and its CSV export
+  const VISIT_SORTS = [
+    ['newest', 'sort|Newest first', 's.entry_at DESC'], ['oldest', 'sort|Oldest first', 's.entry_at'],
+    ['longest', 'sort|Longest first', "(julianday(COALESCE(s.exit_at, 'now')) - julianday(s.entry_at)) DESC"],
+    ['amount_desc', 'sort|Amount: highest first', '(s.fee - s.discount) DESC'], ['amount_asc', 'sort|Amount: lowest first', '(s.fee - s.discount)'],
+  ];
   router.get('/parking/visits', (req, res) => {
     const status = STATUS[req.query.status] ? req.query.status : req.query.status === 'all' ? 'all' : 'inside';
     const kind = KIND[req.query.kind] ? req.query.kind : '';
     const q = h.str(req.query.q, 60);
-    const day = /^\d{4}-\d{2}-\d{2}$/.test(String(req.query.day || '')) ? req.query.day : '';
+    // ?day= (links from the reports) opens that one day as a from/to range
+    if (/^\d{4}-\d{2}-\d{2}$/.test(String(req.query.day || '')) && !req.query.from && !req.query.to) {
+      const { day: d, ...rest } = req.query;
+      return res.redirect(`/admin/parking/visits?${new URLSearchParams({ ...rest, from: d, to: d })}`);
+    }
     const pageNo = Math.max(1, h.int(req.query.page) || 1);
+    // the day they came in (a range) and the sort order: parked now, the longest-parked first;
+    // otherwise the latest first
+    const lf = h.listFilters(req, { cols: { date: 's.entry_at' }, dateLabel: tr('prk|Came in'), defaultSort: status === 'inside' ? 'oldest' : 'newest', sorts: VISIT_SORTS });
+    const { from, to } = lf;
     const where = [];
     const args = [];
     if (status !== 'all') { where.push('s.status = ?'); args.push(status); }
     if (kind) { where.push('s.kind = ?'); args.push(kind); }
-    if (day) { where.push('s.entry_at >= ? AND s.entry_at < ?'); args.push(dayStart(day), dayStart(P.addDays(day, 1))); }
+    if (from) { where.push('s.entry_at >= ?'); args.push(dayStart(from)); }
+    if (to) { where.push('s.entry_at < ?'); args.push(dayStart(P.addDays(to, 1))); }
     if (q) {
       const c = P.readCredential(q);
       where.push('(s.plate_key LIKE ? OR s.code = ? OR s.ref LIKE ? OR s.card_uid = ?)');
@@ -378,7 +401,7 @@ ${ui.card(tr('prk|At the gates'), feedHtml, { action: ui.btn(esc(tr('prk|All car
     const W = where.length ? `WHERE ${where.join(' AND ')}` : '';
     const total = db.value(`SELECT COUNT(*) FROM pk_sessions s ${W}`, ...args);
     const per = 60;
-    const rows = db.all(`SELECT s.* FROM pk_sessions s ${W} ORDER BY ${status === 'inside' ? 's.entry_at' : 's.entry_at DESC'} LIMIT ? OFFSET ?`, ...args, per, (pageNo - 1) * per);
+    const rows = db.all(`SELECT s.* FROM pk_sessions s ${W} ORDER BY ${lf.order}, s.id DESC LIMIT ? OFFSET ?`, ...args, per, (pageNo - 1) * per);
     const table = ui.table([
       { label: tr('prk|Plate'), render: (s) => `${plate(s.plate)}<small class="sub ltr">${esc(P.codeShow(s.code))}</small>` },
       { label: tr('prk|Type'), render: (s) => kindBadge(s.kind) },
@@ -387,24 +410,34 @@ ${ui.card(tr('prk|At the gates'), feedHtml, { action: ui.btn(esc(tr('prk|All car
       { label: tr('prk|Price'), num: true, render: (s) => (s.kind !== 'visitor' ? '—' : s.status === 'inside' ? money(P.quoteOf(s).due) : money(r2(s.fee - s.discount))) },
       { label: tr('Status'), render: (s) => `${statusBadge(s.status)}${s.lost ? ` ${ui.badge('lost', tr('prk|Ticket lost'), 'amber')}` : ''}` },
     ], rows, { href: (s) => `/admin/parking/visits/${s.id}`, empty: esc(tr('prk|No cars match.')) });
-    const qs = (p) => `/admin/parking/visits?${new URLSearchParams({ status, ...(kind ? { kind } : {}), ...(q ? { q } : {}), ...(day ? { day } : {}), page: p })}`;
+    const keepQ = { status, ...(kind ? { kind } : {}), ...(q ? { q } : {}), ...(from ? { from } : {}), ...(to ? { to } : {}), ...(req.query.sort ? { sort: lf.sortKey } : {}) };
+    const qs = (p) => `/admin/parking/visits?${new URLSearchParams({ ...keepQ, page: p })}`;
     const pager = total > per ? `<nav class="row pager">${pageNo > 1 ? ui.btn(esc(tr('ops|Previous')), { href: qs(pageNo - 1), cls: 'btn--ghost btn--sm' }) : ''}<span class="muted">${esc(tr('ops|Page {page} of {pages}', { page: pageNo, pages: Math.ceil(total / per) }))}</span>${pageNo * per < total ? ui.btn(esc(tr('ops|Next')), { href: qs(pageNo + 1), cls: 'btn--ghost btn--sm' }) : ''}</nav>` : '';
-    const filters = `<form method="get" class="filters">${ui.select('status', tr('Status'), [['inside', tr('prk|Parked now')], ['left', tr('prk|Left')], ['void', tr('prk|Cancelled')], ['all', tr('prk|All')]], status)}${ui.select('kind', tr('prk|Type'), tmap(KIND), kind, { blank: tr('prk|All') })}${ui.input('day', tr('prk|Day'), day, { type: 'date' })}${ui.input('q', tr('prk|Plate, ticket or card'), q)}${ui.btn(esc(tr('prk|Show')), { cls: 'btn--ghost btn--sm' })}</form>`;
+    const filters = `<form method="get" class="filters">${ui.select('status', tr('Status'), [['inside', tr('prk|Parked now')], ['left', tr('prk|Left')], ['void', tr('prk|Cancelled')], ['all', tr('prk|All')]], status)}${ui.select('kind', tr('prk|Type'), tmap(KIND), kind, { blank: tr('prk|All') })}${ui.input('q', tr('prk|Plate, ticket or card'), q)}${lf.fields}${ui.btn(esc(tr('prk|Show')), { cls: 'btn--ghost btn--sm' })}${lf.quick}</form>`;
     page(req, res, {
       title: tr('prk|Cars'), crumbs: crumbs([null, tr('prk|Cars')]),
       body: `${tabs('/admin/parking/visits')}${filters}${ui.card(tn(total, 'prk|{n} visit', 'prk|{n} visits'), `${table}${pager}`)}`,
-      actions: ui.btn(esc(tr('Export CSV')), { href: `/admin/parking/visits.csv?${new URLSearchParams({ status, ...(day ? { day } : {}) })}`, cls: 'btn--ghost', ic: 'dl' }),
+      actions: ui.btn(esc(tr('Export CSV')), { href: `/admin/parking/visits.csv?${new URLSearchParams(keepQ)}`, cls: 'btn--ghost', ic: 'dl' }),
     });
   });
   router.get('/parking/visits.csv', (req, res) => {
-    const day = /^\d{4}-\d{2}-\d{2}$/.test(String(req.query.day || '')) ? req.query.day : null;
-    const from = day ? dayStart(day) : new Date(Date.now() - 31 * 86400000).toISOString();
-    const to = day ? dayStart(P.addDays(day, 1)) : '9999';
-    const rows = db.all('SELECT * FROM pk_sessions WHERE entry_at >= ? AND entry_at < ? ORDER BY entry_at', from, to);
+    // the cars list's filters: a day or a from/to range (default the last 31 days), status, type and sort
+    const isD = (x) => /^\d{4}-\d{2}-\d{2}$/.test(String(x || ''));
+    const day = isD(req.query.day) ? req.query.day : null;
+    const f1 = isD(req.query.from) ? req.query.from : day;
+    const f2 = isD(req.query.to) ? req.query.to : day;
+    const from = f1 ? dayStart(f1) : f2 ? '0000' : new Date(Date.now() - 31 * 86400000).toISOString();
+    const to = f2 ? dayStart(P.addDays(f2, 1)) : '9999';
+    const extra = [];
+    const xargs = [];
+    if (STATUS[req.query.status]) { extra.push('s.status = ?'); xargs.push(req.query.status); }
+    if (KIND[req.query.kind]) { extra.push('s.kind = ?'); xargs.push(req.query.kind); }
+    const pick = VISIT_SORTS.find((x) => x[0] === req.query.sort);
+    const rows = db.all(`SELECT s.* FROM pk_sessions s WHERE s.entry_at >= ? AND s.entry_at < ?${extra.map((x) => ` AND ${x}`).join('')} ORDER BY ${pick ? `${pick[2]}, s.id` : 's.entry_at'}`, from, to, ...xargs);
     const head = [tr('prk|Visit'), tr('prk|Ticket'), tr('prk|Plate'), tr('prk|Type'), tr('prk|Came in'), tr('prk|Left'), tr('prk|Minutes'), tr('prk|Price'), tr('prk|Validated'), tr('prk|Paid'), tr('Status')];
     const lines = rows.map((s) => [s.ref, P.codeShow(s.code), s.plate || '', tr(KIND[s.kind] || s.kind), ui.local(s.entry_at), s.exit_at ? ui.local(s.exit_at) : '', minutesOf(s), s.fee, s.discount, s.paid, tr((STATUS[s.status] || [s.status])[0])]);
-    h.log(req, 'Exported', 'export', null, `Parking visits ${day || 'last 31 days'}`);
-    res.type('text/csv; charset=utf-8').set('Content-Disposition', `attachment; filename="parking-${day || cairo().date}.csv"`).send(`﻿${[head, ...lines].map((l) => l.map(csvCell).join(',')).join('\r\n')}`);
+    h.log(req, 'Exported', 'export', null, `Parking visits ${f1 || f2 ? `${f1 || ''}…${f2 || ''}` : 'last 31 days'}`);
+    res.type('text/csv; charset=utf-8').set('Content-Disposition', `attachment; filename="parking-${f1 && f1 === f2 ? f1 : cairo().date}.csv"`).send(`﻿${[head, ...lines].map((l) => l.map(csvCell).join(',')).join('\r\n')}`);
   });
   router.get('/parking/visits/:id', (req, res, next) => {
     const s = visit(req);
@@ -473,8 +506,16 @@ ${ui.card(tr('prk|At the gates'), feedHtml, { action: ui.btn(esc(tr('prk|All car
   // ---------- tills ----------
   const CASH_SUB = [['/admin/parking/tills', 'prk|Tills'], ['/admin/parking/safe', 'prk|Safe'], ['/admin/parking/ereceipts', 'prk|E-receipts']];
   router.get('/parking/tills', (req, res) => {
-    const rows = db.all('SELECT t.*, u.name user_name FROM pk_tills t LEFT JOIN users u ON u.id = t.user_id ORDER BY t.status = \'open\' DESC, t.opened_at DESC LIMIT 120');
+    // the day a till opened (a range) and the sort order (open tills, then the latest, unless chosen)
+    const lf = h.listFilters(req, {
+      cols: { date: 't.opened_at' }, dateLabel: tr('prk|Opened'),
+      sorts: [['open', 'sort|Open first', "t.status = 'open' DESC, t.opened_at DESC"], ['newest', 'sort|Newest first', 't.opened_at DESC'], ['oldest', 'sort|Oldest first', 't.opened_at'],
+        ['amount_desc', 'sort|Amount: highest first', 't.opened_at DESC'], ['diff', 'sort|Largest cash difference', 'ABS(COALESCE(t.difference, 0)) DESC, t.opened_at DESC']],
+    });
+    const dr = dayRange('t.opened_at', lf);
+    const rows = db.all(`SELECT t.*, u.name user_name FROM pk_tills t LEFT JOIN users u ON u.id = t.user_id WHERE 1 = 1${dr.sql} ORDER BY ${lf.order} LIMIT 120`, ...dr.args);
     const total = (t) => (t.status === 'open' ? P.tillTotals(t).total : Object.values(JSON.parse(t.totals || '{}')).reduce((s, x) => s + x.total, 0));
+    if (lf.sortKey === 'amount_desc') rows.sort((a, b) => total(b) - total(a));
     const diffBadge = (t) => (t.status === 'open' ? ui.badge('open', tr('prk|Open'), 'sky') : !t.difference ? ui.badge('ok', tr('prk|Balanced'), 'ok') : ui.badge('diff', `${t.difference > 0 ? '+' : '−'}${ui.money(Math.abs(t.difference), { cur: false })}`, t.difference < 0 ? 'rose' : 'amber'));
     const table = ui.table([
       { label: tr('prk|Till'), render: (t) => `<b>${esc(t.ref)}</b><small class="sub">${esc(tx(t.name))}</small>` },
@@ -484,7 +525,7 @@ ${ui.card(tr('prk|At the gates'), feedHtml, { action: ui.btn(esc(tr('prk|All car
       { label: tr('prk|Taken'), num: true, render: (t) => money(total(t)) },
       { label: tr('prk|Cash count'), render: diffBadge },
     ], rows, { href: (t) => `/admin/parking/tills/${t.id}`, empty: esc(tr('prk|No tills yet. Open one at the booth.')) });
-    page(req, res, { title: tr('prk|Tills'), crumbs: crumbs([null, tr('prk|Tills')]), body: `${tabs('/admin/parking/tills')}${subtabs('/admin/parking/tills', CASH_SUB)}${ui.card(tr('prk|Tills'), table, { sub: esc(tr('prk|A till is one cashier’s shift, or one pay machine’s day. Closing it counts the cash and sends the takings to the books.')) })}` });
+    page(req, res, { title: tr('prk|Tills'), crumbs: crumbs([null, tr('prk|Tills')]), body: `${tabs('/admin/parking/tills')}${subtabs('/admin/parking/tills', CASH_SUB)}${lf.html}${ui.card(tr('prk|Tills'), table, { sub: esc(tr('prk|A till is one cashier’s shift, or one pay machine’s day. Closing it counts the cash and sends the takings to the books.')) })}` });
   });
   router.get('/parking/tills/:id', (req, res, next) => {
     const t = P.tillBy(h.int(req.params.id));
@@ -543,9 +584,17 @@ ${ui.card(tr('prk|At the gates'), feedHtml, { action: ui.btn(esc(tr('prk|All car
     if (status !== 'all') { where.push('p.status = ?'); args.push(status); }
     if (holder) { where.push('p.holder = ?'); args.push(holder); }
     if (q) { where.push('(p.name LIKE ? OR p.ref LIKE ? OR p.plate_keys LIKE ? OR p.card_uid = ? OR b.name LIKE ?)'); args.push(`%${q}%`, `%${q}%`, `%${P.plateKey(q)}%`, P.cardKey(q), `%${q}%`); }
+    // the start date (a range) and the sort order (active first, by name, unless chosen)
+    const lf = h.listFilters(req, {
+      cols: { date: 'p.starts_on' }, dateLabel: tr('prk|Starts'),
+      sorts: [['name', 'sort|Name: A to Z', "p.status = 'active' DESC, p.name"], ['newest', 'sort|Newest first', 'p.starts_on DESC, p.id DESC'], ['oldest', 'sort|Oldest first', 'p.starts_on, p.id'],
+        ['due', 'sort|Ending soonest', 'p.ends_on IS NULL, p.ends_on, p.name'], ['amount_desc', 'sort|Amount: highest first', 'p.price DESC, p.name'], ['amount_asc', 'sort|Amount: lowest first', 'p.price, p.name'], ['ref', 'sort|Reference', 'p.ref DESC']],
+    });
+    where.push(...lf.where);
+    args.push(...lf.args);
     const rows = db.all(`SELECT p.*, b.name brand_name, pl.name plan_name, pl.name_ar plan_name_ar,
       (SELECT COUNT(*) FROM pk_sessions s WHERE s.permit_id = p.id AND s.status = 'inside') inside FROM pk_permits p LEFT JOIN brands b ON b.id = p.brand_id LEFT JOIN pk_plans pl ON pl.id = p.plan_id
-      ${where.length ? `WHERE ${where.join(' AND ')}` : ''} ORDER BY p.status = 'active' DESC, p.name LIMIT 300`, ...args);
+      ${where.length ? `WHERE ${where.join(' AND ')}` : ''} ORDER BY ${lf.order} LIMIT 300`, ...args);
     const stats = db.get("SELECT COUNT(*) n, COALESCE(SUM(price * 1.0 / months), 0) monthly, SUM(holder = 'tenant') tenants, SUM(holder = 'staff') staff FROM pk_permits WHERE status = 'active'");
     const kpis = [
       ui.kpi({ label: tr('prk|Active subscriptions'), value: ui.n0(stats.n) }),
@@ -561,7 +610,7 @@ ${ui.card(tr('prk|At the gates'), feedHtml, { action: ui.btn(esc(tr('prk|All car
       { label: tr('prk|Until'), render: (p) => esc(p.ends_on ? ui.date(p.ends_on) : tr('prk|Ongoing')) },
       { label: tr('Status'), render: (p) => `${pBadge(p.status)}${p.inside ? ` ${ui.badge('in', tr('prk|Parked'), 'ok')}` : ''}` },
     ], rows, { href: (p) => `/admin/parking/subscriptions/${p.id}`, empty: esc(tr('prk|No subscriptions match.')) });
-    const filters = `<form method="get" class="filters">${ui.select('status', tr('Status'), [...tmap(P_STATUS), ['all', tr('prk|All')]], status)}${ui.select('holder', tr('prk|Type'), tmap(HOLDER), holder, { blank: tr('prk|All') })}${ui.input('q', tr('prk|Name, plate or card'), q)}${ui.btn(esc(tr('prk|Show')), { cls: 'btn--ghost btn--sm' })}</form>`;
+    const filters = `<form method="get" class="filters">${ui.select('status', tr('Status'), [...tmap(P_STATUS), ['all', tr('prk|All')]], status)}${ui.select('holder', tr('prk|Type'), tmap(HOLDER), holder, { blank: tr('prk|All') })}${ui.input('q', tr('prk|Name, plate or card'), q)}${lf.fields}${ui.btn(esc(tr('prk|Show')), { cls: 'btn--ghost btn--sm' })}${lf.quick}</form>`;
     const due = db.value("SELECT COUNT(*) FROM pk_permits WHERE status IN ('active','suspended') AND price > 0 AND next_bill_on IS NOT NULL AND next_bill_on <= ?", today());
     const actions = [
       h.can(req, 'manager') ? ui.btn(esc(tr('prk|New subscription')), { href: '/admin/parking/subscriptions/new', cls: 'btn--primary', ic: 'plus' }) : '',
@@ -686,8 +735,12 @@ ${ui.card(tr('prk|At the gates'), feedHtml, { action: ui.btn(esc(tr('prk|All car
   // ---------- validations ----------
   router.get('/parking/validations', (req, res) => {
     const month = /^\d{4}-\d{2}$/.test(String(req.query.m || '')) ? req.query.m : today().slice(0, 7);
+    // the month stays the period (shops are billed by month); the shops can be sorted
+    const lf = h.listFilters(req, {
+      sorts: [['count', 'sort|Most validations', 'n DESC'], ['amount_desc', 'sort|Amount: highest first', 'value DESC'], ['shop', 'sort|Shop pays most', 'shop DESC'], ['name', 'sort|Name: A to Z', 'b.name IS NULL, b.name']],
+    });
     const rows = db.all(`SELECT v.brand_id, b.name, COUNT(*) n, SUM(v.value) value, SUM(v.value * v.share / 100.0) shop, SUM(CASE WHEN v.invoice_id IS NOT NULL THEN v.value * v.share / 100.0 ELSE 0 END) billed
-      FROM pk_validations v LEFT JOIN brands b ON b.id = v.brand_id WHERE v.status = 'ok' AND substr(v.at, 1, 7) = ? GROUP BY v.brand_id ORDER BY n DESC`, month);
+      FROM pk_validations v LEFT JOIN brands b ON b.id = v.brand_id WHERE v.status = 'ok' AND substr(v.at, 1, 7) = ? GROUP BY v.brand_id ORDER BY ${lf.order}`, month);
     const tot = rows.reduce((s, r) => ({ n: s.n + r.n, value: s.value + (r.value || 0), shop: s.shop + (r.shop || 0) }), { n: 0, value: 0, shop: 0 });
     const toBill = db.value(`SELECT COALESCE(SUM(v.value * v.share / 100.0), 0) FROM pk_validations v JOIN pk_sessions s ON s.id = v.session_id WHERE v.status = 'ok' AND v.brand_id IS NOT NULL AND v.payer != 'mall' AND v.invoice_id IS NULL AND s.status = 'left' AND substr(v.at, 1, 7) = ?`, month);
     const kpis = [
@@ -710,7 +763,7 @@ ${ui.card(tr('prk|At the gates'), feedHtml, { action: ui.btn(esc(tr('prk|All car
       } },
     ], rows, { empty: esc(tr('prk|No validations this month.')) });
     const months = [...new Set([today().slice(0, 7), ...db.all('SELECT DISTINCT substr(at, 1, 7) m FROM pk_validations ORDER BY m DESC LIMIT 12').map((x) => x.m)])].sort().reverse();
-    const pick = `<form method="get" class="filters">${ui.select('m', tr('prk|Month'), months.map((m) => [m, ui.monthYear(m)]), month)}${ui.btn(esc(tr('prk|Show')), { cls: 'btn--ghost btn--sm' })}</form>`;
+    const pick = `<form method="get" class="filters">${ui.select('m', tr('prk|Month'), months.map((m) => [m, ui.monthYear(m)]), month)}${lf.fields}${ui.btn(esc(tr('prk|Show')), { cls: 'btn--ghost btn--sm' })}</form>`;
     const recent = db.all(`SELECT v.*, s.plate, s.code, b.name brand FROM pk_validations v JOIN pk_sessions s ON s.id = v.session_id LEFT JOIN brands b ON b.id = v.brand_id WHERE substr(v.at, 1, 7) = ? ORDER BY v.at DESC LIMIT 30`, month);
     const recentTable = ui.table([
       { label: tr('prk|When'), render: (v) => esc(ui.dt(v.at)) },
@@ -760,11 +813,22 @@ ${ui.card(tr('prk|At the gates'), feedHtml, { action: ui.btn(esc(tr('prk|All car
 
   // ---------- reports ----------
   router.get('/parking/reports', (req, res) => {
-    const days = PERIODS[req.query.p] ? Number(req.query.p) : 30;
-    const d = today();
+    // the last 7, 30 or 90 days, or a chosen range of days (?from=&to=, up to a year)
+    const isD = (x) => /^\d{4}-\d{2}-\d{2}$/.test(String(x || ''));
+    let range = null;
+    if (isD(req.query.from) || isD(req.query.to)) {
+      let a = isD(req.query.from) ? req.query.from : req.query.to;
+      let b = isD(req.query.to) ? req.query.to : req.query.from;
+      if (a > b) [a, b] = [b, a];
+      const n = Math.min(366, Math.round((Date.parse(`${b}T00:00:00Z`) - Date.parse(`${a}T00:00:00Z`)) / 86400000) + 1);
+      range = { a: P.addDays(b, -(n - 1)), b, n };
+    }
+    const days = range ? range.n : PERIODS[req.query.p] ? Number(req.query.p) : 30;
+    const d = range ? range.b : today();
     const from = dayStart(P.addDays(d, -(days - 1)));
-    const visits = db.all("SELECT kind, entry_at, exit_at, fee, discount, paid, status FROM pk_sessions WHERE entry_at >= ? AND status != 'void'", from);
-    const pays = db.all("SELECT amount, method, at FROM pk_payments WHERE at >= ? AND status = 'ok'", from);
+    const upto = dayStart(P.addDays(d, 1));
+    const visits = db.all("SELECT kind, entry_at, exit_at, fee, discount, paid, status FROM pk_sessions WHERE entry_at >= ? AND entry_at < ? AND status != 'void'", from, upto);
+    const pays = db.all("SELECT amount, method, at FROM pk_payments WHERE at >= ? AND at < ? AND status = 'ok'", from, upto);
     const dates = Array.from({ length: days }, (_, i) => P.addDays(d, -(days - 1) + i));
     const byDay = new Map(dates.map((x) => [x, { cars: 0, money: 0 }]));
     for (const v of visits) { const k = cairoDate(v.entry_at); if (byDay.has(k)) byDay.get(k).cars++; }
@@ -785,19 +849,20 @@ ${ui.card(tr('prk|At the gates'), feedHtml, { action: ui.btn(esc(tr('prk|All car
     const hrs = Array.from({ length: 24 }, (_, i) => i).filter((hr) => heat.some((r) => r[hr] > 0));
     const names = ui.weekdays();
     const heatHtml = hrs.length ? `<div class="ftf-heat" style="--c:${hrs.length}"><span></span>${hrs.map((hr) => `<span class="ftf-heat__h">${hr % 3 === 0 ? String(hr).padStart(2, '0') : ''}</span>`).join('')}${heat.map((row, wd) => `<span class="ftf-heat__d">${esc(names[wd])}</span>${hrs.map((hr) => `<span class="ftf-heat__c" style="--f:${(row[hr] / hmax).toFixed(2)}" title="${esc(`${names[wd]} ${String(hr).padStart(2, '0')}:00 · ${(row[hr] / weeks).toFixed(1)}`)}"></span>`).join('')}`).join('')}</div>` : `<p class="muted pad">${esc(tr('prk|Not enough visits yet.'))}</p>`;
-    const subs = db.value("SELECT COALESCE(SUM(total), 0) FROM invoices WHERE source = 'parking-permit' AND status != 'void' AND due_date >= ?", P.addDays(d, -(days - 1)));
+    const subs = db.value("SELECT COALESCE(SUM(total), 0) FROM invoices WHERE source = 'parking-permit' AND status != 'void' AND due_date >= ? AND due_date <= ?", P.addDays(d, -(days - 1)), d);
     const kpis = [
       ui.kpi({ label: tr('prk|Visits'), value: ui.n0(visits.length), sub: esc(tr('prk|{n} a day on average', { n: ui.n0(Math.round(visits.length / days)) })) }),
       ui.kpi({ label: tr('prk|Parking takings'), value: money(total), sub: esc(tr('prk|plus {amount} in subscriptions', { amount: money(subs) })) }),
       ui.kpi({ label: tr('prk|Average visit'), value: avg === null ? '—' : esc(dur(avg)) }),
       ui.kpi({ label: tr('prk|Given free by validations'), value: money(free) }),
     ].join('');
-    const periodTabs = `<nav class="tabs">${Object.entries(PERIODS).map(([k, l]) => `<a class="tab${String(days) === k ? ' is-on' : ''}" href="/admin/parking/reports?p=${k}">${esc(tr(l))}</a>`).join('')}</nav>`;
+    const periodTabs = `<nav class="tabs">${Object.entries(PERIODS).map(([k, l]) => `<a class="tab${!range && String(days) === k ? ' is-on' : ''}" href="/admin/parking/reports?p=${k}">${esc(tr(l))}</a>`).join('')}</nav>
+      <form method="get" action="/admin/parking/reports" class="filters">${ui.input('from', `${tr('prk|Day')} · ${tr('From')}`, range ? range.a : '', { type: 'date' })}${ui.input('to', tr('To'), range ? range.b : '', { type: 'date' })}<div class="filters__go">${ui.btn(esc(tr('Filter')), { cls: 'btn--ghost btn--sm', ic: 'search' })}${range ? `<a class="btn btn--ghost btn--sm" href="/admin/parking/reports">${esc(tr('Clear'))}</a>` : ''}</div></form>`;
     const body = `${tabs('/admin/parking/reports')}${subtabs('/admin/parking/reports', [['/admin/parking/reports', 'prk|Overview'], ['/admin/parking/forecast', 'prk|Forecast'], ['/admin/parking/insight', 'prk|Parking and sales']])}${periodTabs}<div class="kpis kpis--4">${kpis}</div>
 <div class="grid grid--side">${ui.card(tr('prk|Takings by day'), ui.bars(series, { key: 'money', label: 'label', h: 160, fmtv: (v) => (v >= 1000 ? `${(v / 1000).toFixed(1)}K` : ui.n0(v)) }))}${ui.card(tr('prk|How visitors paid'), methods.length ? ui.donut(methods, { label: ui.money(total, { compact: true, cur: false }) }) : `<p class="muted pad">${esc(tr('prk|No payments in this period.'))}</p>`)}</div>
 <div class="grid grid--side">${ui.card(tr('prk|Cars by day'), ui.bars(series, { key: 'cars', label: 'label', h: 160, tone: 'sea' }))}${ui.card(tr('prk|Who parks'), kinds.length ? ui.donut(kinds, { label: ui.n0(visits.length) }) : `<p class="muted pad">${esc(tr('prk|Not enough visits yet.'))}</p>`)}</div>
 <div class="grid grid--side">${ui.card(tr('prk|When cars arrive'), heatHtml, { sub: esc(tr('prk|Arrivals by weekday and hour')) })}${ui.card(tr('prk|How long visitors stay'), ui.bars(stays, { key: 'n', label: 'label', h: 150, tone: 'cocoa' }))}</div>`;
-    page(req, res, { title: tr('prk|Parking reports'), crumbs: crumbs([null, tr('prk|Reports')]), body, actions: ui.btn(esc(tr('Export CSV')), { href: '/admin/parking/visits.csv', cls: 'btn--ghost', ic: 'dl' }) });
+    page(req, res, { title: tr('prk|Parking reports'), crumbs: crumbs([null, tr('prk|Reports')]), body, actions: ui.btn(esc(tr('Export CSV')), { href: `/admin/parking/visits.csv?from=${P.addDays(d, -(days - 1))}&to=${d}`, cls: 'btn--ghost', ic: 'dl' }) });
   });
 
   // ---------- set-up ----------
@@ -1032,7 +1097,7 @@ GET  ${s}/ingest/parking/status   (free spaces for the signs)`;
   // the newer parts of the module, each in its own file, sharing these pieces
   const ctx = {
     P, KIND, KIND_TONE, STATUS, METHOD, HOLDER, P_STATUS, VIA, REASON, VAL_MINUTES,
-    esc, tmap, dur, err, RM, RA, plate, kindBadge, statusBadge, pBadge, code, site, ticketUrl, money, minutesOf, today, dayStart, cairoDate,
+    esc, tmap, dur, err, RM, RA, plate, kindBadge, statusBadge, pBadge, code, site, ticketUrl, money, minutesOf, today, dayStart, dayRange, cairoDate,
     crumbs, tabs, subtabs, page, back, fail, userName, brandName, zoneName, tenants, hasTable, visitPanel, scanBox,
   };
   for (const part of ['floor', 'valet', 'safety', 'cash', 'bookings', 'companies', 'watch', 'insight', 'ereceipt', 'edge']) {

@@ -356,3 +356,15 @@ test('people: roles are previewed before saving and keep their people in step', 
   for (const p of ['/admin/people', '/admin/people/roles', '/admin/people/review', '/admin/people/history', '/admin/people/settings', `/admin/people/${pid}`]) assert.equal((await admin.go(`${p}${p.includes('?') ? '&' : '?'}lang=ar`)).status, 200, p);
   await admin.go('/admin?lang=en');
 });
+
+test('people: temporary access to a module behind a ceiling is refused with the reason', async () => {
+  const pid = person('No Finance Agent', 'ppl-nofin@thewave.test', 'agent');
+  const until = new Date(Date.now() + 5 * 86400000).toISOString().slice(0, 10);
+  const page = await (await admin.go(`/admin/people/${pid}/access`)).text();
+  assert.doesNotMatch(page.match(/name="key"[\s\S]*?<\/select>/)[0], /value="\/admin\/accounting"/, 'Accounting is not offered while Finance is off');
+  await admin.form(`/admin/people/${pid}/temp`, { key: '/admin/accounting', level: 'view', until, reason: 'audit week' });
+  assert.match(admin.flash(), /stays closed/);
+  assert.equal(db.value("SELECT COUNT(*) FROM ppl_overrides WHERE user_id = ? AND key = '/admin/accounting'", pid), 0);
+  await admin.form(`/admin/people/${pid}/temp`, { key: '/admin/reports', level: 'view', until, reason: 'audit week' });
+  assert.equal(db.value("SELECT COUNT(*) FROM ppl_overrides WHERE user_id = ? AND key = '/admin/reports'", pid), 1);
+});

@@ -283,6 +283,21 @@ module.exports = function fitout(router, h) {
       open: () => withF.filter((p) => p.stage === 'open'),
       attention: () => withF.filter((p) => p.f.late || p.f.overdueReview),
     }[view]();
+    // the list below the timeline: a range on the opening date, and its order (built in memory)
+    const f = h.listFilters(req, {
+      cols: { date: 'opening' }, dateLabel: tr('fit|Opening'), keep: ['view'],
+      sorts: [['opening', 'sort|Opening: soonest first', ''], ['opening_late', 'sort|Opening: latest first', ''], ['handover', 'sort|Handover: soonest first', ''], ['name', 'sort|Name: A to Z', ''], ['name_desc', 'sort|Name: Z to A', '']],
+    });
+    const openOn = (p) => String(p.actual_opening || p.planned_opening || '').slice(0, 10);
+    const rowsOf = pick.filter((p) => (!f.from || (openOn(p) && openOn(p) >= f.from)) && (!f.to || (openOn(p) && openOn(p) <= f.to)));
+    const cmp = (a, b) => String(a || '9999').localeCompare(String(b || '9999'));
+    const order = {
+      opening_late: (a, b) => cmp(openOn(b), openOn(a)),
+      handover: (a, b) => cmp(a.actual_handover || a.planned_handover, b.actual_handover || b.planned_handover),
+      name: (a, b) => String(a.brand_name || '').localeCompare(String(b.brand_name || '')),
+      name_desc: (a, b) => String(b.brand_name || '').localeCompare(String(a.brand_name || '')),
+    }[f.sortKey];
+    if (order) rowsOf.sort(order);
     const overdueReviews = db.value("SELECT COUNT(*) FROM fitout_rounds r JOIN fitout_projects p ON p.id = r.project_id WHERE r.status = 'in_review' AND r.due_on < ?", t);
     const kpis = [
       ui.kpi({ label: tr('fit|In design'), value: String(withF.filter((p) => idx(p.stage) < idx('approved')).length), href: '/admin/fitout?view=design' }),
@@ -292,7 +307,7 @@ module.exports = function fitout(router, h) {
       ui.kpi({ label: tr('fit|Opened'), value: String(withF.filter((p) => p.stage === 'open').length), href: '/admin/fitout?view=open' }),
     ].join('');
     const tabs = [['all', tr('All')], ['design', tr('fit|Design')], ['site', tr('fit|On site')], ['open', tr('fit|Opened')], ['attention', tr('fit|Needs attention')]]
-      .map(([k, l]) => `<a class="tab${view === k ? ' is-on' : ''}" href="/admin/fitout?view=${k}">${l}</a>`).join('');
+      .map(([k, l]) => `<a class="tab${view === k ? ' is-on' : ''}" href="/admin/fitout?view=${k}${['from', 'to', 'sort'].filter((x) => req.query[x]).map((x) => `&${x}=${encodeURIComponent(req.query[x])}`).join('')}">${l}</a>`).join('');
     const table = ui.table(
       [
         { label: tr('Tenant'), render: (p) => `<b>${ui.esc(p.brand_name || '')}</b><small class="sub">${ui.esc(p.lease_ref)} · ${ui.esc(units(p).map((u) => u.code).join(', '))}</small>` },
@@ -302,13 +317,13 @@ module.exports = function fitout(router, h) {
         { label: tr('fit|Opening'), render: (p) => `<span class="${p.f.late ? 'late' : ''}">${ui.date(p.actual_opening || p.planned_opening)}</span><small class="sub">${p.stage === 'open' ? tr('fit|Opened') : ui.rel(p.planned_opening)}</small>` },
         { label: tr('fit|Deposit'), render: (p) => (p.f.deposit ? ui.badge(p.f.deposit.status, M.INVOICE_STATUS[p.f.deposit.status]) : '<span class="muted">—</span>') },
       ],
-      pick,
+      rowsOf,
       { empty: tr('fit|Nothing here.'), href: (p) => `/admin/fitout/${p.id}` },
     );
     const body = `<div class="kpis kpis--5">${kpis}</div>
 ${ui.card(tr('fit|Timeline'), gantt(withF.filter((p) => view === 'all' || pick.includes(p))), { sub: tr('fit|Design, handover and works for every shop, against today'), cls: 'fit-gantt' })}
-<nav class="tabs">${tabs}</nav>
-${ui.card(tn(pick.length, 'fit|{n} project', 'fit|{n} projects'), table)}`;
+<nav class="tabs">${tabs}</nav>${f.html}
+${ui.card(tn(rowsOf.length, 'fit|{n} project', 'fit|{n} projects'), table)}`;
     h.page(req, res, {
       title: tr('nav|Fit-out'), active: '/admin/fitout', wide: true, body,
       actions: h.can(req, 'manager') ? ui.btn(tr('Settings'), { href: '/admin/fitout/settings', cls: 'btn--ghost', ic: 'gear' }) : '',

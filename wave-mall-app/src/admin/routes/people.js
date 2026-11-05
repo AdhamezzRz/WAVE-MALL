@@ -178,9 +178,10 @@ module.exports = function people(router, h) {
     } },
     { label: tr('ppl|By'), render: (r) => `${esc(r.actor_name || tr('System'))}${r.approver_name ? `<small class="sub">${esc(tr('ppl|approved by {name}', { name: r.approver_name }))}</small>` : ''}` },
   ], rows, { empty: esc(tr('ppl|No changes yet.')) });
-  const historyRows = (where = '', ...args) => db.all(`SELECT x.*, u.name user_name, a.name actor_name, p.name approver_name, r.name role_name FROM ppl_history x
+  const historyRowsBy = (order, where = '', ...args) => db.all(`SELECT x.*, u.name user_name, a.name actor_name, p.name approver_name, r.name role_name FROM ppl_history x
     LEFT JOIN users u ON u.id = x.user_id LEFT JOIN users a ON a.id = x.actor_id LEFT JOIN users p ON p.id = x.approved_by LEFT JOIN ppl_roles r ON r.id = x.role_id
-    ${where} ORDER BY x.at DESC, x.id DESC LIMIT 300`, ...args);
+    ${where} ORDER BY ${order} LIMIT 300`, ...args);
+  const historyRows = (where = '', ...args) => historyRowsBy('x.at DESC, x.id DESC', where, ...args);
 
   // ---------- applying changes (directly, or after a second administrator approved) ----------
   // op: { op: 'role', user_id, role, hr, finance } | { op: 'overrides', user_id, modules: {href: level|null}, caps: {cap: 'on'|'off'|null} }
@@ -460,7 +461,10 @@ module.exports = function people(router, h) {
     const search = h.str(q.q, 80).toLowerCase();
     const all = db.all('SELECT * FROM users ORDER BY active DESC, name');
     const effs = new Map(all.map((u) => [u.id, engine.effective(u)]));
+    const f = h.listFilters(req, { cols: { date: 'x' }, dateLabel: tr('sort|Account created'), sorts: [['name', 'sort|Name: A to Z', ''], ['name_desc', 'sort|Name: Z to A', ''], ['login', 'sort|Last sign-in: most recent first', ''], ['newest', 'sort|Newest first', ''], ['oldest', 'sort|Oldest first', '']] });
     const rows = all.filter((u) => {
+      if (f.from && String(u.created_at).slice(0, 10) < f.from) return false;
+      if (f.to && String(u.created_at).slice(0, 10) > f.to) return false;
       if (search && !`${u.name} ${u.email} ${u.title || ''}`.toLowerCase().includes(search)) return false;
       if (q.role && roleKeyOf(u) !== q.role) return false;
       if (q.status === 'active' && statusOf(u) !== 'active') return false;
@@ -473,6 +477,10 @@ module.exports = function people(router, h) {
       if (['7', '30', '90'].includes(q.last) && (!u.last_login_at || u.last_login_at < new Date(Date.now() - Number(q.last) * 86400000).toISOString())) return false;
       return true;
     });
+    if (f.sortKey === 'name_desc') rows.sort((a, b) => (b.active - a.active) || String(b.name).localeCompare(String(a.name)));
+    else if (f.sortKey === 'login') rows.sort((a, b) => String(b.last_login_at || '').localeCompare(String(a.last_login_at || '')));
+    else if (f.sortKey === 'newest') rows.sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)));
+    else if (f.sortKey === 'oldest') rows.sort((a, b) => String(a.created_at).localeCompare(String(b.created_at)));
     const t = nowIso();
     const kpis = [
       ui.kpi({ label: tr('ppl|Active people'), value: ui.n0(all.filter((u) => u.active).length), href: '/admin/people?status=active', sub: esc(tn(all.filter((u) => u.active && isAdmin(u)).length, 'ppl|{n} administrator', 'ppl|{n} administrators')) }),
@@ -488,7 +496,8 @@ module.exports = function people(router, h) {
       ${ui.select('status', tr('Status'), [['active', tr('ppl|Active')], ['deactivated', tr('ppl|Deactivated')], ['locked', tr('ppl|Locked')], ['dormant', tr('ppl|Dormant')], ['temporary', tr('ppl|With temporary access')]], q.status || '', { blank: tr('All'), attrs: { 'data-autosubmit': '' } })}
       ${ui.select('module', tr('ppl|Can open'), engine.modules().filter((e) => e.href !== '/admin').map((e) => [e.href, tr(e.label)]), q.module || '', { blank: tr('ppl|Any module'), attrs: { 'data-autosubmit': '' } })}
       ${ui.select('last', tr('Last sign-in'), [['7', tr('ppl|Within 7 days')], ['30', tr('ppl|Within 30 days')], ['90', tr('ppl|Within 90 days')], ['never', tr('Never')]], q.last || '', { blank: tr('ppl|Any time'), attrs: { 'data-autosubmit': '' } })}
-      <div class="filters__go">${ui.btn(esc(tr('Filter')), { cls: 'btn--ghost btn--sm', ic: 'search' })}${Object.values(q).some(Boolean) ? `<a class="btn btn--ghost btn--sm" href="/admin/people">${esc(tr('Clear'))}</a>` : ''}</div></form>`;
+      ${f.fields}
+      <div class="filters__go">${ui.btn(esc(tr('Filter')), { cls: 'btn--ghost btn--sm', ic: 'search' })}${Object.values(q).some(Boolean) ? `<a class="btn btn--ghost btn--sm" href="/admin/people">${esc(tr('Clear'))}</a>` : ''}</div>${f.quick}</form>`;
     const total = engine.modules().length;
     const table = ui.table([
       { label: tr('Person'), sort: (u) => u.name, render: (u) => `<span class="who">${avatar(u, 'avatar--sm')}<span><b>${esc(u.name)}${u.id === req.user.id ? ` <span class="badge badge--mute ppl-you">${esc(tr('You'))}</span>` : ''}</b><small class="sub ltr">${esc(u.email)}</small>${u.title ? `<small class="sub">${esc(i18n.tx(u.title))}</small>` : ''}</span></span>` },
@@ -566,7 +575,8 @@ module.exports = function people(router, h) {
   // ---------- invitations ----------
   router.get('/people/invites', RM, (req, res) => {
     const t = nowIso();
-    const rows = db.all('SELECT i.*, u.name by_name FROM ppl_invites i LEFT JOIN users u ON u.id = i.created_by WHERE i.kind = \'invite\' ORDER BY i.created_at DESC LIMIT 300');
+    const f = h.listFilters(req, { cols: { date: 'i.created_at' }, dateLabel: tr('sort|Sent'), sort: { date: 'i.created_at' }, sorts: [['email', 'sort|Email: A to Z', 'i.email COLLATE NOCASE'], ['expires', 'sort|Expiry: soonest first', 'i.expires_at ASC']] });
+    const rows = db.all(`SELECT i.*, u.name by_name FROM ppl_invites i LEFT JOIN users u ON u.id = i.created_by WHERE i.kind = 'invite'${f.sql} ORDER BY ${f.order} LIMIT 300`, ...f.args);
     const state = (i) => (i.accepted_at ? ['ppl|Joined', 'ok'] : i.revoked_at ? ['ppl|Withdrawn', 'mute'] : i.expires_at <= t ? ['ppl|Expired', 'rose'] : ['ppl|Waiting', 'amber']);
     const table = ui.table([
       { label: tr('Email'), sort: (i) => i.email, render: (i) => `<b class="ltr">${esc(i.email)}</b>${i.name ? `<small class="sub">${esc(i.name)}</small>` : ''}` },
@@ -575,7 +585,7 @@ module.exports = function people(router, h) {
       { label: tr('Status'), sort: (i) => state(i)[0], render: (i) => `${ui.badge('x', tr(state(i)[0]), state(i)[1])}${!i.accepted_at && !i.revoked_at && i.expires_at > t ? `<small class="sub">${esc(tr('ppl|expires {when}', { when: ui.rel(i.expires_at) }))}</small>` : ''}` },
       { label: '', render: (i) => (i.accepted_at ? (i.user_id ? `<a class="btn btn--ghost btn--xs" href="/admin/people/${i.user_id}">${esc(tr('ppl|Open'))}</a>` : '') : `<div class="row ppl-rowbtns">${ui.form(`/admin/people/invites/${i.id}/resend`, req.session.csrf, ui.btn(esc(tr('ppl|New link')), { cls: 'btn--ghost btn--xs', ic: 'mail' }))}${i.revoked_at ? '' : ui.form(`/admin/people/invites/${i.id}/revoke`, req.session.csrf, ui.btn(esc(tr('ppl|Withdraw')), { cls: 'btn--ghost btn--xs' }))}</div>`) },
     ], rows, { empty: esc(tr('ppl|No invitations yet.')) });
-    shell(req, res, { tab: '/admin/people/invites', title: tr('ppl|Invitations'), actions: ui.btn(esc(tr('ppl|Invite someone')), { href: '/admin/people/new', cls: 'btn--primary', ic: 'plus' }), body: ui.card(tr('ppl|Invitations'), table, { sub: esc(tr('ppl|A new link replaces the old one; the old link stops working.')) }) });
+    shell(req, res, { tab: '/admin/people/invites', title: tr('ppl|Invitations'), actions: ui.btn(esc(tr('ppl|Invite someone')), { href: '/admin/people/new', cls: 'btn--primary', ic: 'plus' }), body: `${f.html}${ui.card(tr('ppl|Invitations'), table, { sub: esc(tr('ppl|A new link replaces the old one; the old link stops working.')) })}` });
   });
   router.post('/people/invites/:id/resend', RM, (req, res, next) => {
     const inv = db.get('SELECT * FROM ppl_invites WHERE id = ? AND kind = \'invite\'', req.params.id);
@@ -786,7 +796,7 @@ module.exports = function people(router, h) {
     const tempList = temps.length ? `<ul class="list ppl-temps">${temps.map((o) => `<li><span class="what"><b>${esc(o.subject === 'cap' ? capName(o.key) : moduleName(o.key))} · ${o.subject === 'cap' ? esc(tr('ppl|On')) : esc(tr(LEVEL[o.level] ? LEVEL[o.level][0] : 'ppl|View'))}</b><small>${until(o.expires_at)}${o.reason ? ` · ${esc(o.reason)}` : ''}${o.by_name ? ` · ${esc(o.by_name)}` : ''}</small></span>${editable ? ui.form(`/admin/people/${u.id}/temp/${o.id}/remove`, csrf, `<button class="iconbtn" title="${esc(tr('ppl|End it now'))}" aria-label="${esc(tr('ppl|End it now'))}">${ui.icon('x')}</button>`) : ''}</li>`).join('')}</ul>` : `<p class="muted pad">${esc(tr('ppl|No temporary access.'))}</p>`;
     const tomorrow = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
     const tempForm = editable ? ui.form(`/admin/people/${u.id}/temp`, csrf, `<div class="fields">${ui.select('key', tr('ppl|Module or permission'), [
-      ...engine.modules().filter((e) => e.href !== '/admin' && e.href !== '/admin/help' && e.href !== '/admin/people').map((e) => [e.href, tr(e.label)]),
+      ...engine.modules().filter((e) => e.href !== '/admin' && e.href !== '/admin/help' && e.href !== '/admin/people' && !(eff.modules[e.href] || {}).blocked).map((e) => [e.href, tr(e.label)]),
       ...['export', 'manage_users', 'grant'].map((c) => [`cap:${c}`, `${tr('ppl|Permission')}: ${capName(c)}`]),
     ], '')}${ui.select('level', tr('ppl|Level'), [['view', tr('ppl|View')], ['edit', tr('ppl|Edit')], ['full', tr('ppl|Full')]], 'view')}${ui.input('until', tr('ppl|Until'), tomorrow, { type: 'date', required: true, min: new Date().toISOString().slice(0, 10) })}${ui.input('reason', tr('ppl|Why'), '', { placeholder: tr('ppl|e.g. Covering for Salma during her leave') })}</div>${ui.btn(esc(tr('ppl|Give temporary access')), { cls: 'btn--primary btn--sm', ic: 'plus' })}<p class="muted small">${esc(tr('ppl|It ends by itself at the end of that day.'))}</p>`, { cls: 'stack' }) : '';
     // can this person open …?
@@ -855,6 +865,9 @@ module.exports = function people(router, h) {
     const untilIso = day ? new Date(`${day}T21:59:00.000Z`).toISOString() : null;
     if (!untilIso || untilIso <= nowIso()) return h.back(req, res, `/admin/people/${u.id}/access`, 'error', tr('ppl|Choose an end date after today.'));
     if (untilIso > new Date(Date.now() + 366 * 86400000).toISOString()) return h.back(req, res, `/admin/people/${u.id}/access`, 'error', tr('ppl|Temporary access lasts a year at most.'));
+    // a module behind a ceiling (HR, Finance, a rank) stays closed whatever is granted: say so instead of saving
+    const blocked = !isCap && ((engine.effective(u).modules[k] || {}).blocked);
+    if (blocked) return h.back(req, res, `/admin/people/${u.id}/access`, 'error', tr('ppl|{module} stays closed for {name} until this changes: {why}.', { module: moduleName(k), name: u.name, why: tr(BLOCK[blocked] || 'ppl|Closed') }));
     const want = isCap ? { caps: { [k]: true } } : { modules: { [k]: level } };
     const op = { op: 'temp', user_id: u.id, subject: isCap ? 'cap' : 'module', key: k, level, until: untilIso, reason: h.str(req.body.reason, 300) || null };
     return submit(req, res, op, want, `/admin/people/${u.id}/access`, tr('ppl|{name} has temporary access until {when}.', { name: u.name, when: ui.date(untilIso) }));
@@ -1144,9 +1157,11 @@ module.exports = function people(router, h) {
     const args = [];
     if (who) { where.push('x.user_id = ?'); args.push(who); }
     if (action) { where.push('x.action = ?'); args.push(action); }
-    const rows = historyRows(where.length ? `WHERE ${where.join(' AND ')}` : '', ...args);
-    const filters = `<form method="get" action="/admin/people/history" class="filters">${ui.select('user', tr('Person'), db.all('SELECT id, name FROM users ORDER BY name').map((u) => [u.id, u.name]), who || '', { blank: tr('ppl|Everyone'), attrs: { 'data-autosubmit': '' } })}${ui.select('action', tr('ppl|Change'), Object.entries(HIST).map(([k, v]) => [k, tr(v)]), action, { blank: tr('All'), attrs: { 'data-autosubmit': '' } })}<div class="filters__go">${ui.btn(esc(tr('Filter')), { cls: 'btn--ghost btn--sm', ic: 'search' })}</div></form>`;
-    shell(req, res, { tab: '/admin/people/history', title: tr('ppl|Permission history'), body: `${filters}${ui.card(tr('ppl|Every change, newest first'), historyTable(rows), { sub: esc(tn(rows.length, 'ppl|{n} change', 'ppl|{n} changes')) })}` });
+    const f = h.listFilters(req, { cols: { date: 'x.at' }, dateLabel: tr('sort|Changed on'), sorts: [['newest', 'sort|Newest first', 'x.at DESC, x.id DESC'], ['oldest', 'sort|Oldest first', 'x.at ASC, x.id ASC'], ['person', 'sort|Person: A to Z', 'u.name IS NULL, u.name COLLATE NOCASE, x.at DESC']] });
+    where.push(...f.where); args.push(...f.args);
+    const rows = historyRowsBy(f.order, where.length ? `WHERE ${where.join(' AND ')}` : '', ...args);
+    const filters = `<form method="get" action="/admin/people/history" class="filters">${ui.select('user', tr('Person'), db.all('SELECT id, name FROM users ORDER BY name').map((u) => [u.id, u.name]), who || '', { blank: tr('ppl|Everyone'), attrs: { 'data-autosubmit': '' } })}${ui.select('action', tr('ppl|Change'), Object.entries(HIST).map(([k, v]) => [k, tr(v)]), action, { blank: tr('All'), attrs: { 'data-autosubmit': '' } })}${f.fields}<div class="filters__go">${ui.btn(esc(tr('Filter')), { cls: 'btn--ghost btn--sm', ic: 'search' })}</div>${f.quick}</form>`;
+    shell(req, res, { tab: '/admin/people/history', title: tr('ppl|Permission history'), body: `${filters}${ui.card(f.sortKey === 'newest' ? tr('ppl|Every change, newest first') : tr('ppl|Permission history'), historyTable(rows), { sub: esc(tn(rows.length, 'ppl|{n} change', 'ppl|{n} changes')) })}` });
   });
 
   // ---------- settings ----------

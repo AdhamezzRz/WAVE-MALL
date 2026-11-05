@@ -408,6 +408,14 @@ module.exports = function purchasing(router, h) {
   // ---------- pages ----------
   const TABS = [['/admin/purchasing', 'pur|Overview'], ['/admin/purchasing/requests', 'pur|Requests'], ['/admin/purchasing/orders', 'pur|Orders'], ['/admin/purchasing/receipts', 'pur|Deliveries'], ['/admin/purchasing/stock', 'pur|Stock'], ['/admin/purchasing/stock/movements', 'pur|Movements']];
   const tabs = (on) => `<nav class="tabs pur-tabs">${TABS.map(([href, l]) => `<a class="tab${on === href ? ' is-on' : ''}" href="${href}">${esc(tr(l))}</a>`).join('')}</nav>`;
+  // One filter bar for a list: the list's own selects, then the date range and "Sort by" of
+  // h.listFilters (f), the Filter/Clear buttons and the quick ranges. hidden: params to keep.
+  const bar = (action, f, extra = '', hidden = {}) => {
+    const keep = Object.entries(hidden).filter(([, v]) => v !== '' && v !== null && v !== undefined);
+    const on = f.active || extra.includes(' selected') || keep.some(([k]) => k !== 'status');
+    return `<form method="get" action="${esc(action)}" class="filters">${keep.map(([k, v]) => `<input type="hidden" name="${esc(k)}" value="${esc(v)}">`).join('')}${extra}${f.fields}
+      <div class="filters__go">${ui.btn(esc(tr('Filter')), { cls: 'btn--ghost btn--sm', ic: 'search' })}${on || f.active ? `<a class="btn btn--ghost btn--sm" href="${esc(action)}${hidden.status ? `?status=${encodeURIComponent(hidden.status)}` : ''}">${esc(tr('Clear'))}</a>` : ''}</div>${f.quick}</form>`;
+  };
   const page = (req, res, { title, on, body, crumbs, actions = '', wide = true }) => h.page(req, res, { title, active: '/admin/purchasing', crumbs, actions, wide, body: `${tabs(on)}${body}` });
   const names = () => Object.fromEntries(db.all('SELECT id, name FROM users').map((x) => [x.id, x.name]));
   const late = (o) => OPEN_PO.includes(o.status) && o.delivery_date && o.delivery_date < M.today();
@@ -475,7 +483,7 @@ module.exports = function purchasing(router, h) {
     const q = req.query;
     const status = PR_STATUS[q.status] ? q.status : q.status === 'all' ? 'all' : 'open';
     const dept = h.int(q.dept);
-    const f = h.listFilters(req, { cols: { date: 'r.created_at' }, dateLabel: tr('pur|Asked on'), keep: ['status', 'dept'] });
+    const f = h.listFilters(req, { cols: { date: 'r.created_at' }, dateLabel: tr('pur|Asked on'), keep: ['status', 'dept'], sort: { date: 'r.created_at', due: 'r.needed_by', amount: 'r.est_total', name: 'r.title', ref: 'r.ref' } });
     const where = [...f.where];
     const args = [...f.args];
     if (status === 'open') where.push("r.status IN ('pending','approved','ordered')");
@@ -483,9 +491,9 @@ module.exports = function purchasing(router, h) {
     if (dept) { where.push('r.department_id = ?'); args.push(dept); }
     if (!canBuy(req)) { where.push('r.requested_by = ?'); args.push(req.user.id); }
     const rows = db.all(`SELECT r.*, d.name dept, u.name requester, (SELECT COUNT(*) FROM pur_request_lines l WHERE l.request_id = r.id) n_lines
-      FROM pur_requests r LEFT JOIN departments d ON d.id = r.department_id LEFT JOIN users u ON u.id = r.requested_by ${where.length ? `WHERE ${where.join(' AND ')}` : ''} ORDER BY r.created_at DESC LIMIT 500`, ...args);
+      FROM pur_requests r LEFT JOIN departments d ON d.id = r.department_id LEFT JOIN users u ON u.id = r.requested_by ${where.length ? `WHERE ${where.join(' AND ')}` : ''} ORDER BY ${f.order}, r.id DESC LIMIT 500`, ...args);
     const st = `<nav class="tabs tabs--sub">${['open', 'pending', 'approved', 'ordered', 'closed', 'rejected', 'withdrawn', 'all'].map((s) => `<a class="tab${status === s ? ' is-on' : ''}" href="/admin/purchasing/requests?status=${s}${dept ? `&dept=${dept}` : ''}">${esc(s === 'open' ? tr('pur|Open') : s === 'all' ? tr('All') : tr(PR_STATUS[s][0]))}</a>`).join('')}</nav>`;
-    const deptSel = `<form method="get" action="/admin/purchasing/requests" class="filters"><input type="hidden" name="status" value="${esc(status)}">${ui.select('dept', tr('pur|Department'), depts().map((d) => [d.id, deptName(d.name)]), dept || '', { blank: tr('All'), attrs: { 'data-autosubmit': '' } })}</form>`;
+    const deptSel = bar('/admin/purchasing/requests', f, ui.select('dept', tr('pur|Department'), depts().map((d) => [d.id, deptName(d.name)]), dept || '', { blank: tr('All'), attrs: { 'data-autosubmit': '' } }), { status });
     const table = ui.table([
       { label: tr('pur|Request'), sort: (r) => r.ref, render: (r) => `<b>${esc(r.title)}</b>${sub(`<bdi>${esc(r.ref)}</bdi> · ${esc(tn(r.n_lines, 'pur|{n} line', 'pur|{n} lines'))}${r.source === 'reorder' ? ` · ${esc(tr('pur|Low stock'))}` : ''}`)}` },
       { label: tr('pur|Department'), sort: (r) => deptName(r.dept), render: (r) => esc(deptName(r.dept)) },
@@ -496,7 +504,7 @@ module.exports = function purchasing(router, h) {
     ], rows, { empty: esc(tr('pur|No purchase requests here.')), href: (r) => `/admin/purchasing/requests/${r.id}` });
     page(req, res, {
       title: tr('pur|Purchase requests'), on: '/admin/purchasing/requests', actions: ui.btn(esc(tr('pur|New purchase request')), { href: '/admin/purchasing/requests/new', cls: 'btn--primary btn--sm', ic: 'plus' }),
-      body: `${st}<div class="apr-bar">${f.html}${deptSel}</div>${ui.card(tr('pur|Purchase requests'), table, { sub: esc(tn(rows.length, 'pur|{n} request', 'pur|{n} requests')) })}`,
+      body: `${st}${deptSel}${ui.card(tr('pur|Purchase requests'), table, { sub: esc(tn(rows.length, 'pur|{n} request', 'pur|{n} requests')) })}`,
     });
   });
 
@@ -605,16 +613,16 @@ module.exports = function purchasing(router, h) {
     const q = req.query;
     const status = PO_STATUS[q.status] || ['open', 'late', 'all'].includes(q.status) ? q.status : 'all';
     const vendor = h.int(q.vendor);
-    const f = h.listFilters(req, { cols: { date: 'o.order_date' }, dateLabel: tr('pur|Ordered on'), keep: ['status', 'vendor'] });
+    const f = h.listFilters(req, { cols: { date: 'o.order_date' }, dateLabel: tr('pur|Ordered on'), keep: ['status', 'vendor'], sort: { date: 'o.order_date', due: 'o.delivery_date', amount: 'o.total', name: 'v.name', ref: 'o.ref' } });
     const where = [...f.where];
     const args = [...f.args];
     if (status === 'open') where.push("o.status IN ('draft','sent','partial')");
     else if (status === 'late') { where.push("o.status IN ('sent','partial') AND o.delivery_date < ?"); args.push(M.today()); } else if (status !== 'all') { where.push('o.status = ?'); args.push(status); }
     if (vendor) { where.push('o.vendor_id = ?'); args.push(vendor); }
     const rows = db.all(`SELECT o.*, v.name vendor, d.name dept FROM pur_orders o LEFT JOIN acc_vendors v ON v.id = o.vendor_id LEFT JOIN departments d ON d.id = o.department_id
-      ${where.length ? `WHERE ${where.join(' AND ')}` : ''} ORDER BY o.order_date DESC, o.id DESC LIMIT 500`, ...args);
+      ${where.length ? `WHERE ${where.join(' AND ')}` : ''} ORDER BY ${f.order}, o.id ${['oldest', 'due', 'amount_asc', 'name'].includes(f.sortKey) ? 'ASC' : 'DESC'} LIMIT 500`, ...args);
     const st = `<nav class="tabs tabs--sub">${['all', 'open', 'late', 'draft', 'sent', 'partial', 'received', 'closed', 'cancelled'].map((s) => `<a class="tab${status === s ? ' is-on' : ''}" href="/admin/purchasing/orders?status=${s}${vendor ? `&vendor=${vendor}` : ''}">${esc(s === 'all' ? tr('All') : s === 'open' ? tr('pur|Open') : s === 'late' ? tr('pur|Late') : tr(PO_STATUS[s][0]))}</a>`).join('')}</nav>`;
-    const vendSel = `<form method="get" action="/admin/purchasing/orders" class="filters"><input type="hidden" name="status" value="${esc(status)}">${ui.select('vendor', tr('pur|Supplier'), db.all('SELECT DISTINCT v.id, v.name FROM acc_vendors v JOIN pur_orders o ON o.vendor_id = v.id ORDER BY v.name').map((v) => [v.id, v.name]), vendor || '', { blank: tr('All'), attrs: { 'data-autosubmit': '' } })}</form>`;
+    const vendSel = bar('/admin/purchasing/orders', f, ui.select('vendor', tr('pur|Supplier'), db.all('SELECT DISTINCT v.id, v.name FROM acc_vendors v JOIN pur_orders o ON o.vendor_id = v.id ORDER BY v.name').map((v) => [v.id, v.name]), vendor || '', { blank: tr('All'), attrs: { 'data-autosubmit': '' } }), { status });
     const table = ui.table([
       { label: tr('pur|Order'), sort: (o) => o.ref, render: (o) => `<b><bdi>${esc(o.ref)}</bdi></b>${sub(esc(deptName(o.dept)))}` },
       { label: tr('pur|Supplier'), sort: (o) => o.vendor || '', render: (o) => esc(o.vendor || '—') },
@@ -625,7 +633,7 @@ module.exports = function purchasing(router, h) {
     ], rows, { empty: esc(tr('pur|No purchase orders here.')), href: (o) => `/admin/purchasing/orders/${o.id}` });
     page(req, res, {
       title: tr('pur|Purchase orders'), on: '/admin/purchasing/orders', actions: ui.btn(esc(tr('pur|New order')), { href: '/admin/purchasing/orders/new', cls: 'btn--primary btn--sm', ic: 'plus' }),
-      body: `${st}<div class="apr-bar">${f.html}${vendSel}</div>${ui.card(tr('pur|Purchase orders'), table, { sub: esc(tr('pur|{n} orders · {amount}', { n: rows.length, amount: ui.money(r2(rows.reduce((s, o) => s + o.total, 0)), { compact: true }) })) })}`,
+      body: `${st}${vendSel}${ui.card(tr('pur|Purchase orders'), table, { sub: esc(tr('pur|{n} orders · {amount}', { n: rows.length, amount: ui.money(r2(rows.reduce((s, o) => s + o.total, 0)), { compact: true }) })) })}`,
     });
   });
   router.get('/purchasing/orders/new', RP, (req, res) => {
@@ -836,17 +844,17 @@ module.exports = function purchasing(router, h) {
 
   // ----- deliveries -----
   router.get('/purchasing/receipts', RP, (req, res) => {
-    const f = h.listFilters(req, { cols: { date: 'r.date' }, dateLabel: tr('pur|Received on') });
+    const f = h.listFilters(req, { cols: { date: 'r.date' }, dateLabel: tr('pur|Received on'), sort: { date: 'r.date', amount: 'value', name: 'v.name', ref: 'r.ref' } });
     const rows = db.all(`SELECT r.*, o.ref order_ref, o.id order_id, v.name vendor, u.name by_name, (SELECT COALESCE(SUM(x.qty * l.price), 0) FROM pur_receipt_lines x JOIN pur_order_lines l ON l.id = x.order_line_id WHERE x.receipt_id = r.id) value
       FROM pur_receipts r JOIN pur_orders o ON o.id = r.order_id LEFT JOIN acc_vendors v ON v.id = o.vendor_id LEFT JOIN users u ON u.id = r.received_by
-      ${f.where.length ? `WHERE ${f.where.join(' AND ')}` : ''} ORDER BY r.date DESC, r.id DESC LIMIT 500`, ...f.args);
+      ${f.where.length ? `WHERE ${f.where.join(' AND ')}` : ''} ORDER BY ${f.order}, r.id ${['oldest', 'amount_asc', 'name'].includes(f.sortKey) ? 'ASC' : 'DESC'} LIMIT 500`, ...f.args);
     const table = ui.table([
       { label: tr('pur|Delivery'), sort: (r) => r.ref, render: (r) => `<b><bdi>${esc(r.ref)}</bdi></b>${r.delivery_note ? sub(`<bdi>${esc(r.delivery_note)}</bdi>`) : ''}` },
       { label: tr('pur|Order'), sort: (r) => r.order_ref, render: (r) => `<bdi>${esc(r.order_ref)}</bdi>${sub(esc(r.vendor || '—'))}` },
       { label: tr('pur|Received on'), sort: (r) => r.date, render: (r) => `${esc(ui.date(r.date))}${sub(esc(r.by_name || '—'))}` },
       { label: tr('pur|Value'), num: true, sort: (r) => r.value, render: (r) => amt(r2(r.value)) },
     ], rows, { empty: esc(tr('pur|No deliveries here.')), href: (r) => `/admin/purchasing/receipts/${r.id}` });
-    page(req, res, { title: tr('pur|Goods received'), on: '/admin/purchasing/receipts', body: `<div class="apr-bar">${f.html}</div>${ui.card(tr('pur|Goods received notes'), table)}` });
+    page(req, res, { title: tr('pur|Goods received'), on: '/admin/purchasing/receipts', body: `${f.html}${ui.card(tr('pur|Goods received notes'), table)}` });
   });
   router.get('/purchasing/receipts/:id', RP, (req, res, next) => {
     const r = db.get('SELECT r.*, o.ref order_ref, v.name vendor, u.name by_name FROM pur_receipts r JOIN pur_orders o ON o.id = r.order_id LEFT JOIN acc_vendors v ON v.id = o.vendor_id LEFT JOIN users u ON u.id = r.received_by WHERE r.id = ?', h.int(req.params.id));
@@ -878,7 +886,15 @@ module.exports = function purchasing(router, h) {
     if (cat) { where.push('i.category = ?'); args.push(cat); }
     if (lowOnly) where.push('i.min_qty > 0 AND i.on_hand <= i.min_qty');
     if (search) { where.push('(i.code LIKE ? OR i.name LIKE ? OR i.name_ar LIKE ? OR i.location LIKE ?)'); args.push(...Array(4).fill(`%${search}%`)); }
-    const rows = db.all(`SELECT i.*, (SELECT MAX(m.date) FROM inv_moves m WHERE m.item_id = i.id AND m.kind = 'issue') last_issue FROM inv_items i WHERE ${where.join(' AND ')} ORDER BY i.code`, ...args);
+    // last issued in a date range, and the sort order (by code unless chosen)
+    const lastIssue = "(SELECT MAX(m.date) FROM inv_moves m WHERE m.item_id = i.id AND m.kind = 'issue')";
+    const f = h.listFilters(req, {
+      cols: { date: lastIssue }, dateLabel: tr('pur|Last issued'),
+      sorts: [['code', 'sort|Reference', 'i.code'], ['name', 'sort|Name: A to Z', 'i.name COLLATE NOCASE, i.code'],
+        ['qty_desc', 'sort|On hand: most first', 'i.on_hand DESC, i.code'], ['qty_asc', 'sort|On hand: least first', 'i.on_hand, i.code'],
+        ['amount_desc', 'sort|Value: highest first', 'i.on_hand * i.avg_cost DESC, i.code'], ['newest', 'sort|Last issued: most recent', `${lastIssue} IS NULL, ${lastIssue} DESC, i.code`]],
+    });
+    const rows = db.all(`SELECT i.*, ${lastIssue} last_issue FROM inv_items i WHERE ${where.join(' AND ')}${f.sql} ORDER BY ${f.order}`, ...args, ...f.args);
     const all = db.all('SELECT * FROM inv_items WHERE active = 1');
     const value = r2(all.reduce((s, i) => s + i.on_hand * i.avg_cost, 0));
     const month = M.today().slice(0, 7);
@@ -894,7 +910,8 @@ module.exports = function purchasing(router, h) {
       ${ui.input('q', tr('pur|Search'), search, { placeholder: tr('pur|Code, name or location') })}
       ${ui.select('category', tr('pur|Category'), Object.fromEntries(Object.entries(CATEGORIES).map(([k, v]) => [k, tr(v)])), cat, { blank: tr('All'), attrs: { 'data-autosubmit': '' } })}
       ${ui.select('low', tr('pur|Show'), [['', tr('pur|All items')], ['1', tr('pur|Running low only')]], lowOnly ? '1' : '', { attrs: { 'data-autosubmit': '' } })}
-      <div class="filters__go">${ui.btn(esc(tr('pur|Filter')), { cls: 'btn--ghost btn--sm', ic: 'search' })}</div></form>`;
+      ${f.fields}
+      <div class="filters__go">${ui.btn(esc(tr('pur|Filter')), { cls: 'btn--ghost btn--sm', ic: 'search' })}${f.active || search || cat || lowOnly ? `<a class="btn btn--ghost btn--sm" href="/admin/purchasing/stock${wo ? `?wo=${wo.id}` : ''}">${esc(tr('Clear'))}</a>` : ''}</div>${f.quick}</form>`;
     const table = ui.table([
       { label: tr('pur|Item'), sort: (i) => i.code, render: (i) => `<b><bdi>${esc(i.code)}</bdi> · ${esc(itemName(i))}</b>${sub(`${esc(catLabel(i.category))}${i.location ? ` · ${esc(i.location)}` : ''}`)}` },
       { label: tr('pur|On hand'), num: true, sort: (i) => i.on_hand, render: (i) => `<b class="${isLow(i) ? 'late' : ''}">${esc(qtyf(i.on_hand))}</b> ${esc(unitLabel(i.unit))}${isLow(i) ? sub(ui.badge('low', tr('pur|Low'), 'rose')) : ''}` },
@@ -998,16 +1015,16 @@ module.exports = function purchasing(router, h) {
   router.get('/purchasing/stock/movements', RA, (req, res) => {
     const q = req.query;
     const kind = MOVES[q.kind] ? q.kind : '';
-    const f = h.listFilters(req, { cols: { date: 'm.date' }, dateLabel: tr('pur|Date'), keep: ['kind'] });
+    const f = h.listFilters(req, { cols: { date: 'm.date' }, dateLabel: tr('pur|Date'), keep: ['kind'], sort: { date: 'm.date', amount: 'ABS(m.value)', name: 'i.code' } });
     const where = [...f.where];
     const args = [...f.args];
     if (kind) { where.push('m.kind = ?'); args.push(kind); }
     const rows = db.all(`SELECT m.*, i.code, i.name, i.name_ar, i.unit, u.name by_name, d.name dept ${hasWO() ? ', w.ref wo_ref, w.title wo_title' : ''}
       FROM inv_moves m JOIN inv_items i ON i.id = m.item_id LEFT JOIN users u ON u.id = m.user_id LEFT JOIN departments d ON d.id = m.department_id ${hasWO() ? 'LEFT JOIN work_orders w ON w.id = m.work_order_id' : ''}
-      ${where.length ? `WHERE ${where.join(' AND ')}` : ''} ORDER BY m.date DESC, m.id DESC LIMIT 500`, ...args);
-    const kindSel = `<form method="get" action="/admin/purchasing/stock/movements" class="filters">${ui.select('kind', tr('pur|Movement'), Object.fromEntries(Object.entries(MOVES).map(([k, v]) => [k, tr(v)])), kind, { blank: tr('All'), attrs: { 'data-autosubmit': '' } })}</form>`;
+      ${where.length ? `WHERE ${where.join(' AND ')}` : ''} ORDER BY ${f.order}, m.id ${['oldest', 'amount_asc', 'name'].includes(f.sortKey) ? 'ASC' : 'DESC'} LIMIT 500`, ...args);
+    const kindSel = bar('/admin/purchasing/stock/movements', f, ui.select('kind', tr('pur|Movement'), Object.fromEntries(Object.entries(MOVES).map(([k, v]) => [k, tr(v)])), kind, { blank: tr('All'), attrs: { 'data-autosubmit': '' } }));
     const table = ui.table(moveCols({ withItem: true }), rows, { empty: esc(tr('pur|No movements here.')), href: (m) => `/admin/purchasing/stock/${m.item_id}` });
-    page(req, res, { title: tr('pur|Stock movements'), on: '/admin/purchasing/stock/movements', body: `<div class="apr-bar">${f.html}${kindSel}</div>${ui.card(tr('pur|Stock movements'), table, { sub: esc(tn(rows.length, 'pur|{n} movement', 'pur|{n} movements')) })}` });
+    page(req, res, { title: tr('pur|Stock movements'), on: '/admin/purchasing/stock/movements', body: `${kindSel}${ui.card(tr('pur|Stock movements'), table, { sub: esc(tn(rows.length, 'pur|{n} movement', 'pur|{n} movements')) })}` });
   });
   // "Damaged · two cartons split": the chosen reason in the reader's language, the note as typed
   const reasonText = (r) => {

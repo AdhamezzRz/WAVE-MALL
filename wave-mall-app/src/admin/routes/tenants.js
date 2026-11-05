@@ -46,15 +46,25 @@ module.exports = function tenants(router, h) {
     const level = M.ZONES[req.query.level] ? req.query.level : '';
     const cat = M.CATEGORIES[req.query.category] ? req.query.category : '';
     const comp = ['complete', 'missing', 'expired', 'expiring'].includes(req.query.compliance) ? req.query.compliance : '';
-    const sort = ['opening', 'end', 'compliance'].includes(req.query.sort) ? req.query.sort : 'name';
+    const sort = ['opening', 'end', 'compliance', 'name_desc', 'opening_late', 'end_late', 'area', 'arrears'].includes(req.query.sort) ? req.query.sort : 'name';
+    // the date range narrows by the opening (or lease start) date; the list is built in memory, so the
+    // filter only borrows the shared date inputs and quick ranges
+    const f = h.listFilters(req, { cols: { date: 'opening' }, dateLabel: tr('ten|Opening date') });
+    const openOf = (x) => String(x.opening || x.lease?.start_date || '').slice(0, 10);
     let list = all.filter((x) => (!q || [x.name, x.legal_name, x.store_manager, codes(x.units)].some((v) => String(v || '').toLowerCase().includes(q)))
       && (!level || x.zones.includes(level)) && (!cat || x.category === cat)
+      && (!f.from || (openOf(x) && openOf(x) >= f.from)) && (!f.to || (openOf(x) && openOf(x) <= f.to))
       && (!comp || (comp === 'complete' ? x.compliance.score >= 1 && !x.compliance.expired : comp === 'missing' ? x.compliance.missing > 0 : comp === 'expired' ? x.compliance.expired > 0 : x.compliance.expiring > 0)));
     const by = {
       name: (a, b) => a.name.localeCompare(b.name),
       opening: (a, b) => String(a.opening || a.lease?.start_date || '9999').localeCompare(String(b.opening || b.lease?.start_date || '9999')),
       end: (a, b) => String(a.lease?.end_date || '9999').localeCompare(String(b.lease?.end_date || '9999')),
       compliance: (a, b) => a.compliance.score - b.compliance.score || a.name.localeCompare(b.name),
+      name_desc: (a, b) => b.name.localeCompare(a.name),
+      opening_late: (a, b) => String(b.opening || b.lease?.start_date || '').localeCompare(String(a.opening || a.lease?.start_date || '')),
+      end_late: (a, b) => String(b.lease?.end_date || '').localeCompare(String(a.lease?.end_date || '')),
+      area: (a, b) => b.area - a.area || a.name.localeCompare(b.name),
+      arrears: (a, b) => b.arrears - a.arrears || a.name.localeCompare(b.name),
     };
     list = list.sort(by[sort]);
 
@@ -75,7 +85,7 @@ module.exports = function tenants(router, h) {
     ].join('');
 
     const keep = (extra) => {
-      const p = new URLSearchParams({ ...(q ? { q } : {}), ...(level ? { level } : {}), ...(cat ? { category: cat } : {}), ...(comp ? { compliance: comp } : {}), ...(sort !== 'name' ? { sort } : {}), ...extra });
+      const p = new URLSearchParams({ ...(q ? { q } : {}), ...(level ? { level } : {}), ...(cat ? { category: cat } : {}), ...(comp ? { compliance: comp } : {}), ...(sort !== 'name' ? { sort } : {}), ...(f.from ? { from: f.from } : {}), ...(f.to ? { to: f.to } : {}), ...extra });
       const s = p.toString();
       return `/admin/tenants${s ? `?${s}` : ''}`;
     };
@@ -86,8 +96,9 @@ module.exports = function tenants(router, h) {
       ${ui.select('level', tr('Level'), levels, level, { blank: tr('ten|All levels'), cls: 'f--inline' })}
       ${ui.select('category', tr('Category'), M.CATEGORIES, cat, { blank: tr('All categories'), cls: 'f--inline' })}
       ${ui.select('compliance', tr('ten|File'), { complete: tr('ten|Complete'), missing: tr('ten|Missing items'), expired: tr('ten|Expired items'), expiring: tr('ten|Expiring soon') }, comp, { blank: tr('ten|Any file status'), cls: 'f--inline' })}
-      ${ui.select('sort', tr('ten|Sort by'), { name: tr('Name'), opening: tr('ten|Opening date'), end: tr('ten|Lease end'), compliance: tr('ten|File completeness') }, sort, { cls: 'f--inline' })}
-      ${ui.btn(tr('ten|Apply'), { cls: 'btn--ghost btn--sm' })}</form>`;
+      ${f.fields}
+      ${ui.select('sort', tr('ten|Sort by'), { name: tr('sort|Name: A to Z'), name_desc: tr('sort|Name: Z to A'), opening: tr('sort|Opening: soonest first'), opening_late: tr('sort|Opening: latest first'), end: tr('sort|Lease end: soonest first'), end_late: tr('sort|Lease end: latest first'), area: tr('sort|Area: largest first'), arrears: tr('sort|Arrears: highest first'), compliance: tr('ten|File completeness') }, sort, { cls: 'f--inline', attrs: { 'data-autosubmit': '' } })}
+      ${ui.btn(tr('ten|Apply'), { cls: 'btn--ghost btn--sm' })}${f.quick}</form>`;
 
     let main;
     if (!all.length) {

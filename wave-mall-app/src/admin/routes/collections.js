@@ -558,10 +558,15 @@ module.exports = function collections(router, h) {
   });
 
   // aging by tenant (and a CSV)
-  function agingByTenant() {
+  // the aging list's filters: a range on the invoices' due date (those outside it are left out), and the order
+  const agingFilters = (req) => h.listFilters(req, {
+    cols: { date: 'i.due_date' }, dateLabel: tr('Due'),
+    sorts: [['overdue', 'sort|Overdue: highest first', ''], ['total', 'sort|Total: highest first', ''], ['total_asc', 'sort|Total: lowest first', ''], ['name', 'sort|Name: A to Z', ''], ['name_desc', 'sort|Name: Z to A', '']],
+  });
+  function agingByTenant(f = { where: [], args: [], sortKey: 'overdue' }) {
     const t = today();
     const rows = new Map();
-    for (const i of db.all(`SELECT i.total, i.paid, i.due_date, i.brand_id, COALESCE(b.name, i.customer, '—') name FROM invoices i LEFT JOIN brands b ON b.id = i.brand_id WHERE ${OPEN}`)) {
+    for (const i of db.all(`SELECT i.total, i.paid, i.due_date, i.brand_id, COALESCE(b.name, i.customer, '—') name FROM invoices i LEFT JOIN brands b ON b.id = i.brand_id WHERE ${[OPEN, ...f.where].join(' AND ')}`, ...f.args)) {
       const key = i.brand_id || `c:${i.name}`;
       if (!rows.has(key)) rows.set(key, { id: i.brand_id, name: i.name, ...Object.fromEntries(BUCKETS.map(([k]) => [k, 0])), total: 0 });
       const r = rows.get(key);
@@ -570,21 +575,30 @@ module.exports = function collections(router, h) {
       r[b[0]] = r2(r[b[0]] + i.total - i.paid);
       r.total = r2(r.total + i.total - i.paid);
     }
-    return [...rows.values()].map((r) => ({ ...r, overdue: r2(r.total - r.current) })).sort((a, b) => b.overdue - a.overdue || b.total - a.total);
+    const by = {
+      overdue: (a, b) => b.overdue - a.overdue || b.total - a.total,
+      total: (a, b) => b.total - a.total,
+      total_asc: (a, b) => a.total - b.total,
+      name: (a, b) => String(a.name).localeCompare(String(b.name)),
+      name_desc: (a, b) => String(b.name).localeCompare(String(a.name)),
+    };
+    return [...rows.values()].map((r) => ({ ...r, overdue: r2(r.total - r.current) })).sort(by[f.sortKey] || by.overdue);
   }
   router.get('/collections/aging', (req, res) => {
-    const rows = agingByTenant();
+    const f = agingFilters(req);
+    const rows = agingByTenant(f);
+    const fq = ['from', 'to', 'sort'].filter((k) => req.query[k]).map((k) => `${k}=${encodeURIComponent(req.query[k])}`).join('&');
     const table = ui.table([
       { label: tr('Tenant'), render: (r) => (r.id ? tenantLink(r.id, r.name) : esc(r.name)) },
       ...BUCKETS.map(([k, l]) => ({ label: tr(l), num: true, sort: (r) => r[k], render: (r) => (r[k] ? `<span class="${k !== 'current' && ['b90', 'b180', 'old'].includes(k) ? 'late' : ''}">${ui.money(r[k], { cur: false })}</span>` : '—') })),
       { label: tr('Total'), num: true, sort: (r) => r.total, render: (r) => `<b>${ui.money(r.total, { cur: false })}</b>` },
     ], rows, { empty: esc(tr('col|Nothing is owed.')), href: (r) => (r.id ? `/admin/collections/tenants/${r.id}` : null) });
-    page(req, res, { title: tr('col|Aging by tenant'), on: '/admin/collections', crumbs: [['/admin/collections', tr('col|Collections')], [null, tr('col|Aging by tenant')]], actions: ui.btn(esc(tr('col|Download CSV')), { href: '/admin/collections/aging.csv', cls: 'btn--ghost', ic: 'dl' }), body: ui.card(tr('col|Aging by tenant'), table) });
+    page(req, res, { title: tr('col|Aging by tenant'), on: '/admin/collections', crumbs: [['/admin/collections', tr('col|Collections')], [null, tr('col|Aging by tenant')]], actions: ui.btn(esc(tr('col|Download CSV')), { href: `/admin/collections/aging.csv${fq ? `?${fq}` : ''}`, cls: 'btn--ghost', ic: 'dl' }), body: `${f.html}${ui.card(tr('col|Aging by tenant'), table)}` });
   });
   router.get('/collections/aging.csv', (req, res) => {
     const q = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
     const lines = [['Tenant', ...BUCKETS.map(([, l]) => i18n.run('en', () => tr(l))), 'Total'].map(q).join(',')];
-    for (const r of agingByTenant()) lines.push([r.name, ...BUCKETS.map(([k]) => r[k]), r.total].map(q).join(','));
+    for (const r of agingByTenant(agingFilters(req))) lines.push([r.name, ...BUCKETS.map(([k]) => r[k]), r.total].map(q).join(','));
     res.set('Content-Disposition', `attachment; filename="aging-${today()}.csv"`).type('text/csv').send(`﻿${lines.join('\n')}\n`);
   });
 
@@ -752,8 +766,8 @@ module.exports = function collections(router, h) {
 
   // ---------- reminders ----------
   router.get('/collections/reminders', (req, res) => {
-    const f = h.listFilters(req, { cols: { date: 'r.created_at', brand: 'r.brand_id' }, dateLabel: tr('col|Sent') });
-    const rows = db.all(`SELECT r.*, i.ref, i.total, i.due_date, b.name brand_name, u.name user_name FROM col_reminders r JOIN invoices i ON i.id = r.invoice_id LEFT JOIN brands b ON b.id = r.brand_id LEFT JOIN users u ON u.id = r.user_id ${f.where.length ? `WHERE ${f.where.join(' AND ')}` : ''} ORDER BY r.created_at DESC, r.id DESC LIMIT 400`, ...f.args);
+    const f = h.listFilters(req, { cols: { date: 'r.created_at', brand: 'r.brand_id' }, dateLabel: tr('col|Sent'), sorts: [['newest', 'sort|Newest first', 'r.created_at DESC, r.id DESC'], ['oldest', 'sort|Oldest first', 'r.created_at ASC, r.id ASC'], ['amount_desc', 'sort|Amount: highest first', 'i.total DESC'], ['name', 'sort|Name: A to Z', 'b.name COLLATE NOCASE']] });
+    const rows = db.all(`SELECT r.*, i.ref, i.total, i.due_date, b.name brand_name, u.name user_name FROM col_reminders r JOIN invoices i ON i.id = r.invoice_id LEFT JOIN brands b ON b.id = r.brand_id LEFT JOIN users u ON u.id = r.user_id ${f.where.length ? `WHERE ${f.where.join(' AND ')}` : ''} ORDER BY ${f.order} LIMIT 400`, ...f.args);
     const table = ui.table([
       { label: tr('col|Sent'), sort: (r) => r.created_at, render: (r) => esc(ui.dt(r.created_at)) },
       { label: tr('Tenant'), render: (r) => (r.brand_id ? tenantLink(r.brand_id, r.brand_name) : '—') },
@@ -782,7 +796,9 @@ module.exports = function collections(router, h) {
     const csrf = req.session.csrf;
     const due = db.all(`SELECT i.*, b.name brand_name FROM invoices i LEFT JOIN brands b ON b.id = i.brand_id WHERE ${OPEN} AND i.kind NOT IN ('penalty','deposit') AND i.due_date < ? ORDER BY i.due_date`, today())
       .map((i) => ({ ...i, pending: pendingPenalty(i), done: charged(i.id), paused: pausedByPlan(i.id) })).filter((i) => i.pending >= 1 || i.done > 0);
-    const history = db.all('SELECT p.*, i.ref inv_ref, x.ref pen_ref, x.status pen_status, x.total pen_total, x.paid pen_paid, b.name brand_name FROM col_penalties p JOIN invoices i ON i.id = p.invoice_id LEFT JOIN invoices x ON x.id = p.penalty_invoice_id LEFT JOIN brands b ON b.id = i.brand_id ORDER BY p.created_at DESC, p.id DESC LIMIT 200');
+    // the history of charges: a range on when they were charged, and its order
+    const pf = h.listFilters(req, { cols: { date: 'p.created_at', brand: 'i.brand_id' }, dateLabel: tr('col|Charged'), sorts: [['newest', 'sort|Newest first', 'p.created_at DESC, p.id DESC'], ['oldest', 'sort|Oldest first', 'p.created_at ASC, p.id ASC'], ['amount_desc', 'sort|Amount: highest first', 'p.amount DESC'], ['amount_asc', 'sort|Amount: lowest first', 'p.amount ASC']] });
+    const history = db.all(`SELECT p.*, i.ref inv_ref, x.ref pen_ref, x.status pen_status, x.total pen_total, x.paid pen_paid, b.name brand_name FROM col_penalties p JOIN invoices i ON i.id = p.invoice_id LEFT JOIN invoices x ON x.id = p.penalty_invoice_id LEFT JOIN brands b ON b.id = i.brand_id ${pf.where.length ? `WHERE ${pf.where.join(' AND ')}` : ''} ORDER BY ${pf.order} LIMIT 200`, ...pf.args);
     const may = canMoney(req);
     const dueTable = ui.table([
       { label: tr('Invoice'), render: (i) => `${invLink(i)}<small class="sub">${esc(i.brand_name || i.customer || '')}</small>` },
@@ -802,7 +818,7 @@ module.exports = function collections(router, h) {
     ], history, { empty: esc(tr('col|No late charges yet.')) });
     const rule = c.mode === 'none' ? tr('col|Late charges are off.') : tr(c.mode === 'pct_month' ? 'col|{rate}% a month on what is owed, after {grace} days of grace, at most {cap}% of the invoice.' : 'col|{rate} a day, after {grace} days of grace, at most {cap}% of the invoice.', { rate: c.mode === 'pct_month' ? c.rate : ui.money(c.rate), grace: c.grace, cap: c.cap || '∞' });
     const run = may && c.mode !== 'none' ? ui.form('/admin/collections/penalties/run', csrf, ui.btn(esc(tr('col|Charge all that are due')), { cls: 'btn--ghost', ic: 'percent', attrs: { 'data-confirm': tr('col|Add a late charge to every overdue invoice listed?') } })) : '';
-    page(req, res, { title: tr('col|Late charges'), on: '/admin/collections/penalties', actions: `<div class="row">${run}</div>`, body: `<p class="muted col-rule">${esc(rule)} ${esc(c.auto ? tr('col|Charged automatically once a month.') : tr('col|Charged by hand.'))} <a href="/admin/collections/settings">${esc(tr('col|Change'))}</a></p>${ui.card(tr('col|Due now'), dueTable)}${ui.card(tr('col|Charged'), histTable)}` });
+    page(req, res, { title: tr('col|Late charges'), on: '/admin/collections/penalties', actions: `<div class="row">${run}</div>`, body: `<p class="muted col-rule">${esc(rule)} ${esc(c.auto ? tr('col|Charged automatically once a month.') : tr('col|Charged by hand.'))} <a href="/admin/collections/settings">${esc(tr('col|Change'))}</a></p>${ui.card(tr('col|Due now'), dueTable)}${pf.html}${ui.card(tr('col|Charged'), histTable)}` });
   });
   router.post('/collections/penalties/run', R('manager'), (req, res) => {
     if (!canMoney(req)) return h.back(req, res, '/admin/collections/penalties', 'error', tr('Your role does not allow that.'));
@@ -813,8 +829,8 @@ module.exports = function collections(router, h) {
 
   // ---------- write-offs ----------
   router.get('/collections/writeoffs', (req, res) => {
-    const f = h.listFilters(req, { cols: { date: 'w.created_at', brand: 'w.brand_id' }, dateLabel: tr('Date') });
-    const rows = db.all(`SELECT w.*, i.ref inv_ref, i.kind, b.name brand_name, u.name by_name, d.name decided_name FROM col_writeoffs w JOIN invoices i ON i.id = w.invoice_id LEFT JOIN brands b ON b.id = w.brand_id LEFT JOIN users u ON u.id = w.requested_by LEFT JOIN users d ON d.id = w.decided_by ${f.where.length ? `WHERE ${f.where.join(' AND ')}` : ''} ORDER BY w.id DESC LIMIT 400`, ...f.args);
+    const f = h.listFilters(req, { cols: { date: 'w.created_at', brand: 'w.brand_id' }, dateLabel: tr('Date'), sorts: [['newest', 'sort|Newest first', 'w.id DESC'], ['oldest', 'sort|Oldest first', 'w.id ASC'], ['amount_desc', 'sort|Amount: highest first', 'w.amount DESC'], ['amount_asc', 'sort|Amount: lowest first', 'w.amount ASC'], ['name', 'sort|Name: A to Z', 'b.name COLLATE NOCASE']] });
+    const rows = db.all(`SELECT w.*, i.ref inv_ref, i.kind, b.name brand_name, u.name by_name, d.name decided_name FROM col_writeoffs w JOIN invoices i ON i.id = w.invoice_id LEFT JOIN brands b ON b.id = w.brand_id LEFT JOIN users u ON u.id = w.requested_by LEFT JOIN users d ON d.id = w.decided_by ${f.where.length ? `WHERE ${f.where.join(' AND ')}` : ''} ORDER BY ${f.order} LIMIT 400`, ...f.args);
     const table = ui.table([
       { label: tr('col|Write-off'), render: (w) => `<b><bdi>${esc(w.ref)}</bdi></b><small class="sub">${esc(ui.date(w.created_at))}${w.by_name ? ` · ${esc(w.by_name)}` : ''}</small>` },
       { label: tr('Tenant'), render: (w) => (w.brand_id ? tenantLink(w.brand_id, w.brand_name) : '—') },
@@ -858,9 +874,15 @@ module.exports = function collections(router, h) {
   });
   router.get('/collections/plans', (req, res) => {
     const st = PLAN[req.query.status] ? req.query.status : req.query.status === 'all' ? 'all' : '';
-    const rows = db.all(`SELECT p.*, b.name brand_name FROM col_plans p JOIN brands b ON b.id = p.brand_id ${st === 'all' ? '' : st ? 'WHERE p.status = ?' : "WHERE p.status IN ('active','late','broken')"} ORDER BY p.id DESC LIMIT 300`, ...(st && st !== 'all' ? [st] : []))
+    const f = h.listFilters(req, {
+      cols: { date: 'p.created_at', brand: 'p.brand_id' }, dateLabel: tr('col|Agreed'), keep: ['status'],
+      sorts: [['newest', 'sort|Newest first', 'p.id DESC'], ['oldest', 'sort|Oldest first', 'p.id ASC'], ['amount_desc', 'sort|Amount: highest first', 'p.total DESC'], ['amount_asc', 'sort|Amount: lowest first', 'p.total ASC'], ['name', 'sort|Name: A to Z', 'b.name COLLATE NOCASE']],
+    });
+    const pw = [...(st === 'all' ? [] : st ? ['p.status = ?'] : ["p.status IN ('active','late','broken')"]), ...f.where];
+    const rows = db.all(`SELECT p.*, b.name brand_name FROM col_plans p JOIN brands b ON b.id = p.brand_id ${pw.length ? `WHERE ${pw.join(' AND ')}` : ''} ORDER BY ${f.order} LIMIT 300`, ...(st && st !== 'all' ? [st] : []), ...f.args)
       .map((p) => ({ ...p, s: planState(p) }));
-    const sub = `<nav class="tabs tabs--sub">${[['', 'col|Running'], ...Object.entries(PLAN).map(([k, v]) => [k, v[0]]), ['all', 'All']].map(([k, l]) => `<a class="tab${st === k ? ' is-on' : ''}" href="/admin/collections/plans${k ? `?status=${k}` : ''}">${esc(tr(l))}</a>`).join('')}</nav>`;
+    const fq = ['brand', 'from', 'to', 'sort'].filter((k) => req.query[k]).map((k) => `${k}=${encodeURIComponent(req.query[k])}`).join('&');
+    const sub = `<nav class="tabs tabs--sub">${[['', 'col|Running'], ...Object.entries(PLAN).map(([k, v]) => [k, v[0]]), ['all', 'All']].map(([k, l]) => `<a class="tab${st === k ? ' is-on' : ''}" href="/admin/collections/plans${k || fq ? `?${[k ? `status=${k}` : '', fq].filter(Boolean).join('&')}` : ''}">${esc(tr(l))}</a>`).join('')}</nav>`;
     const table = ui.table([
       { label: tr('col|Plan'), render: (p) => `<b><bdi>${esc(p.ref)}</bdi></b><small class="sub">${esc(ui.date(p.created_at))}</small>` },
       { label: tr('Tenant'), render: (p) => tenantLink(p.brand_id, p.brand_name) },
@@ -869,7 +891,7 @@ module.exports = function collections(router, h) {
       { label: tr('col|Next installment'), render: (p) => (p.s.next ? `${esc(ui.date(p.s.next.due_date))}<small class="sub">${ui.money(p.s.next.amount, { compact: true })}</small>` : '—') },
       { label: tr('Status'), render: (p) => badgeOf(PLAN, p.s.status) },
     ], rows, { empty: esc(tr('col|No payment plans here.')), href: (p) => `/admin/collections/plans/${p.id}` });
-    page(req, res, { title: tr('col|Payment plans'), on: '/admin/collections/plans', body: `${sub}${ui.card(tn(rows.length, 'col|{n} plan', 'col|{n} plans'), table, { sub: esc(tr('col|Agree a plan from a tenant\'s collection page. Installments count as paid when payments on the plan\'s invoices reach them.')) })}` });
+    page(req, res, { title: tr('col|Payment plans'), on: '/admin/collections/plans', body: `${sub}${f.html}${ui.card(tn(rows.length, 'col|{n} plan', 'col|{n} plans'), table, { sub: esc(tr('col|Agree a plan from a tenant\'s collection page. Installments count as paid when payments on the plan\'s invoices reach them.')) })}` });
   });
   router.get('/collections/plans/:id', (req, res, next) => {
     const p = db.get('SELECT p.*, b.name brand_name, u.name by_name FROM col_plans p JOIN brands b ON b.id = p.brand_id LEFT JOIN users u ON u.id = p.created_by WHERE p.id = ?', h.int(req.params.id));
@@ -945,9 +967,16 @@ module.exports = function collections(router, h) {
   });
   router.get('/collections/cases', (req, res) => {
     const st = req.query.status === 'closed' ? 'closed' : req.query.status === 'all' ? 'all' : 'open';
-    const rows = db.all(`SELECT c.*, b.name brand_name FROM col_cases c JOIN brands b ON b.id = c.brand_id ${st === 'all' ? '' : 'WHERE c.status = ?'} ORDER BY c.status = 'open' DESC, COALESCE(c.next_hearing, '9999'), c.id DESC`, ...(st === 'all' ? [] : [st]));
+    const f = h.listFilters(req, {
+      cols: { date: 'c.created_at', brand: 'c.brand_id' }, dateLabel: tr('col|Opened'), keep: ['status'],
+      sorts: [['hearing', 'sort|Next hearing: soonest first', "c.status = 'open' DESC, COALESCE(c.next_hearing, '9999'), c.id DESC"], ['newest', 'sort|Newest first', 'c.id DESC'], ['oldest', 'sort|Oldest first', 'c.id ASC'],
+        ['amount_desc', 'sort|Amount: highest first', 'c.amount DESC'], ['amount_asc', 'sort|Amount: lowest first', 'c.amount ASC'], ['name', 'sort|Name: A to Z', 'b.name COLLATE NOCASE']],
+    });
+    const cw = [...(st === 'all' ? [] : ['c.status = ?']), ...f.where];
+    const rows = db.all(`SELECT c.*, b.name brand_name FROM col_cases c JOIN brands b ON b.id = c.brand_id ${cw.length ? `WHERE ${cw.join(' AND ')}` : ''} ORDER BY ${f.order}`, ...(st === 'all' ? [] : [st]), ...f.args);
+    const fq = ['brand', 'from', 'to', 'sort'].filter((k) => req.query[k]).map((k) => `&${k}=${encodeURIComponent(req.query[k])}`).join('');
     const t = today();
-    const sub = `<nav class="tabs tabs--sub">${[['open', 'col|Open'], ['closed', 'col|Closed'], ['all', 'All']].map(([k, l]) => `<a class="tab${st === k ? ' is-on' : ''}" href="/admin/collections/cases?status=${k}">${esc(tr(l))}</a>`).join('')}</nav>`;
+    const sub = `<nav class="tabs tabs--sub">${[['open', 'col|Open'], ['closed', 'col|Closed'], ['all', 'All']].map(([k, l]) => `<a class="tab${st === k ? ' is-on' : ''}" href="/admin/collections/cases?status=${k}${fq}">${esc(tr(l))}</a>`).join('')}</nav>`;
     const table = ui.table([
       { label: tr('col|Case'), render: (c) => `<b><bdi>${esc(c.ref)}</bdi></b><small class="sub">${esc([c.case_no, c.court].filter(Boolean).join(' · '))}</small>` },
       { label: tr('Tenant'), render: (c) => tenantLink(c.brand_id, c.brand_name) },
@@ -956,7 +985,7 @@ module.exports = function collections(router, h) {
       { label: tr('col|Lawyer'), render: (c) => esc(c.lawyer || '—') },
       { label: tr('col|Next hearing'), sort: (c) => c.next_hearing || '', render: (c) => (c.next_hearing && c.status === 'open' ? `<span class="${c.next_hearing <= M.addDays(t, 3) ? 'late' : ''}">${esc(ui.date(c.next_hearing))}</span><small class="sub">${esc(ui.rel(c.next_hearing))}</small>` : '—') },
     ], rows, { empty: esc(tr('col|No legal cases here. Open one from a tenant\'s collection page.')), href: (c) => `/admin/collections/cases/${c.id}` });
-    page(req, res, { title: tr('col|Legal cases'), on: '/admin/collections/cases', body: `${sub}${ui.card(tn(rows.length, 'col|{n} case', 'col|{n} cases'), table)}` });
+    page(req, res, { title: tr('col|Legal cases'), on: '/admin/collections/cases', body: `${sub}${f.html}${ui.card(tn(rows.length, 'col|{n} case', 'col|{n} cases'), table)}` });
   });
   router.get('/collections/cases/:id', (req, res, next) => {
     const c = caseOf(h.int(req.params.id));

@@ -411,7 +411,8 @@ ${dailyCard}`;
       <label class="drop"><input type="file" name="file" accept=".csv,.txt,text/csv,text/plain">${ui.icon('upload')}<span data-drop-label>${ui.esc(tr('nrg|Drop a CSV file here, or click to choose'))}</span><small>${ui.esc(tr('nrg|Up to 8 MB'))}</small><i class="drop__bar" hidden><b></b></i></label>
       <p class="upload__msg" data-upload-msg hidden></p></form>`;
     const paste = ui.form('/admin/energy/import/text', csrf, `${ui.textarea('csv', tr('nrg|Or paste the rows'), '', { rows: 5, placeholder: 'meter,time,kwh\nE-LL-HVAC,2026-11-01 14:00,96.4' })}${ui.btn(tr('nrg|Import'), { cls: 'btn--primary btn--sm' })}`, { cls: 'stack' });
-    const past = db.all('SELECT i.*, u.name user_name FROM nrg_imports i LEFT JOIN users u ON u.id = i.user_id ORDER BY i.id DESC LIMIT 12');
+    const f = h.listFilters(req, { cols: { date: 'i.created_at' }, dateLabel: tr('nrg|Import'), sort: { date: 'i.created_at' }, sorts: [['rows', 'sort|Most rows first', 'i.inserted + i.updated DESC']] });
+    const past = db.all(`SELECT i.*, u.name user_name FROM nrg_imports i LEFT JOIN users u ON u.id = i.user_id ${f.where.length ? `WHERE ${f.where.join(' AND ')}` : ''} ORDER BY ${f.order}, i.id DESC LIMIT ${f.active ? 300 : 12}`, ...f.args);
     const hist = ui.table([
       { label: tr('nrg|Import'), render: (i) => `<b>${ui.esc(i.via === 'api' ? tr('nrg|From the building system') : i.file_name || tr('nrg|Pasted rows'))}</b><small class="sub">${ui.esc(ui.rel(i.created_at))}${i.user_name ? ` · ${ui.esc(i.user_name)}` : ''}</small>` },
       { label: tr('nrg|Period'), render: (i) => (i.first_ts ? `${ui.date(i.first_ts.slice(0, 10))} – ${ui.date(i.last_ts.slice(0, 10))}` : '—') },
@@ -432,7 +433,7 @@ X-Signature: sha256=…   (${ui.esc(tr('nrg|when ENERGY_HMAC_SECRET is set'))})
   { "meter": "W-LL-01", "time": "2026-11-01T14:00:00+02:00", "m3": 1.8 }
 ] }</pre>`;
     const body = `${tabs('/admin/energy/meters')}<div class="grid grid--side">
-  <div class="stack">${ui.card(tr('nrg|Landlord meters'), table, { sub: ui.esc(tr('nrg|Meters on the common areas and central plant. Tenants\' meters are read and billed under Utilities.')) })}${ui.card(tr('nrg|Recent imports'), hist)}</div>
+  <div class="stack">${ui.card(tr('nrg|Landlord meters'), table, { sub: ui.esc(tr('nrg|Meters on the common areas and central plant. Tenants\' meters are read and billed under Utilities.')) })}${ui.card(tr('nrg|Recent imports'), `${f.html}${hist}`)}</div>
   <div class="stack">${mgr ? ui.card(tr('nrg|Add a meter'), add) : ''}${ui.card(tr('nrg|Import readings'), `${upload}${paste}<p class="muted small">${ui.esc(tr('nrg|Columns: meter, time and kWh (or m³); or a time column and one column per meter code. Times are Cairo time unless they carry a zone.'))}</p>`)}${ui.card(tr('nrg|Building system connection'), api)}</div>
 </div>`;
     h.page(req, res, { title: tr('nrg|Meters and import'), crumbs: crumbs([null, tr('nrg|Meters and import')]), active: '/admin/energy', wide: true, body });

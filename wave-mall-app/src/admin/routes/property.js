@@ -24,10 +24,16 @@ module.exports = function property(router, h) {
   router.get('/units', (req, res) => {
     h.sweep(req);
     const view = req.query.view === 'table' ? 'table' : 'plan';
+    // the table view can be narrowed by when a unit last changed, and sorted; the plan always shows every unit
+    const f = h.listFilters(req, {
+      cols: view === 'table' ? { date: 'u.updated_at' } : {}, dateLabel: tr('sort|Last changed'), keep: ['view'],
+      sorts: view === 'table' ? [['plan', 'sort|Plan order', 'u.sort'], ['code', 'sort|Unit code', 'u.code COLLATE NOCASE'], ['area_desc', 'sort|Area: largest first', 'u.indoor_m2 DESC'], ['area_asc', 'sort|Area: smallest first', 'u.indoor_m2 ASC'],
+        ['status', 'sort|Status', 'u.status, u.sort'], ['updated', 'sort|Recently updated', 'u.updated_at DESC']] : [],
+    });
     const units = db.all(
       `SELECT u.*, l.title hold_title,
         (SELECT b.name FROM lease_units lu JOIN leases s ON s.id = lu.lease_id JOIN brands b ON b.id = s.brand_id WHERE lu.unit_id = u.id AND s.status = 'active' LIMIT 1) tenant
-       FROM units u LEFT JOIN leads l ON l.id = u.hold_lead_id WHERE u.status != 'retired' ORDER BY u.sort`,
+       FROM units u LEFT JOIN leads l ON l.id = u.hold_lead_id WHERE u.status != 'retired'${f.sql} ORDER BY ${f.order || 'u.sort'}`, ...f.args,
     );
     const retired = db.all("SELECT * FROM units WHERE status = 'retired' ORDER BY retired_at DESC LIMIT 30");
     const total = units.reduce((s, u) => s + u.indoor_m2, 0);
@@ -45,7 +51,7 @@ module.exports = function property(router, h) {
       <div class="grid grid--side">${ui.card(tr('Street level · 7 shops on North 90'), `${ui.plan(units, 'B1')}${ui.planLegend()}`)}${ui.card(tr('Street units'), side('street'))}</div>
       ${units.some((u) => !['plaza', 'street'].includes(u.zone)) ? ui.card(tr('Other units'), side('upper') + side('kiosk')) : ''}`;
     } else {
-      main = ui.card(tr('{units} · {area} indoor', { units: tn(units.length, '{n} unit', '{n} units'), area: ui.m2(total) }), ui.table(
+      main = f.html + ui.card(tr('{units} · {area} indoor', { units: tn(units.length, '{n} unit', '{n} units'), area: ui.m2(total) }), ui.table(
         [
           { label: tr('Unit'), render: (u) => `<b>${ui.esc(u.code)}</b>` },
           { label: tr('Level'), render: (u) => ui.esc(M.ZONES[u.zone]) },
@@ -290,15 +296,16 @@ module.exports = function property(router, h) {
   router.get('/brands', (req, res) => {
     const q = h.str(req.query.q, 80);
     const cat = M.CATEGORIES[req.query.category] ? req.query.category : '';
+    const f = h.listFilters(req, { cols: { date: 'b.created_at' }, dateLabel: tr('sort|Added'), sorts: [['name', 'sort|Name: A to Z', 'b.name'], ['name_desc', 'sort|Name: Z to A', 'b.name DESC'], ['newest', 'sort|Newest first', 'b.created_at DESC, b.id DESC'], ['oldest', 'sort|Oldest first', 'b.created_at ASC, b.id ASC']] });
     const rows = db.all(
       `SELECT b.*, (SELECT COUNT(*) FROM leads l WHERE l.brand_id = b.id) leads,
         (SELECT COUNT(*) FROM leases s WHERE s.brand_id = b.id AND s.status = 'active') leases,
         (SELECT l.stage FROM leads l WHERE l.brand_id = b.id ORDER BY l.updated_at DESC LIMIT 1) stage,
         (SELECT c.name FROM contacts c WHERE c.brand_id = b.id ORDER BY c.primary_contact DESC LIMIT 1) contact
-       FROM brands b WHERE (? = '' OR b.name LIKE ?) AND (? = '' OR b.category = ?) ORDER BY b.name`,
-      q, `%${q}%`, cat, cat,
+       FROM brands b WHERE (? = '' OR b.name LIKE ?) AND (? = '' OR b.category = ?)${f.sql} ORDER BY ${f.order}`,
+      q, `%${q}%`, cat, cat, ...f.args,
     );
-    const filters = `<form class="filters" method="get"><input type="search" name="q" value="${ui.esc(q)}" placeholder="${ui.esc(tr('Search brands'))}">${ui.select('category', tr('Category'), M.CATEGORIES, cat, { blank: tr('All categories'), cls: 'f--inline' })}${ui.btn(tr('o|Filter'), { cls: 'btn--ghost btn--sm' })}</form>`;
+    const filters = `<form class="filters" method="get"><input type="search" name="q" value="${ui.esc(q)}" placeholder="${ui.esc(tr('Search brands'))}">${ui.select('category', tr('Category'), M.CATEGORIES, cat, { blank: tr('All categories'), cls: 'f--inline' })}${f.fields}${ui.btn(tr('o|Filter'), { cls: 'btn--ghost btn--sm' })}${f.quick}</form>`;
     const table = ui.table(
       [
         { label: tr('Brand'), render: (b) => `<b>${ui.esc(b.name)}</b>${b.origin ? `<small class="sub">${ui.esc(tx(b.origin))}</small>` : ''}` },

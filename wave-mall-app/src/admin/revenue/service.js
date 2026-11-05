@@ -410,9 +410,28 @@ ${ui.card(tr('svc|Tenants'), table, { sub: ui.esc(tr('svc|Each lease’s share f
   });
 
   // actual costs
+  // the cost lines of a year: narrowed to the months inside a date range, and sorted
+  function actualsFiltered(req, year) {
+    const f = h.listFilters(req, {
+      cols: { date: 'a.period' }, dateLabel: tr('svc|Month'), keep: ['year'],
+      sorts: [['newest', 'sort|Newest first', ''], ['oldest', 'sort|Oldest first', ''], ['amount_desc', 'sort|Amount: highest first', ''], ['amount_asc', 'sort|Amount: lowest first', ''], ['category', 'sort|Category', '']],
+    });
+    const lo = f.from ? f.from.slice(0, 7) : '';
+    const hi = f.to ? f.to.slice(0, 7) : '';
+    const rows = actualsOf(year).filter((a) => (!lo || a.period >= lo) && (!hi || a.period <= hi));
+    const by = {
+      oldest: (a, b) => a.period.localeCompare(b.period) || a.id - b.id,
+      amount_desc: (a, b) => b.amount - a.amount,
+      amount_asc: (a, b) => a.amount - b.amount,
+      category: (a, b) => catLabel(a.category).localeCompare(catLabel(b.category)) || b.period.localeCompare(a.period),
+    }[f.sortKey];
+    if (by) rows.sort(by);
+    return { f, rows };
+  }
   router.get('/service-charge/actuals', (req, res) => {
     const year = yearOf(req);
-    const rows = actualsOf(year);
+    const { f, rows } = actualsFiltered(req, year);
+    const fq = ['from', 'to', 'sort'].filter((k) => req.query[k]).map((k) => `&${k}=${encodeURIComponent(req.query[k])}`).join('');
     const canEdit = h.can(req, 'agent');
     const csrf = req.session.csrf;
     const months = C.ymRange(`${year}-01`, `${year}-12`).filter((m) => m <= C.ymOf(M.today()) || year > X.thisYear());
@@ -444,9 +463,9 @@ ${ui.card(tr('svc|Tenants'), table, { sub: ui.esc(tr('svc|Each lease’s share f
       { empty: ui.esc(tr('svc|No costs entered for this year yet.')) },
     );
     const total = rows.reduce((t, a) => t + a.amount, 0);
-    const body = `${nav(`/admin/service-charge/actuals?year=${year}`, year)}${yearPick('/admin/service-charge/actuals', year)}
+    const body = `${nav(`/admin/service-charge/actuals?year=${year}`, year)}${yearPick('/admin/service-charge/actuals', year)}${f.html}
 <div class="grid grid--side">
-  ${ui.card(tn(rows.length, 'svc|{n} cost line', 'svc|{n} cost lines'), table, { sub: ui.esc(tr('svc|Total {amount}', { amount: ui.money(total) })), action: ui.btn(tr('Export CSV'), { href: `/admin/service-charge/actuals.csv?year=${year}`, cls: 'btn--ghost btn--sm', ic: 'dl' }) })}
+  ${ui.card(tn(rows.length, 'svc|{n} cost line', 'svc|{n} cost lines'), table, { sub: ui.esc(tr('svc|Total {amount}', { amount: ui.money(total) })), action: ui.btn(tr('Export CSV'), { href: `/admin/service-charge/actuals.csv?year=${year}${fq}`, cls: 'btn--ghost btn--sm', ic: 'dl' }) })}
   <div class="stack">${addForm ? ui.card(tr('svc|Add a cost'), addForm) : ''}${importForm ? ui.card(tr('svc|Import costs'), importForm) : ''}${ledgerForm ? ui.card(tr('svc|From the accounts'), ledgerForm) : ''}</div>
 </div>`;
     h.page(req, res, { title: tr('svc|Actual costs'), crumbs: [['/admin/service-charge', tr('svc|Service charge')], [null, tr('svc|Actual costs')]], active: '/admin/service-charge', wide: true, body });
@@ -494,7 +513,9 @@ ${ui.card(tr('svc|Tenants'), table, { sub: ui.esc(tr('svc|Each lease’s share f
   router.get('/service-charge/actuals.csv', (req, res) => {
     const year = yearOf(req);
     h.log(req, 'Exported', 'export', null, 'Service charge costs');
-    res.type('text/csv').attachment(`the-wave-service-charge-costs-${year}.csv`).send(X.csv([...actualsOf(year)].reverse(), [
+    // the export follows the list's month range and order when they are given (oldest first otherwise)
+    const picked = req.query.from || req.query.to || req.query.sort ? actualsFiltered(req, year).rows : [...actualsOf(year)].reverse();
+    res.type('text/csv').attachment(`the-wave-service-charge-costs-${year}.csv`).send(X.csv(picked, [
       ['period', tr('svc|Month')], [(a) => catLabel(a.category), tr('svc|Category')], ['amount', tr('svc|Amount')], [(a) => tx(a.description) || '', tr('svc|Description')], [(a) => tr(SOURCES[a.source] || 'svc|Entered'), tr('svc|Source')],
     ]));
   });
@@ -648,7 +669,11 @@ ${ui.card(tr('svc|Tenants'), table, { sub: ui.esc(tr('svc|Each lease’s share f
 
   // credit notes (shared by the revenue modules)
   router.get('/service-charge/credits', (req, res) => {
-    const rows = db.all('SELECT c.*, b.name brand_name, s.ref lease_ref FROM revenue_credits c LEFT JOIN brands b ON b.id = c.brand_id LEFT JOIN leases s ON s.id = c.lease_id ORDER BY c.created_at DESC, c.id DESC LIMIT 200');
+    const f = h.listFilters(req, {
+      cols: { date: 'c.created_at', brand: 'c.brand_id', lease: 'c.lease_id' },
+      sorts: [['newest', 'sort|Newest first', 'c.created_at DESC, c.id DESC'], ['oldest', 'sort|Oldest first', 'c.created_at ASC, c.id ASC'], ['amount_desc', 'sort|Amount: highest first', 'c.amount DESC'], ['amount_asc', 'sort|Amount: lowest first', 'c.amount ASC'], ['name', 'sort|Name: A to Z', 'b.name COLLATE NOCASE']],
+    });
+    const rows = db.all(`SELECT c.*, b.name brand_name, s.ref lease_ref FROM revenue_credits c LEFT JOIN brands b ON b.id = c.brand_id LEFT JOIN leases s ON s.id = c.lease_id${f.where.length ? ` WHERE ${f.where.join(' AND ')}` : ''} ORDER BY ${f.order} LIMIT 200`, ...f.args);
     const canMgr = h.can(req, 'manager');
     const table = ui.table(
       [
@@ -664,7 +689,7 @@ ${ui.card(tr('svc|Tenants'), table, { sub: ui.esc(tr('svc|Each lease’s share f
       { empty: ui.esc(tr('svc|No credit notes yet.')) },
     );
     const open = rows.filter((c) => c.status === 'open').reduce((t, c) => t + c.amount - c.applied, 0);
-    const body = `${nav('/admin/service-charge/credits', X.thisYear())}${ui.card(tr('svc|Credit notes'), table, { sub: ui.esc(tr('svc|Open credit {amount}. Credits are set against the tenant’s next service charge, utilities or turnover rent invoice.', { amount: ui.money(open) })) })}`;
+    const body = `${nav('/admin/service-charge/credits', X.thisYear())}${f.html}${ui.card(tr('svc|Credit notes'), table, { sub: ui.esc(tr('svc|Open credit {amount}. Credits are set against the tenant’s next service charge, utilities or turnover rent invoice.', { amount: ui.money(open) })) })}`;
     h.page(req, res, { title: tr('svc|Credit notes'), crumbs: [['/admin/service-charge', tr('svc|Service charge')], [null, tr('svc|Credit notes')]], active: '/admin/service-charge', wide: true, body });
   });
   router.post('/service-charge/credits/:id/refund', R('manager'), (req, res, next) => {

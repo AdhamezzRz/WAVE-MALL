@@ -277,8 +277,9 @@ ${ui.card(tr('spc|Availability'), cal, { action: nav, cls: 'spc-calcard' })}
 
   // ---------- spaces and rates ----------
   router.get('/specialty/spaces', (req, res) => {
+    const f = h.listFilters(req, { sorts: [['default', 'sort|Plan order', 's.active DESC, s.sort, s.code'], ['code', 'sort|Code', 's.code'], ['rate_desc', 'sort|Day rate: highest first', 's.rate_day DESC'], ['rate_asc', 'sort|Day rate: lowest first', 's.rate_day ASC'], ['size', 'sort|Area: largest first', 's.size_m2 DESC'], ['busy', 'sort|Most bookings first', 'active_bookings DESC, s.code']] });
     const spaces = db.all(`SELECT s.*, (SELECT COUNT(*) FROM space_bookings k WHERE k.space_id = s.id AND k.status IN ('held','confirmed','live')) active_bookings
-      FROM spaces s ORDER BY s.active DESC, s.sort, s.code`);
+      FROM spaces s ORDER BY ${f.order}`);
     const rate = (v) => (v ? ui.money(v, { cur: false }) : '—');
     const table = ui.table([
       { label: tr('spc|Space'), render: (s) => `<b>${ui.esc(s.code)} · ${ui.esc(tx(s.name))}</b><small class="sub">${ui.esc(tr(TYPES[s.type]))}${s.location ? ` · ${ui.esc(tx(s.location))}` : ''}${s.active ? '' : ` · ${ui.esc(tr('spc|Not in use'))}`}</small>` },
@@ -294,7 +295,7 @@ ${ui.card(tr('spc|Availability'), cal, { action: nav, cls: 'spc-calcard' })}
     const peakList = `${pk.length ? `<ul class="list">${pk.map((p) => `<li><span class="what"><b>${ui.esc(tx(p.name))} · +${ui.n0(p.pct)}%</b><small>${ui.date(p.start_date)} – ${ui.date(p.end_date)}</small></span>${mgr ? ui.form(`/admin/specialty/peaks/${p.id}/delete`, req.session.csrf, `<button class="iconbtn" title="${ui.esc(tr('Remove'))}" aria-label="${ui.esc(tr('Remove'))}" data-confirm="${ui.esc(tr('spc|Remove this peak period?'))}">×</button>`) : ''}</li>`).join('')}</ul>` : `<p class="muted pad">${ui.esc(tr('spc|No peak periods yet.'))}</p>`}
       ${mgr ? `<details class="upload-box"><summary>${ui.icon('plus')}<span>${ui.esc(tr('spc|Add a peak period'))}</span></summary>${ui.form('/admin/specialty/peaks', req.session.csrf, `<div class="fields">${ui.input('name', tr('Name'), '', { required: true, placeholder: tr('spc|e.g. Ramadan nights') })}${ui.input('start_date', tr('spc|From'), '', { type: 'date', required: true })}${ui.input('end_date', tr('spc|To'), '', { type: 'date', required: true })}${ui.input('pct', tr('spc|Surcharge (%)'), 20, { type: 'number', min: 0, max: 300, step: 1, required: true })}</div>${ui.btn(tr('Add'), { cls: 'btn--primary btn--sm' })}`, { cls: 'stack' })}</details>` : ''}`;
     const body = `${tabs('/admin/specialty/spaces')}<div class="grid grid--side">
-  ${ui.card(tn(spaces.length, 'spc|{n} space', 'spc|{n} spaces'), table, { sub: ui.esc(tr('spc|Rates are per space, before VAT. A week or a month is cheaper per day than single days.')) })}
+  ${ui.card(tn(spaces.length, 'spc|{n} space', 'spc|{n} spaces'), f.html + table, { sub: ui.esc(tr('spc|Rates are per space, before VAT. A week or a month is cheaper per day than single days.')) })}
   ${ui.card(tr('spc|Peak periods'), peakList, { sub: ui.esc(tr('spc|Days inside a peak period cost more, on top of any weekend surcharge.')) })}
 </div>`;
     h.page(req, res, {
@@ -429,10 +430,12 @@ ${ui.card(tr('spc|The next six weeks'), `<div class="spc-cal-wrap">${calendar([s
       upcoming: `k.status IN ('held','confirmed') AND k.start_date >= '${t}'`,
       approval: "k.needs_approval = 1 AND k.approved_at IS NULL AND k.status NOT IN ('cancelled','completed')",
     }[st] || `k.status = '${st}'`;
+    const f = bookingFilters(req, st);
     const rows = db.all(`SELECT k.*, s.code space_code, s.type space_type, b.name brand_name, i.status invoice_status FROM space_bookings k JOIN spaces s ON s.id = k.space_id
-      LEFT JOIN brands b ON b.id = k.brand_id LEFT JOIN invoices i ON i.id = k.invoice_id WHERE ${where} ORDER BY k.start_date ${st === 'completed' || st === 'cancelled' ? 'DESC' : ''} LIMIT 200`);
+      LEFT JOIN brands b ON b.id = k.brand_id LEFT JOIN invoices i ON i.id = k.invoice_id WHERE ${where}${f.sql} ORDER BY ${f.order} LIMIT 200`, ...f.args);
+    const fq = ['from', 'to', 'sort'].filter((x) => req.query[x]).map((x) => `${x}=${encodeURIComponent(req.query[x])}`).join('&');
     const tabsHtml = [['open', tr('spc|Open')], ['upcoming', tr('spc|Upcoming')], ['enquiry', tr(STATUS.enquiry)], ['held', tr(STATUS.held)], ['approval', tr('spc|Needs approval')], ['live', tr(STATUS.live)], ['completed', tr(STATUS.completed)], ['cancelled', tr(STATUS.cancelled)]]
-      .map(([k, l]) => `<a class="tab${st === k ? ' is-on' : ''}" href="/admin/specialty/bookings${k === 'open' ? '' : `?status=${k}`}">${ui.esc(l)}</a>`).join('');
+      .map(([k, l]) => `<a class="tab${st === k ? ' is-on' : ''}" href="/admin/specialty/bookings${k === 'open' && !fq ? '' : `?${[k === 'open' ? '' : `status=${k}`, fq].filter(Boolean).join('&')}`}">${ui.esc(l)}</a>`).join('');
     const table = ui.table([
       { label: tr('spc|Booking'), render: (k) => `<b>${ui.esc(who(k))}</b><small class="sub">${ui.esc(k.ref)}${k.purpose ? ` · ${ui.esc(tx(k.purpose))}` : ''}</small>` },
       { label: tr('spc|Space'), render: (k) => `${ui.esc(k.space_code)}${SHARED.has(k.space_type) ? `<small class="sub">${ui.esc(tr('spc|{pct}% of the loop', { pct: Math.round(k.share_pct) }))}</small>` : ''}` },
@@ -442,13 +445,26 @@ ${ui.card(tr('spc|The next six weeks'), `<div class="spc-cal-wrap">${calendar([s
     ], rows, { empty: ui.esc(tr('spc|No bookings here.')), href: (k) => `/admin/specialty/bookings/${k.id}` });
     h.page(req, res, {
       title: tr('spc|Bookings'), crumbs: [['/admin/specialty', tr('nav|Short-term space')], [null, tr('spc|Bookings')]], active: '/admin/specialty', wide: true,
-      body: `${tabs('/admin/specialty/bookings')}<nav class="tabs">${tabsHtml}</nav>${ui.card(tn(rows.length, 'spc|{n} booking', 'spc|{n} bookings'), table, { action: ui.btn(tr('Export CSV'), { href: '/admin/specialty/bookings.csv', cls: 'btn--ghost btn--sm', ic: 'dl' }) })}`,
+      body: `${tabs('/admin/specialty/bookings')}<nav class="tabs">${tabsHtml}</nav>${f.html}${ui.card(tn(rows.length, 'spc|{n} booking', 'spc|{n} bookings'), table, { action: ui.btn(tr('Export CSV'), { href: `/admin/specialty/bookings.csv${f.active || req.query.sort ? `?${fq}` : ''}`, cls: 'btn--ghost btn--sm', ic: 'dl' }) })}`,
       actions: h.can(req, 'agent') ? ui.btn(tr('spc|New booking'), { href: '/admin/specialty/bookings/new', cls: 'btn--primary', ic: 'plus' }) : '',
     });
   });
 
+  // the bookings list: a range on the first day, and its order (the default keeps the old order)
+  function bookingFilters(req, st) {
+    const past = st === 'completed' || st === 'cancelled';
+    return h.listFilters(req, {
+      cols: { date: 'k.start_date' }, dateLabel: tr('spc|From'), keep: ['status'],
+      sorts: [['default', past ? 'sort|Start date: latest first' : 'sort|Start date: soonest first', past ? 'k.start_date DESC' : 'k.start_date'], ['start_late', past ? 'sort|Start date: soonest first' : 'sort|Start date: latest first', past ? 'k.start_date' : 'k.start_date DESC'],
+        ['newest', 'sort|Newest first', 'k.created_at DESC, k.id DESC'], ['oldest', 'sort|Oldest first', 'k.created_at ASC, k.id ASC'],
+        ['amount_desc', 'sort|Amount: highest first', 'k.price DESC'], ['amount_asc', 'sort|Amount: lowest first', 'k.price ASC'], ['space', 'sort|Space', 's.code, k.start_date']],
+    });
+  }
+
   router.get('/specialty/bookings.csv', (req, res) => {
-    const rows = db.all(`SELECT k.*, s.code space_code, b.name brand_name FROM space_bookings k JOIN spaces s ON s.id = k.space_id LEFT JOIN brands b ON b.id = k.brand_id ORDER BY k.start_date`);
+    // the export follows the list's date range and order when they are given
+    const f = bookingFilters(req, '');
+    const rows = db.all(`SELECT k.*, s.code space_code, b.name brand_name FROM space_bookings k JOIN spaces s ON s.id = k.space_id LEFT JOIN brands b ON b.id = k.brand_id WHERE 1 = 1${f.sql} ORDER BY ${f.order}`, ...f.args);
     const cols = [['ref', tr('Ref')], ['space_code', tr('spc|Space')], [(k) => who(k), tr('spc|Customer')], ['start_date', tr('spc|From')], ['end_date', tr('spc|To')], ['days', tr('spc|Days')], ['share_pct', tr('spc|Share of loop (%)')], ['list_price', tr('spc|List price')], ['price', tr('spc|Price')], ['deposit', tr('spc|Deposit')], [(k) => tr(STATUS[k.status]), tr('Status')]];
     const csv = [cols.map((c) => csvCell(c[1])).join(','), ...rows.map((k) => cols.map(([f]) => csvCell(typeof f === 'function' ? f(k) : k[f])).join(','))].join('\r\n');
     h.log(req, 'Exported', 'export', null, 'Short-term bookings');

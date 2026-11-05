@@ -94,9 +94,17 @@ module.exports = function advances(router, h) {
   router.get('/hr/advances', RH, (req, res) => {
     const st = STATUS[req.query.status] ? req.query.status : req.query.status === 'all' ? 'all' : 'active';
     const emp = h.int(req.query.employee);
-    const where = [...(st === 'all' ? [] : ['a.status = ?']), ...(emp ? ['a.employee_id = ?'] : [])];
-    const rows = db.all(`SELECT a.*, e.name, e.name_ar, e.code FROM hr_advances a JOIN employees e ON e.id = a.employee_id ${where.length ? `WHERE ${where.join(' AND ')}` : ''} ORDER BY a.issued_on DESC, a.id DESC`, ...(st === 'all' ? [] : [st]), ...(emp ? [emp] : []))
+    // a date range on the day it was given, and the sort order (the newest first unless chosen)
+    const lf = h.listFilters(req, {
+      cols: { date: 'a.issued_on' }, dateLabel: tr('adv|Given on'), keep: ['status', 'employee'],
+      sorts: [['newest', 'sort|Newest first', 'a.issued_on DESC, a.id DESC'], ['oldest', 'sort|Oldest first', 'a.issued_on, a.id'],
+        ['amount_desc', 'sort|Amount: highest first', 'a.amount DESC, a.id DESC'], ['amount_asc', 'sort|Amount: lowest first', 'a.amount, a.id'],
+        ['left', 'sort|Most left to repay', 'a.issued_on DESC, a.id DESC'], ['name', 'sort|Name: A to Z', 'e.name, a.id DESC']],
+    });
+    const where = [...(st === 'all' ? [] : ['a.status = ?']), ...(emp ? ['a.employee_id = ?'] : []), ...lf.where];
+    const rows = db.all(`SELECT a.*, e.name, e.name_ar, e.code FROM hr_advances a JOIN employees e ON e.id = a.employee_id ${where.length ? `WHERE ${where.join(' AND ')}` : ''} ORDER BY ${lf.order}`, ...(st === 'all' ? [] : [st]), ...(emp ? [emp] : []), ...lf.args)
       .map((a) => ({ ...a, repaid: repaid(a), left: remaining(a) }));
+    if (lf.sortKey === 'left') rows.sort((a, b) => b.left - a.left);
     const open = db.all("SELECT * FROM hr_advances WHERE status = 'active'");
     const month = M.today().slice(0, 7);
     const kpis = [
@@ -129,7 +137,7 @@ module.exports = function advances(router, h) {
     </div><p class="muted small">${esc(tr('adv|The monthly amount is taken off their pay from the first deduction month until it is repaid.'))}</p>${rule && rule.active ? `<p class="muted small">${esc(tr('apr|Advances from {amount} wait for approval first.', { amount: ui.money(rule.min_amount) }))}</p>` : ''}${ui.btn(esc(tr('adv|Give the advance')), { cls: 'btn--primary btn--sm' })}`, { cls: 'stack' });
     h.page(req, res, {
       title: tr('adv|Salary advances'), active: '/admin/hr/advances', wide: true,
-      body: `<div class="kpis kpis--3">${kpis}</div>${tabs}<div class="grid grid--side"><div class="stack">${pending.length ? ui.card(tr('apr|Waiting for approval'), waitingList(pending), { sub: esc(tr('apr|Given once approved.')) }) : ''}${ui.card(tr('adv|Advances'), table)}</div><div>${ui.card(tr('adv|New advance'), form, { sub: esc(tr('adv|A loan against salary, repaid from payroll.')) })}</div></div>`,
+      body: `<div class="kpis kpis--3">${kpis}</div>${tabs}<div class="grid grid--side"><div class="stack">${pending.length ? ui.card(tr('apr|Waiting for approval'), waitingList(pending), { sub: esc(tr('apr|Given once approved.')) }) : ''}${lf.html}${ui.card(tr('adv|Advances'), table)}</div><div>${ui.card(tr('adv|New advance'), form, { sub: esc(tr('adv|A loan against salary, repaid from payroll.')) })}</div></div>`,
     });
   });
 

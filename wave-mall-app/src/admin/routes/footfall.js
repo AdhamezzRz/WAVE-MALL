@@ -222,10 +222,27 @@ module.exports = function footfall(router, h) {
   // the period on screen and the one it is compared with (ts_hour bounds)
   // The period on screen and the one it is compared with (ts_hour bounds). A mall day runs from
   // 06:00 to 05:59 the next morning, so the hours after midnight count with the evening before.
-  function period(p, c) {
+  // a chosen range of mall days (?from=&to=, up to a year), against the same number of days before it
+  const isDay = (x) => /^\d{4}-\d{2}-\d{2}$/.test(String(x || ''));
+  function rangeOf(q) {
+    if (!isDay(q.from) && !isDay(q.to)) return null;
+    let a = isDay(q.from) ? q.from : q.to;
+    let b = isDay(q.to) ? q.to : q.from;
+    if (a > b) [a, b] = [b, a];
+    const n = Math.round((Date.parse(`${b}T00:00:00Z`) - Date.parse(`${a}T00:00:00Z`)) / 86400000) + 1;
+    if (n > 366) a = addDays(b, -365);
+    return { a, b };
+  }
+  function period(p, c, range = null) {
     const d = c.hour < DAY_START ? addDays(c.date, -1) : c.date;
     const H = pad(c.hour);
     const span = (a, b) => [`${a}T${pad(DAY_START)}`, `${addDays(b, 1)}T${pad(DAY_START - 1)}`];
+    if (range) {
+      const n = Math.round((Date.parse(`${range.b}T00:00:00Z`) - Date.parse(`${range.a}T00:00:00Z`)) / 86400000) + 1;
+      const [from, to] = span(range.a, range.b);
+      const [pFrom, pTo] = span(addDays(range.a, -n), addDays(range.b, -n));
+      return { from, to, pFrom, pTo, days: Array.from({ length: n }, (_, i) => addDays(range.a, i)), vs: tr('sort|vs the same number of days before') };
+    }
     if (p === 'yesterday') {
       const y = addDays(d, -1);
       const [from, to] = span(y, y);
@@ -280,8 +297,9 @@ module.exports = function footfall(router, h) {
   // ---------- dashboard ----------
   router.get('/footfall', (req, res) => {
     const c = cairo();
-    const p = PERIODS[req.query.p] ? req.query.p : 'today';
-    const per = period(p, c);
+    const range = rangeOf(req.query);
+    const p = range ? 'range' : PERIODS[req.query.p] ? req.query.p : 'today';
+    const per = period(p, c, range);
     const total = sumIn(per.from, per.to);
     const before = sumIn(per.pFrom, per.pTo);
     const hasData = db.value('SELECT COUNT(*) FROM footfall') > 0;
@@ -324,10 +342,11 @@ module.exports = function footfall(router, h) {
       ui.kpi({ label: tr('ftf|Cars'), value: ui.n0(cars), sub: `${delta(cars, carsBefore)} ${ui.esc(per.vs)}` }),
       ui.kpi({ label: tr('ftf|Car park at its fullest'), value: cap ? ui.pct(peakOcc / cap) : ui.n0(peakOcc), bar: cap ? Math.min(1, peakOcc / cap) : null, sub: ui.esc(tr('ftf|Average stay {time}', { time: stayText })) }),
     ].join('');
-    const periodTabs = `<nav class="tabs">${Object.entries(PERIODS).map(([k, l]) => `<a class="tab${p === k ? ' is-on' : ''}" href="/admin/footfall${k === 'today' ? '' : `?p=${k}`}">${ui.esc(tr(l))}</a>`).join('')}</nav>`;
+    const periodTabs = `<nav class="tabs">${Object.entries(PERIODS).map(([k, l]) => `<a class="tab${p === k ? ' is-on' : ''}" href="/admin/footfall${k === 'today' ? '' : `?p=${k}`}">${ui.esc(tr(l))}</a>`).join('')}</nav>
+      <form method="get" action="/admin/footfall" class="filters">${ui.input('from', `${tr('ftf|Date')} · ${tr('From')}`, range ? range.a : '', { type: 'date' })}${ui.input('to', tr('To'), range ? range.b : '', { type: 'date' })}<div class="filters__go">${ui.btn(ui.esc(tr('Filter')), { cls: 'btn--ghost btn--sm', ic: 'search' })}${range ? `<a class="btn btn--ghost btn--sm" href="/admin/footfall">${ui.esc(tr('Clear'))}</a>` : ''}</div></form>`;
     const hours = shown.map(hourLabel);
     const curveCard = ui.card(per.days.length > 1 ? tr('ftf|An average day, hour by hour') : tr('ftf|Hour by hour'), lineChart([
-      { values: curve, tone: 'forest', label: tr(PERIODS[p]) },
+      { values: curve, tone: 'forest', label: range ? `${ui.date(range.a)} – ${ui.date(range.b)}` : tr(PERIODS[p]) },
       { values: prevCurve, tone: 'sand', label: tr('ftf|Comparison'), dashed: true },
     ], { labels: hours }));
     // daily trend with mall events
@@ -356,7 +375,7 @@ ${trend ? `<div class="grid grid--side">${parkCard}${eventsHtml || weekShape()}<
 ${!trend && eventsHtml ? eventsHtml : ''}`;
     h.page(req, res, {
       title: tr('nav|Footfall'), active: '/admin/footfall', wide: true, body,
-      actions: hasData ? ui.btn(tr('Export CSV'), { href: `/admin/footfall/export.csv?p=${p}`, cls: 'btn--ghost', ic: 'dl' }) : '',
+      actions: hasData ? ui.btn(tr('Export CSV'), { href: `/admin/footfall/export.csv?${range ? `from=${range.a}&to=${range.b}` : `p=${p}`}`, cls: 'btn--ghost', ic: 'dl' }) : '',
     });
   });
 
@@ -437,8 +456,9 @@ ${!trend && eventsHtml ? eventsHtml : ''}`;
   // ---------- export ----------
   router.get('/footfall/export.csv', (req, res) => {
     const c = cairo();
+    const range = rangeOf(req.query);
     const p = PERIODS[req.query.p] ? req.query.p : 'month';
-    const per = period(p, c);
+    const per = period(p, c, range);
     const ds = doors();
     const rows = db.all('SELECT ts_hour, entrance, visitors_in, visitors_out FROM footfall WHERE ts_hour >= ? AND ts_hour <= ? ORDER BY ts_hour', per.from, per.to);
     const park = new Map(db.all('SELECT * FROM parking WHERE ts_hour >= ? AND ts_hour <= ?', per.from, per.to).map((x) => [x.ts_hour, x]));

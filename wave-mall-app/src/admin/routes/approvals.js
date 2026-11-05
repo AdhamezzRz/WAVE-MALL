@@ -550,7 +550,8 @@ module.exports = function approvals(router, h) {
     const tab = ['todo', 'mine', 'all'].includes(q.tab) && (q.tab !== 'all' || over) ? q.tab : todo.length || !db.value('SELECT COUNT(*) FROM apr_requests WHERE requested_by = ?', u.id) ? 'todo' : 'mine';
     const status = STATUS[q.status] || q.status === 'any' ? q.status : tab === 'todo' ? 'pending' : 'any';
     const kind = KINDS[q.kind] ? q.kind : '';
-    const f = h.listFilters(req, { cols: { date: 'r.created_at' }, dateLabel: tr('apr|Asked on'), keep: ['tab', 'status', 'kind'] });
+    const DEF = "r.status = 'pending' DESC, r.created_at DESC";
+    const f = h.listFilters(req, { cols: { date: 'r.created_at' }, dateLabel: tr('apr|Asked on'), keep: ['tab', 'status', 'kind'], sorts: [['default', 'sort|Suggested order', DEF], ['newest', 'sort|Newest first', 'r.created_at DESC'], ['oldest', 'sort|Oldest first', 'r.created_at ASC'], ['amount_desc', 'sort|Amount: highest first', 'r.amount DESC, r.created_at DESC'], ['amount_asc', 'sort|Amount: lowest first', 'r.amount ASC, r.created_at DESC'], ['due', 'sort|Due date: soonest first', DEF], ['priority', 'sort|Priority', DEF]] });
     let rows;
     if (tab === 'todo') rows = todo.filter((r) => (!kind || r.kind === kind) && (!f.from || r.created_at.slice(0, 10) >= f.from) && (!f.to || r.created_at.slice(0, 10) <= f.to));
     else {
@@ -559,8 +560,19 @@ module.exports = function approvals(router, h) {
       if (tab === 'mine') { where.push('r.requested_by = ?'); args.push(u.id); }
       if (status !== 'any') { where.push('r.status = ?'); args.push(status); }
       if (kind) { where.push('r.kind = ?'); args.push(kind); }
-      rows = db.all(`SELECT r.* FROM apr_requests r ${where.length ? `WHERE ${where.join(' AND ')}` : ''} ORDER BY r.status = 'pending' DESC, r.created_at DESC LIMIT 500`, ...args).map(hydrate);
+      rows = db.all(`SELECT r.* FROM apr_requests r ${where.length ? `WHERE ${where.join(' AND ')}` : ''} ORDER BY ${f.order} LIMIT 500`, ...args).map(hydrate);
     }
+    // the "to approve" tab is built in memory (oldest first by default); due date and priority sort in memory on every tab
+    const P_RANK = { urgent: 0, high: 1, normal: 2, low: 3 };
+    const by = {
+      newest: (a, b) => String(b.created_at).localeCompare(String(a.created_at)),
+      oldest: (a, b) => String(a.created_at).localeCompare(String(b.created_at)),
+      amount_desc: (a, b) => (b.amount || 0) - (a.amount || 0),
+      amount_asc: (a, b) => (a.amount || 0) - (b.amount || 0),
+      due: (a, b) => String((sla(a) || {}).due || '9999').localeCompare(String((sla(b) || {}).due || '9999')),
+      priority: (a, b) => (P_RANK[priorityOf(a)] ?? 2) - (P_RANK[priorityOf(b)] ?? 2),
+    };
+    if (by[f.sortKey] && (tab === 'todo' || ['due', 'priority'].includes(f.sortKey))) rows = [...rows].sort(by[f.sortKey]);
     const names = Object.fromEntries(db.all('SELECT id, name FROM users').map((x) => [x.id, x.name]));
     const mine = db.value("SELECT COUNT(*) FROM apr_requests WHERE requested_by = ? AND status = 'pending'", u.id);
     const month = M.today().slice(0, 7);
@@ -577,7 +589,7 @@ module.exports = function approvals(router, h) {
     const tabs = `<nav class="tabs">${[['todo', tr('apr|To approve'), todo.length], ['mine', tr('apr|My requests'), mine], ...(over ? [['all', tr('apr|All requests'), null]] : [])]
       .map(([k, l, n]) => `<a class="tab${tab === k ? ' is-on' : ''}" href="/admin/approvals?tab=${k}">${esc(l)}${n ? ` <b class="nav__count">${n}</b>` : ''}</a>`).join('')}</nav>`;
     const sub = tab === 'todo' ? '' : `<nav class="tabs tabs--sub">${['pending', 'approved', 'rejected', 'withdrawn', 'any'].map((s) => `<a class="tab${status === s ? ' is-on' : ''}" href="${esc(link({ status: s }))}">${esc(s === 'any' ? tr('All') : tr(STATUS[s][0]))}</a>`).join('')}</nav>`;
-    const kindSel = `<form method="get" action="/admin/approvals" class="filters apr-kinds"><input type="hidden" name="tab" value="${esc(tab)}">${q.status ? `<input type="hidden" name="status" value="${esc(q.status)}">` : ''}${ui.select('kind', tr('apr|Kind'), Object.fromEntries(Object.entries(KINDS).map(([k, v]) => [k, tr(v)])), kind, { blank: tr('All'), attrs: { 'data-autosubmit': '' } })}</form>`;
+    const kindSel = `<form method="get" action="/admin/approvals" class="filters apr-kinds"><input type="hidden" name="tab" value="${esc(tab)}">${q.status ? `<input type="hidden" name="status" value="${esc(q.status)}">` : ''}${['from', 'to', 'sort'].filter((k) => typeof q[k] === 'string' && q[k]).map((k) => `<input type="hidden" name="${k}" value="${esc(q[k])}">`).join('')}${ui.select('kind', tr('apr|Kind'), Object.fromEntries(Object.entries(KINDS).map(([k, v]) => [k, tr(v)])), kind, { blank: tr('All'), attrs: { 'data-autosubmit': '' } })}</form>`;
     const P_ORDER = { urgent: 0, high: 1, normal: 2, low: 3 };
     const table = ui.table([
       { label: tr('apr|Request'), sort: (r) => titleOf(r), render: (r) => `<b>${esc(titleOf(r))}</b><small class="sub"><bdi>${esc(r.ref)}</bdi> · ${esc(kindLabel(r.kind))}</small>` },

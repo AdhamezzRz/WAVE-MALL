@@ -3274,3 +3274,13 @@ kbd, .hlp-key { display: inline-block; min-width: 24px; padding: 3px 7px; border
 @media print {
   .hlp-print { margin: 0 auto; }
 }
+
+/* ---------- shared list toolbar: quick date ranges (h.listFilters) ---------- */
+.filters__quick { flex: 1 1 100%; display: flex; flex-wrap: wrap; gap: 6px; }
+.filters__quick .chip { display: inline-flex; align-items: center; padding: 4px 12px; border: 1px solid var(--line); border-radius: 999px; font-size: 12.5px; color: var(--mute); text-decoration: none; background: var(--white); }
+.filters__quick .chip:hover { color: var(--ink); border-color: var(--ink); }
+.filters__quick .chip.is-on { background: var(--ink); border-color: var(--ink); color: var(--white); }
+.table th.is-sortable[aria-sort="none"]::after { opacity: .25; border-top-color: currentColor; border-bottom-width: 0; }
+/* a row's popover (details.pop) must not be clipped by its table's sideways scroll frame */
+.tablewrap:has(details.pop[open]) { overflow: visible; }
+.tablewrap:has(details.pop[open]) details.pop[open] > form { z-index: 40; }

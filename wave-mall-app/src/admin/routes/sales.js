@@ -43,9 +43,11 @@ module.exports = function sales(router, h) {
   router.get('/inbox', (req, res) => {
     const tab = ['new', 'leasing', 'contact', 'archived'].includes(req.query.tab) ? req.query.tab : 'all';
     const where = { all: "status != 'archived'", new: "status = 'new'", leasing: "kind = 'leasing' AND status != 'archived'", contact: "kind = 'contact' AND status != 'archived'", archived: "status = 'archived'" }[tab];
-    const rows = db.all(`SELECT m.*, l.ref lead_ref FROM messages m LEFT JOIN leads l ON l.id = m.lead_id WHERE ${where} ORDER BY m.created_at DESC LIMIT 300`);
+    const f = h.listFilters(req, { cols: { date: 'm.created_at' }, dateLabel: tr('Received'), keep: ['tab'], sort: { date: 'm.created_at', name: 'm.name' } });
+    const rows = db.all(`SELECT m.*, l.ref lead_ref FROM messages m LEFT JOIN leads l ON l.id = m.lead_id WHERE ${where}${f.sql} ORDER BY ${f.order}, m.id DESC LIMIT 300`, ...f.args);
+    const fq = ['from', 'to', 'sort'].filter((k) => req.query[k]).map((k) => `&${k}=${encodeURIComponent(req.query[k])}`).join('');
     const tabs = [['all', tr('All')], ['new', tr('inbox|New')], ['leasing', tr('inbox|Leasing')], ['contact', tr('inbox|Contact')], ['archived', tr('inbox|Archived')]]
-      .map(([k, l]) => `<a href="/admin/inbox?tab=${k}" class="tab${tab === k ? ' is-on' : ''}">${ui.esc(l)}</a>`).join('');
+      .map(([k, l]) => `<a href="/admin/inbox?tab=${k}${fq}" class="tab${tab === k ? ' is-on' : ''}">${ui.esc(l)}</a>`).join('');
     const table = ui.table(
       [
         { label: tr('inbox|From'), render: (m) => `<b>${ui.esc(m.name)}</b><small class="sub">${ui.esc(m.email)}</small>` },
@@ -57,7 +59,7 @@ module.exports = function sales(router, h) {
       rows,
       { empty: ui.esc(tr('No messages. Website enquiries and contact forms arrive here.')), href: (m) => `/admin/inbox/${m.id}` },
     );
-    h.page(req, res, { title: tr('Inbox'), active: '/admin/inbox', body: `<nav class="tabs">${tabs}</nav>${ui.card(tr('Messages from the website'), table, { sub: ui.esc(tr('Leasing enquiries open a lead automatically.')) })}` });
+    h.page(req, res, { title: tr('Inbox'), active: '/admin/inbox', body: `<nav class="tabs">${tabs}</nav>${f.html}${ui.card(tr('Messages from the website'), table, { sub: ui.esc(tr('Leasing enquiries open a lead automatically.')) })}` });
   });
 
   router.get('/inbox/:id', (req, res, next) => {
@@ -120,7 +122,14 @@ module.exports = function sales(router, h) {
     if (q.view === 'stale') { where.push(`l.stage IN (${M.OPEN_STAGES.map((s) => `'${s}'`).join(',')}) AND l.updated_at < ?`); args.push(new Date(Date.now() - 14 * 86400000).toISOString()); }
     if (q.view === 'closing') where.push("l.stage IN ('negotiation','reserved')");
     if (q.view === 'overdue') { where.push(`l.next_step_at < ? AND l.stage IN (${M.OPEN_STAGES.map((s) => `'${s}'`).join(',')})`); args.push(M.today()); }
-    const order = { value: 'l.value_est DESC', next: 'l.next_step_at IS NULL, l.next_step_at', created: 'l.created_at DESC' }[q.sort] || 'l.updated_at DESC';
+    const f = h.listFilters(req, {
+      cols: { date: 'l.created_at' }, dateLabel: tr('sort|Created'),
+      sorts: [['updated', 'Recently updated', 'l.updated_at DESC'], ['value', 'Highest value', 'l.value_est DESC'], ['value_asc', 'sort|Lowest value', 'l.value_est ASC'], ['score', 'Best score', 'l.updated_at DESC'],
+        ['next', 'Next step', 'l.next_step_at IS NULL, l.next_step_at'], ['created', 'Newest', 'l.created_at DESC'], ['oldest', 'sort|Oldest first', 'l.created_at ASC'],
+        ['name', 'sort|Name: A to Z', 'l.title COLLATE NOCASE ASC'], ['name_desc', 'sort|Name: Z to A', 'l.title COLLATE NOCASE DESC']],
+    });
+    where.push(...f.where); args.push(...f.args);
+    const order = f.order;
     let rows = db.all(
       `SELECT l.*, b.name brand_name, c.name contact_name, u.name owner_name,
         (SELECT COUNT(*) FROM activities a WHERE a.lead_id = l.id) acts, (SELECT COUNT(*) FROM activities a WHERE a.lead_id = l.id AND a.type = 'viewing') views
@@ -129,7 +138,7 @@ module.exports = function sales(router, h) {
       ...args,
     ).map((l) => ({ ...l, score: scoreOf(l, { activities: l.acts, viewings: l.views }) }));
     if (q.view === 'hot') rows = rows.filter((l) => l.score >= 70 && M.OPEN_STAGES.includes(l.stage));
-    if (q.sort === 'score') rows.sort((a, b) => b.score - a.score);
+    if (f.sortKey === 'score') rows.sort((a, b) => b.score - a.score);
 
     const views = [['', tr('All')], ['open', tr('leads|Open'), 'stage'], ['me', tr('Mine'), 'owner'], ['hot', tr('Hot'), null], ['closing', tr('Closing'), null], ['overdue', tr('Follow-up overdue'), null], ['stale', tr('Quiet for 14 days'), null]]
       .map(([k, l, field]) => {
@@ -143,8 +152,8 @@ module.exports = function sales(router, h) {
       ${ui.select('owner', tr('Owner'), [['me', tr('Me')], ...h.users().map((u) => [u.id, u.name])], q.owner, { blank: tr('Anyone'), cls: 'f--inline' })}
       ${ui.select('source', tr('Source'), M.SOURCES, q.source, { blank: tr('Any source'), cls: 'f--inline' })}
       ${ui.select('category', tr('Category'), M.CATEGORIES, q.category, { blank: tr('Any category'), cls: 'f--inline' })}
-      ${ui.select('sort', tr('Sort'), [['', tr('Recently updated')], ['value', tr('Highest value')], ['score', tr('Best score')], ['next', tr('Next step')], ['created', tr('Newest')]], q.sort, { cls: 'f--inline' })}
-      ${ui.btn(ui.esc(tr('Filter')), { cls: 'btn--ghost btn--sm' })}
+      ${f.fields}
+      ${ui.btn(ui.esc(tr('Filter')), { cls: 'btn--ghost btn--sm' })}${f.quick}
     </form>`;
     const total = rows.reduce((s, l) => s + (M.OPEN_STAGES.includes(l.stage) ? l.value_est : 0), 0);
     const table = ui.table(

@@ -340,7 +340,9 @@ ${ui.card(tr('utl|Electricity intensity'), topTable, { sub: ui.esc(tr('utl|Tenan
     const action = canBill && p.lines.length
       ? ui.form('/admin/utilities/bill', req.session.csrf, `<input type="hidden" name="period" value="${period}">${ui.btn(tr('utl|Bill utilities'), { cls: 'btn--primary btn--sm', ic: 'bill', attrs: { 'data-confirm': tr('utl|Issue {n} utility invoices for {month}?', { n: Object.keys(byLease).length, month: ui.monthYear(period) }) } })}`)
       : '';
-    const done = db.all('SELECT b.*, m.code, m.utility, i.ref invoice_ref, br.name brand_name FROM utl_bills b JOIN utl_meters m ON m.id = b.meter_id LEFT JOIN invoices i ON i.id = b.invoice_id LEFT JOIN leases s ON s.id = b.lease_id LEFT JOIN brands br ON br.id = s.brand_id WHERE b.period = ? ORDER BY br.name, m.code', period);
+    // what was billed in the month (the month picker is the date filter): its order
+    const f = h.listFilters(req, { keep: ['period'], sorts: [['name', 'sort|Name: A to Z', 'br.name, m.code'], ['code', 'sort|Meter', 'm.code'], ['amount_desc', 'sort|Amount: highest first', 'b.amount DESC'], ['amount_asc', 'sort|Amount: lowest first', 'b.amount ASC'], ['use', 'sort|Consumption: highest first', 'b.consumption DESC']] });
+    const done = db.all(`SELECT b.*, m.code, m.utility, i.ref invoice_ref, br.name brand_name FROM utl_bills b JOIN utl_meters m ON m.id = b.meter_id LEFT JOIN invoices i ON i.id = b.invoice_id LEFT JOIN leases s ON s.id = b.lease_id LEFT JOIN brands br ON br.id = s.brand_id WHERE b.period = ? ORDER BY ${f.order}`, period);
     const doneTable = ui.table(
       [
         { label: tr('utl|Meter'), render: (b) => `<b>${ui.esc(b.code)}</b>` },
@@ -354,7 +356,7 @@ ${ui.card(tr('utl|Electricity intensity'), topTable, { sub: ui.esc(tr('utl|Tenan
     );
     const body = `${nav('/admin/utilities/billing')}${tariffBanner()}${monthPick('/admin/utilities/billing', period)}
 <div class="grid grid--side">${ui.card(tr('utl|Ready to bill, {month}', { month: ui.monthYear(period) }), ready, { sub: ui.esc(tr('utl|Total {amount} before VAT', { amount: ui.money(total) })), action })}${ui.card(tr('utl|Held back'), blocked)}</div>
-${ui.card(tr('utl|Billed'), doneTable)}`;
+${ui.card(tr('utl|Billed'), f.html + doneTable)}`;
     h.page(req, res, { title: tr('utl|Utility billing'), crumbs: [['/admin/utilities', tr('utl|Utilities')], [null, tr('utl|Billing')]], active: '/admin/utilities', wide: true, body });
   });
   router.post('/utilities/bill', R('manager'), (req, res) => {
@@ -372,7 +374,11 @@ ${ui.card(tr('utl|Billed'), doneTable)}`;
 
   // meters
   router.get('/utilities/meters', (req, res) => {
-    const list = meters({ active: false });
+    const f = h.listFilters(req, {
+      cols: { date: 'm.created_at' }, dateLabel: tr('sort|Added'),
+      sorts: [['default', 'sort|By utility', 'm.utility, m.unit_id IS NULL, u.sort, m.code'], ['code', 'sort|Meter', 'm.code'], ['newest', 'sort|Newest first', 'm.created_at DESC, m.id DESC'], ['oldest', 'sort|Oldest first', 'm.created_at ASC, m.id ASC']],
+    });
+    const list = db.all(`SELECT m.*, u.code unit_code, u.indoor_m2 FROM utl_meters m LEFT JOIN units u ON u.id = m.unit_id${f.where.length ? ` WHERE ${f.where.join(' AND ')}` : ''} ORDER BY ${f.order}`, ...f.args);
     const LM = X.lastMonth();
     const table = ui.table(
       [
@@ -398,7 +404,7 @@ ${ui.card(tr('utl|Billed'), doneTable)}`;
           ${ui.input('initial', tr('utl|Opening reading'), '', { type: 'number', min: 0, step: '0.01' })}
         </div>${ui.btn(tr('utl|Add meter'), { cls: 'btn--primary btn--sm', ic: 'plus' })}`, { cls: 'stack' })
       : '';
-    const body = `${nav('/admin/utilities/meters')}<div class="grid grid--side">${ui.card(tn(list.length, 'utl|{n} meter', 'utl|{n} meters'), table)}${add ? ui.card(tr('utl|Add a meter'), add) : ''}</div>`;
+    const body = `${nav('/admin/utilities/meters')}${f.html}<div class="grid grid--side">${ui.card(tn(list.length, 'utl|{n} meter', 'utl|{n} meters'), table)}${add ? ui.card(tr('utl|Add a meter'), add) : ''}</div>`;
     h.page(req, res, { title: tr('utl|Meters'), crumbs: [['/admin/utilities', tr('utl|Utilities')], [null, tr('utl|Meters')]], active: '/admin/utilities', wide: true, body });
   });
   function meterFields(b) {

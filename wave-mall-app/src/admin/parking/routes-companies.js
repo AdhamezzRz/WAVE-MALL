@@ -70,6 +70,16 @@ module.exports = function companyRoutes(router, h, c) {
       (SELECT COALESCE(SUM(amount), 0) FROM pk_account_charges x WHERE x.account_id = a.id AND x.at >= ?) used,
       (SELECT COALESCE(SUM(total - paid), 0) FROM invoices i WHERE i.source = 'parking-account' AND i.source_id = a.id AND i.status IN ('open','partial')) owed
       FROM pk_accounts a LEFT JOIN brands b ON b.id = a.brand_id ORDER BY a.status = 'active' DESC, a.name`, c.dayStart(monthStart()));
+    // the list: the day an account was opened (a range) and the sort order (the totals above count every account)
+    const lf = h.listFilters(req, {
+      cols: { date: 'a.created_at' }, dateLabel: tr('prk|Opened'),
+      sorts: [['name', 'sort|Name: A to Z', ''], ['owed', 'sort|Owes the most', ''], ['plates', 'sort|Most plates', ''], ['newest', 'sort|Newest first', ''], ['oldest', 'sort|Oldest first', '']],
+    });
+    const dr = c.dayRange('created_at', lf);
+    const inRange = lf.active ? new Set(db.all(`SELECT id FROM pk_accounts WHERE 1 = 1${dr.sql}`, ...dr.args).map((x) => x.id)) : null;
+    const listed = rows.filter((a) => !inRange || inRange.has(a.id));
+    const by = { owed: (a, b) => b.owed - a.owed, plates: (a, b) => b.plates - a.plates, newest: (a, b) => String(b.created_at).localeCompare(String(a.created_at)), oldest: (a, b) => String(a.created_at).localeCompare(String(b.created_at)) }[lf.sortKey];
+    if (by) listed.sort(by);
     const kpis = [
       ui.kpi({ label: tr('prk|Company accounts'), value: ui.n0(rows.filter((a) => a.status === 'active').length) }),
       ui.kpi({ label: tr('prk|Their plates'), value: ui.n0(rows.reduce((s, a) => s + a.plates, 0)) }),
@@ -83,8 +93,8 @@ module.exports = function companyRoutes(router, h, c) {
       { label: tr('prk|This month'), num: true, render: (a) => (a.mode === 'usage' ? c.money(a.used) : c.money(r2(a.plates * a.price))) },
       { label: tr('prk|Owed'), num: true, render: (a) => (a.owed ? `<b class="late">${c.money(a.owed)}</b>` : '—') },
       { label: tr('Status'), render: (a) => badge(a.status) },
-    ], rows, { href: (a) => `/admin/parking/companies/${a.id}`, empty: esc(tr('prk|No company accounts yet.')) });
-    c.page(req, res, { title: tr('prk|Companies'), crumbs: c.crumbs([null, tr('prk|Companies')]), actions: h.can(req, 'manager') ? ui.btn(esc(tr('prk|New company')), { href: '/admin/parking/companies/new', cls: 'btn--primary', ic: 'plus' }) : '', body: `${c.tabs('/admin/parking/companies')}<div class="kpis kpis--4">${kpis}</div>${ui.card(tr('prk|Companies'), table, { sub: esc(tr('prk|Offices, hotels and clinics nearby with many cars, on one monthly invoice.')) })}` });
+    ], listed, { href: (a) => `/admin/parking/companies/${a.id}`, empty: esc(rows.length ? tr('sort|No companies match.') : tr('prk|No company accounts yet.')) });
+    c.page(req, res, { title: tr('prk|Companies'), crumbs: c.crumbs([null, tr('prk|Companies')]), actions: h.can(req, 'manager') ? ui.btn(esc(tr('prk|New company')), { href: '/admin/parking/companies/new', cls: 'btn--primary', ic: 'plus' }) : '', body: `${c.tabs('/admin/parking/companies')}<div class="kpis kpis--4">${kpis}</div>${lf.html}${ui.card(tr('prk|Companies'), table, { sub: esc(tr('prk|Offices, hotels and clinics nearby with many cars, on one monthly invoice.')) })}` });
   });
   const form = (req, a = {}) => `<div class="fields">
     ${ui.input('name', tr('prk|Company'), a.name || '', { required: true })}
