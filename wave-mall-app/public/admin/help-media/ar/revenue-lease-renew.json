@@ -1,0 +1,142 @@
+{
+ "id": "revenue-lease-renew",
+ "lang": "ar",
+ "title": "تجديد العقد",
+ "duration": 67.51,
+ "cues": [
+  {
+   "start": 0.08,
+   "end": 7.37,
+   "text": "اعرف العقود التي تنتهي قريبًا ومواعيد الإخطار، ثم أرسل للمستأجر عرض تجديد.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.37,
+   "end": 13.84,
+   "text": "تعرض صفحة التجديدات العقود القريبة من الانتهاء ومواعيد الإخطار والعروض التي تنتظر ردًا.",
+   "step": 1,
+   "url": "/admin/leases/renewals"
+  },
+  {
+   "start": 13.84,
+   "end": 20.48,
+   "text": "انظر إلى ثلاثة أو ستة أو اثني عشر أو أربعة وعشرين شهرًا مقبلة.",
+   "step": 2,
+   "url": "/admin/leases/renewals"
+  },
+  {
+   "start": 20.48,
+   "end": 23.42,
+   "text": "لتقديم عرض تجديد، افتح العقد.",
+   "step": 3,
+   "url": "/admin/leases?status=active"
+  },
+  {
+   "start": 26.78,
+   "end": 33.63,
+   "text": "في بطاقة «التجديد»، اختر «تقديم عرض تجديد».",
+   "step": 5,
+   "url": "/admin/leases/3"
+  },
+  {
+   "start": 33.63,
+   "end": 37.92,
+   "text": "اعرض عقدًا جديدًا أو تمديدًا لهذا العقد.",
+   "step": 6,
+   "url": "/admin/leases/3"
+  },
+  {
+   "start": 37.92,
+   "end": 41.36,
+   "text": "حدد عدد الأشهر والإيجار الجديد والزيادة السنوية.",
+   "step": 7,
+   "url": "/admin/leases/3"
+  },
+  {
+   "start": 47.58,
+   "end": 52.35,
+   "text": "أرسله الآن عبر بوابة المستأجر، حيث يمكنه قبوله.",
+   "step": 10,
+   "url": "/admin/leases/3"
+  },
+  {
+   "start": 52.35,
+   "end": 55.39,
+   "text": "اختر «تقديم العرض».",
+   "step": 11,
+   "url": "/admin/leases/3#renewal"
+  },
+  {
+   "start": 55.39,
+   "end": 62.77,
+   "text": "ينتظر العرض هنا مع حالته. وعند قبوله يُمدَّد العقد أو تُنشأ لك مسودة عقد جديد.",
+   "step": 12,
+   "url": "/admin/leases/3#renewal"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/leases/renewals"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/leases/renewals"
+  },
+  {
+   "step": 3,
+   "kind": "go",
+   "url": "/admin/leases?status=active"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/leases/3"
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/leases/3"
+  },
+  {
+   "step": 6,
+   "kind": "select",
+   "url": "/admin/leases/3"
+  },
+  {
+   "step": 7,
+   "kind": "type",
+   "url": "/admin/leases/3"
+  },
+  {
+   "step": 8,
+   "kind": "type",
+   "url": "/admin/leases/3"
+  },
+  {
+   "step": 9,
+   "kind": "type",
+   "url": "/admin/leases/3"
+  },
+  {
+   "step": 10,
+   "kind": "select",
+   "url": "/admin/leases/3"
+  },
+  {
+   "step": 11,
+   "kind": "click",
+   "url": "/admin/leases/3#renewal"
+  },
+  {
+   "step": 12,
+   "kind": "point",
+   "url": "/admin/leases/3#renewal"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:00:48.722Z"
+}

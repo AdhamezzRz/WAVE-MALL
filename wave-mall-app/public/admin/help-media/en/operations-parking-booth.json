@@ -1,0 +1,151 @@
+{
+ "id": "operations-parking-booth",
+ "lang": "en",
+ "title": "Working the parking booth",
+ "duration": 79.35,
+ "cues": [
+  {
+   "start": 0.14,
+   "end": 9.07,
+   "text": "Open your till, find a car by its ticket or plate, take the payment and let it out.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 9.07,
+   "end": 15.93,
+   "text": "Parking shows the car park live: cars inside, free spaces and what happens at the gates.",
+   "step": 1,
+   "url": "/admin/parking"
+  },
+  {
+   "start": 15.93,
+   "end": 23.42,
+   "text": "At the exit, cashiers work in the Booth. It is made for a tablet.",
+   "step": 2,
+   "url": "/admin/parking/booth"
+  },
+  {
+   "start": 23.42,
+   "end": 29.07,
+   "text": "First open your till, with the cash you start with in the drawer.",
+   "step": 3,
+   "url": "/admin/parking/booth"
+  },
+  {
+   "start": 29.07,
+   "end": 33.58,
+   "text": "Every payment you take goes into your till.",
+   "step": 4,
+   "url": "/admin/parking/booth"
+  },
+  {
+   "start": 33.58,
+   "end": 39.87,
+   "text": "Scan the ticket's code, tap the card, or type the plate.",
+   "step": 5,
+   "url": "/admin/parking/booth"
+  },
+  {
+   "start": 39.87,
+   "end": 43.23,
+   "text": "Find.",
+   "step": 6,
+   "url": "/admin/parking/booth?q=%D8%B3+%D8%B9+%D8%AF+2026"
+  },
+  {
+   "start": 43.23,
+   "end": 51.46,
+   "text": "The car, when it came in, how long it stayed and the price. Shop validations are already taken off.",
+   "step": 7,
+   "url": "/admin/parking/booth?q=%D8%B3+%D8%B9+%D8%AF+2026"
+  },
+  {
+   "start": 51.46,
+   "end": 55.83,
+   "text": "Choose how they pay: cash, card, wallet or InstaPay.",
+   "step": 8,
+   "url": "/admin/parking/booth?q=%D8%B3+%D8%B9+%D8%AF+2026"
+  },
+  {
+   "start": 55.83,
+   "end": 61.18,
+   "text": "Cash. The receipt can be printed or sent by message.",
+   "step": 9,
+   "url": "/admin/parking/booth?q=7N24-42BK"
+  },
+  {
+   "start": 61.18,
+   "end": 65.96,
+   "text": "Then open the barrier and close the visit.",
+   "step": 10,
+   "url": "/admin/parking/booth"
+  },
+  {
+   "start": 65.96,
+   "end": 74.55,
+   "text": "A lost ticket, or a guest of the mall? Those buttons are on the same screen, and every one is logged.",
+   "step": 11,
+   "url": "/admin/parking/booth"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/parking"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/parking/booth"
+  },
+  {
+   "step": 3,
+   "kind": "type",
+   "url": "/admin/parking/booth"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/parking/booth"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/parking/booth"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/parking/booth?q=%D8%B3+%D8%B9+%D8%AF+2026"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/parking/booth?q=%D8%B3+%D8%B9+%D8%AF+2026"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/parking/booth?q=%D8%B3+%D8%B9+%D8%AF+2026"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/parking/booth?q=7N24-42BK"
+  },
+  {
+   "step": 10,
+   "kind": "click",
+   "url": "/admin/parking/booth"
+  },
+  {
+   "step": 11,
+   "kind": "say",
+   "url": "/admin/parking/booth"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:13:34.683Z"
+}

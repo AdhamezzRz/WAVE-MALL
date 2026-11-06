@@ -1,0 +1,108 @@
+{
+ "id": "revenue-collections-writeoff",
+ "lang": "ar",
+ "title": "غرامات التأخير وإعدام الدين",
+ "duration": 56.24,
+ "cues": [
+  {
+   "start": 0.06,
+   "end": 6.85,
+   "text": "احتسب غرامة تأخير، واطلب الموافقة على إعدام الدين الذي لن يُسدَّد.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 6.85,
+   "end": 11.51,
+   "text": "كل ما يخص تحصيل الفاتورة موجود في الفاتورة نفسها.",
+   "step": 1,
+   "url": "/admin/billing?status=overdue"
+  },
+  {
+   "start": 15.18,
+   "end": 21.35,
+   "text": "من «التحصيل» يمكنك إرسال تذكير، أو احتساب غرامة التأخير المحددة في الإعدادات.",
+   "step": 3,
+   "url": "/admin/invoices/265"
+  },
+  {
+   "start": 21.35,
+   "end": 28.01,
+   "text": "إن كان المبلغ لن يُسدَّد أبدًا، اختر «إعدام الدين».",
+   "step": 4,
+   "url": "/admin/invoices/265"
+  },
+  {
+   "start": 28.01,
+   "end": 33.44,
+   "text": "أدخل المبلغ والسبب.",
+   "step": 5,
+   "url": "/admin/invoices/265"
+  },
+  {
+   "start": 33.44,
+   "end": 39.78,
+   "text": "يحتاج إعدام الدين دائمًا إلى موافقة مدير، لذا اختر «اطلب الموافقة».",
+   "step": 6,
+   "url": "/admin/invoices/265"
+  },
+  {
+   "start": 39.78,
+   "end": 45.43,
+   "text": "يذهب الطلب إلى «الموافقات والمهام»، وبعد الموافقة يُعدَم الدين وتُحدَّث الحسابات.",
+   "step": 7,
+   "url": "/admin/invoices/265"
+  },
+  {
+   "start": 45.43,
+   "end": 51.6,
+   "text": "وتجد كل دين معدوم، ومن وافق عليه، في «الديون المعدومة» داخل صفحة التحصيل.",
+   "step": 8,
+   "url": "/admin/invoices/265"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/billing?status=overdue"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/invoices/265"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/invoices/265"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/invoices/265"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/invoices/265"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/invoices/265"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/invoices/265"
+  },
+  {
+   "step": 8,
+   "kind": "say",
+   "url": "/admin/invoices/265"
+  }
+ ],
+ "recorded_at": "2026-11-05T23:14:57.787Z"
+}

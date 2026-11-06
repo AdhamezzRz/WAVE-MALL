@@ -1,0 +1,115 @@
+{
+ "id": "overview-away",
+ "lang": "en",
+ "title": "Handing over while you are away",
+ "duration": 60.42,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 8.57,
+   "text": "Choose who covers your approvals and tasks while you are on leave, from and until which day.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.57,
+   "end": 13.99,
+   "text": "Going on leave? Hand over your approvals and tasks before you go.",
+   "step": 1,
+   "url": "/admin/work"
+  },
+  {
+   "start": 13.99,
+   "end": 17.86,
+   "text": "Choose Away.",
+   "step": 2,
+   "url": "/admin/work/away"
+  },
+  {
+   "start": 17.86,
+   "end": 25.73,
+   "text": "It is filled in for you. A manager can also set it for someone on the team.",
+   "step": 3,
+   "url": "/admin/work/away"
+  },
+  {
+   "start": 25.73,
+   "end": 29.08,
+   "text": "Choose who covers for you.",
+   "step": 4,
+   "url": "/admin/work/away"
+  },
+  {
+   "start": 29.08,
+   "end": 33.84,
+   "text": "Set the first and the last day you are away.",
+   "step": 5,
+   "url": "/admin/work/away"
+  },
+  {
+   "start": 33.84,
+   "end": 40.39,
+   "text": "Add a note for your colleagues.",
+   "step": 6,
+   "url": "/admin/work/away"
+  },
+  {
+   "start": 40.39,
+   "end": 49.23,
+   "text": "Save. Dina is told, decides your approvals while you are away, and sees your tasks in her day.",
+   "step": 7,
+   "url": "/admin/work/away"
+  },
+  {
+   "start": 49.23,
+   "end": 55.76,
+   "text": "Away now and planned lists every cover. End one early when you are back.",
+   "step": 8,
+   "url": "/admin/work/away"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/work"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/work/away"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/work/away"
+  },
+  {
+   "step": 4,
+   "kind": "select",
+   "url": "/admin/work/away"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/work/away"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/work/away"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/work/away"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/work/away"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:49:37.551Z"
+}

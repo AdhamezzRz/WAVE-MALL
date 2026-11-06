@@ -1,0 +1,139 @@
+{
+ "id": "finance-bill",
+ "lang": "ar",
+ "title": "تسجيل فاتورة مورد",
+ "duration": 64.36,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 6.37,
+   "text": "سجّل فاتورة مورد واعتمدها، واعرف ما هو مستحق ولمن ومتى.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 6.37,
+   "end": 10.59,
+   "text": "تعرض «الدائنون» ما على المول لموردينه، والفواتير المتأخرة.",
+   "step": 1,
+   "url": "/admin/accounting/payables"
+  },
+  {
+   "start": 10.59,
+   "end": 15.43,
+   "text": "اختر «فاتورة جديدة».",
+   "step": 2,
+   "url": "/admin/accounting/bills/new"
+  },
+  {
+   "start": 15.43,
+   "end": 19.29,
+   "text": "اختر المورد.",
+   "step": 3,
+   "url": "/admin/accounting/bills/new"
+  },
+  {
+   "start": 19.29,
+   "end": 25.44,
+   "text": "اكتب رقم فاتورة المورد نفسه، حتى لا تُسجَّل مرتين.",
+   "step": 4,
+   "url": "/admin/accounting/bills/new"
+  },
+  {
+   "start": 25.44,
+   "end": 30.05,
+   "text": "في كل سطر، حساب المصروف، وهنا النظافة.",
+   "step": 5,
+   "url": "/admin/accounting/bills/new"
+  },
+  {
+   "start": 30.05,
+   "end": 36.78,
+   "text": "وصف ما تخصّه.",
+   "step": 6,
+   "url": "/admin/accounting/bills/new"
+  },
+  {
+   "start": 36.78,
+   "end": 40.68,
+   "text": "والمبلغ قبل الضريبة.",
+   "step": 7,
+   "url": "/admin/accounting/bills/new"
+  },
+  {
+   "start": 40.68,
+   "end": 45.11,
+   "text": "نسبة ضريبة القيمة المضافة، ويحسب النظام الضريبة والإجمالي.",
+   "step": 8,
+   "url": "/admin/accounting/bills/new"
+  },
+  {
+   "start": 45.11,
+   "end": 52.56,
+   "text": "اضغط «حفظ واعتماد». تُرحَّل الفاتورة إلى الدفاتر وتنتظر السداد في موعد استحقاقها.",
+   "step": 9,
+   "url": "/admin/accounting/bills/45"
+  },
+  {
+   "start": 52.56,
+   "end": 59.16,
+   "text": "أما فواتير أوامر الشراء فتُنشأ من أمر الشراء نفسه، وتُطابَق مع ما تم استلامه.",
+   "step": 10,
+   "url": "/admin/accounting/bills/45"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/accounting/payables"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/accounting/bills/new"
+  },
+  {
+   "step": 3,
+   "kind": "select",
+   "url": "/admin/accounting/bills/new"
+  },
+  {
+   "step": 4,
+   "kind": "type",
+   "url": "/admin/accounting/bills/new"
+  },
+  {
+   "step": 5,
+   "kind": "select",
+   "url": "/admin/accounting/bills/new"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/accounting/bills/new"
+  },
+  {
+   "step": 7,
+   "kind": "type",
+   "url": "/admin/accounting/bills/new"
+  },
+  {
+   "step": 8,
+   "kind": "type",
+   "url": "/admin/accounting/bills/new"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/accounting/bills/45"
+  },
+  {
+   "step": 10,
+   "kind": "say",
+   "url": "/admin/accounting/bills/45"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:57:12.845Z"
+}

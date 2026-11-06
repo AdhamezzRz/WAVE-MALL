@@ -1,0 +1,137 @@
+{
+ "id": "revenue-cheques-deposit",
+ "lang": "ar",
+ "title": "إيداع الشيكات وتحصيلها",
+ "duration": 61.78,
+ "cues": [
+  {
+   "start": 0.04,
+   "end": 8.13,
+   "text": "أودِع الشيكات المستحقة دفعة واحدة، ثم سجّل كل شيك محصّلًا، أو مرتدًا إن عاد.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.13,
+   "end": 12.54,
+   "text": "تعرض الحافظة الشيكات التي لديك، الأقرب استحقاقًا أولًا.",
+   "step": 1,
+   "url": "/admin/cheques"
+  },
+  {
+   "start": 12.54,
+   "end": 17.29,
+   "text": "الشيكات المستحقة محددة مسبقًا. حدد غيرها أو ألغِ تحديده.",
+   "step": 2,
+   "url": "/admin/cheques"
+  },
+  {
+   "start": 17.29,
+   "end": 21.74,
+   "text": "من «الإيداع في البنك» اختر الحساب ورقم قسيمة الإيداع.",
+   "step": 3,
+   "url": "/admin/cheques"
+  },
+  {
+   "start": 30.83,
+   "end": 34.71,
+   "text": "اختر «إيداع الشيكات المحددة».",
+   "step": 6,
+   "url": "/admin/cheques?status=deposited"
+  },
+  {
+   "start": 34.71,
+   "end": 38.26,
+   "text": "تنتقل إلى «المودعة» في انتظار البنك.",
+   "step": 7,
+   "url": "/admin/cheques?status=deposited"
+  },
+  {
+   "start": 38.26,
+   "end": 42.14,
+   "text": "عندما يصرف البنك شيكًا، افتحه.",
+   "step": 8,
+   "url": "/admin/cheques/11"
+  },
+  {
+   "start": 42.14,
+   "end": 48.19,
+   "text": "الخطوة التالية: سجّله محصّلًا فتُسدَّد فاتورته. وإن ارتد سجّل ذلك ويُبلَّغ المستأجر.",
+   "step": 9,
+   "url": "/admin/cheques/11"
+  },
+  {
+   "start": 48.19,
+   "end": 51.4,
+   "text": "هذا الشيك صُرف.",
+   "step": 10,
+   "url": "/admin/cheques/11"
+  },
+  {
+   "start": 51.4,
+   "end": 57.12,
+   "text": "يحتفظ السجل بكل خطوة مر بها الشيك، ومن قام بها ومتى.",
+   "step": 11,
+   "url": "/admin/cheques/11"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/cheques"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/cheques"
+  },
+  {
+   "step": 3,
+   "kind": "scroll",
+   "url": "/admin/cheques"
+  },
+  {
+   "step": 4,
+   "kind": "type",
+   "url": "/admin/cheques"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/cheques"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/cheques?status=deposited"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/cheques?status=deposited"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/cheques/11"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/cheques/11"
+  },
+  {
+   "step": 10,
+   "kind": "click",
+   "url": "/admin/cheques/11"
+  },
+  {
+   "step": 11,
+   "kind": "point",
+   "url": "/admin/cheques/11"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:18:05.379Z"
+}

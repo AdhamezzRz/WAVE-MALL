@@ -1,0 +1,127 @@
+{
+ "id": "finance-close",
+ "lang": "ar",
+ "title": "إقفال الشهر",
+ "duration": 69.64,
+ "cues": [
+  {
+   "start": 0.04,
+   "end": 6.39,
+   "text": "اقفل الشهر بعد مراجعته، حتى لا يُرحَّل فيه شيء بالخطأ.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 6.39,
+   "end": 12.06,
+   "text": "بعد مراجعة الشهر، اقفله. تعرض النظرة العامة آخر شهر تم إقفاله.",
+   "step": 1,
+   "url": "/admin/accounting"
+  },
+  {
+   "start": 12.06,
+   "end": 14.96,
+   "text": "اختر «إقفال شهر».",
+   "step": 2,
+   "url": "/admin/accounting"
+  },
+  {
+   "start": 14.96,
+   "end": 22.41,
+   "text": "قبل الإقفال، يراجع النظام الشهر: قيود معلّقة، وإيصالات لم تُرحَّل، وبنوك لم تُسوَّ.",
+   "step": 3,
+   "url": "/admin/accounting/settings#close"
+  },
+  {
+   "start": 22.41,
+   "end": 27.9,
+   "text": "إذا كان هناك شيء مفتوح، يظهر هنا مع رابط لمعالجته.",
+   "step": 4,
+   "url": "/admin/accounting/settings#close"
+  },
+  {
+   "start": 27.9,
+   "end": 32.87,
+   "text": "أضف ملاحظة للسجل.",
+   "step": 5,
+   "url": "/admin/accounting/settings#close"
+  },
+  {
+   "start": 32.87,
+   "end": 44.38,
+   "text": "بعض البنود اختيارية، مثل فواتير موردين لم تُعتمد بعد. إذا كنت متأكدًا، اختر «الإقفال حتى لو لم تكتمل الفحوص الاختيارية».",
+   "step": 6,
+   "url": "/admin/accounting/settings#close"
+  },
+  {
+   "start": 44.38,
+   "end": 53.36,
+   "text": "اقفل الشهر. لن يمكن ترحيل أي شيء في هذا التاريخ أو قبله، من أي جزء في النظام.",
+   "step": 7,
+   "url": "/admin/accounting/settings"
+  },
+  {
+   "start": 53.36,
+   "end": 59.48,
+   "text": "تحتاج إلى تصحيح؟ يستطيع المدير إعادة فتح آخر شهر مُقفَل، ويُسجَّل ذلك.",
+   "step": 8,
+   "url": "/admin/accounting/settings"
+  },
+  {
+   "start": 59.48,
+   "end": 64.98,
+   "text": "وفي نهاية السنة، اقفل السنة: تنتقل النتيجة إلى الأرباح المحتجزة.",
+   "step": 9,
+   "url": "/admin/accounting/settings"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/accounting"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/accounting"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/accounting/settings#close"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/accounting/settings#close"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/accounting/settings#close"
+  },
+  {
+   "step": 6,
+   "kind": "check",
+   "url": "/admin/accounting/settings#close"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/accounting/settings"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/accounting/settings"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/accounting/settings"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:48:18.442Z"
+}

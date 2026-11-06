@@ -1,0 +1,161 @@
+{
+ "id": "revenue-lease-settle",
+ "lang": "en",
+ "title": "Ending a lease and settling the deposit",
+ "duration": 83.5,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 9.33,
+   "text": "End a lease early or at term, deduct what is owed from the deposit and print the settlement statement.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 9.33,
+   "end": 15.35,
+   "text": "When a tenant leaves, settle the lease so everyone agrees on what is owed.",
+   "step": 1,
+   "url": "/admin/leases?status=active"
+  },
+  {
+   "start": 18.77,
+   "end": 26.9,
+   "text": "Choose End lease. You can end it quickly here, or settle it properly.",
+   "step": 3,
+   "url": "/admin/leases/3"
+  },
+  {
+   "start": 26.9,
+   "end": 30.39,
+   "text": "Choose End and settle.",
+   "step": 4,
+   "url": "/admin/leases/3/settle"
+  },
+  {
+   "start": 30.39,
+   "end": 37.66,
+   "text": "Say whether the term is complete or the lease ends early, and the last day.",
+   "step": 5,
+   "url": "/admin/leases/3/settle"
+  },
+  {
+   "start": 37.66,
+   "end": 42.73,
+   "text": "Decide whether to charge the early-exit penalty in the lease.",
+   "step": 6,
+   "url": "/admin/leases/3/settle"
+  },
+  {
+   "start": 42.73,
+   "end": 48.16,
+   "text": "List what comes off the deposit, such as repairs.",
+   "step": 7,
+   "url": "/admin/leases/3/settle"
+  },
+  {
+   "start": 51.2,
+   "end": 54.65,
+   "text": "Choose how the rest is refunded.",
+   "step": 9,
+   "url": "/admin/leases/3/settle"
+  },
+  {
+   "start": 54.65,
+   "end": 58.17,
+   "text": "Choose Work out the settlement.",
+   "step": 10,
+   "url": "/admin/settlements/1"
+  },
+  {
+   "start": 58.17,
+   "end": 64.45,
+   "text": "The statement nets the unpaid invoices, the penalties and the deductions against the deposit.",
+   "step": 11,
+   "url": "/admin/settlements/1"
+  },
+  {
+   "start": 64.45,
+   "end": 71.04,
+   "text": "Print it for the tenant to sign, and keep the handover papers with it.",
+   "step": 12,
+   "url": "/admin/settlements/1"
+  },
+  {
+   "start": 71.04,
+   "end": 78.83,
+   "text": "Then confirm. The lease ends, future invoices are voided, the refund is recorded and the units become available.",
+   "step": 13,
+   "url": "/admin/settlements/1"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/leases?status=active"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/leases/3"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/leases/3"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/leases/3/settle"
+  },
+  {
+   "step": 5,
+   "kind": "select",
+   "url": "/admin/leases/3/settle"
+  },
+  {
+   "step": 6,
+   "kind": "select",
+   "url": "/admin/leases/3/settle"
+  },
+  {
+   "step": 7,
+   "kind": "type",
+   "url": "/admin/leases/3/settle"
+  },
+  {
+   "step": 8,
+   "kind": "type",
+   "url": "/admin/leases/3/settle"
+  },
+  {
+   "step": 9,
+   "kind": "select",
+   "url": "/admin/leases/3/settle"
+  },
+  {
+   "step": 10,
+   "kind": "click",
+   "url": "/admin/settlements/1"
+  },
+  {
+   "step": 11,
+   "kind": "point",
+   "url": "/admin/settlements/1"
+  },
+  {
+   "step": 12,
+   "kind": "point",
+   "url": "/admin/settlements/1"
+  },
+  {
+   "step": 13,
+   "kind": "point",
+   "url": "/admin/settlements/1"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:55:05.148Z"
+}

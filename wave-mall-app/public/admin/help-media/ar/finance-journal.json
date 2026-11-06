@@ -1,0 +1,151 @@
+{
+ "id": "finance-journal",
+ "lang": "ar",
+ "title": "ترحيل قيد يومية",
+ "duration": 84.32,
+ "cues": [
+  {
+   "start": 0.12,
+   "end": 7.78,
+   "text": "اطّلع على الدفاتر في نظرة واحدة، ثم رحّل قيدًا يدويًا متوازن المدين والدائن.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.78,
+   "end": 15.77,
+   "text": "تُفتح المحاسبة على النظرة العامة: النقدية في البنوك، وما على المستأجرين، وما عليك للموردين، ونتيجة العام.",
+   "step": 1,
+   "url": "/admin/accounting"
+  },
+  {
+   "start": 15.77,
+   "end": 23.69,
+   "text": "تُرحَّل فواتير الإيجار والمدفوعات والرواتب والمشتريات هنا تلقائيًا، ولا ترحّل بنفسك إلا ما لا يعرفه النظام.",
+   "step": 2,
+   "url": "/admin/accounting"
+  },
+  {
+   "start": 23.69,
+   "end": 33.14,
+   "text": "افتح دفتر اليومية لترى كل القيود، مع رابط إلى الفاتورة أو الإيصال الذي أنشأ كل قيد.",
+   "step": 3,
+   "url": "/admin/accounting/journal"
+  },
+  {
+   "start": 33.14,
+   "end": 37.26,
+   "text": "اختر «قيد جديد».",
+   "step": 4,
+   "url": "/admin/accounting/journal/new"
+  },
+  {
+   "start": 37.26,
+   "end": 45.66,
+   "text": "اكتب وصف القيد. التاريخ هو اليوم، وغيّره إذا كان القيد يخص يومًا آخر.",
+   "step": 5,
+   "url": "/admin/accounting/journal/new"
+  },
+  {
+   "start": 45.66,
+   "end": 50.79,
+   "text": "في السطر الأول، اختر حساب المصروف: المصروفات البنكية.",
+   "step": 6,
+   "url": "/admin/accounting/journal/new"
+  },
+  {
+   "start": 50.79,
+   "end": 53.74,
+   "text": "ثم المبلغ في خانة المدين.",
+   "step": 7,
+   "url": "/admin/accounting/journal/new"
+  },
+  {
+   "start": 53.74,
+   "end": 59.18,
+   "text": "وفي السطر الثاني، الحساب البنكي الذي خرج منه المبلغ.",
+   "step": 8,
+   "url": "/admin/accounting/journal/new"
+  },
+  {
+   "start": 59.18,
+   "end": 65.52,
+   "text": "والمبلغ نفسه في خانة الدائن. يجب أن يتوازن الإجماليان أسفل الجدول قبل الترحيل.",
+   "step": 9,
+   "url": "/admin/accounting/journal/new"
+  },
+  {
+   "start": 65.52,
+   "end": 71.02,
+   "text": "تحتاج سطورًا أكثر؟ أضف سطرًا، مثلًا لفصل ضريبة القيمة المضافة.",
+   "step": 10,
+   "url": "/admin/accounting/journal/new"
+  },
+  {
+   "start": 71.02,
+   "end": 79.47,
+   "text": "رحّل القيد. يأخذ رقمًا خاصًا به، والقيد المُرحَّل لا يُعدَّل أبدًا: لإلغائه تعكسه بقيد عكسي.",
+   "step": 11,
+   "url": "/admin/accounting/journal/625"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/accounting"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/accounting"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/accounting/journal"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/accounting/journal/new"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/accounting/journal/new"
+  },
+  {
+   "step": 6,
+   "kind": "select",
+   "url": "/admin/accounting/journal/new"
+  },
+  {
+   "step": 7,
+   "kind": "type",
+   "url": "/admin/accounting/journal/new"
+  },
+  {
+   "step": 8,
+   "kind": "select",
+   "url": "/admin/accounting/journal/new"
+  },
+  {
+   "step": 9,
+   "kind": "type",
+   "url": "/admin/accounting/journal/new"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/accounting/journal/new"
+  },
+  {
+   "step": 11,
+   "kind": "click",
+   "url": "/admin/accounting/journal/625"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:45:42.287Z"
+}

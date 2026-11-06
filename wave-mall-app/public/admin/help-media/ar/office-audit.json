@@ -1,0 +1,84 @@
+{
+ "id": "office-audit",
+ "lang": "ar",
+ "title": "معرفة من غيّر ماذا",
+ "duration": 40.72,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 6.81,
+   "text": "يسجّل سجل النشاط كل تعديل وتسجيل دخول وتصدير، مع الشخص والوقت.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 6.81,
+   "end": 11.89,
+   "text": "يسجّل سجل النشاط كل تعديل وتسجيل دخول وتصدير في المكتب.",
+   "step": 1,
+   "url": "/admin/audit"
+  },
+  {
+   "start": 11.89,
+   "end": 18.54,
+   "text": "يعرض كل سطر من قام بالإجراء وما فعله ومتى، واضغط على السجل لفتحه.",
+   "step": 2,
+   "url": "/admin/audit"
+  },
+  {
+   "start": 18.54,
+   "end": 22.86,
+   "text": "اختر شخصًا لترى ما فعله فقط.",
+   "step": 3,
+   "url": "/admin/audit"
+  },
+  {
+   "start": 26.03,
+   "end": 31.62,
+   "text": "لا يمكن لأحد تعديل السجل من المكتب، لذا يمكنك الاعتماد عليه.",
+   "step": 5,
+   "url": "/admin/audit?user=2"
+  },
+  {
+   "start": 31.62,
+   "end": 36.05,
+   "text": "ولتغييرات الصلاحيات سجل تفصيلي خاص بها في المستخدمين والصلاحيات.",
+   "step": 6,
+   "url": "/admin/audit?user=2"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/audit"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/audit"
+  },
+  {
+   "step": 3,
+   "kind": "select",
+   "url": "/admin/audit"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/audit?user=2"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/audit?user=2"
+  },
+  {
+   "step": 6,
+   "kind": "say",
+   "url": "/admin/audit?user=2"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:44:43.795Z"
+}

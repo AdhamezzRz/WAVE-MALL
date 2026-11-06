@@ -1,0 +1,139 @@
+{
+ "id": "ops-energy",
+ "lang": "ar",
+ "title": "استهلاك الطاقة وتقرير الاستدامة",
+ "duration": 66.92,
+ "cues": [
+  {
+   "start": 0.09,
+   "end": 7.3,
+   "text": "تابع الكهرباء والمياه حسب العداد، واعرف استهلاك المستأجرين، وجهّز تقرير الاستدامة السنوي.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.3,
+   "end": 13.76,
+   "text": "يعرض قسم الطاقة كهرباء المول ومياهه، من عدادات المبنى أو من قراءات مستوردة.",
+   "step": 1,
+   "url": "/admin/energy"
+  },
+  {
+   "start": 13.76,
+   "end": 21.3,
+   "text": "كهرباء المول هذا الشهر وتكلفتها، وأعلى حمل، والاستهلاك الليلي الثابت، وما يقابلها من انبعاثات الكربون.",
+   "step": 2,
+   "url": "/admin/energy"
+  },
+  {
+   "start": 21.3,
+   "end": 25.66,
+   "text": "آخر اثني عشر شهرًا، لتظهر ذروة الصيف بوضوح.",
+   "step": 3,
+   "url": "/admin/energy"
+  },
+  {
+   "start": 25.66,
+   "end": 30.03,
+   "text": "ويقسّم «حسب العداد» الاستهلاك: التبريد والإضاءة والجراج وغيرها.",
+   "step": 4,
+   "url": "/admin/energy"
+  },
+  {
+   "start": 30.03,
+   "end": 35.24,
+   "text": "ويفصل «المالك والمستأجرون» ما يستهلكه المول عمّا يُحمَّل على المستأجرين.",
+   "step": 5,
+   "url": "/admin/energy"
+  },
+  {
+   "start": 35.24,
+   "end": 41.02,
+   "text": "ويحوّل تبويب الاستدامة الأرقام نفسها إلى التقرير السنوي.",
+   "step": 6,
+   "url": "/admin/energy/esg"
+  },
+  {
+   "start": 41.02,
+   "end": 46.1,
+   "text": "تُحسب انبعاثات الكربون تلقائيًا من الكهرباء والسولار والغاز المستهلك.",
+   "step": 7,
+   "url": "/admin/energy/esg"
+  },
+  {
+   "start": 46.1,
+   "end": 53.45,
+   "text": "الأرقام التي لا عداد لها، مثل السولار والمخلفات وإعادة التدوير، تُسجَّل هنا مرة كل شهر.",
+   "step": 8,
+   "url": "/admin/energy/esg"
+  },
+  {
+   "start": 53.45,
+   "end": 57.28,
+   "text": "اطبع التقرير للملاك، أو لشهادة المباني الخضراء.",
+   "step": 9,
+   "url": "/admin/energy/esg"
+  },
+  {
+   "start": 57.28,
+   "end": 62.22,
+   "text": "وفي «العدادات والاستيراد» تُضاف العدادات وتُستورد القراءات من ملف.",
+   "step": 10,
+   "url": "/admin/energy/esg"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/energy"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/energy"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/energy"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/energy"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/energy"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/energy/esg"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/energy/esg"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/energy/esg"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/energy/esg"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/energy/esg"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:07:08.473Z"
+}

@@ -1,0 +1,175 @@
+{
+ "id": "operations-workorder-close",
+ "lang": "en",
+ "title": "Working a job to the end",
+ "duration": 80.17,
+ "cues": [
+  {
+   "start": 0.04,
+   "end": 8.2,
+   "text": "Assign a work order, log the time and parts, and mark it resolved with a note.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.2,
+   "end": 11.31,
+   "text": "Start from the most urgent job.",
+   "step": 1,
+   "url": "/admin/maintenance"
+  },
+  {
+   "start": 11.31,
+   "end": 14.86,
+   "text": "Open it.",
+   "step": 2,
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "start": 14.86,
+   "end": 20.66,
+   "text": "Red means the agreed time has passed. Managers are told when that happens.",
+   "step": 3,
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "start": 20.66,
+   "end": 28.58,
+   "text": "Assign it to a technician, or to a contractor with a service contract.",
+   "step": 4,
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "start": 28.58,
+   "end": 31.73,
+   "text": "Choose who.",
+   "step": 5,
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "start": 31.73,
+   "end": 37.77,
+   "text": "Assign. They see it on their phone, in the office app.",
+   "step": 6,
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "start": 37.77,
+   "end": 43.2,
+   "text": "Log the time spent on the job.",
+   "step": 7,
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "start": 43.2,
+   "end": 45.86,
+   "text": "Two hours, for example.",
+   "step": 8,
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "start": 45.86,
+   "end": 49.32,
+   "text": "Log it.",
+   "step": 9,
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "start": 49.32,
+   "end": 56.32,
+   "text": "Parts taken from the store are issued here, and their cost is added to the job.",
+   "step": 10,
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "start": 56.32,
+   "end": 61.07,
+   "text": "When the work is done, set it to Resolved.",
+   "step": 11,
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "start": 61.07,
+   "end": 69.3,
+   "text": "Say what was done. The tenant who reported it sees this note.",
+   "step": 12,
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "start": 69.3,
+   "end": 75.53,
+   "text": "Update. The job is closed, with its full history, costs and times.",
+   "step": 13,
+   "url": "/admin/maintenance/orders/60"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/maintenance"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "step": 5,
+   "kind": "select",
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "step": 8,
+   "kind": "type",
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "step": 11,
+   "kind": "select",
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "step": 12,
+   "kind": "type",
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "step": 13,
+   "kind": "click",
+   "url": "/admin/maintenance/orders/60"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:09:48.575Z"
+}

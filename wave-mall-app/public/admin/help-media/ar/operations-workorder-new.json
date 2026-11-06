@@ -1,0 +1,163 @@
+{
+ "id": "operations-workorder-new",
+ "lang": "ar",
+ "title": "إنشاء أمر عمل",
+ "duration": 76.02,
+ "cues": [
+  {
+   "start": 0.06,
+   "end": 7.28,
+   "text": "سجّل العطل كأمر عمل بأولويته ومكانه والفني المسؤول، حتى لا يُنسى شيء.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.28,
+   "end": 12.18,
+   "text": "تعرض «الصيانة» كل الأعمال المفتوحة في المول، والمتأخر منها.",
+   "step": 1,
+   "url": "/admin/maintenance"
+  },
+  {
+   "start": 12.18,
+   "end": 18.31,
+   "text": "أوامر العمل المفتوحة، وعدد العاجل منها، وعدد ما تجاوز المهلة المتفق عليها.",
+   "step": 2,
+   "url": "/admin/maintenance"
+  },
+  {
+   "start": 18.31,
+   "end": 23.89,
+   "text": "قائمة «الأكثر إلحاحًا» تعرض ما يجب البدء به، والطوارئ في الأعلى.",
+   "step": 3,
+   "url": "/admin/maintenance"
+  },
+  {
+   "start": 23.89,
+   "end": 31.23,
+   "text": "اختر «أمر عمل جديد». أما طلبات المستأجرين من بوابتهم فتصل هنا تلقائيًا.",
+   "step": 4,
+   "url": "/admin/maintenance/orders/new"
+  },
+  {
+   "start": 31.23,
+   "end": 36.25,
+   "text": "اكتب المشكلة في كلمات قليلة.",
+   "step": 5,
+   "url": "/admin/maintenance/orders/new"
+  },
+  {
+   "start": 36.25,
+   "end": 40.5,
+   "text": "نوع العمل، وهو الذي يحدد من يُبلَّغ.",
+   "step": 6,
+   "url": "/admin/maintenance/orders/new"
+  },
+  {
+   "start": 40.5,
+   "end": 44.71,
+   "text": "الأولوية، ولكل أولوية مهلة للاستجابة ومهلة للإصلاح.",
+   "step": 7,
+   "url": "/admin/maintenance/orders/new"
+  },
+  {
+   "start": 44.71,
+   "end": 51.5,
+   "text": "المكان: وحدة، أو معدّة، أو مكان في المناطق المشتركة.",
+   "step": 8,
+   "url": "/admin/maintenance/orders/new"
+  },
+  {
+   "start": 51.5,
+   "end": 57.34,
+   "text": "ما رأيته وما تم عمله حتى الآن.",
+   "step": 9,
+   "url": "/admin/maintenance/orders/new"
+  },
+  {
+   "start": 57.34,
+   "end": 61.41,
+   "text": "اختر الفني الآن، أو اتركه للمشرف.",
+   "step": 10,
+   "url": "/admin/maintenance/orders/new"
+  },
+  {
+   "start": 61.41,
+   "end": 67.43,
+   "text": "اضغط «إنشاء أمر العمل». يُبلَّغ الفني فورًا، ويبدأ حساب المهلة.",
+   "step": 11,
+   "url": "/admin/maintenance/orders/98"
+  },
+  {
+   "start": 67.43,
+   "end": 71.28,
+   "text": "يعرض هذان المؤقتان الوقت المتبقي للاستجابة وللإصلاح.",
+   "step": 12,
+   "url": "/admin/maintenance/orders/98"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/maintenance"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/maintenance"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/maintenance"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/maintenance/orders/new"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/maintenance/orders/new"
+  },
+  {
+   "step": 6,
+   "kind": "select",
+   "url": "/admin/maintenance/orders/new"
+  },
+  {
+   "step": 7,
+   "kind": "select",
+   "url": "/admin/maintenance/orders/new"
+  },
+  {
+   "step": 8,
+   "kind": "type",
+   "url": "/admin/maintenance/orders/new"
+  },
+  {
+   "step": 9,
+   "kind": "type",
+   "url": "/admin/maintenance/orders/new"
+  },
+  {
+   "step": 10,
+   "kind": "select",
+   "url": "/admin/maintenance/orders/new"
+  },
+  {
+   "step": 11,
+   "kind": "click",
+   "url": "/admin/maintenance/orders/98"
+  },
+  {
+   "step": 12,
+   "kind": "point",
+   "url": "/admin/maintenance/orders/98"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:07:49.546Z"
+}

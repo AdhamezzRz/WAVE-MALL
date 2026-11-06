@@ -1,0 +1,127 @@
+{
+ "id": "revenue-lease-page",
+ "lang": "ar",
+ "title": "قراءة صفحة العقد",
+ "duration": 59.72,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 8.1,
+   "text": "ابحث عن عقد، ثم اقرأ إيجاره وفواتيره ومستنداته وشيكاته وخياراته وتجديده في مكان واحد.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.1,
+   "end": 14.23,
+   "text": "تعرض صفحة العقود كل العقود، مع تبويبات للمسودات والسارية والمنتهية والمفسوخة.",
+   "step": 1,
+   "url": "/admin/leases"
+  },
+  {
+   "start": 14.23,
+   "end": 19.09,
+   "text": "صفِّ القائمة حسب تاريخ البداية أو المستأجر أو العقد.",
+   "step": 2,
+   "url": "/admin/leases"
+  },
+  {
+   "start": 19.09,
+   "end": 25.73,
+   "text": "يعرض كل صف الوحدات والمدة والإيجار الحالي والفاتورة التالية، وهل النسخة الموقّعة محفوظة.",
+   "step": 3,
+   "url": "/admin/leases"
+  },
+  {
+   "start": 25.73,
+   "end": 30.44,
+   "text": "افتح عقدًا.",
+   "step": 4,
+   "url": "/admin/leases/3"
+  },
+  {
+   "start": 30.44,
+   "end": 36.54,
+   "text": "في الأعلى: المساحة والإيجار السنوي الحالي وقيمة العقد وما حُصّل وما تأخر.",
+   "step": 5,
+   "url": "/admin/leases/3"
+  },
+  {
+   "start": 36.54,
+   "end": 40.17,
+   "text": "وفي الأسفل فواتيره وجدول الإيجار سنة بسنة.",
+   "step": 6,
+   "url": "/admin/leases/3"
+  },
+  {
+   "start": 40.17,
+   "end": 44.8,
+   "text": "تحفظ بطاقة المستندات العقد الموقّع والضمانات وكل المرفقات.",
+   "step": 7,
+   "url": "/admin/leases/3"
+  },
+  {
+   "start": 44.8,
+   "end": 49.27,
+   "text": "وفي الأسفل أيضًا الملاحق والخيارات بمواعيد الإخطار، ثم التجديد.",
+   "step": 8,
+   "url": "/admin/leases/3"
+  },
+  {
+   "start": 49.27,
+   "end": 54.83,
+   "text": "ومن الشريط العلوي يمكنك إضافة رسوم لمرة واحدة أو إنهاء العقد.",
+   "step": 9,
+   "url": "/admin/leases/3"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/leases"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/leases"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/leases"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/leases/3"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/leases/3"
+  },
+  {
+   "step": 6,
+   "kind": "scroll",
+   "url": "/admin/leases/3"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/leases/3"
+  },
+  {
+   "step": 8,
+   "kind": "scroll",
+   "url": "/admin/leases/3"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/leases/3"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:53:02.415Z"
+}

@@ -1,0 +1,163 @@
+{
+ "id": "operations-workorder-new",
+ "lang": "en",
+ "title": "Raising a work order",
+ "duration": 84.92,
+ "cues": [
+  {
+   "start": 0.08,
+   "end": 8.62,
+   "text": "Report a fault as a work order with its priority, place and technician, so nothing gets forgotten.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.62,
+   "end": 14.37,
+   "text": "Maintenance shows every open job in the mall, and which ones are late.",
+   "step": 1,
+   "url": "/admin/maintenance"
+  },
+  {
+   "start": 14.37,
+   "end": 21.02,
+   "text": "Open work orders, how many are urgent, and how many are past their agreed time.",
+   "step": 2,
+   "url": "/admin/maintenance"
+  },
+  {
+   "start": 21.02,
+   "end": 26.05,
+   "text": "Most urgent lists what to do first: emergencies at the top.",
+   "step": 3,
+   "url": "/admin/maintenance"
+  },
+  {
+   "start": 26.05,
+   "end": 33.33,
+   "text": "Choose New work order. Tenants' requests from their portal arrive here by themselves.",
+   "step": 4,
+   "url": "/admin/maintenance/orders/new"
+  },
+  {
+   "start": 33.33,
+   "end": 39.09,
+   "text": "Say what is wrong, in a few words.",
+   "step": 5,
+   "url": "/admin/maintenance/orders/new"
+  },
+  {
+   "start": 39.09,
+   "end": 42.96,
+   "text": "The trade: it decides who is told.",
+   "step": 6,
+   "url": "/admin/maintenance/orders/new"
+  },
+  {
+   "start": 42.96,
+   "end": 49.21,
+   "text": "The priority. Each one has its own time to respond and to fix.",
+   "step": 7,
+   "url": "/admin/maintenance/orders/new"
+  },
+  {
+   "start": 49.21,
+   "end": 57.2,
+   "text": "Where it is: a unit, an asset, or a place in the common area.",
+   "step": 8,
+   "url": "/admin/maintenance/orders/new"
+  },
+  {
+   "start": 57.2,
+   "end": 62.51,
+   "text": "What you saw and what was already done.",
+   "step": 9,
+   "url": "/admin/maintenance/orders/new"
+  },
+  {
+   "start": 62.51,
+   "end": 67.56,
+   "text": "Choose the technician now, or leave it for the supervisor.",
+   "step": 10,
+   "url": "/admin/maintenance/orders/new"
+  },
+  {
+   "start": 67.56,
+   "end": 74.79,
+   "text": "Raise the work order. The technician is told at once, and the clocks start.",
+   "step": 11,
+   "url": "/admin/maintenance/orders/97"
+  },
+  {
+   "start": 74.79,
+   "end": 80.26,
+   "text": "These two timers show the time left to respond and to fix.",
+   "step": 12,
+   "url": "/admin/maintenance/orders/97"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/maintenance"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/maintenance"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/maintenance"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/maintenance/orders/new"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/maintenance/orders/new"
+  },
+  {
+   "step": 6,
+   "kind": "select",
+   "url": "/admin/maintenance/orders/new"
+  },
+  {
+   "step": 7,
+   "kind": "select",
+   "url": "/admin/maintenance/orders/new"
+  },
+  {
+   "step": 8,
+   "kind": "type",
+   "url": "/admin/maintenance/orders/new"
+  },
+  {
+   "step": 9,
+   "kind": "type",
+   "url": "/admin/maintenance/orders/new"
+  },
+  {
+   "step": 10,
+   "kind": "select",
+   "url": "/admin/maintenance/orders/new"
+  },
+  {
+   "step": 11,
+   "kind": "click",
+   "url": "/admin/maintenance/orders/97"
+  },
+  {
+   "step": 12,
+   "kind": "point",
+   "url": "/admin/maintenance/orders/97"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:05:58.958Z"
+}

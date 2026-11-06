@@ -1,0 +1,144 @@
+{
+ "id": "overview-ask",
+ "lang": "ar",
+ "title": "طلب موافقة والرد على الأسئلة",
+ "duration": 72.08,
+ "cues": [
+  {
+   "start": 0.13,
+   "end": 7.35,
+   "text": "أرسل طلب موافقة بالمبلغ والسبب، وأجب عندما يطلب صاحب القرار معلومات إضافية.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.35,
+   "end": 12.53,
+   "text": "تحتاج إلى موافقة المدير على شيء؟ اطلبها من الموافقات والمهام.",
+   "step": 1,
+   "url": "/admin/work"
+  },
+  {
+   "start": 12.53,
+   "end": 16.35,
+   "text": "اختر «طلب موافقة».",
+   "step": 2,
+   "url": "/admin/approvals/new"
+  },
+  {
+   "start": 16.35,
+   "end": 21.76,
+   "text": "اكتب ما يحتاج إلى موافقة،",
+   "step": 3,
+   "url": "/admin/approvals/new"
+  },
+  {
+   "start": 21.76,
+   "end": 25.91,
+   "text": "والمبلغ،",
+   "step": 4,
+   "url": "/admin/approvals/new"
+  },
+  {
+   "start": 25.91,
+   "end": 33.05,
+   "text": "والسبب. السبب الواضح يأتي بالرد أسرع.",
+   "step": 5,
+   "url": "/admin/approvals/new"
+  },
+  {
+   "start": 33.05,
+   "end": 40.58,
+   "text": "أرسله. يُبلَّغ صاحب القرار فورًا، وتعرض صفحة الطلب لدى من هو الآن.",
+   "step": 6,
+   "url": "/admin/approvals/22"
+  },
+  {
+   "start": 40.58,
+   "end": 45.64,
+   "text": "إذا كان لدى صاحب القرار سؤال، تجده تحت «ما طلبته».",
+   "step": 7,
+   "url": "/admin/work"
+  },
+  {
+   "start": 49.48,
+   "end": 55.65,
+   "text": "هذا هو السؤال، وطالما ينتظر ردك يتوقف حساب المهلة لدى صاحب القرار.",
+   "step": 9,
+   "url": "/admin/approvals/21"
+  },
+  {
+   "start": 55.65,
+   "end": 61.18,
+   "text": "اكتب ردك.",
+   "step": 10,
+   "url": "/admin/approvals/21"
+  },
+  {
+   "start": 61.18,
+   "end": 67.3,
+   "text": "أرسله، فيعود الطلب إلى صاحب القرار ويستأنف حساب المهلة.",
+   "step": 11,
+   "url": "/admin/approvals/21"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/work"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/approvals/new"
+  },
+  {
+   "step": 3,
+   "kind": "type",
+   "url": "/admin/approvals/new"
+  },
+  {
+   "step": 4,
+   "kind": "type",
+   "url": "/admin/approvals/new"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/approvals/new"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/approvals/22"
+  },
+  {
+   "step": 7,
+   "kind": "go",
+   "url": "/admin/work"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/approvals/21"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/approvals/21"
+  },
+  {
+   "step": 10,
+   "kind": "type",
+   "url": "/admin/approvals/21"
+  },
+  {
+   "step": 11,
+   "kind": "click",
+   "url": "/admin/approvals/21"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:55:30.833Z"
+}

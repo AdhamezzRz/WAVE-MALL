@@ -1,0 +1,149 @@
+{
+ "id": "revenue-collections-day",
+ "lang": "en",
+ "title": "A day in collections: who to call",
+ "duration": 68,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 8.95,
+   "text": "Start from the list of who to call today, log the call and record a promise to pay.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.95,
+   "end": 13.85,
+   "text": "Collections shows everything owed, and what to do about it today.",
+   "step": 1,
+   "url": "/admin/collections"
+  },
+  {
+   "start": 13.85,
+   "end": 18.89,
+   "text": "The totals: overdue, days to collect, promises due and broken promises.",
+   "step": 2,
+   "url": "/admin/collections"
+  },
+  {
+   "start": 18.89,
+   "end": 25.44,
+   "text": "Who to call today ranks the tenants by how much and how long they owe.",
+   "step": 3,
+   "url": "/admin/collections"
+  },
+  {
+   "start": 25.44,
+   "end": 28.61,
+   "text": "Open a tenant.",
+   "step": 4,
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "start": 28.61,
+   "end": 34.82,
+   "text": "Their balance, the oldest unpaid invoice and the calls so far, on one page.",
+   "step": 5,
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "start": 34.82,
+   "end": 38.76,
+   "text": "Call the number shown, then log what happened.",
+   "step": 6,
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "start": 38.76,
+   "end": 41.58,
+   "text": "They promised to pay.",
+   "step": 7,
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "start": 41.58,
+   "end": 44.53,
+   "text": "Enter how much, and by when.",
+   "step": 8,
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "start": 52.16,
+   "end": 55.19,
+   "text": "Choose Log the call.",
+   "step": 11,
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "start": 55.19,
+   "end": 63.42,
+   "text": "The promise is tracked. If the date passes without payment, it comes back to the top of your list.",
+   "step": 12,
+   "url": "/admin/collections/tenants/3"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/collections"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/collections"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/collections"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "step": 7,
+   "kind": "select",
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "step": 8,
+   "kind": "type",
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "step": 9,
+   "kind": "type",
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "step": 10,
+   "kind": "type",
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "step": 11,
+   "kind": "click",
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "step": 12,
+   "kind": "point",
+   "url": "/admin/collections/tenants/3"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:58:18.360Z"
+}

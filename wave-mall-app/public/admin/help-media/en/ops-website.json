@@ -1,0 +1,151 @@
+{
+ "id": "ops-website",
+ "lang": "en",
+ "title": "Updating the website",
+ "duration": 75.04,
+ "cues": [
+  {
+   "start": 0.05,
+   "end": 7.83,
+   "text": "Edit a store's listing, feature it, add an event, and see who subscribed for news.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.83,
+   "end": 13.99,
+   "text": "Website keeps the public site up to date: the store directory, events and promotions.",
+   "step": 1,
+   "url": "/admin/website"
+  },
+  {
+   "start": 13.99,
+   "end": 17.58,
+   "text": "Open a store.",
+   "step": 2,
+   "url": "/admin/website/stores/2"
+  },
+  {
+   "start": 17.58,
+   "end": 24.69,
+   "text": "Its listing is in English and Arabic: the name, a tagline, the description and the category.",
+   "step": 3,
+   "url": "/admin/website/stores/2"
+  },
+  {
+   "start": 24.69,
+   "end": 28.49,
+   "text": "Add the opening hours.",
+   "step": 4,
+   "url": "/admin/website/stores/2"
+  },
+  {
+   "start": 28.49,
+   "end": 35.53,
+   "text": "Tick Feature to put it at the top of the directory.",
+   "step": 5,
+   "url": "/admin/website/stores/2"
+  },
+  {
+   "start": 35.53,
+   "end": 40.11,
+   "text": "Save. The website shows the change at once.",
+   "step": 6,
+   "url": "/admin/website/stores/2"
+  },
+  {
+   "start": 40.11,
+   "end": 46.5,
+   "text": "Here is its public address, and the switch to hide or publish the listing.",
+   "step": 7,
+   "url": "/admin/website/stores/2"
+  },
+  {
+   "start": 46.5,
+   "end": 49.13,
+   "text": "Events work the same way.",
+   "step": 8,
+   "url": "/admin/website?tab=events"
+  },
+  {
+   "start": 49.13,
+   "end": 55.02,
+   "text": "Give the new event a title and a date.",
+   "step": 9,
+   "url": "/admin/website?tab=events"
+  },
+  {
+   "start": 55.02,
+   "end": 63.23,
+   "text": "Create it, then add the details in both languages, the times and a cover picture, and publish.",
+   "step": 10,
+   "url": "/admin/website/events/4"
+  },
+  {
+   "start": 63.23,
+   "end": 70.35,
+   "text": "Subscribers lists everyone who signed up for news on the website. Export the list for your newsletter.",
+   "step": 11,
+   "url": "/admin/subscribers"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/website"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/website/stores/2"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/website/stores/2"
+  },
+  {
+   "step": 4,
+   "kind": "type",
+   "url": "/admin/website/stores/2"
+  },
+  {
+   "step": 5,
+   "kind": "check",
+   "url": "/admin/website/stores/2"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/website/stores/2"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/website/stores/2"
+  },
+  {
+   "step": 8,
+   "kind": "go",
+   "url": "/admin/website?tab=events"
+  },
+  {
+   "step": 9,
+   "kind": "type",
+   "url": "/admin/website?tab=events"
+  },
+  {
+   "step": 10,
+   "kind": "click",
+   "url": "/admin/website/events/4"
+  },
+  {
+   "step": 11,
+   "kind": "go",
+   "url": "/admin/subscribers"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:12:53.917Z"
+}

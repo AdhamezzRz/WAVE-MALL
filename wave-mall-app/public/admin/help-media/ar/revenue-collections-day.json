@@ -1,0 +1,149 @@
+{
+ "id": "revenue-collections-day",
+ "lang": "ar",
+ "title": "يوم في التحصيل: بمن تتصل",
+ "duration": 62.39,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 6.8,
+   "text": "ابدأ من قائمة من تتصل بهم اليوم، وسجّل المكالمة ووعد السداد.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 6.8,
+   "end": 11.77,
+   "text": "تعرض صفحة التحصيل كل المستحقات، وما يجب فعله بشأنها اليوم.",
+   "step": 1,
+   "url": "/admin/collections"
+  },
+  {
+   "start": 11.77,
+   "end": 17.44,
+   "text": "الإجماليات: المتأخر وأيام التحصيل والوعود المستحقة والوعود التي لم يُوفَ بها.",
+   "step": 2,
+   "url": "/admin/collections"
+  },
+  {
+   "start": 17.44,
+   "end": 23,
+   "text": "ترتب قائمة «من نتصل به اليوم» المستأجرين حسب قيمة المتأخرات ومدتها.",
+   "step": 3,
+   "url": "/admin/collections"
+  },
+  {
+   "start": 23,
+   "end": 26.21,
+   "text": "افتح مستأجرًا.",
+   "step": 4,
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "start": 26.21,
+   "end": 31.36,
+   "text": "رصيده وأقدم فاتورة غير مسددة والمكالمات السابقة، في صفحة واحدة.",
+   "step": 5,
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "start": 31.36,
+   "end": 35.19,
+   "text": "اتصل بالرقم الظاهر، ثم سجّل ما حدث.",
+   "step": 6,
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "start": 35.19,
+   "end": 38,
+   "text": "وعد بالسداد.",
+   "step": 7,
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "start": 38,
+   "end": 40.92,
+   "text": "أدخل المبلغ والموعد.",
+   "step": 8,
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "start": 48.55,
+   "end": 51.54,
+   "text": "اختر «سجّل المكالمة».",
+   "step": 11,
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "start": 51.54,
+   "end": 57.6,
+   "text": "يُتابَع الوعد، وإن مر موعده دون سداد يعود المستأجر إلى رأس قائمتك.",
+   "step": 12,
+   "url": "/admin/collections/tenants/3"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/collections"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/collections"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/collections"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "step": 7,
+   "kind": "select",
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "step": 8,
+   "kind": "type",
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "step": 9,
+   "kind": "type",
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "step": 10,
+   "kind": "type",
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "step": 11,
+   "kind": "click",
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "step": 12,
+   "kind": "point",
+   "url": "/admin/collections/tenants/3"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:59:50.903Z"
+}

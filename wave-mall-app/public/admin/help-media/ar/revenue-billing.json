@@ -1,0 +1,120 @@
+{
+ "id": "revenue-billing",
+ "lang": "ar",
+ "title": "متابعة الفواتير من صفحة الفواتير",
+ "duration": 50.71,
+ "cues": [
+  {
+   "start": 0.04,
+   "end": 7.26,
+   "text": "اعرف المفتوح والمتأخر والقادم، وصفِّ حسب المستأجر أو العقد، وافتح أي فاتورة.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.26,
+   "end": 13.06,
+   "text": "تُنشأ الفواتير من جدول إيجار كل عقد، فلا تكتبها يدويًا أبدًا.",
+   "step": 1,
+   "url": "/admin/billing"
+  },
+  {
+   "start": 13.06,
+   "end": 17.58,
+   "text": "تعرض الإجماليات المفتوح والمتأخر وما حُصّل هذا الشهر.",
+   "step": 2,
+   "url": "/admin/billing"
+  },
+  {
+   "start": 17.58,
+   "end": 22.25,
+   "text": "تقسّم التبويبات الفواتير. هذه هي المتأخرة.",
+   "step": 3,
+   "url": "/admin/billing?status=overdue"
+  },
+  {
+   "start": 22.25,
+   "end": 27.15,
+   "text": "ضيّق القائمة حسب تاريخ الاستحقاق أو المستأجر أو العقد.",
+   "step": 4,
+   "url": "/admin/billing?status=overdue"
+  },
+  {
+   "start": 27.15,
+   "end": 32.91,
+   "text": "وفي الأسفل يوضح تحليل أعمار الديون مدة التأخير، ومن المتأخرون في السداد.",
+   "step": 5,
+   "url": "/admin/billing?status=overdue"
+  },
+  {
+   "start": 33.84,
+   "end": 37.09,
+   "text": "افتح فاتورة.",
+   "step": 7,
+   "url": "/admin/invoices/265"
+  },
+  {
+   "start": 37.09,
+   "end": 42.34,
+   "text": "تعرض الفاتورة بنودها وضريبة القيمة المضافة وما سُدّد والرصيد المتبقي.",
+   "step": 8,
+   "url": "/admin/invoices/265"
+  },
+  {
+   "start": 42.34,
+   "end": 45.99,
+   "text": "اطبعها بهوية المول، أو نزّلها لإرسالها.",
+   "step": 9,
+   "url": "/admin/invoices/265"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/billing"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/billing"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/billing?status=overdue"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/billing?status=overdue"
+  },
+  {
+   "step": 5,
+   "kind": "scroll",
+   "url": "/admin/billing?status=overdue"
+  },
+  {
+   "step": 6,
+   "kind": "scroll",
+   "url": "/admin/billing?status=overdue"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/invoices/265"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/invoices/265"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/invoices/265"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:07:25.286Z"
+}

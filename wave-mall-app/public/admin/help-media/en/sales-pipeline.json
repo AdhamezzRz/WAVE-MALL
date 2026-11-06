@@ -1,0 +1,144 @@
+{
+ "id": "sales-pipeline",
+ "lang": "en",
+ "title": "Working the pipeline board",
+ "duration": 87.4,
+ "cues": [
+  {
+   "start": 0.01,
+   "end": 10.48,
+   "text": "See every deal by stage and value, hold a unit for a brand, and close a lead you lost with the reason.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 10.48,
+   "end": 16.83,
+   "text": "The pipeline shows every open deal as a card, in a column for each stage.",
+   "step": 1,
+   "url": "/admin/pipeline"
+  },
+  {
+   "start": 16.83,
+   "end": 23.85,
+   "text": "Each column shows how many deals it holds, their yearly rent and the chance of closing.",
+   "step": 2,
+   "url": "/admin/pipeline"
+  },
+  {
+   "start": 23.85,
+   "end": 32.69,
+   "text": "A card shows the brand, its score, the size it wants, the owner and the next step. Late steps turn red.",
+   "step": 3,
+   "url": "/admin/pipeline"
+  },
+  {
+   "start": 32.69,
+   "end": 40.75,
+   "text": "Drag a card to another column to move the deal. The tabs show only your deals or a colleague's.",
+   "step": 4,
+   "url": "/admin/pipeline"
+  },
+  {
+   "start": 40.75,
+   "end": 44.85,
+   "text": "Click a card to open the lead.",
+   "step": 5,
+   "url": "/admin/leads/19"
+  },
+  {
+   "start": 44.85,
+   "end": 50.78,
+   "text": "Units that fit lists the free units that match the size they asked for.",
+   "step": 6,
+   "url": "/admin/leads/19"
+  },
+  {
+   "start": 50.78,
+   "end": 58.83,
+   "text": "Hold puts the unit aside for this brand for a week, so nobody offers it to someone else.",
+   "step": 7,
+   "url": "/admin/leads/19"
+  },
+  {
+   "start": 58.83,
+   "end": 65.18,
+   "text": "If the brand walks away, mark the lead as lost.",
+   "step": 8,
+   "url": "/admin/leads/19"
+  },
+  {
+   "start": 65.18,
+   "end": 72.45,
+   "text": "Always choose the reason. The reports add them up, so you learn why deals are lost.",
+   "step": 9,
+   "url": "/admin/leads/19"
+  },
+  {
+   "start": 76.6,
+   "end": 83.18,
+   "text": "Mark it lost. The unit hold is released and the lead leaves the board.",
+   "step": 11,
+   "url": "/admin/leads/19"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/pipeline"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/pipeline"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/pipeline"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/pipeline"
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/leads/19"
+  },
+  {
+   "step": 6,
+   "kind": "scroll",
+   "url": "/admin/leads/19"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/leads/19"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/leads/19"
+  },
+  {
+   "step": 9,
+   "kind": "select",
+   "url": "/admin/leads/19"
+  },
+  {
+   "step": 10,
+   "kind": "type",
+   "url": "/admin/leads/19"
+  },
+  {
+   "step": 11,
+   "kind": "click",
+   "url": "/admin/leads/19"
+  }
+ ],
+ "recorded_at": "2026-11-06T00:06:57.284Z"
+}

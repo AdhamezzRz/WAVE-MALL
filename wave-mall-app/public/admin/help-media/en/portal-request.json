@@ -1,0 +1,127 @@
+{
+ "id": "portal-request",
+ "lang": "en",
+ "title": "Reporting a problem in your store",
+ "duration": 60.6,
+ "cues": [
+  {
+   "start": 0.01,
+   "end": 7.78,
+   "text": "Send a maintenance request to the mall team and follow it until it is fixed.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.78,
+   "end": 12.59,
+   "text": "Something needs fixing? Maintenance is where you tell the mall team.",
+   "step": 1,
+   "url": "/portal/requests"
+  },
+  {
+   "start": 12.59,
+   "end": 17.37,
+   "text": "Say in a few words what is wrong.",
+   "step": 2,
+   "url": "/portal/requests"
+  },
+  {
+   "start": 17.37,
+   "end": 23.46,
+   "text": "Choose the kind of problem, so it goes straight to the right technician.",
+   "step": 3,
+   "url": "/portal/requests"
+  },
+  {
+   "start": 23.46,
+   "end": 30.32,
+   "text": "Set how urgent it is. Emergency is for safety risks or when you cannot trade.",
+   "step": 4,
+   "url": "/portal/requests"
+  },
+  {
+   "start": 30.32,
+   "end": 34.44,
+   "text": "Tell them where to look.",
+   "step": 5,
+   "url": "/portal/requests"
+  },
+  {
+   "start": 34.44,
+   "end": 38.63,
+   "text": "Add any detail that helps.",
+   "step": 6,
+   "url": "/portal/requests"
+  },
+  {
+   "start": 38.63,
+   "end": 41.67,
+   "text": "Send the request.",
+   "step": 7,
+   "url": "/portal/requests/97"
+  },
+  {
+   "start": 41.67,
+   "end": 50.15,
+   "text": "Your request has a number and a status. You get an email as it is assigned, worked on and done.",
+   "step": 8,
+   "url": "/portal/requests/97"
+  },
+  {
+   "start": 50.15,
+   "end": 56.46,
+   "text": "Write to the team here, and add photos below to show them the problem.",
+   "step": 9,
+   "url": "/portal/requests/97"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/portal/requests"
+  },
+  {
+   "step": 2,
+   "kind": "type",
+   "url": "/portal/requests"
+  },
+  {
+   "step": 3,
+   "kind": "select",
+   "url": "/portal/requests"
+  },
+  {
+   "step": 4,
+   "kind": "select",
+   "url": "/portal/requests"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/portal/requests"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/portal/requests"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/portal/requests/97"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/portal/requests/97"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/portal/requests/97"
+  }
+ ],
+ "recorded_at": "2026-11-06T00:26:48.695Z"
+}

@@ -1,0 +1,139 @@
+{
+ "id": "overview-board",
+ "lang": "en",
+ "title": "Working with the board",
+ "duration": 82.11,
+ "cues": [
+  {
+   "start": 0.05,
+   "end": 9.74,
+   "text": "See tasks and approvals as cards by stage, move them along, and switch to the list, calendar and team views.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 9.74,
+   "end": 15.12,
+   "text": "The board shows tasks and approvals as cards, one column per stage.",
+   "step": 1,
+   "url": "/admin/work/board"
+  },
+  {
+   "start": 15.12,
+   "end": 21.4,
+   "text": "Filter by what to show, whose work it is, the priority or a label.",
+   "step": 2,
+   "url": "/admin/work/board"
+  },
+  {
+   "start": 21.4,
+   "end": 30.18,
+   "text": "Each card shows its reference, the amount or due date, and who has it. Overdue cards are marked in red.",
+   "step": 3,
+   "url": "/admin/work/board"
+  },
+  {
+   "start": 30.18,
+   "end": 38.97,
+   "text": "Drag a task to another column, or use the menu on its card.",
+   "step": 4,
+   "url": "/admin/work/board"
+  },
+  {
+   "start": 38.97,
+   "end": 45.82,
+   "text": "Move it to In progress. Everyone following the task sees the change.",
+   "step": 5,
+   "url": "/admin/work/board"
+  },
+  {
+   "start": 45.82,
+   "end": 51.33,
+   "text": "Approvals move by themselves as they are decided: open one to decide it.",
+   "step": 6,
+   "url": "/admin/work/board"
+  },
+  {
+   "start": 51.33,
+   "end": 59.85,
+   "text": "List shows the same work as a table, with filters by state, due date, label and dates.",
+   "step": 7,
+   "url": "/admin/work/list"
+  },
+  {
+   "start": 59.86,
+   "end": 64.17,
+   "text": "Calendar puts everything on its due date.",
+   "step": 8,
+   "url": "/admin/work/calendar"
+  },
+  {
+   "start": 64.17,
+   "end": 71.15,
+   "text": "Team shows what is on each person's plate, so work can be shared fairly.",
+   "step": 9,
+   "url": "/admin/work/team"
+  },
+  {
+   "start": 71.15,
+   "end": 77.4,
+   "text": "And Recurring creates the tasks that come back every week or month, by themselves.",
+   "step": 10,
+   "url": "/admin/work/team"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/work/board"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/work/board"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/work/board"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/work/board"
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/work/board"
+  },
+  {
+   "step": 6,
+   "kind": "say",
+   "url": "/admin/work/board"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/work/list"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/work/calendar"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/work/team"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/work/team"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:45:45.205Z"
+}

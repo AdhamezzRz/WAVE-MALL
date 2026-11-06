@@ -1,0 +1,137 @@
+{
+ "id": "purchasing-stock",
+ "lang": "en",
+ "title": "The store: issuing parts and reordering",
+ "duration": 58.1,
+ "cues": [
+  {
+   "start": 0.04,
+   "end": 8.58,
+   "text": "Find an item, issue it to a work order, and reorder everything running low in one click.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.58,
+   "end": 15.9,
+   "text": "Stock lists every item in the store, how many are on hand and what they are worth.",
+   "step": 1,
+   "url": "/admin/purchasing/stock"
+  },
+  {
+   "start": 15.9,
+   "end": 19.06,
+   "text": "Search by code, name or shelf.",
+   "step": 2,
+   "url": "/admin/purchasing/stock"
+  },
+  {
+   "start": 20.88,
+   "end": 24.2,
+   "text": "Open the item.",
+   "step": 5,
+   "url": "/admin/purchasing/stock/1"
+  },
+  {
+   "start": 24.2,
+   "end": 28.63,
+   "text": "To take parts out of the store, use Issue.",
+   "step": 6,
+   "url": "/admin/purchasing/stock/1"
+  },
+  {
+   "start": 28.63,
+   "end": 31.39,
+   "text": "How many.",
+   "step": 7,
+   "url": "/admin/purchasing/stock/1"
+  },
+  {
+   "start": 31.39,
+   "end": 37.59,
+   "text": "And the work order they are for. The cost goes onto that job.",
+   "step": 8,
+   "url": "/admin/purchasing/stock/1"
+  },
+  {
+   "start": 37.59,
+   "end": 43.73,
+   "text": "Issue from the store. The movement is logged with who and when.",
+   "step": 9,
+   "url": "/admin/purchasing/stock/1"
+  },
+  {
+   "start": 43.73,
+   "end": 47.82,
+   "text": "Back on Stock, items under their minimum are marked.",
+   "step": 10,
+   "url": "/admin/purchasing/stock"
+  },
+  {
+   "start": 47.82,
+   "end": 53.46,
+   "text": "Request everything running low makes one purchase request with the right quantities.",
+   "step": 11,
+   "url": "/admin/purchasing/stock"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/purchasing/stock"
+  },
+  {
+   "step": 2,
+   "kind": "type",
+   "url": "/admin/purchasing/stock"
+  },
+  {
+   "step": 3,
+   "kind": "key",
+   "url": "/admin/purchasing/stock?q=LED&category=&low="
+  },
+  {
+   "step": 4,
+   "kind": "pause",
+   "url": "/admin/purchasing/stock?q=LED&category=&low="
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/purchasing/stock/1"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/purchasing/stock/1"
+  },
+  {
+   "step": 7,
+   "kind": "type",
+   "url": "/admin/purchasing/stock/1"
+  },
+  {
+   "step": 8,
+   "kind": "select",
+   "url": "/admin/purchasing/stock/1"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/purchasing/stock/1"
+  },
+  {
+   "step": 10,
+   "kind": "go",
+   "url": "/admin/purchasing/stock"
+  },
+  {
+   "step": 11,
+   "kind": "point",
+   "url": "/admin/purchasing/stock"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:55:18.764Z"
+}

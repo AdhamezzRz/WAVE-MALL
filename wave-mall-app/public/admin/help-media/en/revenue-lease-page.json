@@ -1,0 +1,127 @@
+{
+ "id": "revenue-lease-page",
+ "lang": "en",
+ "title": "Reading a lease page",
+ "duration": 67.31,
+ "cues": [
+  {
+   "start": 0.12,
+   "end": 8.28,
+   "text": "Find a lease, then read its rent, invoices, documents, cheques, options and renewal in one place.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.28,
+   "end": 14,
+   "text": "Leases lists every contract, with tabs for drafts, active, ended and terminated leases.",
+   "step": 1,
+   "url": "/admin/leases"
+  },
+  {
+   "start": 14,
+   "end": 17.63,
+   "text": "Filter by start date, tenant or contract.",
+   "step": 2,
+   "url": "/admin/leases"
+  },
+  {
+   "start": 17.63,
+   "end": 26.62,
+   "text": "Each row shows the units, the term, the rent today, the next invoice and whether the signed copy is on file.",
+   "step": 3,
+   "url": "/admin/leases"
+  },
+  {
+   "start": 26.62,
+   "end": 31.1,
+   "text": "Open a lease.",
+   "step": 4,
+   "url": "/admin/leases/3"
+  },
+  {
+   "start": 31.1,
+   "end": 39.35,
+   "text": "At the top: the area, the annual rent now, the contract value, what was collected and what is overdue.",
+   "step": 5,
+   "url": "/admin/leases/3"
+  },
+  {
+   "start": 39.35,
+   "end": 44.84,
+   "text": "Below are its invoices and the rent schedule year by year.",
+   "step": 6,
+   "url": "/admin/leases/3"
+  },
+  {
+   "start": 44.84,
+   "end": 50.35,
+   "text": "The documents card keeps the signed lease, the guarantees and every attachment.",
+   "step": 7,
+   "url": "/admin/leases/3"
+  },
+  {
+   "start": 50.35,
+   "end": 56.36,
+   "text": "Further down are the addenda, the options with their notice dates, and the renewal.",
+   "step": 8,
+   "url": "/admin/leases/3"
+  },
+  {
+   "start": 56.36,
+   "end": 62.55,
+   "text": "From the top bar you can add a one-off charge, or end the lease.",
+   "step": 9,
+   "url": "/admin/leases/3"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/leases"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/leases"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/leases"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/leases/3"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/leases/3"
+  },
+  {
+   "step": 6,
+   "kind": "scroll",
+   "url": "/admin/leases/3"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/leases/3"
+  },
+  {
+   "step": 8,
+   "kind": "scroll",
+   "url": "/admin/leases/3"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/leases/3"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:51:24.580Z"
+}

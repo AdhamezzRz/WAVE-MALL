@@ -1,0 +1,127 @@
+{
+ "id": "property-specialty",
+ "lang": "ar",
+ "title": "حجز كشك أو مساحة مؤقتة",
+ "duration": 58.36,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 8.11,
+   "text": "أجّر الأكشاك والمساحات المؤقتة ومناطق الترويج باليوم، بسعر من قائمة الأسعار مع منع التعارض.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.11,
+   "end": 13.95,
+   "text": "تؤجّر «المساحات المؤقتة» الأكشاك والمساحات المؤقتة ومناطق الترويج والشاشات باليوم أو الأسبوع.",
+   "step": 1,
+   "url": "/admin/specialty"
+  },
+  {
+   "start": 13.95,
+   "end": 18.75,
+   "text": "نسبة الإشغال، وإيرادات الشهر، والحجوزات القريبة، والاستفسارات التي تنتظرك.",
+   "step": 2,
+   "url": "/admin/specialty"
+  },
+  {
+   "start": 18.75,
+   "end": 24.3,
+   "text": "تعرض «الإتاحة» كل مساحة على مدار الشهر، فتظهر الأيام المتاحة بسهولة.",
+   "step": 3,
+   "url": "/admin/specialty"
+  },
+  {
+   "start": 24.3,
+   "end": 27.42,
+   "text": "للحجز، اختر «حجز جديد».",
+   "step": 4,
+   "url": "/admin/specialty/bookings/new"
+  },
+  {
+   "start": 27.42,
+   "end": 34.73,
+   "text": "يُحسب السعر من قائمة الأسعار أثناء الكتابة. هذا الكشك محجوز في هذه الأيام، فينبهك المكتب.",
+   "step": 5,
+   "url": "/admin/specialty/bookings/new"
+  },
+  {
+   "start": 34.73,
+   "end": 39.85,
+   "text": "اختر مساحة متاحة بدلًا منه: كشك جسر منطقة المطاعم.",
+   "step": 6,
+   "url": "/admin/specialty/bookings/new"
+  },
+  {
+   "start": 39.85,
+   "end": 45.29,
+   "text": "اختر العلامة، أو اكتب اسم العميل إن لم يكن مسجلًا.",
+   "step": 7,
+   "url": "/admin/specialty/bookings/new"
+  },
+  {
+   "start": 45.29,
+   "end": 49.28,
+   "text": "اذكر الغرض من الحجز.",
+   "step": 8,
+   "url": "/admin/specialty/bookings/new"
+  },
+  {
+   "start": 49.28,
+   "end": 54.14,
+   "text": "احفظ الحجز، فتُحجز المساحة، وعند تأكيده تصدر الفاتورة.",
+   "step": 9,
+   "url": "/admin/specialty/bookings/25"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/specialty"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/specialty"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/specialty"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/specialty/bookings/new"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/specialty/bookings/new"
+  },
+  {
+   "step": 6,
+   "kind": "select",
+   "url": "/admin/specialty/bookings/new"
+  },
+  {
+   "step": 7,
+   "kind": "select",
+   "url": "/admin/specialty/bookings/new"
+  },
+  {
+   "step": 8,
+   "kind": "type",
+   "url": "/admin/specialty/bookings/new"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/specialty/bookings/25"
+  }
+ ],
+ "recorded_at": "2026-11-06T00:43:02.045Z"
+}

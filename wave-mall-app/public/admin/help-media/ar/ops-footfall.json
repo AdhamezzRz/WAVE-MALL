@@ -1,0 +1,127 @@
+{
+ "id": "ops-footfall",
+ "lang": "ar",
+ "title": "قراءة حركة الزوار",
+ "duration": 69.08,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 7.68,
+   "text": "كم شخصًا دخل المول، ومتى، ومن أي مدخل، مقارنةً بالأسبوع الماضي وبمبيعات المستأجرين.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.68,
+   "end": 13.64,
+   "text": "تعدّ صفحة حركة الزوار القادمين من كل مدخل، مباشرةً من عدادات الأبواب.",
+   "step": 1,
+   "url": "/admin/footfall"
+  },
+  {
+   "start": 13.64,
+   "end": 22.77,
+   "text": "عدد الزوار حتى الآن وأكثر ساعة ازدحامًا والسيارات، وكل رقم مقارن بنفس اليوم من الأسبوع الماضي في هذه الساعة.",
+   "step": 2,
+   "url": "/admin/footfall"
+  },
+  {
+   "start": 22.77,
+   "end": 28.77,
+   "text": "الخط المتصل هو اليوم، والخط المتقطع هو نفس اليوم من الأسبوع الماضي.",
+   "step": 3,
+   "url": "/admin/footfall"
+  },
+  {
+   "start": 28.77,
+   "end": 35.39,
+   "text": "غيّر الفترة: أمس أو آخر سبعة أيام أو آخر ثلاثين يومًا.",
+   "step": 4,
+   "url": "/admin/footfall?p=week"
+  },
+  {
+   "start": 35.39,
+   "end": 42.25,
+   "text": "يوضح «حسب المدخل» أي الأبواب تجلب الزوار، وهذا يساعدك على توزيع العروض والحراسة.",
+   "step": 5,
+   "url": "/admin/footfall?p=week"
+  },
+  {
+   "start": 42.25,
+   "end": 49.22,
+   "text": "يضع «الزوار ومبيعات المستأجرين» أعداد الزوار بجانب مبيعات المحلات، فترى كم ينفق كل زائر.",
+   "step": 6,
+   "url": "/admin/footfall?p=week"
+  },
+  {
+   "start": 49.22,
+   "end": 53.63,
+   "text": "صدّر الأرقام إلى جدول بيانات متى احتجت إليها.",
+   "step": 7,
+   "url": "/admin/footfall?p=week"
+  },
+  {
+   "start": 53.63,
+   "end": 60.09,
+   "text": "إذا توقف أحد العدادات، استورد أرقامه من ملف من هنا.",
+   "step": 8,
+   "url": "/admin/footfall/import"
+  },
+  {
+   "start": 60.09,
+   "end": 64.43,
+   "text": "وفي «المداخل والعدادات» تُضبط الأبواب والعدادات المركّبة عليها.",
+   "step": 9,
+   "url": "/admin/footfall/import"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/footfall"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/footfall"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/footfall"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/footfall?p=week"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/footfall?p=week"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/footfall?p=week"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/footfall?p=week"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/footfall/import"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/footfall/import"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:35:07.692Z"
+}

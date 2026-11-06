@@ -1,0 +1,144 @@
+{
+ "id": "overview-ask",
+ "lang": "en",
+ "title": "Asking for approval and answering questions",
+ "duration": 83.56,
+ "cues": [
+  {
+   "start": 0.05,
+   "end": 9.75,
+   "text": "Send a request for approval with the amount and the reason, and answer when the approver asks for more information.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 9.75,
+   "end": 15.73,
+   "text": "Need a manager's agreement for something? Ask for approval from Approvals & tasks.",
+   "step": 1,
+   "url": "/admin/work"
+  },
+  {
+   "start": 15.73,
+   "end": 19.48,
+   "text": "Choose Ask for approval.",
+   "step": 2,
+   "url": "/admin/approvals/new"
+  },
+  {
+   "start": 19.48,
+   "end": 26.5,
+   "text": "Say what needs approval,",
+   "step": 3,
+   "url": "/admin/approvals/new"
+  },
+  {
+   "start": 26.5,
+   "end": 32.01,
+   "text": "the amount,",
+   "step": 4,
+   "url": "/admin/approvals/new"
+  },
+  {
+   "start": 32.01,
+   "end": 40.35,
+   "text": "and why. A clear reason gets a faster answer.",
+   "step": 5,
+   "url": "/admin/approvals/new"
+  },
+  {
+   "start": 40.35,
+   "end": 48.77,
+   "text": "Send it. The approver is told at once, and the request page shows who has it now.",
+   "step": 6,
+   "url": "/admin/approvals/20"
+  },
+  {
+   "start": 48.77,
+   "end": 54.79,
+   "text": "If the approver has a question, you see it under What you asked for.",
+   "step": 7,
+   "url": "/admin/work"
+  },
+  {
+   "start": 58.45,
+   "end": 65.97,
+   "text": "Here is the question. While it waits for your answer, the approver's clock is paused.",
+   "step": 9,
+   "url": "/admin/approvals/19"
+  },
+  {
+   "start": 65.97,
+   "end": 71.86,
+   "text": "Write your answer.",
+   "step": 10,
+   "url": "/admin/approvals/19"
+  },
+  {
+   "start": 71.86,
+   "end": 78.91,
+   "text": "Send it. The request goes back to the approver and the clock runs again.",
+   "step": 11,
+   "url": "/admin/approvals/19"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/work"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/approvals/new"
+  },
+  {
+   "step": 3,
+   "kind": "type",
+   "url": "/admin/approvals/new"
+  },
+  {
+   "step": 4,
+   "kind": "type",
+   "url": "/admin/approvals/new"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/approvals/new"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/approvals/20"
+  },
+  {
+   "step": 7,
+   "kind": "go",
+   "url": "/admin/work"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/approvals/19"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/approvals/19"
+  },
+  {
+   "step": 10,
+   "kind": "type",
+   "url": "/admin/approvals/19"
+  },
+  {
+   "step": 11,
+   "kind": "click",
+   "url": "/admin/approvals/19"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:53:31.937Z"
+}

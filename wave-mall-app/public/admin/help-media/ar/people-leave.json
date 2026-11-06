@@ -1,0 +1,127 @@
+{
+ "id": "people-leave",
+ "lang": "ar",
+ "title": "اعتماد الإجازات",
+ "duration": 62.43,
+ "cues": [
+  {
+   "start": 0.04,
+   "end": 8.56,
+   "text": "اعتمد طلبات الإجازة أو ارفضها، واعرف من في إجازة هذا الشهر، وسجّل إجازة لأحد الموظفين.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.56,
+   "end": 12.3,
+   "text": "تُفتح «الإجازات» على الطلبات التي تنتظر القرار.",
+   "step": 1,
+   "url": "/admin/hr/leave"
+  },
+  {
+   "start": 12.3,
+   "end": 18.35,
+   "text": "يعرض كل طلب الموظف ونوع الإجازة والتواريخ وعدد أيام العمل التي تستهلكها.",
+   "step": 2,
+   "url": "/admin/hr/leave"
+  },
+  {
+   "start": 18.35,
+   "end": 24,
+   "text": "قبل أن تقرر، راجع من غيره في إجازة في تلك الأيام.",
+   "step": 3,
+   "url": "/admin/hr/leave"
+  },
+  {
+   "start": 24,
+   "end": 29.83,
+   "text": "اضغط «موافقة». تُخصم الأيام من رصيده، ويصله إشعار بالبريد.",
+   "step": 4,
+   "url": "/admin/hr/leave"
+  },
+  {
+   "start": 29.83,
+   "end": 35.74,
+   "text": "وللرفض، اكتب السبب، فهو يصل إلى الموظف.",
+   "step": 5,
+   "url": "/admin/hr/leave"
+  },
+  {
+   "start": 35.74,
+   "end": 41.96,
+   "text": "مثلًا: موسم ذروة، برجاء اختيار تواريخ أخرى.",
+   "step": 6,
+   "url": "/admin/hr/leave"
+  },
+  {
+   "start": 41.96,
+   "end": 46.32,
+   "text": "أو اتركه لوقت لاحق.",
+   "step": 7,
+   "url": "/admin/hr/leave"
+  },
+  {
+   "start": 46.32,
+   "end": 51.54,
+   "text": "اتصل أحدهم ليبلغ بمرضه؟ سجّل الإجازة هنا، واختر «اعتماد الآن».",
+   "step": 8,
+   "url": "/admin/hr/leave"
+  },
+  {
+   "start": 51.54,
+   "end": 57.66,
+   "text": "تعرض الأرصدة استحقاق كل موظف، وما استخدمه، وما تبقى له هذا العام.",
+   "step": 9,
+   "url": "/admin/hr/leave"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/hr/leave"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/hr/leave"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/hr/leave"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/hr/leave"
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/hr/leave"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/hr/leave"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/hr/leave"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/hr/leave"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/hr/leave"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:28:18.890Z"
+}

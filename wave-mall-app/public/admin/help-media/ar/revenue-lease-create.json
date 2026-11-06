@@ -1,0 +1,156 @@
+{
+ "id": "revenue-lease-create",
+ "lang": "ar",
+ "title": "تحويل العرض المقبول إلى عقد",
+ "duration": 71.09,
+ "cues": [
+  {
+   "start": 0.07,
+   "end": 8.17,
+   "text": "سجّل قبول العرض، وأنشئ مسودة العقد منه بضغطة واحدة، ثم راجع الشروط وفعّل العقد.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.17,
+   "end": 15.06,
+   "text": "يبدأ العقد من العرض الذي وافقت عليه العلامة التجارية. هذه هي العروض التي أرسلتها.",
+   "step": 1,
+   "url": "/admin/offers?status=sent"
+  },
+  {
+   "start": 15.06,
+   "end": 19.67,
+   "text": "افتح العرض الذي وافقت عليه العلامة.",
+   "step": 2,
+   "url": "/admin/offers/2"
+  },
+  {
+   "start": 19.67,
+   "end": 25.35,
+   "text": "اختر «قُبِل العرض». أصبحت الوحدات الآن محجوزة لهذه العلامة.",
+   "step": 3,
+   "url": "/admin/offers/2"
+  },
+  {
+   "start": 25.35,
+   "end": 29.3,
+   "text": "يظهر زر جديد: «إنشاء العقد».",
+   "step": 4,
+   "url": "/admin/leases/new?offer=2"
+  },
+  {
+   "start": 29.3,
+   "end": 34.98,
+   "text": "كل شيء يأتي من العرض: العلامة والوحدات والإيجار والزيادة السنوية والتأمين.",
+   "step": 5,
+   "url": "/admin/leases/new?offer=2"
+  },
+  {
+   "start": 34.98,
+   "end": 40.33,
+   "text": "راجع تاريخ البداية والشروط، وعدّل أي شيء اتُّفق عليه عند التوقيع.",
+   "step": 6,
+   "url": "/admin/leases/new?offer=2"
+  },
+  {
+   "start": 40.33,
+   "end": 47.11,
+   "text": "اختر «إنشاء العقد». يبدأ العقد مسودة، فلا تصدر أي فواتير بعد.",
+   "step": 7,
+   "url": "/admin/leases/7"
+  },
+  {
+   "start": 47.11,
+   "end": 51.34,
+   "text": "تعرض المسودة المساحة والإيجار وقيمة العقد كاملة.",
+   "step": 8,
+   "url": "/admin/leases/7"
+  },
+  {
+   "start": 51.34,
+   "end": 55.22,
+   "text": "ارفع النسخة الموقّعة هنا ليكتمل ملف العقد.",
+   "step": 9,
+   "url": "/admin/leases/7"
+  },
+  {
+   "start": 55.22,
+   "end": 61.98,
+   "text": "ثم اختر «تفعيل العقد». تصبح الوحدات مؤجرة وتُنشأ كل فواتير مدة العقد.",
+   "step": 10,
+   "url": "/admin/leases/7"
+  },
+  {
+   "start": 62.01,
+   "end": 66.39,
+   "text": "أصبح العقد ساريًا، وتتبع فواتيره جدول الإيجار تلقائيًا.",
+   "step": 12,
+   "url": "/admin/leases/7"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/offers?status=sent"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/offers/2"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/offers/2"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/leases/new?offer=2"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/leases/new?offer=2"
+  },
+  {
+   "step": 6,
+   "kind": "scroll",
+   "url": "/admin/leases/new?offer=2"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/leases/7"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/leases/7"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/leases/7"
+  },
+  {
+   "step": 10,
+   "kind": "click",
+   "url": "/admin/leases/7"
+  },
+  {
+   "step": 11,
+   "kind": "wait",
+   "url": "/admin/leases/7"
+  },
+  {
+   "step": 12,
+   "kind": "point",
+   "url": "/admin/leases/7"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:49:22.159Z"
+}

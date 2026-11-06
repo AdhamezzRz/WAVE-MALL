@@ -1,0 +1,144 @@
+{
+ "id": "property-tenant-file",
+ "lang": "ar",
+ "title": "ملف المستأجر",
+ "duration": 74.4,
+ "cues": [
+  {
+   "start": 0.01,
+   "end": 8.97,
+   "text": "كل ما يخص المستأجر في صفحة واحدة: العقد والمستندات والبيانات القانونية وجهات اتصال المتجر وما ينقص.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.97,
+   "end": 14.81,
+   "text": "تحفظ «ملفات المستأجرين» كل ما يخص كل علامة وقّعت مع ذا ويف.",
+   "step": 1,
+   "url": "/admin/tenants"
+  },
+  {
+   "start": 14.81,
+   "end": 21.77,
+   "text": "كم مستأجرًا يعمل، ومن يفتتح قريبًا، ومدى اكتمال الملفات، والمستندات المطلوب تجديدها، والإيجارات المتأخرة.",
+   "step": 2,
+   "url": "/admin/tenants"
+  },
+  {
+   "start": 21.77,
+   "end": 26.44,
+   "text": "اعرضها كبطاقات أو كجدول أو كمصفوفة لكل المستندات المطلوبة.",
+   "step": 3,
+   "url": "/admin/tenants"
+  },
+  {
+   "start": 26.44,
+   "end": 31.95,
+   "text": "افتح مستأجرًا. «أتيليه نور» ما زال في مرحلة التوقيع.",
+   "step": 4,
+   "url": "/admin/tenants/5"
+  },
+  {
+   "start": 31.95,
+   "end": 36.73,
+   "text": "يعرض الرأس الاسم القانوني والوحدات والحالة ومدى اكتمال الملف.",
+   "step": 5,
+   "url": "/admin/tenants/5"
+  },
+  {
+   "start": 36.73,
+   "end": 43.22,
+   "text": "انتقل إلى أي جزء من الملف من هذا الشريط.",
+   "step": 6,
+   "url": "/admin/tenants/5#compliance"
+  },
+  {
+   "start": 43.22,
+   "end": 49.19,
+   "text": "يعرض «اكتمال الملفات» المستندات المطلوبة ويحدد الناقص منها، فتعرف تمامًا ماذا تطلب.",
+   "step": 7,
+   "url": "/admin/tenants/5#compliance"
+  },
+  {
+   "start": 53.2,
+   "end": 59.05,
+   "text": "البيانات القانونية وفريق المتجر وجهات الاتصال على اليمين، وعدّلها كلما تغيرت.",
+   "step": 9,
+   "url": "/admin/tenants/5#legal"
+  },
+  {
+   "start": 59.05,
+   "end": 65.46,
+   "text": "من «الوصول إلى البوابة» تدعو المستأجر إلى بوابته الخاصة ليدفع الفواتير ويرسل الطلبات.",
+   "step": 10,
+   "url": "/admin/tenants/5#legal"
+  },
+  {
+   "start": 65.46,
+   "end": 70.13,
+   "text": "«البطاقة التعريفية» تطبع ملخصًا للمستأجر في صفحة واحدة للاجتماعات.",
+   "step": 11,
+   "url": "/admin/tenants/5#legal"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/tenants"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/tenants"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/tenants"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/tenants/5"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/tenants/5"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/tenants/5#compliance"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/tenants/5#compliance"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/tenants/5#legal"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/tenants/5#legal"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/tenants/5#legal"
+  },
+  {
+   "step": 11,
+   "kind": "point",
+   "url": "/admin/tenants/5#legal"
+  }
+ ],
+ "recorded_at": "2026-11-06T00:40:17.028Z"
+}

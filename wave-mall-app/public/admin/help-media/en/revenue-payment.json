@@ -1,0 +1,125 @@
+{
+ "id": "revenue-payment",
+ "lang": "en",
+ "title": "Recording a payment",
+ "duration": 65.68,
+ "cues": [
+  {
+   "start": 0.04,
+   "end": 8.97,
+   "text": "Record a transfer or cash payment against an invoice, or send the tenant a link to pay online.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.97,
+   "end": 12.38,
+   "text": "A tenant has paid. Find their invoice.",
+   "step": 1,
+   "url": "/admin/billing?status=overdue"
+  },
+  {
+   "start": 15.62,
+   "end": 22.17,
+   "text": "Record a payment is on the right. The amount is the balance still due.",
+   "step": 3,
+   "url": "/admin/invoices/265"
+  },
+  {
+   "start": 22.17,
+   "end": 28.65,
+   "text": "Choose how they paid: transfer, cheque, card, cash, InstaPay, Fawry or a wallet.",
+   "step": 4,
+   "url": "/admin/invoices/265"
+  },
+  {
+   "start": 28.65,
+   "end": 34.16,
+   "text": "Add the bank reference, so it can be matched later.",
+   "step": 5,
+   "url": "/admin/invoices/265"
+  },
+  {
+   "start": 34.16,
+   "end": 37.14,
+   "text": "Choose Record payment.",
+   "step": 6,
+   "url": "/admin/invoices/265"
+  },
+  {
+   "start": 37.14,
+   "end": 44.76,
+   "text": "The invoice is paid, the receipt is ready to print, and the accounts are updated by themselves.",
+   "step": 7,
+   "url": "/admin/invoices/265"
+  },
+  {
+   "start": 44.76,
+   "end": 48.94,
+   "text": "Prefer the tenant pays online? Open an unpaid invoice.",
+   "step": 8,
+   "url": "/admin/billing?status=open"
+  },
+  {
+   "start": 52.32,
+   "end": 60.97,
+   "text": "Under Online payment, create a link. The tenant pays by card, and the invoice is marked paid on its own.",
+   "step": 10,
+   "url": "/admin/invoices/360"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/billing?status=overdue"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/invoices/265"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/invoices/265"
+  },
+  {
+   "step": 4,
+   "kind": "select",
+   "url": "/admin/invoices/265"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/invoices/265"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/invoices/265"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/invoices/265"
+  },
+  {
+   "step": 8,
+   "kind": "go",
+   "url": "/admin/billing?status=open"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/invoices/360"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/invoices/360"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:09:09.810Z"
+}

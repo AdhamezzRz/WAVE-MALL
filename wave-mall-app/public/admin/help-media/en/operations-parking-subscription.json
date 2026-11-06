@@ -1,0 +1,139 @@
+{
+ "id": "operations-parking-subscription",
+ "lang": "en",
+ "title": "Monthly parking subscriptions",
+ "duration": 66.89,
+ "cues": [
+  {
+   "start": 0.07,
+   "end": 9.77,
+   "text": "Give a driver a monthly subscription so the gates open for their plate or card, and bill it every month.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 9.77,
+   "end": 14.76,
+   "text": "Subscriptions are for tenant staff, mall staff, VIPs and regular drivers.",
+   "step": 1,
+   "url": "/admin/parking/subscriptions"
+  },
+  {
+   "start": 14.76,
+   "end": 18.48,
+   "text": "Choose New subscription.",
+   "step": 2,
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "start": 18.48,
+   "end": 23.14,
+   "text": "Choose the plan. The price comes with it.",
+   "step": 3,
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "start": 23.14,
+   "end": 27.81,
+   "text": "Who it is for: here, a tenant's staff member.",
+   "step": 4,
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "start": 27.81,
+   "end": 32.94,
+   "text": "And which tenant. Their invoice can go to the brand.",
+   "step": 5,
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "start": 32.94,
+   "end": 36.89,
+   "text": "The driver's name.",
+   "step": 6,
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "start": 36.89,
+   "end": 43.42,
+   "text": "The plates. The camera at the gate reads them and opens by itself.",
+   "step": 7,
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "start": 43.42,
+   "end": 49.68,
+   "text": "Or give them a card: hold it on a phone to read its number.",
+   "step": 8,
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "start": 49.68,
+   "end": 55.11,
+   "text": "Auto-renew keeps it going every month. An unpaid invoice suspends it.",
+   "step": 9,
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "start": 55.11,
+   "end": 62.25,
+   "text": "Create. The first invoice is issued, and the gates know the plate at once.",
+   "step": 10,
+   "url": "/admin/parking/subscriptions/26"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/parking/subscriptions"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "step": 3,
+   "kind": "select",
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "step": 4,
+   "kind": "select",
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "step": 5,
+   "kind": "select",
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "step": 7,
+   "kind": "type",
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "step": 10,
+   "kind": "click",
+   "url": "/admin/parking/subscriptions/26"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:16:51.508Z"
+}

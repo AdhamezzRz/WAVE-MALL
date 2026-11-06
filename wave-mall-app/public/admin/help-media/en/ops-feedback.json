@@ -1,0 +1,156 @@
+{
+ "id": "ops-feedback",
+ "lang": "en",
+ "title": "Handling shopper feedback",
+ "duration": 81.67,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 7.8,
+   "text": "Read the ratings by place, take a ticket, record what was done and close it.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.8,
+   "end": 15.51,
+   "text": "Shoppers scan a poster anywhere in the mall, rate it and leave a comment. No app, no sign-in.",
+   "step": 1,
+   "url": "/admin/feedback"
+  },
+  {
+   "start": 15.51,
+   "end": 24.47,
+   "text": "The average rating, how many would recommend the mall, the tickets still open and how fast they get a first answer.",
+   "step": 2,
+   "url": "/admin/feedback"
+  },
+  {
+   "start": 24.47,
+   "end": 28.9,
+   "text": "By location, worst first, tells you where to act.",
+   "step": 3,
+   "url": "/admin/feedback"
+  },
+  {
+   "start": 28.9,
+   "end": 32.91,
+   "text": "Low ratings and comments become tickets.",
+   "step": 4,
+   "url": "/admin/feedback/tickets"
+  },
+  {
+   "start": 32.91,
+   "end": 36.29,
+   "text": "Open one.",
+   "step": 5,
+   "url": "/admin/feedback/91"
+  },
+  {
+   "start": 36.29,
+   "end": 44.83,
+   "text": "What the shopper said, where, and where it was sent. A cleanliness complaint goes straight to cleaning as an alert.",
+   "step": 6,
+   "url": "/admin/feedback/91"
+  },
+  {
+   "start": 44.83,
+   "end": 48.91,
+   "text": "Set the status and who handles it.",
+   "step": 7,
+   "url": "/admin/feedback/91"
+  },
+  {
+   "start": 51.52,
+   "end": 60.25,
+   "text": "Write what was done. The time to the first action is measured, so answer quickly.",
+   "step": 9,
+   "url": "/admin/feedback/91"
+  },
+  {
+   "start": 60.25,
+   "end": 63.35,
+   "text": "Save.",
+   "step": 10,
+   "url": "/admin/feedback/91"
+  },
+  {
+   "start": 63.35,
+   "end": 72.86,
+   "text": "Each place has its own poster and link. Add a place here and link it to a cleaning area.",
+   "step": 11,
+   "url": "/admin/feedback/locations"
+  },
+  {
+   "start": 72.86,
+   "end": 77.03,
+   "text": "Then print the posters and put them up.",
+   "step": 12,
+   "url": "/admin/feedback/locations"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/feedback"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/feedback"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/feedback"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/feedback/tickets"
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/feedback/91"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/feedback/91"
+  },
+  {
+   "step": 7,
+   "kind": "select",
+   "url": "/admin/feedback/91"
+  },
+  {
+   "step": 8,
+   "kind": "select",
+   "url": "/admin/feedback/91"
+  },
+  {
+   "step": 9,
+   "kind": "type",
+   "url": "/admin/feedback/91"
+  },
+  {
+   "step": 10,
+   "kind": "click",
+   "url": "/admin/feedback/91"
+  },
+  {
+   "step": 11,
+   "kind": "click",
+   "url": "/admin/feedback/locations"
+  },
+  {
+   "step": 12,
+   "kind": "point",
+   "url": "/admin/feedback/locations"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:09:17.480Z"
+}

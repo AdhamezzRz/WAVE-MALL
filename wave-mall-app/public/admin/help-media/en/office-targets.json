@@ -1,0 +1,113 @@
+{
+ "id": "office-targets",
+ "lang": "en",
+ "title": "Setting the team's monthly targets",
+ "duration": 61.26,
+ "cues": [
+  {
+   "start": 0.09,
+   "end": 9.4,
+   "text": "See how each person is doing this month, and set their targets for leads, viewings, signed area and rent.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 9.4,
+   "end": 14.36,
+   "text": "Team & targets shows how each person is doing this month.",
+   "step": 1,
+   "url": "/admin/team"
+  },
+  {
+   "start": 14.36,
+   "end": 22.17,
+   "text": "The leasing team lists everyone with their role, open and signed deals, and when they last signed in.",
+   "step": 2,
+   "url": "/admin/team"
+  },
+  {
+   "start": 22.17,
+   "end": 26.9,
+   "text": "Below, the targets for this month: one row per person.",
+   "step": 3,
+   "url": "/admin/team"
+  },
+  {
+   "start": 26.9,
+   "end": 30.31,
+   "text": "Enter how many new leads, how many viewings,",
+   "step": 4,
+   "url": "/admin/team"
+  },
+  {
+   "start": 32.94,
+   "end": 39.15,
+   "text": "the area to sign in square metres, and the yearly rent to bring in.",
+   "step": 6,
+   "url": "/admin/team"
+  },
+  {
+   "start": 43.01,
+   "end": 49.88,
+   "text": "Save the targets. Reports measures each person against them in Team this month.",
+   "step": 8,
+   "url": "/admin/team?period=2026-11#targets"
+  },
+  {
+   "start": 49.88,
+   "end": 56.54,
+   "text": "To change what someone can see or do, go to Users & permissions.",
+   "step": 9,
+   "url": "/admin/team?period=2026-11#targets"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/team"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/team"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/team"
+  },
+  {
+   "step": 4,
+   "kind": "type",
+   "url": "/admin/team"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/team"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/team"
+  },
+  {
+   "step": 7,
+   "kind": "type",
+   "url": "/admin/team"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/team?period=2026-11#targets"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/team?period=2026-11#targets"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:26:33.042Z"
+}

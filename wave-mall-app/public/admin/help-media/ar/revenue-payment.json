@@ -1,0 +1,125 @@
+{
+ "id": "revenue-payment",
+ "lang": "ar",
+ "title": "تسجيل دفعة",
+ "duration": 57.76,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 7.69,
+   "text": "سجّل تحويلًا أو دفعة نقدية على فاتورة، أو أرسل للمستأجر رابطًا للدفع الإلكتروني.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.69,
+   "end": 11.25,
+   "text": "سدّد أحد المستأجرين. ابحث عن فاتورته.",
+   "step": 1,
+   "url": "/admin/billing?status=overdue"
+  },
+  {
+   "start": 14.49,
+   "end": 19.24,
+   "text": "تجد «تسجيل دفعة» على اليمين، والمبلغ هو الرصيد المستحق.",
+   "step": 3,
+   "url": "/admin/invoices/360"
+  },
+  {
+   "start": 19.24,
+   "end": 27.52,
+   "text": "اختر طريقة الدفع: تحويل أو شيك أو بطاقة أو نقدًا أو إنستاباي أو فوري أو محفظة.",
+   "step": 4,
+   "url": "/admin/invoices/360"
+  },
+  {
+   "start": 27.52,
+   "end": 31.42,
+   "text": "أضف مرجع البنك لتسهيل المطابقة لاحقًا.",
+   "step": 5,
+   "url": "/admin/invoices/360"
+  },
+  {
+   "start": 31.42,
+   "end": 34.64,
+   "text": "اختر «تسجيل الدفعة».",
+   "step": 6,
+   "url": "/admin/invoices/360"
+  },
+  {
+   "start": 34.64,
+   "end": 39.13,
+   "text": "سُدّدت الفاتورة، والإيصال جاهز للطباعة، وتُحدَّث الحسابات تلقائيًا.",
+   "step": 7,
+   "url": "/admin/invoices/360"
+  },
+  {
+   "start": 39.13,
+   "end": 43.73,
+   "text": "تفضّل أن يدفع المستأجر إلكترونيًا؟ افتح فاتورة غير مسددة.",
+   "step": 8,
+   "url": "/admin/billing?status=open"
+  },
+  {
+   "start": 46.96,
+   "end": 53.04,
+   "text": "من «الدفع الإلكتروني» أنشئ رابطًا. يدفع المستأجر بالبطاقة، وتُسجَّل الفاتورة مسددة تلقائيًا.",
+   "step": 10,
+   "url": "/admin/invoices/266"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/billing?status=overdue"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/invoices/360"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/invoices/360"
+  },
+  {
+   "step": 4,
+   "kind": "select",
+   "url": "/admin/invoices/360"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/invoices/360"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/invoices/360"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/invoices/360"
+  },
+  {
+   "step": 8,
+   "kind": "go",
+   "url": "/admin/billing?status=open"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/invoices/266"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/invoices/266"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:10:35.293Z"
+}

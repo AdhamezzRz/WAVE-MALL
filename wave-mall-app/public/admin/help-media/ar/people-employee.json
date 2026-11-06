@@ -1,0 +1,163 @@
+{
+ "id": "people-employee",
+ "lang": "ar",
+ "title": "إضافة موظف",
+ "duration": 69.56,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 6.37,
+   "text": "تعرّف على ملفات الموظفين، ثم أضف موظفًا جديدًا بوظيفته وراتبه.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 6.37,
+   "end": 11.42,
+   "text": "صفحة الموظفين هي ملف العاملين في المول: الجميع، حسب الإدارة.",
+   "step": 1,
+   "url": "/admin/hr"
+  },
+  {
+   "start": 11.42,
+   "end": 18.07,
+   "text": "في الأعلى: تكلفة الرواتب الشهرية، ومن في إجازة اليوم، والإجازات التي تنتظر اعتمادك.",
+   "step": 2,
+   "url": "/admin/hr"
+  },
+  {
+   "start": 18.07,
+   "end": 22.87,
+   "text": "عدد العاملين حسب الإدارة، وكل صف يصفّي القائمة بالأسفل.",
+   "step": 3,
+   "url": "/admin/hr"
+  },
+  {
+   "start": 22.87,
+   "end": 28.31,
+   "text": "وقسم «القادم» ينبّهك إلى العقود وفترات الاختبار التي تنتهي قريبًا.",
+   "step": 4,
+   "url": "/admin/hr"
+  },
+  {
+   "start": 28.31,
+   "end": 32.96,
+   "text": "لإضافة موظف، اختر «موظف جديد».",
+   "step": 5,
+   "url": "/admin/hr/employees/new"
+  },
+  {
+   "start": 32.96,
+   "end": 37.56,
+   "text": "الاسم كما في البطاقة، بالإنجليزية.",
+   "step": 6,
+   "url": "/admin/hr/employees/new"
+  },
+  {
+   "start": 37.56,
+   "end": 41.04,
+   "text": "وبالعربية، لقسائم الرواتب والخطابات.",
+   "step": 7,
+   "url": "/admin/hr/employees/new"
+  },
+  {
+   "start": 41.04,
+   "end": 43.89,
+   "text": "الإدارة.",
+   "step": 8,
+   "url": "/admin/hr/employees/new"
+  },
+  {
+   "start": 43.89,
+   "end": 47.69,
+   "text": "المسمى الوظيفي.",
+   "step": 9,
+   "url": "/admin/hr/employees/new"
+  },
+  {
+   "start": 47.69,
+   "end": 53.36,
+   "text": "تاريخ التعيين هو اليوم، وفترة الاختبار محسوبة بثلاثة أشهر، ويمكنك تعديلهما.",
+   "step": 10,
+   "url": "/admin/hr/employees/new"
+  },
+  {
+   "start": 53.36,
+   "end": 57.99,
+   "text": "الراتب الأساسي، ومنه تُحسب الرواتب والتأمينات والضرائب كل شهر.",
+   "step": 11,
+   "url": "/admin/hr/employees/new"
+  },
+  {
+   "start": 57.99,
+   "end": 64.87,
+   "text": "اضغط «إضافة الموظف». يضم ملفه المستندات وأرصدة الإجازات والسلف وكل قسائم الرواتب.",
+   "step": 12,
+   "url": "/admin/hr/employees/27"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/hr"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/hr"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/hr"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/hr"
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/hr/employees/new"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/hr/employees/new"
+  },
+  {
+   "step": 7,
+   "kind": "type",
+   "url": "/admin/hr/employees/new"
+  },
+  {
+   "step": 8,
+   "kind": "select",
+   "url": "/admin/hr/employees/new"
+  },
+  {
+   "step": 9,
+   "kind": "type",
+   "url": "/admin/hr/employees/new"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/hr/employees/new"
+  },
+  {
+   "step": 11,
+   "kind": "type",
+   "url": "/admin/hr/employees/new"
+  },
+  {
+   "step": 12,
+   "kind": "click",
+   "url": "/admin/hr/employees/27"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:25:02.238Z"
+}

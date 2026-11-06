@@ -1,0 +1,139 @@
+{
+ "id": "purchasing-request",
+ "lang": "en",
+ "title": "Asking to buy something",
+ "duration": 73.88,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 7.8,
+   "text": "Raise a purchase request with its lines and estimated prices, and send it for approval.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.8,
+   "end": 14.48,
+   "text": "Purchasing follows every purchase: the request, the approval, the order, the delivery and the bill.",
+   "step": 1,
+   "url": "/admin/purchasing"
+  },
+  {
+   "start": 14.48,
+   "end": 20.8,
+   "text": "At the top: open orders, late deliveries, items running low and requests waiting.",
+   "step": 2,
+   "url": "/admin/purchasing"
+  },
+  {
+   "start": 20.8,
+   "end": 27.35,
+   "text": "Anyone can ask to buy something. Choose New purchase request.",
+   "step": 3,
+   "url": "/admin/purchasing/requests/new"
+  },
+  {
+   "start": 27.35,
+   "end": 33.69,
+   "text": "Say what it is for.",
+   "step": 4,
+   "url": "/admin/purchasing/requests/new"
+  },
+  {
+   "start": 33.69,
+   "end": 37.32,
+   "text": "The department that pays for it.",
+   "step": 5,
+   "url": "/admin/purchasing/requests/new"
+  },
+  {
+   "start": 37.32,
+   "end": 43.49,
+   "text": "And why. A clear reason gets a faster yes.",
+   "step": 6,
+   "url": "/admin/purchasing/requests/new"
+  },
+  {
+   "start": 43.49,
+   "end": 51.17,
+   "text": "For each line, choose an item from the store, or leave it empty for something new.",
+   "step": 7,
+   "url": "/admin/purchasing/requests/new"
+  },
+  {
+   "start": 51.17,
+   "end": 54.43,
+   "text": "The quantity.",
+   "step": 8,
+   "url": "/admin/purchasing/requests/new"
+  },
+  {
+   "start": 54.43,
+   "end": 59.45,
+   "text": "And the price you expect. It decides who has to approve.",
+   "step": 9,
+   "url": "/admin/purchasing/requests/new"
+  },
+  {
+   "start": 59.45,
+   "end": 69.16,
+   "text": "Send the request. It goes to the right approvers by itself, and you are told when it is decided.",
+   "step": 10,
+   "url": "/admin/purchasing/requests/8"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/purchasing"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/purchasing"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/purchasing/requests/new"
+  },
+  {
+   "step": 4,
+   "kind": "type",
+   "url": "/admin/purchasing/requests/new"
+  },
+  {
+   "step": 5,
+   "kind": "select",
+   "url": "/admin/purchasing/requests/new"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/purchasing/requests/new"
+  },
+  {
+   "step": 7,
+   "kind": "select",
+   "url": "/admin/purchasing/requests/new"
+  },
+  {
+   "step": 8,
+   "kind": "type",
+   "url": "/admin/purchasing/requests/new"
+  },
+  {
+   "step": 9,
+   "kind": "type",
+   "url": "/admin/purchasing/requests/new"
+  },
+  {
+   "step": 10,
+   "kind": "click",
+   "url": "/admin/purchasing/requests/8"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:59:22.013Z"
+}

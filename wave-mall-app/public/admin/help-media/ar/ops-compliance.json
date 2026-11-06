@@ -1,0 +1,144 @@
+{
+ "id": "ops-compliance",
+ "lang": "ar",
+ "title": "متابعة التراخيص وفحوص السلامة",
+ "duration": 70.48,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 5.94,
+   "text": "سجل الشهادات والفحوص والتراخيص، وما تأخر منها، وتسجيل التجديد.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 5.94,
+   "end": 12.7,
+   "text": "يحفظ قسم السلامة والتراخيص كل شهادة وفحص وترخيص يحتاجه المول، مع موعد استحقاقه التالي.",
+   "step": 1,
+   "url": "/admin/compliance"
+  },
+  {
+   "start": 12.7,
+   "end": 20.2,
+   "text": "في الأعلى: المتأخر، وما يستحق قريبًا، والمستأجرون الذين لا يوجد لديهم تأمين أو انتهى تأمينهم.",
+   "step": 2,
+   "url": "/admin/compliance"
+  },
+  {
+   "start": 20.2,
+   "end": 26.29,
+   "text": "صفِّ حسب النوع: الدفاع المدني، وإنذار الحريق، والمصاعد، والتراخيص وغيرها.",
+   "step": 3,
+   "url": "/admin/compliance?cat=fire_alarm"
+  },
+  {
+   "start": 26.29,
+   "end": 30.47,
+   "text": "عُد إلى الكل. يأتي المتأخر أولًا.",
+   "step": 4,
+   "url": "/admin/compliance"
+  },
+  {
+   "start": 30.47,
+   "end": 36.4,
+   "text": "افتح البند عند إنجاز الاختبار أو التفتيش أو التجديد.",
+   "step": 5,
+   "url": "/admin/compliance/items/4"
+  },
+  {
+   "start": 36.4,
+   "end": 40.69,
+   "text": "سجّله من هنا: التاريخ والنتيجة ومن قام به.",
+   "step": 6,
+   "url": "/admin/compliance/items/4"
+  },
+  {
+   "start": 43.49,
+   "end": 50.52,
+   "text": "أضف رقم الشهادة، واترك الموعد التالي فارغًا، فهو يُحسب تلقائيًا حسب تكرار البند.",
+   "step": 8,
+   "url": "/admin/compliance/items/4"
+  },
+  {
+   "start": 50.52,
+   "end": 54,
+   "text": "سجّله كمُنجز.",
+   "step": 9,
+   "url": "/admin/compliance/items/4"
+  },
+  {
+   "start": 54,
+   "end": 58.41,
+   "text": "ثم ارفع الشهادة لتكون جاهزة عند زيارة المفتش.",
+   "step": 10,
+   "url": "/admin/compliance/items/4"
+  },
+  {
+   "start": 58.41,
+   "end": 65.76,
+   "text": "يعرض تقويم الاثني عشر شهرًا كل ما يستحق هذا العام، وتُرسل التذكيرات قبل كل موعد.",
+   "step": 11,
+   "url": "/admin/compliance/items/4"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/compliance"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/compliance"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/compliance?cat=fire_alarm"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/compliance"
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/compliance/items/4"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/compliance/items/4"
+  },
+  {
+   "step": 7,
+   "kind": "select",
+   "url": "/admin/compliance/items/4"
+  },
+  {
+   "step": 8,
+   "kind": "type",
+   "url": "/admin/compliance/items/4"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/compliance/items/4"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/compliance/items/4"
+  },
+  {
+   "step": 11,
+   "kind": "point",
+   "url": "/admin/compliance/items/4"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:03:25.335Z"
+}

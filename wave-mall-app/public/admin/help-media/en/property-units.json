@@ -1,0 +1,151 @@
+{
+ "id": "property-units",
+ "lang": "en",
+ "title": "Finding a unit and holding it",
+ "duration": 96.08,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 11.25,
+   "text": "Read the mall plan, open a unit to see its size and list rent, and hold it for a brand you are talking to.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 11.25,
+   "end": 17.99,
+   "text": "Units and plan shows every shop in the mall, on the plan and as a list.",
+   "step": 1,
+   "url": "/admin/units"
+  },
+  {
+   "start": 17.99,
+   "end": 24.93,
+   "text": "At the top: how many units are available, on hold, reserved and leased, with their area.",
+   "step": 2,
+   "url": "/admin/units"
+  },
+  {
+   "start": 24.93,
+   "end": 31.84,
+   "text": "On the plan, each colour is a status, so free space stands out at a glance.",
+   "step": 3,
+   "url": "/admin/units"
+  },
+  {
+   "start": 31.84,
+   "end": 44.46,
+   "text": "Hover a shop to see its code, status and size.",
+   "step": 4,
+   "url": "/admin/units"
+  },
+  {
+   "start": 44.46,
+   "end": 50.85,
+   "text": "Click a shop on the plan or in the list to open it.",
+   "step": 5,
+   "url": "/admin/units/9"
+  },
+  {
+   "start": 50.85,
+   "end": 59.02,
+   "text": "The unit page shows its status, indoor area and terrace, and the list rent a month and a year.",
+   "step": 6,
+   "url": "/admin/units/9"
+  },
+  {
+   "start": 59.02,
+   "end": 67.47,
+   "text": "Where it is marks the shop on the plan, and below are its documents, work orders, interested leads and offers.",
+   "step": 7,
+   "url": "/admin/units/9"
+  },
+  {
+   "start": 67.47,
+   "end": 74.9,
+   "text": "To keep it for a brand while you negotiate, choose the lead under Hold this unit.",
+   "step": 8,
+   "url": "/admin/units/9"
+  },
+  {
+   "start": 74.9,
+   "end": 81.17,
+   "text": "Set how many days. The hold ends by itself, so units never stay blocked by mistake.",
+   "step": 9,
+   "url": "/admin/units/9"
+  },
+  {
+   "start": 81.17,
+   "end": 84.1,
+   "text": "Place the hold.",
+   "step": 10,
+   "url": "/admin/units/9"
+  },
+  {
+   "start": 84.1,
+   "end": 91.87,
+   "text": "The unit is now on hold for that brand, on the plan and for everyone in the office.",
+   "step": 11,
+   "url": "/admin/units/9"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/units"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/units"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/units"
+  },
+  {
+   "step": 4,
+   "kind": "hover",
+   "url": "/admin/units"
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/units/9"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/units/9"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/units/9"
+  },
+  {
+   "step": 8,
+   "kind": "select",
+   "url": "/admin/units/9"
+  },
+  {
+   "step": 9,
+   "kind": "type",
+   "url": "/admin/units/9"
+  },
+  {
+   "step": 10,
+   "kind": "click",
+   "url": "/admin/units/9"
+  },
+  {
+   "step": 11,
+   "kind": "point",
+   "url": "/admin/units/9"
+  }
+ ],
+ "recorded_at": "2026-11-06T00:12:20.187Z"
+}

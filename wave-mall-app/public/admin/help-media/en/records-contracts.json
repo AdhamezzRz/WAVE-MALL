@@ -1,0 +1,139 @@
+{
+ "id": "records-contracts",
+ "lang": "en",
+ "title": "Renewing a service contract",
+ "duration": 73.12,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 10.1,
+   "text": "Track what the mall pays its suppliers, see which contracts reach their notice date, and renew or end them on time.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 10.1,
+   "end": 16.84,
+   "text": "Contracts holds the mall's service contracts, security, cleaning, insurance and more, next to the tenant leases.",
+   "step": 1,
+   "url": "/admin/contracts"
+  },
+  {
+   "start": 16.84,
+   "end": 23.79,
+   "text": "What the mall pays a year, renewals due and what ends in the next ninety days.",
+   "step": 2,
+   "url": "/admin/contracts"
+  },
+  {
+   "start": 23.79,
+   "end": 32.45,
+   "text": "Renewals due lists the contracts whose notice date has arrived. Decide now, before they renew or lapse by themselves.",
+   "step": 3,
+   "url": "/admin/contracts?tab=renewals"
+  },
+  {
+   "start": 32.45,
+   "end": 35.49,
+   "text": "Open the contract.",
+   "step": 4,
+   "url": "/admin/contracts/5"
+  },
+  {
+   "start": 35.49,
+   "end": 41.33,
+   "text": "The supplier, value, billing, notice period and who in the office owns it.",
+   "step": 5,
+   "url": "/admin/contracts/5"
+  },
+  {
+   "start": 41.33,
+   "end": 45.73,
+   "text": "To keep it, choose Renew.",
+   "step": 6,
+   "url": "/admin/contracts/5"
+  },
+  {
+   "start": 45.73,
+   "end": 52.64,
+   "text": "The new end date is a year on. Change it if you agreed a different term.",
+   "step": 7,
+   "url": "/admin/contracts/5"
+  },
+  {
+   "start": 52.64,
+   "end": 56.27,
+   "text": "Enter the new value if the price changed.",
+   "step": 8,
+   "url": "/admin/contracts/5"
+  },
+  {
+   "start": 56.27,
+   "end": 59.17,
+   "text": "Renew the contract.",
+   "step": 9,
+   "url": "/admin/contracts/5"
+  },
+  {
+   "start": 59.17,
+   "end": 68.97,
+   "text": "The renewal is recorded in its history. If it is not working out, Terminate ends it on a chosen day with the reason.",
+   "step": 10,
+   "url": "/admin/contracts/5"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/contracts"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/contracts"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/contracts?tab=renewals"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/contracts/5"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/contracts/5"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/contracts/5"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/contracts/5"
+  },
+  {
+   "step": 8,
+   "kind": "type",
+   "url": "/admin/contracts/5"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/contracts/5"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/contracts/5"
+  }
+ ],
+ "recorded_at": "2026-11-06T00:23:50.846Z"
+}

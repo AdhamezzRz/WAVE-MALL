@@ -1,0 +1,162 @@
+{
+ "id": "revenue-cheques-receive",
+ "lang": "en",
+ "title": "Receiving post-dated cheques",
+ "duration": 80.35,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 7.79,
+   "text": "Put a tenant's cheques in the portfolio, each one matched to the invoice it pays.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.79,
+   "end": 12.83,
+   "text": "Cheques keeps every post-dated cheque you hold, until it is collected.",
+   "step": 1,
+   "url": "/admin/cheques"
+  },
+  {
+   "start": 12.83,
+   "end": 20.34,
+   "text": "You see what is due to deposit this week, what is at the bank and what bounced.",
+   "step": 2,
+   "url": "/admin/cheques"
+  },
+  {
+   "start": 20.34,
+   "end": 25.16,
+   "text": "A tenant brings their cheques. Choose Receive cheques.",
+   "step": 3,
+   "url": "/admin/cheques/receive"
+  },
+  {
+   "start": 25.16,
+   "end": 28.47,
+   "text": "Choose the tenant.",
+   "step": 4,
+   "url": "/admin/cheques/receive"
+  },
+  {
+   "start": 31.68,
+   "end": 35.16,
+   "text": "Then the lease, and choose Show.",
+   "step": 6,
+   "url": "/admin/cheques/receive?brand=1"
+  },
+  {
+   "start": 38.15,
+   "end": 44.79,
+   "text": "One row for each open invoice: the amounts and due dates are already filled in.",
+   "step": 8,
+   "url": "/admin/cheques/receive?brand=1&lease=1"
+  },
+  {
+   "start": 44.79,
+   "end": 48.19,
+   "text": "Type each cheque number and its bank.",
+   "step": 9,
+   "url": "/admin/cheques/receive?brand=1&lease=1"
+  },
+  {
+   "start": 64.05,
+   "end": 67.5,
+   "text": "Choose Put in the portfolio.",
+   "step": 15,
+   "url": "/admin/cheques?brand=1"
+  },
+  {
+   "start": 67.5,
+   "end": 75.67,
+   "text": "The cheques are held, each one linked to its invoice. You are reminded when each is due to deposit.",
+   "step": 16,
+   "url": "/admin/cheques?brand=1"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/cheques"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/cheques"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/cheques/receive"
+  },
+  {
+   "step": 4,
+   "kind": "select",
+   "url": "/admin/cheques/receive"
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/cheques/receive?brand=1"
+  },
+  {
+   "step": 6,
+   "kind": "select",
+   "url": "/admin/cheques/receive?brand=1"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/cheques/receive?brand=1&lease=1"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/cheques/receive?brand=1&lease=1"
+  },
+  {
+   "step": 9,
+   "kind": "type",
+   "url": "/admin/cheques/receive?brand=1&lease=1"
+  },
+  {
+   "step": 10,
+   "kind": "type",
+   "url": "/admin/cheques/receive?brand=1&lease=1"
+  },
+  {
+   "step": 11,
+   "kind": "type",
+   "url": "/admin/cheques/receive?brand=1&lease=1"
+  },
+  {
+   "step": 12,
+   "kind": "type",
+   "url": "/admin/cheques/receive?brand=1&lease=1"
+  },
+  {
+   "step": 13,
+   "kind": "type",
+   "url": "/admin/cheques/receive?brand=1&lease=1"
+  },
+  {
+   "step": 14,
+   "kind": "type",
+   "url": "/admin/cheques/receive?brand=1&lease=1"
+  },
+  {
+   "step": 15,
+   "kind": "click",
+   "url": "/admin/cheques?brand=1"
+  },
+  {
+   "step": 16,
+   "kind": "point",
+   "url": "/admin/cheques?brand=1"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:12:40.268Z"
+}

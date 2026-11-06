@@ -1,0 +1,144 @@
+{
+ "id": "sales-pipeline",
+ "lang": "ar",
+ "title": "العمل على لوحة مسار الصفقات",
+ "duration": 72.24,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 8.54,
+   "text": "شاهد كل صفقة حسب المرحلة والقيمة، واحجز وحدة لعلامة تجارية، وأغلق الفرصة الخاسرة مع سببها.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.54,
+   "end": 13.92,
+   "text": "يعرض مسار الصفقات كل صفقة مفتوحة كبطاقة، في عمود لكل مرحلة.",
+   "step": 1,
+   "url": "/admin/pipeline"
+  },
+  {
+   "start": 13.92,
+   "end": 19.06,
+   "text": "يعرض كل عمود عدد الصفقات فيه وإيجارها السنوي واحتمال إغلاقها.",
+   "step": 2,
+   "url": "/admin/pipeline"
+  },
+  {
+   "start": 19.06,
+   "end": 25.9,
+   "text": "تعرض البطاقة العلامة وتقييمها والمساحة المطلوبة والمسؤول والخطوة التالية، وتظهر الخطوات المتأخرة باللون الأحمر.",
+   "step": 3,
+   "url": "/admin/pipeline"
+  },
+  {
+   "start": 25.9,
+   "end": 32.91,
+   "text": "اسحب البطاقة إلى عمود آخر لتنقل الصفقة، وتعرض التبويبات صفقاتك أنت أو صفقات زميل.",
+   "step": 4,
+   "url": "/admin/pipeline"
+  },
+  {
+   "start": 32.91,
+   "end": 36.65,
+   "text": "اضغط على البطاقة لتفتح الفرصة.",
+   "step": 5,
+   "url": "/admin/leads/19"
+  },
+  {
+   "start": 36.65,
+   "end": 41.11,
+   "text": "تعرض «وحدات مناسبة» الوحدات المتاحة التي تطابق المساحة المطلوبة.",
+   "step": 6,
+   "url": "/admin/leads/19"
+  },
+  {
+   "start": 41.11,
+   "end": 47.87,
+   "text": "«حجز مؤقت» يخصص الوحدة لهذه العلامة لمدة أسبوع، فلا يعرضها أحد على غيرها.",
+   "step": 7,
+   "url": "/admin/leads/19"
+  },
+  {
+   "start": 47.87,
+   "end": 52.93,
+   "text": "وإن انسحبت العلامة، سجّل الفرصة كخاسرة.",
+   "step": 8,
+   "url": "/admin/leads/19"
+  },
+  {
+   "start": 52.93,
+   "end": 58.37,
+   "text": "اختر السبب دائمًا، فالتقارير تجمع الأسباب لتعرف لماذا تُخسر الصفقات.",
+   "step": 9,
+   "url": "/admin/leads/19"
+  },
+  {
+   "start": 62.47,
+   "end": 68.02,
+   "text": "سجّلها كخاسرة، فيُلغى الحجز المؤقت للوحدة وتخرج الفرصة من اللوحة.",
+   "step": 11,
+   "url": "/admin/leads/19"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/pipeline"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/pipeline"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/pipeline"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/pipeline"
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/leads/19"
+  },
+  {
+   "step": 6,
+   "kind": "scroll",
+   "url": "/admin/leads/19"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/leads/19"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/leads/19"
+  },
+  {
+   "step": 9,
+   "kind": "select",
+   "url": "/admin/leads/19"
+  },
+  {
+   "step": 10,
+   "kind": "type",
+   "url": "/admin/leads/19"
+  },
+  {
+   "step": 11,
+   "kind": "click",
+   "url": "/admin/leads/19"
+  }
+ ],
+ "recorded_at": "2026-11-06T00:30:50.866Z"
+}

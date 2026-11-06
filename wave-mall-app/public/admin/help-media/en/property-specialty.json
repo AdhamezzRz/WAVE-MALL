@@ -1,0 +1,127 @@
+{
+ "id": "property-specialty",
+ "lang": "en",
+ "title": "Booking a kiosk or pop-up",
+ "duration": 67.04,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 9.33,
+   "text": "Rent kiosks, pop-ups and promotion areas by the day, with the price from the rate card and clash checks.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 9.33,
+   "end": 15.34,
+   "text": "Short-term space rents kiosks, pop-ups, promotion areas and screens by the day or week.",
+   "step": 1,
+   "url": "/admin/specialty"
+  },
+  {
+   "start": 15.34,
+   "end": 20.74,
+   "text": "Occupancy, this month's revenue, bookings starting soon and enquiries waiting for you.",
+   "step": 2,
+   "url": "/admin/specialty"
+  },
+  {
+   "start": 20.74,
+   "end": 26.98,
+   "text": "Availability shows every space across the month, so free days are easy to see.",
+   "step": 3,
+   "url": "/admin/specialty"
+  },
+  {
+   "start": 26.98,
+   "end": 30.65,
+   "text": "To book one, choose New booking.",
+   "step": 4,
+   "url": "/admin/specialty/bookings/new"
+  },
+  {
+   "start": 30.65,
+   "end": 40.67,
+   "text": "The price is worked out from the rate card as you type. This kiosk is taken on these dates, so the office warns you.",
+   "step": 5,
+   "url": "/admin/specialty/bookings/new"
+  },
+  {
+   "start": 40.67,
+   "end": 45.79,
+   "text": "Choose a free space instead: the food court bridge kiosk.",
+   "step": 6,
+   "url": "/admin/specialty/bookings/new"
+  },
+  {
+   "start": 45.79,
+   "end": 52.27,
+   "text": "Pick the brand, or type the customer's name if they are not on file.",
+   "step": 7,
+   "url": "/admin/specialty/bookings/new"
+  },
+  {
+   "start": 52.27,
+   "end": 56.37,
+   "text": "Say what it is for.",
+   "step": 8,
+   "url": "/admin/specialty/bookings/new"
+  },
+  {
+   "start": 56.37,
+   "end": 62.86,
+   "text": "Save the booking. It holds the space, and confirming it raises the invoice.",
+   "step": 9,
+   "url": "/admin/specialty/bookings/25"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/specialty"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/specialty"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/specialty"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/specialty/bookings/new"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/specialty/bookings/new"
+  },
+  {
+   "step": 6,
+   "kind": "select",
+   "url": "/admin/specialty/bookings/new"
+  },
+  {
+   "step": 7,
+   "kind": "select",
+   "url": "/admin/specialty/bookings/new"
+  },
+  {
+   "step": 8,
+   "kind": "type",
+   "url": "/admin/specialty/bookings/new"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/specialty/bookings/25"
+  }
+ ],
+ "recorded_at": "2026-11-06T00:20:31.739Z"
+}

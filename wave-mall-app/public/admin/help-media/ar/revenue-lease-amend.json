@@ -1,0 +1,156 @@
+{
+ "id": "revenue-lease-amend",
+ "lang": "ar",
+ "title": "تعديل العقد بملحق",
+ "duration": 68,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 7.25,
+   "text": "غيّر الإيجار أو أضف وحدة أو مدّد المدة بملحق، ثم عاينه وطبّقه.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.25,
+   "end": 12.29,
+   "text": "لا يُعدَّل العقد مباشرة بعد تفعيله، بل تتم التعديلات بملحق.",
+   "step": 1,
+   "url": "/admin/leases?status=active"
+  },
+  {
+   "start": 16,
+   "end": 21.82,
+   "text": "في صفحة العقد، ابحث عن «الملاحق» واختر «ملحق جديد».",
+   "step": 3,
+   "url": "/admin/leases/3/amend"
+  },
+  {
+   "start": 21.82,
+   "end": 27.35,
+   "text": "يسري الملحق من هذا التاريخ، وتبقى الفواتير السابقة كما هي.",
+   "step": 4,
+   "url": "/admin/leases/3/amend"
+  },
+  {
+   "start": 27.35,
+   "end": 32.16,
+   "text": "اكتب سبب تعديل العقد.",
+   "step": 5,
+   "url": "/admin/leases/3/amend"
+  },
+  {
+   "start": 32.16,
+   "end": 35.32,
+   "text": "أدخل الإيجار الجديد للمتر المربع.",
+   "step": 6,
+   "url": "/admin/leases/3/amend"
+  },
+  {
+   "start": 35.32,
+   "end": 39.17,
+   "text": "أضف وحدة، أو حدد وحدة لإعادتها.",
+   "step": 7,
+   "url": "/admin/leases/3/amend"
+  },
+  {
+   "start": 39.17,
+   "end": 42.67,
+   "text": "ويمكنك أيضًا تمديد المدة في الملحق نفسه.",
+   "step": 8,
+   "url": "/admin/leases/3/amend"
+  },
+  {
+   "start": 42.67,
+   "end": 45.93,
+   "text": "اختر «معاينة الملحق».",
+   "step": 9,
+   "url": "/admin/leases/3/amendments/3"
+  },
+  {
+   "start": 45.93,
+   "end": 51.31,
+   "text": "تعرض المسودة كل تغيير: الإيجار الجديد والوحدة المضافة والمدة الأطول.",
+   "step": 10,
+   "url": "/admin/leases/3/amendments/3"
+  },
+  {
+   "start": 51.31,
+   "end": 57.04,
+   "text": "وتعرض أيضًا الفواتير التي ستُلغى، والفواتير الجديدة التي تصدر بدلًا منها.",
+   "step": 11,
+   "url": "/admin/leases/3/amendments/3"
+  },
+  {
+   "start": 57.04,
+   "end": 63.28,
+   "text": "ارفع الملحق الموقّع، ثم اختر «تطبيق الملحق». وتبقى الفواتير القديمة في السجل.",
+   "step": 12,
+   "url": "/admin/leases/3/amendments/3"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/leases?status=active"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/leases/3"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/leases/3/amend"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/leases/3/amend"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/leases/3/amend"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/leases/3/amend"
+  },
+  {
+   "step": 7,
+   "kind": "select",
+   "url": "/admin/leases/3/amend"
+  },
+  {
+   "step": 8,
+   "kind": "type",
+   "url": "/admin/leases/3/amend"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/leases/3/amendments/3"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/leases/3/amendments/3"
+  },
+  {
+   "step": 11,
+   "kind": "point",
+   "url": "/admin/leases/3/amendments/3"
+  },
+  {
+   "step": 12,
+   "kind": "point",
+   "url": "/admin/leases/3/amendments/3"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:52:59.653Z"
+}

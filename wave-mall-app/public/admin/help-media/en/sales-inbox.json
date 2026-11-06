@@ -1,0 +1,127 @@
+{
+ "id": "sales-inbox",
+ "lang": "en",
+ "title": "Answering the website inbox",
+ "duration": 71.84,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 8.17,
+   "text": "Read what visitors send from the website, reply, and turn a promising message into a lead.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.17,
+   "end": 12.62,
+   "text": "Every message sent from the website lands in the Inbox.",
+   "step": 1,
+   "url": "/admin/inbox"
+  },
+  {
+   "start": 12.62,
+   "end": 19.19,
+   "text": "New messages are on top. Leasing enquiries and general contact messages have their own tabs.",
+   "step": 2,
+   "url": "/admin/inbox"
+  },
+  {
+   "start": 19.19,
+   "end": 27.74,
+   "text": "A leasing enquiry opens a lead by itself, so no brand is ever lost. The badge takes you to it.",
+   "step": 3,
+   "url": "/admin/inbox"
+  },
+  {
+   "start": 27.74,
+   "end": 32.57,
+   "text": "Open a contact message to read it in full.",
+   "step": 4,
+   "url": "/admin/inbox/3"
+  },
+  {
+   "start": 32.57,
+   "end": 39.89,
+   "text": "You see the message, who sent it, how to reach them and the language they wrote in.",
+   "step": 5,
+   "url": "/admin/inbox/3"
+  },
+  {
+   "start": 39.89,
+   "end": 45.51,
+   "text": "Reply by email opens your mail with the address and subject ready.",
+   "step": 6,
+   "url": "/admin/inbox/3"
+  },
+  {
+   "start": 45.51,
+   "end": 50.88,
+   "text": "When it needs nothing more, archive it to keep the inbox clean.",
+   "step": 7,
+   "url": "/admin/inbox/3"
+  },
+  {
+   "start": 50.88,
+   "end": 56.84,
+   "text": "This one sounds like a future tenant, so choose Convert to lead.",
+   "step": 8,
+   "url": "/admin/leads/23"
+  },
+  {
+   "start": 56.84,
+   "end": 67.65,
+   "text": "The lead is created with their name and email, and a first call is planned for today. Give it an owner, and the deal has started.",
+   "step": 9,
+   "url": "/admin/leads/23"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/inbox"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/inbox"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/inbox"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/inbox/3"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/inbox/3"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/inbox/3"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/inbox/3"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/leads/23"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/leads/23"
+  }
+ ],
+ "recorded_at": "2026-11-06T00:05:04.055Z"
+}

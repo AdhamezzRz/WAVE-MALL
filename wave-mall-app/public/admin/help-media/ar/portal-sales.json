@@ -1,0 +1,115 @@
+{
+ "id": "portal-sales",
+ "lang": "ar",
+ "title": "إرسال مبيعاتك الشهرية",
+ "duration": 42.72,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 8.11,
+   "text": "أرسل مبيعات الشهر من البوابة. وإن كان عقدك يتضمن إيجارًا من المبيعات، فيُحسب منها.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.11,
+   "end": 11.73,
+   "text": "كل شهر، أرسل مبيعات متجرك من هنا.",
+   "step": 1,
+   "url": "/portal/sales"
+  },
+  {
+   "start": 11.73,
+   "end": 16.15,
+   "text": "تخبرك البوابة بالأشهر التي لم تُرسل مبيعاتها بعد.",
+   "step": 2,
+   "url": "/portal/sales"
+  },
+  {
+   "start": 16.15,
+   "end": 18.69,
+   "text": "الشهر مختار لك.",
+   "step": 3,
+   "url": "/portal/sales"
+  },
+  {
+   "start": 18.69,
+   "end": 22.29,
+   "text": "أدخل إجمالي المبيعات قبل ضريبة القيمة المضافة.",
+   "step": 4,
+   "url": "/portal/sales"
+  },
+  {
+   "start": 22.29,
+   "end": 26.14,
+   "text": "ثم المرتجعات. صافي المبيعات هو الإجمالي ناقص المرتجعات.",
+   "step": 5,
+   "url": "/portal/sales"
+  },
+  {
+   "start": 26.14,
+   "end": 28.92,
+   "text": "وعدد الفواتير إن كان متاحًا.",
+   "step": 6,
+   "url": "/portal/sales"
+  },
+  {
+   "start": 28.92,
+   "end": 31.82,
+   "text": "أرسل المبيعات.",
+   "step": 7,
+   "url": "/portal/sales"
+  },
+  {
+   "start": 31.82,
+   "end": 38.51,
+   "text": "يظهر الشهر كمُرسل، ويراجعه مكتب التأجير، ويُصدر منه أي إيجار مستحق من المبيعات.",
+   "step": 8,
+   "url": "/portal/sales"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/portal/sales"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/portal/sales"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/portal/sales"
+  },
+  {
+   "step": 4,
+   "kind": "type",
+   "url": "/portal/sales"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/portal/sales"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/portal/sales"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/portal/sales"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/portal/sales"
+  }
+ ],
+ "recorded_at": "2026-11-06T00:49:29.851Z"
+}

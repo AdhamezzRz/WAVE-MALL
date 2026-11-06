@@ -1,0 +1,139 @@
+{
+ "id": "operations-parking-subscription",
+ "lang": "ar",
+ "title": "اشتراكات المواقف الشهرية",
+ "duration": 59.06,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 7.24,
+   "text": "امنح السائق اشتراكًا شهريًا لتُفتح البوابات للوحته أو بطاقته، مع فاتورة شهرية.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.24,
+   "end": 12.54,
+   "text": "الاشتراكات مخصصة لموظفي المستأجرين وموظفي المول وكبار الزوار والسائقين الدائمين.",
+   "step": 1,
+   "url": "/admin/parking/subscriptions"
+  },
+  {
+   "start": 12.54,
+   "end": 16.85,
+   "text": "اختر «اشتراك جديد».",
+   "step": 2,
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "start": 16.85,
+   "end": 20.39,
+   "text": "اختر الباقة، ويأتي السعر معها.",
+   "step": 3,
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "start": 20.39,
+   "end": 24.72,
+   "text": "لمن الاشتراك: وهنا، موظف لدى أحد المستأجرين.",
+   "step": 4,
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "start": 24.72,
+   "end": 29.54,
+   "text": "وأي مستأجر، ويمكن أن تصدر الفاتورة باسم العلامة.",
+   "step": 5,
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "start": 29.54,
+   "end": 33.69,
+   "text": "اسم السائق.",
+   "step": 6,
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "start": 33.69,
+   "end": 38.44,
+   "text": "أرقام اللوحات، وتقرأها كاميرا البوابة فتُفتح تلقائيًا.",
+   "step": 7,
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "start": 38.44,
+   "end": 42.71,
+   "text": "أو امنحه بطاقة: قرّبها من الهاتف لقراءة رقمها.",
+   "step": 8,
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "start": 42.71,
+   "end": 47.92,
+   "text": "التجديد التلقائي يجدده كل شهر، والفاتورة غير المدفوعة توقفه.",
+   "step": 9,
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "start": 47.92,
+   "end": 54.41,
+   "text": "اضغط «إنشاء». تصدر الفاتورة الأولى، وتتعرف البوابات على اللوحة فورًا.",
+   "step": 10,
+   "url": "/admin/parking/subscriptions/27"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/parking/subscriptions"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "step": 3,
+   "kind": "select",
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "step": 4,
+   "kind": "select",
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "step": 5,
+   "kind": "select",
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "step": 7,
+   "kind": "type",
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/parking/subscriptions/new"
+  },
+  {
+   "step": 10,
+   "kind": "click",
+   "url": "/admin/parking/subscriptions/27"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:18:17.921Z"
+}

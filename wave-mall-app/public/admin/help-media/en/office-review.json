@@ -1,0 +1,132 @@
+{
+ "id": "office-review",
+ "lang": "en",
+ "title": "The quarterly access review",
+ "duration": 81.31,
+ "cues": [
+  {
+   "start": 0.06,
+   "end": 8.59,
+   "text": "Check who can do what, confirm or remove access person by person, and switch off dormant accounts.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.59,
+   "end": 15.88,
+   "text": "Once a quarter, check who can do what. The access review puts it all on one page.",
+   "step": 1,
+   "url": "/admin/people/review"
+  },
+  {
+   "start": 15.88,
+   "end": 24.85,
+   "text": "At the top: how many people are reviewed this quarter, powerful rights, dormant accounts and changes in the last 30 days.",
+   "step": 2,
+   "url": "/admin/people/review"
+  },
+  {
+   "start": 24.85,
+   "end": 33.42,
+   "text": "Everyone against every module: each square is a person's level in a module. The darker, the more they can do.",
+   "step": 3,
+   "url": "/admin/people/review"
+  },
+  {
+   "start": 33.42,
+   "end": 40.82,
+   "text": "Certify this quarter: for each person, keep their access, mark it for a change, or remove it.",
+   "step": 4,
+   "url": "/admin/people/review"
+  },
+  {
+   "start": 43.53,
+   "end": 49.12,
+   "text": "Add a note where it helps.",
+   "step": 6,
+   "url": "/admin/people/review"
+  },
+  {
+   "start": 49.12,
+   "end": 57.31,
+   "text": "Save the review. It is kept with the date and your name, ready for the auditors.",
+   "step": 7,
+   "url": "/admin/people/review?period=2026-Q4"
+  },
+  {
+   "start": 57.31,
+   "end": 65.29,
+   "text": "Dormant accounts have not signed in for a long time. Tick them and switch them off together.",
+   "step": 8,
+   "url": "/admin/people/review?period=2026-Q4"
+  },
+  {
+   "start": 65.29,
+   "end": 72.36,
+   "text": "Powerful rights lists who can manage users, grant access or export data, so nothing slips through.",
+   "step": 9,
+   "url": "/admin/people/review?period=2026-Q4"
+  },
+  {
+   "start": 72.36,
+   "end": 76.64,
+   "text": "Export the review as a spreadsheet for your records.",
+   "step": 10,
+   "url": "/admin/people/review?period=2026-Q4"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/people/review"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/people/review"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/people/review"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/people/review"
+  },
+  {
+   "step": 5,
+   "kind": "select",
+   "url": "/admin/people/review"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/people/review"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/people/review?period=2026-Q4"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/people/review?period=2026-Q4"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/people/review?period=2026-Q4"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/people/review?period=2026-Q4"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:33:51.085Z"
+}

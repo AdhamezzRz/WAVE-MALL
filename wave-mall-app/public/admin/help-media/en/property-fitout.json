@@ -1,0 +1,151 @@
+{
+ "id": "property-fitout",
+ "lang": "en",
+ "title": "Reviewing a fit-out design",
+ "duration": 70.16,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 8.56,
+   "text": "Follow each shop from design to opening, and record your review of the drawings a tenant submits.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.56,
+   "end": 13.39,
+   "text": "Fit-out follows every shop from the first drawings to opening day.",
+   "step": 1,
+   "url": "/admin/fitout"
+  },
+  {
+   "start": 13.39,
+   "end": 18.79,
+   "text": "The timeline shows design, handover and works for each shop against today.",
+   "step": 2,
+   "url": "/admin/fitout"
+  },
+  {
+   "start": 18.79,
+   "end": 25.52,
+   "text": "Awaiting review shows the drawings waiting for the mall. One is past its deadline.",
+   "step": 3,
+   "url": "/admin/fitout?view=attention"
+  },
+  {
+   "start": 25.52,
+   "end": 28.59,
+   "text": "Open the shop.",
+   "step": 4,
+   "url": "/admin/fitout/5"
+  },
+  {
+   "start": 28.59,
+   "end": 35.15,
+   "text": "The steps run from the brief to opening. Click one when the shop moves on.",
+   "step": 5,
+   "url": "/admin/fitout/5"
+  },
+  {
+   "start": 35.15,
+   "end": 40.53,
+   "text": "Each round of drawings is kept with its files and your comments.",
+   "step": 6,
+   "url": "/admin/fitout/5"
+  },
+  {
+   "start": 40.53,
+   "end": 44.72,
+   "text": "Choose Record the review.",
+   "step": 7,
+   "url": "/admin/fitout/5"
+  },
+  {
+   "start": 44.72,
+   "end": 50.04,
+   "text": "Approve, approve with comments, or ask them to revise and resubmit.",
+   "step": 8,
+   "url": "/admin/fitout/5"
+  },
+  {
+   "start": 50.04,
+   "end": 54.23,
+   "text": "Write your comments for the tenant.",
+   "step": 9,
+   "url": "/admin/fitout/5"
+  },
+  {
+   "start": 54.23,
+   "end": 59.71,
+   "text": "Save. The tenant sees the result in their portal right away.",
+   "step": 10,
+   "url": "/admin/fitout/5"
+  },
+  {
+   "start": 59.71,
+   "end": 65.91,
+   "text": "Next come the contractor, the deposit, handover and the checklists, all on this page.",
+   "step": 11,
+   "url": "/admin/fitout/5"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/fitout"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/fitout"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/fitout?view=attention"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/fitout/5"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/fitout/5"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/fitout/5"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/fitout/5"
+  },
+  {
+   "step": 8,
+   "kind": "select",
+   "url": "/admin/fitout/5"
+  },
+  {
+   "step": 9,
+   "kind": "type",
+   "url": "/admin/fitout/5"
+  },
+  {
+   "step": 10,
+   "kind": "click",
+   "url": "/admin/fitout/5"
+  },
+  {
+   "step": 11,
+   "kind": "point",
+   "url": "/admin/fitout/5"
+  }
+ ],
+ "recorded_at": "2026-11-06T00:19:02.154Z"
+}

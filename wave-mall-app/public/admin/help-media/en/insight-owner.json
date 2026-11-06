@@ -1,0 +1,139 @@
+{
+ "id": "insight-owner",
+ "lang": "en",
+ "title": "The owner's monthly report",
+ "duration": 70.15,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 9.72,
+   "text": "One page for the owners each month: the figures, highlights and risks, sent by email on the day you choose.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 9.72,
+   "end": 17.08,
+   "text": "The owner report sums up a month for the owners: billing, collections, occupancy, sales, visitors and parking.",
+   "step": 1,
+   "url": "/admin/owner-report"
+  },
+  {
+   "start": 17.08,
+   "end": 22.28,
+   "text": "It opens on the last full month. Choose another month here.",
+   "step": 2,
+   "url": "/admin/owner-report"
+  },
+  {
+   "start": 22.28,
+   "end": 26.14,
+   "text": "Each figure is compared with the month before.",
+   "step": 3,
+   "url": "/admin/owner-report"
+  },
+  {
+   "start": 26.14,
+   "end": 33.17,
+   "text": "Highlights and risks are written for you from the numbers. The same sentences open the report.",
+   "step": 4,
+   "url": "/admin/owner-report"
+  },
+  {
+   "start": 33.17,
+   "end": 38.39,
+   "text": "Under Monthly email, enter who receives it.",
+   "step": 5,
+   "url": "/admin/owner-report"
+  },
+  {
+   "start": 38.39,
+   "end": 44.98,
+   "text": "Choose the language, or both, and the day of the month it goes out.",
+   "step": 6,
+   "url": "/admin/owner-report"
+  },
+  {
+   "start": 44.98,
+   "end": 50.09,
+   "text": "Save. From now on it is sent by itself.",
+   "step": 7,
+   "url": "/admin/owner-report"
+  },
+  {
+   "start": 50.09,
+   "end": 54.12,
+   "text": "Send now sends this month's report straight away.",
+   "step": 8,
+   "url": "/admin/owner-report"
+  },
+  {
+   "start": 54.12,
+   "end": 60.19,
+   "text": "And this is the report itself, ready to print or save as a document.",
+   "step": 9,
+   "url": "/admin/owner-report/print"
+  },
+  {
+   "start": 60.19,
+   "end": 65.51,
+   "text": "Print it, or save it as a document to attach.",
+   "step": 10,
+   "url": "/admin/owner-report/print"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/owner-report"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/owner-report"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/owner-report"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/owner-report"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/owner-report"
+  },
+  {
+   "step": 6,
+   "kind": "select",
+   "url": "/admin/owner-report"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/owner-report"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/owner-report"
+  },
+  {
+   "step": 9,
+   "kind": "go",
+   "url": "/admin/owner-report/print"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/owner-report/print"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:20:12.092Z"
+}

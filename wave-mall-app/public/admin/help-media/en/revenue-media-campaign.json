@@ -1,0 +1,161 @@
+{
+ "id": "revenue-media-campaign",
+ "lang": "en",
+ "title": "Selling advertising: from quote to campaign",
+ "duration": 81.28,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 8.18,
+   "text": "Price screens, banners and promotion spaces for an advertiser and save the quote as a campaign.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.18,
+   "end": 13.52,
+   "text": "Advertising sells the mall's screens, banners, promotion spaces and car display spots.",
+   "step": 1,
+   "url": "/admin/media"
+  },
+  {
+   "start": 13.52,
+   "end": 19.82,
+   "text": "You see this month's revenue, how full the spaces are, and what needs attention.",
+   "step": 2,
+   "url": "/admin/media"
+  },
+  {
+   "start": 19.82,
+   "end": 23.75,
+   "text": "Choose Build a quote.",
+   "step": 3,
+   "url": "/admin/media/quote"
+  },
+  {
+   "start": 23.75,
+   "end": 28.12,
+   "text": "Choose the advertiser and name the campaign.",
+   "step": 4,
+   "url": "/admin/media/quote"
+  },
+  {
+   "start": 32.14,
+   "end": 39.59,
+   "text": "Tick the spaces. Busy dates show as taken, so you never double-book.",
+   "step": 6,
+   "url": "/admin/media/quote"
+  },
+  {
+   "start": 43.73,
+   "end": 47.52,
+   "text": "Choose Update the price.",
+   "step": 8,
+   "url": "/admin/media/quote?client=c%3A2&title=Winter+launch&start=2026-11-12&end=2026-11-25&extra=&item=2&slots_2=1&slots_3=1&slots_4=1&slots_6=1&slots_1=1&slots_7=1&item=9"
+  },
+  {
+   "start": 47.52,
+   "end": 52.98,
+   "text": "The quote applies the rate card, the season and any package discount.",
+   "step": 9,
+   "url": "/admin/media/quote?client=c%3A2&title=Winter+launch&start=2026-11-12&end=2026-11-25&extra=&item=2&slots_2=1&slots_3=1&slots_4=1&slots_6=1&slots_1=1&slots_7=1&item=9"
+  },
+  {
+   "start": 52.98,
+   "end": 56.77,
+   "text": "Choose Save as a proposal.",
+   "step": 10,
+   "url": "/admin/media/campaigns/35"
+  },
+  {
+   "start": 56.77,
+   "end": 62.53,
+   "text": "The campaign moves from proposal to confirmed, artwork approved, live and ended.",
+   "step": 11,
+   "url": "/admin/media/campaigns/35"
+  },
+  {
+   "start": 62.53,
+   "end": 71.45,
+   "text": "Hold the spaces while the client decides, then confirm the booking and raise the invoice. Print the proposal from the top.",
+   "step": 12,
+   "url": "/admin/media/campaigns/35"
+  },
+  {
+   "start": 71.45,
+   "end": 76.59,
+   "text": "The Calendar tab shows every space week by week, booked and free.",
+   "step": 13,
+   "url": "/admin/media/campaigns/35"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/media"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/media"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/media/quote"
+  },
+  {
+   "step": 4,
+   "kind": "select",
+   "url": "/admin/media/quote"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/media/quote"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/media/quote"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/media/quote"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/media/quote?client=c%3A2&title=Winter+launch&start=2026-11-12&end=2026-11-25&extra=&item=2&slots_2=1&slots_3=1&slots_4=1&slots_6=1&slots_1=1&slots_7=1&item=9"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/media/quote?client=c%3A2&title=Winter+launch&start=2026-11-12&end=2026-11-25&extra=&item=2&slots_2=1&slots_3=1&slots_4=1&slots_6=1&slots_1=1&slots_7=1&item=9"
+  },
+  {
+   "step": 10,
+   "kind": "click",
+   "url": "/admin/media/campaigns/35"
+  },
+  {
+   "step": 11,
+   "kind": "point",
+   "url": "/admin/media/campaigns/35"
+  },
+  {
+   "step": 12,
+   "kind": "point",
+   "url": "/admin/media/campaigns/35"
+  },
+  {
+   "step": 13,
+   "kind": "say",
+   "url": "/admin/media/campaigns/35"
+  }
+ ],
+ "recorded_at": "2026-11-05T23:16:52.372Z"
+}

@@ -1,0 +1,156 @@
+{
+ "id": "revenue-lease-create",
+ "lang": "en",
+ "title": "Turning an accepted offer into a lease",
+ "duration": 81.08,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 8.95,
+   "text": "Mark the offer accepted, draft the lease from it in one click, check the terms and activate it.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.95,
+   "end": 16.18,
+   "text": "A lease starts from the offer the brand agreed to. These are the offers you have sent.",
+   "step": 1,
+   "url": "/admin/offers?status=sent"
+  },
+  {
+   "start": 16.18,
+   "end": 21.5,
+   "text": "Open the offer the brand has said yes to.",
+   "step": 2,
+   "url": "/admin/offers/4"
+  },
+  {
+   "start": 21.5,
+   "end": 27.16,
+   "text": "Choose Accepted. The units are now reserved for this brand.",
+   "step": 3,
+   "url": "/admin/offers/4"
+  },
+  {
+   "start": 27.16,
+   "end": 31.43,
+   "text": "A new button appears: Create lease.",
+   "step": 4,
+   "url": "/admin/leases/new?offer=4"
+  },
+  {
+   "start": 31.43,
+   "end": 39,
+   "text": "Everything comes from the offer: the brand, the units, the rent, the yearly increase and the deposit.",
+   "step": 5,
+   "url": "/admin/leases/new?offer=4"
+  },
+  {
+   "start": 39,
+   "end": 44.57,
+   "text": "Check the start date and the terms, and change anything agreed at signing.",
+   "step": 6,
+   "url": "/admin/leases/new?offer=4"
+  },
+  {
+   "start": 44.57,
+   "end": 50.98,
+   "text": "Choose Create lease. It starts as a draft, so nothing is billed yet.",
+   "step": 7,
+   "url": "/admin/leases/6"
+  },
+  {
+   "start": 50.98,
+   "end": 57.64,
+   "text": "The draft already shows the area, the rent and the value of the whole contract.",
+   "step": 8,
+   "url": "/admin/leases/6"
+  },
+  {
+   "start": 57.64,
+   "end": 63.17,
+   "text": "Upload the signed copy here, so the lease is complete on file.",
+   "step": 9,
+   "url": "/admin/leases/6"
+  },
+  {
+   "start": 63.17,
+   "end": 70.69,
+   "text": "Then choose Activate lease. The units become leased and every invoice of the term is created.",
+   "step": 10,
+   "url": "/admin/leases/6"
+  },
+  {
+   "start": 70.74,
+   "end": 76.41,
+   "text": "The lease is active, and its invoices follow the rent schedule automatically.",
+   "step": 12,
+   "url": "/admin/leases/6"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/offers?status=sent"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/offers/4"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/offers/4"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/leases/new?offer=4"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/leases/new?offer=4"
+  },
+  {
+   "step": 6,
+   "kind": "scroll",
+   "url": "/admin/leases/new?offer=4"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/leases/6"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/leases/6"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/leases/6"
+  },
+  {
+   "step": 10,
+   "kind": "click",
+   "url": "/admin/leases/6"
+  },
+  {
+   "step": 11,
+   "kind": "wait",
+   "url": "/admin/leases/6"
+  },
+  {
+   "step": 12,
+   "kind": "point",
+   "url": "/admin/leases/6"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:47:38.100Z"
+}

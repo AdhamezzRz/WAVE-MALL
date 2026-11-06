@@ -1,0 +1,149 @@
+{
+ "id": "ops-incident",
+ "lang": "en",
+ "title": "Reporting a security incident",
+ "duration": 87.63,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 9.33,
+   "text": "Record what happened, where and how serious it is, give it to someone, and follow it to the end.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 9.33,
+   "end": 15.42,
+   "text": "Something happened in the mall? Report it straight away from Security & cleaning.",
+   "step": 1,
+   "url": "/admin/security"
+  },
+  {
+   "start": 15.42,
+   "end": 19.34,
+   "text": "Choose Report an incident.",
+   "step": 2,
+   "url": "/admin/security/incidents/new"
+  },
+  {
+   "start": 19.34,
+   "end": 25.33,
+   "text": "Pick the kind of incident and how serious it is.",
+   "step": 3,
+   "url": "/admin/security/incidents/new"
+  },
+  {
+   "start": 28.49,
+   "end": 34.68,
+   "text": "Say in a few words what happened.",
+   "step": 5,
+   "url": "/admin/security/incidents/new"
+  },
+  {
+   "start": 34.68,
+   "end": 40.84,
+   "text": "Where it happened, and the cameras that saw it.",
+   "step": 6,
+   "url": "/admin/security/incidents/new"
+  },
+  {
+   "start": 46.29,
+   "end": 49.56,
+   "text": "Choose who follows it up.",
+   "step": 8,
+   "url": "/admin/security/incidents/new"
+  },
+  {
+   "start": 49.56,
+   "end": 60.54,
+   "text": "Describe it as you would to the police.",
+   "step": 9,
+   "url": "/admin/security/incidents/new"
+  },
+  {
+   "start": 60.54,
+   "end": 65.78,
+   "text": "Save the report. It gets its own number.",
+   "step": 10,
+   "url": "/admin/security/incidents/10"
+  },
+  {
+   "start": 65.78,
+   "end": 75.38,
+   "text": "Follow it up here: the status, a police report number, the outcome. Every change goes on the timeline, and photos go above.",
+   "step": 11,
+   "url": "/admin/security/incidents/10"
+  },
+  {
+   "start": 75.38,
+   "end": 82.84,
+   "text": "At the end of the shift, write the handover so the next team knows what is still open.",
+   "step": 12,
+   "url": "/admin/security/incidents/10"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/security"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/security/incidents/new"
+  },
+  {
+   "step": 3,
+   "kind": "select",
+   "url": "/admin/security/incidents/new"
+  },
+  {
+   "step": 4,
+   "kind": "select",
+   "url": "/admin/security/incidents/new"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/security/incidents/new"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/security/incidents/new"
+  },
+  {
+   "step": 7,
+   "kind": "type",
+   "url": "/admin/security/incidents/new"
+  },
+  {
+   "step": 8,
+   "kind": "select",
+   "url": "/admin/security/incidents/new"
+  },
+  {
+   "step": 9,
+   "kind": "type",
+   "url": "/admin/security/incidents/new"
+  },
+  {
+   "step": 10,
+   "kind": "click",
+   "url": "/admin/security/incidents/10"
+  },
+  {
+   "step": 11,
+   "kind": "point",
+   "url": "/admin/security/incidents/10"
+  },
+  {
+   "step": 12,
+   "kind": "say",
+   "url": "/admin/security/incidents/10"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:57:54.681Z"
+}

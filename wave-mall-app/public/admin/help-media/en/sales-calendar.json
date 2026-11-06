@@ -1,0 +1,161 @@
+{
+ "id": "sales-calendar",
+ "lang": "en",
+ "title": "Booking a viewing and keeping up with tasks",
+ "duration": 72.44,
+ "cues": [
+  {
+   "start": 0.01,
+   "end": 8.17,
+   "text": "Put viewings, meetings and calls on the calendar and tick off your tasks as you go.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.17,
+   "end": 14.17,
+   "text": "The calendar shows the viewings, meetings, calls and tasks of the whole leasing team.",
+   "step": 1,
+   "url": "/admin/calendar"
+  },
+  {
+   "start": 14.17,
+   "end": 19.96,
+   "text": "Today is highlighted. Each entry is coloured by type and opens its lead.",
+   "step": 2,
+   "url": "/admin/calendar"
+  },
+  {
+   "start": 19.96,
+   "end": 24.17,
+   "text": "Move between months, or show only your own entries.",
+   "step": 3,
+   "url": "/admin/calendar"
+  },
+  {
+   "start": 24.17,
+   "end": 28.36,
+   "text": "To book a viewing, use Schedule. Choose Viewing.",
+   "step": 4,
+   "url": "/admin/calendar"
+  },
+  {
+   "start": 28.36,
+   "end": 33.69,
+   "text": "Choose the lead, so the viewing appears on its timeline too.",
+   "step": 5,
+   "url": "/admin/calendar"
+  },
+  {
+   "start": 33.69,
+   "end": 37.81,
+   "text": "Give it a clear title.",
+   "step": 6,
+   "url": "/admin/calendar"
+  },
+  {
+   "start": 37.81,
+   "end": 42.42,
+   "text": "Set the day and time, and who will host it.",
+   "step": 7,
+   "url": "/admin/calendar"
+  },
+  {
+   "start": 45.02,
+   "end": 51.81,
+   "text": "Add it. The office opens the lead, with the viewing waiting on its timeline.",
+   "step": 9,
+   "url": "/admin/leads/18"
+  },
+  {
+   "start": 51.81,
+   "end": 58.6,
+   "text": "It is on the calendar too, and the host gets a reminder before it starts.",
+   "step": 10,
+   "url": "/admin/leads/18"
+  },
+  {
+   "start": 59.56,
+   "end": 64.39,
+   "text": "Tasks lists what is overdue, due today and coming up.",
+   "step": 12,
+   "url": "/admin/calendar"
+  },
+  {
+   "start": 64.39,
+   "end": 68.23,
+   "text": "When something is done, tick it off here.",
+   "step": 13,
+   "url": "/admin/calendar"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/calendar"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/calendar"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/calendar"
+  },
+  {
+   "step": 4,
+   "kind": "select",
+   "url": "/admin/calendar"
+  },
+  {
+   "step": 5,
+   "kind": "select",
+   "url": "/admin/calendar"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/calendar"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/calendar"
+  },
+  {
+   "step": 8,
+   "kind": "select",
+   "url": "/admin/calendar"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/leads/18"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/leads/18"
+  },
+  {
+   "step": 11,
+   "kind": "go",
+   "url": "/admin/calendar"
+  },
+  {
+   "step": 12,
+   "kind": "point",
+   "url": "/admin/calendar"
+  },
+  {
+   "step": 13,
+   "kind": "point",
+   "url": "/admin/calendar"
+  }
+ ],
+ "recorded_at": "2026-11-06T00:10:14.499Z"
+}

@@ -1,0 +1,139 @@
+{
+ "id": "revenue-utilities",
+ "lang": "ar",
+ "title": "قراءات العدادات وفواتير المرافق",
+ "duration": 57.68,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 7.69,
+   "text": "أدخل قراءات العدادات للشهر، وراجع غير المعتاد منها، وأصدر فواتير المستأجرين حسب استهلاكهم.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.69,
+   "end": 12.77,
+   "text": "تتابع صفحة المرافق الكهرباء والمياه والغاز للمول كله ولكل مستأجر.",
+   "step": 1,
+   "url": "/admin/utilities"
+  },
+  {
+   "start": 12.77,
+   "end": 17.12,
+   "text": "استهلاك هذا الشهر وتكلفته والمبلغ المسترد من المستأجرين.",
+   "step": 2,
+   "url": "/admin/utilities"
+  },
+  {
+   "start": 17.12,
+   "end": 20.57,
+   "text": "كل شهر، افتح «القراءات».",
+   "step": 3,
+   "url": "/admin/utilities/readings"
+  },
+  {
+   "start": 20.57,
+   "end": 25.3,
+   "text": "اكتب قراءة كل عداد، ويُحسب الاستهلاك والتكلفة أولًا بأول.",
+   "step": 4,
+   "url": "/admin/utilities/readings"
+  },
+  {
+   "start": 25.3,
+   "end": 30.87,
+   "text": "تُميَّز القراءة البعيدة عن المعتاد، فلا يُفوتر خطأ في الكتابة أبدًا.",
+   "step": 5,
+   "url": "/admin/utilities/readings"
+  },
+  {
+   "start": 30.87,
+   "end": 34.45,
+   "text": "راجعها، واقبلها إن كانت صحيحة.",
+   "step": 6,
+   "url": "/admin/utilities/readings?period=2026-10"
+  },
+  {
+   "start": 34.45,
+   "end": 38.1,
+   "text": "ثم افتح «الفوترة».",
+   "step": 7,
+   "url": "/admin/utilities/billing"
+  },
+  {
+   "start": 38.1,
+   "end": 42.83,
+   "text": "يُسعَّر استهلاك كل مستأجر حسب التعريفة، وهو جاهز للفوترة.",
+   "step": 8,
+   "url": "/admin/utilities/billing"
+  },
+  {
+   "start": 42.83,
+   "end": 48.02,
+   "text": "اختر «فوترة المرافق». تصل الفواتير إلى المستأجرين ومعها القراءات.",
+   "step": 9,
+   "url": "/admin/utilities/billing?period=2026-10"
+  },
+  {
+   "start": 48.02,
+   "end": 53.18,
+   "text": "تنتقل العدادات المفوترة إلى الأسفل، وتنتظر القراءات المستبعدة مؤقتًا مراجعتك.",
+   "step": 10,
+   "url": "/admin/utilities/billing?period=2026-10"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/utilities"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/utilities"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/utilities/readings"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/utilities/readings"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/utilities/readings"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/utilities/readings?period=2026-10"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/utilities/billing"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/utilities/billing"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/utilities/billing?period=2026-10"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/utilities/billing?period=2026-10"
+  }
+ ],
+ "recorded_at": "2026-11-05T23:28:13.263Z"
+}

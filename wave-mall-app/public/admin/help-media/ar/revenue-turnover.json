@@ -1,0 +1,137 @@
+{
+ "id": "revenue-turnover",
+ "lang": "ar",
+ "title": "مبيعات المستأجرين وإيجار النسبة",
+ "duration": 67.36,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 7.68,
+   "text": "أدخل المبيعات الشهرية، وقارن بين المستأجرين، وأصدر فاتورة النسبة من المبيعات فوق الحد.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.68,
+   "end": 13.63,
+   "text": "تتابع صفحة المبيعات وإيجار النسبة ما يبيعه كل مستأجر، والإيجار المستحق عليه.",
+   "step": 1,
+   "url": "/admin/turnover"
+  },
+  {
+   "start": 13.63,
+   "end": 18.91,
+   "text": "إجمالي المبيعات، والمبيعات لكل متر مربع، ونسبة الإيجار إلى المبيعات.",
+   "step": 2,
+   "url": "/admin/turnover"
+  },
+  {
+   "start": 18.91,
+   "end": 23.57,
+   "text": "كل شهر، أدخل المبيعات من تبويب «المبيعات».",
+   "step": 3,
+   "url": "/admin/turnover/sales"
+  },
+  {
+   "start": 23.57,
+   "end": 26.92,
+   "text": "اكتب إجمالي المبيعات والمرتجعات وعدد الإيصالات.",
+   "step": 4,
+   "url": "/admin/turnover/sales"
+  },
+  {
+   "start": 32.77,
+   "end": 38.2,
+   "text": "اختر «حفظ المبيعات». ويمكن للمستأجرين إرسالها من بوابتهم أيضًا.",
+   "step": 7,
+   "url": "/admin/turnover/sales?period=2026-10"
+  },
+  {
+   "start": 38.2,
+   "end": 41.53,
+   "text": "ثم افتح «الفوترة».",
+   "step": 8,
+   "url": "/admin/turnover/billing"
+  },
+  {
+   "start": 41.53,
+   "end": 50.63,
+   "text": "إيجار النسبة هو المبيعات فوق الحد مضروبة في النسبة المتفق عليها، وإن كانت المبيعات أقل منه فلا شيء مستحق.",
+   "step": 9,
+   "url": "/admin/turnover/billing"
+  },
+  {
+   "start": 50.63,
+   "end": 56.39,
+   "text": "أصدر فاتورة لكل عقد أو سجّله بلا مستحق، ليُغلق الشهر.",
+   "step": 10,
+   "url": "/admin/turnover/billing"
+  },
+  {
+   "start": 56.39,
+   "end": 62.84,
+   "text": "تنتقل الشهور المفوترة إلى الأسفل. وفي النظرة العامة يقارن الترتيب مبيعات كل المستأجرين.",
+   "step": 11,
+   "url": "/admin/turnover/billing"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/turnover"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/turnover"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/turnover/sales"
+  },
+  {
+   "step": 4,
+   "kind": "type",
+   "url": "/admin/turnover/sales"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/turnover/sales"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/turnover/sales"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/turnover/sales?period=2026-10"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/turnover/billing"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/turnover/billing"
+  },
+  {
+   "step": 10,
+   "kind": "click",
+   "url": "/admin/turnover/billing"
+  },
+  {
+   "step": 11,
+   "kind": "point",
+   "url": "/admin/turnover/billing"
+  }
+ ],
+ "recorded_at": "2026-11-05T23:21:53.321Z"
+}

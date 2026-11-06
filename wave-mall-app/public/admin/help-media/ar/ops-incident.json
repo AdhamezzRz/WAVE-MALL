@@ -1,0 +1,149 @@
+{
+ "id": "ops-incident",
+ "lang": "ar",
+ "title": "تسجيل حادثة أمنية",
+ "duration": 76.06,
+ "cues": [
+  {
+   "start": 0.1,
+   "end": 7.31,
+   "text": "سجّل ما حدث وأين ومدى خطورته، وأسنده إلى مسؤول، وتابعه حتى نهايته.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.31,
+   "end": 12.51,
+   "text": "وقع شيء في المول؟ سجّله فورًا من قسم الأمن والنظافة.",
+   "step": 1,
+   "url": "/admin/security"
+  },
+  {
+   "start": 12.51,
+   "end": 16.85,
+   "text": "اختر «تسجيل حادثة».",
+   "step": 2,
+   "url": "/admin/security/incidents/new"
+  },
+  {
+   "start": 16.85,
+   "end": 20.57,
+   "text": "اختر نوع الحادثة ومدى خطورتها.",
+   "step": 3,
+   "url": "/admin/security/incidents/new"
+  },
+  {
+   "start": 23.51,
+   "end": 29,
+   "text": "اكتب في كلمات قليلة ما حدث.",
+   "step": 5,
+   "url": "/admin/security/incidents/new"
+  },
+  {
+   "start": 29,
+   "end": 33.77,
+   "text": "أين وقعت، والكاميرات التي صوّرتها.",
+   "step": 6,
+   "url": "/admin/security/incidents/new"
+  },
+  {
+   "start": 39.18,
+   "end": 42.52,
+   "text": "اختر من سيتابعها.",
+   "step": 8,
+   "url": "/admin/security/incidents/new"
+  },
+  {
+   "start": 42.52,
+   "end": 52.53,
+   "text": "صِفها كما لو كنت تصفها للشرطة.",
+   "step": 9,
+   "url": "/admin/security/incidents/new"
+  },
+  {
+   "start": 52.53,
+   "end": 57.59,
+   "text": "احفظ البلاغ، فيحصل على رقم خاص به.",
+   "step": 10,
+   "url": "/admin/security/incidents/11"
+  },
+  {
+   "start": 57.59,
+   "end": 65.99,
+   "text": "تابعها من هنا: الحالة ورقم محضر الشرطة والنتيجة. كل تغيير يُضاف إلى السجل الزمني، والصور في الأعلى.",
+   "step": 11,
+   "url": "/admin/security/incidents/11"
+  },
+  {
+   "start": 65.99,
+   "end": 71.3,
+   "text": "وفي نهاية الوردية، اكتب التسليم ليعرف الفريق التالي ما زال مفتوحًا.",
+   "step": 12,
+   "url": "/admin/security/incidents/11"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/security"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/security/incidents/new"
+  },
+  {
+   "step": 3,
+   "kind": "select",
+   "url": "/admin/security/incidents/new"
+  },
+  {
+   "step": 4,
+   "kind": "select",
+   "url": "/admin/security/incidents/new"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/security/incidents/new"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/security/incidents/new"
+  },
+  {
+   "step": 7,
+   "kind": "type",
+   "url": "/admin/security/incidents/new"
+  },
+  {
+   "step": 8,
+   "kind": "select",
+   "url": "/admin/security/incidents/new"
+  },
+  {
+   "step": 9,
+   "kind": "type",
+   "url": "/admin/security/incidents/new"
+  },
+  {
+   "step": 10,
+   "kind": "click",
+   "url": "/admin/security/incidents/11"
+  },
+  {
+   "step": 11,
+   "kind": "point",
+   "url": "/admin/security/incidents/11"
+  },
+  {
+   "step": 12,
+   "kind": "say",
+   "url": "/admin/security/incidents/11"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:59:46.278Z"
+}

@@ -1,0 +1,164 @@
+{
+ "id": "property-brands",
+ "lang": "en",
+ "title": "Adding a brand and its contacts",
+ "duration": 82,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 8.17,
+   "text": "Keep one profile for each brand, with its category, tier and the people you deal with.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.17,
+   "end": 14.15,
+   "text": "Brands lists every brand you have spoken to, with its leads and latest stage.",
+   "step": 1,
+   "url": "/admin/brands"
+  },
+  {
+   "start": 14.15,
+   "end": 17.63,
+   "text": "Search by name or filter by category.",
+   "step": 2,
+   "url": "/admin/brands"
+  },
+  {
+   "start": 17.63,
+   "end": 21.49,
+   "text": "To add one, choose Add brand.",
+   "step": 3,
+   "url": "/admin/brands/new"
+  },
+  {
+   "start": 21.49,
+   "end": 26.62,
+   "text": "Write the brand name as customers know it.",
+   "step": 4,
+   "url": "/admin/brands/new"
+  },
+  {
+   "start": 26.62,
+   "end": 32.71,
+   "text": "Choose its category and tier. They drive the reports and the tenant mix.",
+   "step": 5,
+   "url": "/admin/brands/new"
+  },
+  {
+   "start": 38.71,
+   "end": 42.96,
+   "text": "Add how many stores they run and their website or Instagram.",
+   "step": 8,
+   "url": "/admin/brands/new"
+  },
+  {
+   "start": 46.62,
+   "end": 49.65,
+   "text": "Save the brand.",
+   "step": 10,
+   "url": "/admin/brands/23"
+  },
+  {
+   "start": 49.65,
+   "end": 58.12,
+   "text": "The brand page opens. Now add the people you deal with: choose Add contact.",
+   "step": 11,
+   "url": "/admin/brands/23"
+  },
+  {
+   "start": 58.12,
+   "end": 62.3,
+   "text": "Fill in the name, job title and phone.",
+   "step": 12,
+   "url": "/admin/brands/23"
+  },
+  {
+   "start": 70.05,
+   "end": 77.78,
+   "text": "Add the contact. Their phone and WhatsApp are one click away from every lead of this brand.",
+   "step": 15,
+   "url": "/admin/brands/23"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/brands"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/brands"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/brands/new"
+  },
+  {
+   "step": 4,
+   "kind": "type",
+   "url": "/admin/brands/new"
+  },
+  {
+   "step": 5,
+   "kind": "select",
+   "url": "/admin/brands/new"
+  },
+  {
+   "step": 6,
+   "kind": "select",
+   "url": "/admin/brands/new"
+  },
+  {
+   "step": 7,
+   "kind": "type",
+   "url": "/admin/brands/new"
+  },
+  {
+   "step": 8,
+   "kind": "type",
+   "url": "/admin/brands/new"
+  },
+  {
+   "step": 9,
+   "kind": "type",
+   "url": "/admin/brands/new"
+  },
+  {
+   "step": 10,
+   "kind": "click",
+   "url": "/admin/brands/23"
+  },
+  {
+   "step": 11,
+   "kind": "click",
+   "url": "/admin/brands/23"
+  },
+  {
+   "step": 12,
+   "kind": "type",
+   "url": "/admin/brands/23"
+  },
+  {
+   "step": 13,
+   "kind": "type",
+   "url": "/admin/brands/23"
+  },
+  {
+   "step": 14,
+   "kind": "type",
+   "url": "/admin/brands/23"
+  },
+  {
+   "step": 15,
+   "kind": "click",
+   "url": "/admin/brands/23"
+  }
+ ],
+ "recorded_at": "2026-11-06T00:15:41.752Z"
+}

@@ -1,0 +1,142 @@
+{
+ "id": "revenue-collections-plans",
+ "lang": "en",
+ "title": "Reminders and payment plans",
+ "duration": 73.72,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 8.96,
+   "text": "Send the due reminders in one go, then agree a payment plan that splits old invoices into instalments.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.96,
+   "end": 15.49,
+   "text": "Reminders go out by themselves before and after each due date, by email and WhatsApp.",
+   "step": 1,
+   "url": "/admin/collections/reminders"
+  },
+  {
+   "start": 15.49,
+   "end": 20.57,
+   "text": "Here is every reminder sent, to whom and for which invoice.",
+   "step": 2,
+   "url": "/admin/collections/reminders"
+  },
+  {
+   "start": 20.57,
+   "end": 27.06,
+   "text": "To send the ones due right now, choose Send due reminders now.",
+   "step": 3,
+   "url": "/admin/collections/reminders"
+  },
+  {
+   "start": 27.06,
+   "end": 31.88,
+   "text": "A tenant cannot pay everything at once? Agree a payment plan.",
+   "step": 4,
+   "url": "/admin/collections"
+  },
+  {
+   "start": 35.18,
+   "end": 39.96,
+   "text": "Choose New payment plan.",
+   "step": 6,
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "start": 39.96,
+   "end": 45.28,
+   "text": "Tick the invoices it covers.",
+   "step": 7,
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "start": 49.83,
+   "end": 53.25,
+   "text": "Split them into instalments, every month or quarter.",
+   "step": 9,
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "start": 56.97,
+   "end": 60.34,
+   "text": "Choose Agree the plan.",
+   "step": 11,
+   "url": "/admin/collections/plans/2"
+  },
+  {
+   "start": 60.34,
+   "end": 69.06,
+   "text": "Each instalment has its date. Attach a cheque to each one, and late fees stop while the plan is kept.",
+   "step": 12,
+   "url": "/admin/collections/plans/2"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/collections/reminders"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/collections/reminders"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/collections/reminders"
+  },
+  {
+   "step": 4,
+   "kind": "go",
+   "url": "/admin/collections"
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "step": 7,
+   "kind": "check",
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "step": 8,
+   "kind": "check",
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "step": 9,
+   "kind": "type",
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "step": 10,
+   "kind": "type",
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "step": 11,
+   "kind": "click",
+   "url": "/admin/collections/plans/2"
+  },
+  {
+   "step": 12,
+   "kind": "point",
+   "url": "/admin/collections/plans/2"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:23:33.582Z"
+}

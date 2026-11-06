@@ -1,0 +1,156 @@
+{
+ "id": "ops-feedback",
+ "lang": "ar",
+ "title": "التعامل مع آراء المتسوقين",
+ "duration": 71.28,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 6.81,
+   "text": "اقرأ التقييمات حسب المكان، وتسلّم بلاغًا، وسجّل ما تم، ثم أغلقه.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 6.81,
+   "end": 14.07,
+   "text": "يمسح المتسوق ملصقًا في أي مكان بالمول، ويقيّم ويترك تعليقًا، دون تطبيق أو تسجيل دخول.",
+   "step": 1,
+   "url": "/admin/feedback"
+  },
+  {
+   "start": 14.07,
+   "end": 20.27,
+   "text": "متوسط التقييم، ونسبة من يوصون بالمول، والبلاغات المفتوحة، وسرعة الاستجابة الأولى لها.",
+   "step": 2,
+   "url": "/admin/feedback"
+  },
+  {
+   "start": 20.27,
+   "end": 25.03,
+   "text": "ويخبرك «حسب المكان، الأسوأ أولًا» أين يجب أن تتدخل.",
+   "step": 3,
+   "url": "/admin/feedback"
+  },
+  {
+   "start": 25.03,
+   "end": 29.17,
+   "text": "التقييمات المنخفضة والتعليقات تتحول إلى بلاغات.",
+   "step": 4,
+   "url": "/admin/feedback/tickets"
+  },
+  {
+   "start": 29.17,
+   "end": 32.84,
+   "text": "افتح أحدها.",
+   "step": 5,
+   "url": "/admin/feedback/77"
+  },
+  {
+   "start": 32.84,
+   "end": 40.18,
+   "text": "ما قاله المتسوق وأين، وإلى من أُرسل. شكوى النظافة تذهب مباشرة إلى فريق النظافة كتنبيه.",
+   "step": 6,
+   "url": "/admin/feedback/77"
+  },
+  {
+   "start": 40.18,
+   "end": 43.21,
+   "text": "حدد الحالة ومن يتولاها.",
+   "step": 7,
+   "url": "/admin/feedback/77"
+  },
+  {
+   "start": 45.95,
+   "end": 52.9,
+   "text": "اكتب ما تم. يُقاس الوقت حتى أول إجراء، فاستجب بسرعة.",
+   "step": 9,
+   "url": "/admin/feedback/77"
+  },
+  {
+   "start": 52.9,
+   "end": 56.02,
+   "text": "احفظ.",
+   "step": 10,
+   "url": "/admin/feedback/77"
+  },
+  {
+   "start": 56.02,
+   "end": 63.66,
+   "text": "لكل مكان ملصق ورابط خاص به. أضف مكانًا من هنا واربطه بمنطقة نظافة.",
+   "step": 11,
+   "url": "/admin/feedback/locations"
+  },
+  {
+   "start": 63.66,
+   "end": 66.6,
+   "text": "ثم اطبع الملصقات وعلّقها.",
+   "step": 12,
+   "url": "/admin/feedback/locations"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/feedback"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/feedback"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/feedback"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/feedback/tickets"
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/feedback/77"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/feedback/77"
+  },
+  {
+   "step": 7,
+   "kind": "select",
+   "url": "/admin/feedback/77"
+  },
+  {
+   "step": 8,
+   "kind": "select",
+   "url": "/admin/feedback/77"
+  },
+  {
+   "step": 9,
+   "kind": "type",
+   "url": "/admin/feedback/77"
+  },
+  {
+   "step": 10,
+   "kind": "click",
+   "url": "/admin/feedback/77"
+  },
+  {
+   "step": 11,
+   "kind": "click",
+   "url": "/admin/feedback/locations"
+  },
+  {
+   "step": 12,
+   "kind": "point",
+   "url": "/admin/feedback/locations"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:11:00.452Z"
+}

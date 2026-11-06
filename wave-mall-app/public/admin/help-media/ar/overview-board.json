@@ -1,0 +1,139 @@
+{
+ "id": "overview-board",
+ "lang": "ar",
+ "title": "العمل على لوحة المهام",
+ "duration": 76.64,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 8.59,
+   "text": "اعرض المهام والموافقات كبطاقات حسب المرحلة، وانقلها بين المراحل، وانتقل إلى عرض القائمة والتقويم والفريق.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.59,
+   "end": 13.26,
+   "text": "تعرض اللوحة المهام والموافقات كبطاقات، عمود لكل مرحلة.",
+   "step": 1,
+   "url": "/admin/work/board"
+  },
+  {
+   "start": 13.26,
+   "end": 18.53,
+   "text": "صفِّ حسب ما تريد عرضه، وصاحب العمل، والأولوية، أو الوسم.",
+   "step": 2,
+   "url": "/admin/work/board"
+  },
+  {
+   "start": 18.53,
+   "end": 25.92,
+   "text": "تعرض كل بطاقة رقمها والمبلغ أو موعد التسليم ومن يتولاها، والمتأخرة مميزة باللون الأحمر.",
+   "step": 3,
+   "url": "/admin/work/board"
+  },
+  {
+   "start": 25.92,
+   "end": 35.56,
+   "text": "اسحب المهمة إلى عمود آخر، أو استخدم القائمة على بطاقتها.",
+   "step": 4,
+   "url": "/admin/work/board"
+  },
+  {
+   "start": 35.56,
+   "end": 42.18,
+   "text": "انقلها إلى «قيد التنفيذ»، فيرى التغيير كل من يتابع المهمة.",
+   "step": 5,
+   "url": "/admin/work/board"
+  },
+  {
+   "start": 42.18,
+   "end": 47.5,
+   "text": "أما الموافقات فتنتقل وحدها عند البت فيها، افتح الطلب لتتخذ القرار.",
+   "step": 6,
+   "url": "/admin/work/board"
+  },
+  {
+   "start": 47.5,
+   "end": 54.71,
+   "text": "تعرض «القائمة» العمل نفسه كجدول، مع تصفية حسب الحالة والموعد والوسم والتاريخ.",
+   "step": 7,
+   "url": "/admin/work/list"
+  },
+  {
+   "start": 54.71,
+   "end": 60.54,
+   "text": "ويضع «التقويم» كل شيء في موعد تسليمه.",
+   "step": 8,
+   "url": "/admin/work/calendar"
+  },
+  {
+   "start": 60.54,
+   "end": 66.68,
+   "text": "ويعرض «الفريق» ما لدى كل شخص من عمل، ليُوزَّع بعدل.",
+   "step": 9,
+   "url": "/admin/work/team"
+  },
+  {
+   "start": 66.68,
+   "end": 71.97,
+   "text": "و«المتكررة» تُنشئ المهام التي تتكرر كل أسبوع أو شهر تلقائيًا.",
+   "step": 10,
+   "url": "/admin/work/team"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/work/board"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/work/board"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/work/board"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/work/board"
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/work/board"
+  },
+  {
+   "step": 6,
+   "kind": "say",
+   "url": "/admin/work/board"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/work/list"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/work/calendar"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/work/team"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/work/team"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:47:49.925Z"
+}

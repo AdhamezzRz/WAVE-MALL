@@ -1,0 +1,108 @@
+{
+ "id": "revenue-collections-writeoff",
+ "lang": "en",
+ "title": "Late fees and writing off a debt",
+ "duration": 56.72,
+ "cues": [
+  {
+   "start": 0.04,
+   "end": 8.2,
+   "text": "Charge a late fee, and ask for approval to write off what will never be paid.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.2,
+   "end": 12.71,
+   "text": "Everything about collecting one invoice is on the invoice itself.",
+   "step": 1,
+   "url": "/admin/billing?status=overdue"
+  },
+  {
+   "start": 15.79,
+   "end": 22.81,
+   "text": "Under Collections you can send a reminder, or charge the late fee set in the settings.",
+   "step": 3,
+   "url": "/admin/invoices/265"
+  },
+  {
+   "start": 22.81,
+   "end": 28.89,
+   "text": "If the money will never come, choose Write off.",
+   "step": 4,
+   "url": "/admin/invoices/265"
+  },
+  {
+   "start": 28.89,
+   "end": 33.3,
+   "text": "Give the amount and the reason.",
+   "step": 5,
+   "url": "/admin/invoices/265"
+  },
+  {
+   "start": 33.3,
+   "end": 38.82,
+   "text": "Write-offs always need a manager's approval, so choose Ask for approval.",
+   "step": 6,
+   "url": "/admin/invoices/265"
+  },
+  {
+   "start": 38.82,
+   "end": 46.96,
+   "text": "The request goes to Approvals and tasks. Once approved, the debt is written off and the accounts are updated.",
+   "step": 7,
+   "url": "/admin/invoices/265"
+  },
+  {
+   "start": 46.96,
+   "end": 52.08,
+   "text": "Every write-off, and who approved it, is listed under Write-offs in Collections.",
+   "step": 8,
+   "url": "/admin/invoices/265"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/billing?status=overdue"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/invoices/265"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/invoices/265"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/invoices/265"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/invoices/265"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/invoices/265"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/invoices/265"
+  },
+  {
+   "step": 8,
+   "kind": "say",
+   "url": "/admin/invoices/265"
+  }
+ ],
+ "recorded_at": "2026-11-05T23:13:33.513Z"
+}

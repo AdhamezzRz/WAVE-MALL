@@ -1,0 +1,127 @@
+{
+ "id": "finance-bank",
+ "lang": "en",
+ "title": "Reconciling the bank",
+ "duration": 78.32,
+ "cues": [
+  {
+   "start": 0.04,
+   "end": 8.19,
+   "text": "Match the bank statement with the books, and post bank charges and interest in one click.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.19,
+   "end": 15.08,
+   "text": "Banking lists the mall's bank accounts and cash, with how many statement lines still need matching.",
+   "step": 1,
+   "url": "/admin/accounting/banking"
+  },
+  {
+   "start": 15.08,
+   "end": 19.13,
+   "text": "Open an account to reconcile it.",
+   "step": 2,
+   "url": "/admin/accounting/banking/1"
+  },
+  {
+   "start": 19.13,
+   "end": 27.28,
+   "text": "At the top: the balance in the books, the balance on the statement, and the difference still to explain.",
+   "step": 3,
+   "url": "/admin/accounting/banking/1"
+  },
+  {
+   "start": 27.28,
+   "end": 35.79,
+   "text": "Each statement line is listed with what in the books could match it: the same amount within a few days.",
+   "step": 4,
+   "url": "/admin/accounting/banking/1"
+  },
+  {
+   "start": 35.79,
+   "end": 40.42,
+   "text": "Bank charges and interest are not in the books yet.",
+   "step": 5,
+   "url": "/admin/accounting/banking/1"
+  },
+  {
+   "start": 40.42,
+   "end": 51.6,
+   "text": "Choose Post on the line, pick the account, for example bank charges, then Post and match: the entry is posted and the line ticked off at once.",
+   "step": 6,
+   "url": "/admin/accounting/banking/1"
+  },
+  {
+   "start": 51.6,
+   "end": 59.35,
+   "text": "When the books already have the same amounts, Match automatically ticks off every obvious pair in one go.",
+   "step": 7,
+   "url": "/admin/accounting/banking/1"
+  },
+  {
+   "start": 59.35,
+   "end": 66.97,
+   "text": "Below are entries in the books that are not on a statement yet, like cheques not cleared.",
+   "step": 8,
+   "url": "/admin/accounting/banking/1"
+  },
+  {
+   "start": 66.97,
+   "end": 73.62,
+   "text": "A duplicate, or a transfer already recorded? Ignore it. A wrong match can always be undone.",
+   "step": 9,
+   "url": "/admin/accounting/banking/1"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/accounting/banking"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/accounting/banking/1"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/accounting/banking/1"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/accounting/banking/1"
+  },
+  {
+   "step": 5,
+   "kind": "scroll",
+   "url": "/admin/accounting/banking/1"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/accounting/banking/1"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/accounting/banking/1"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/accounting/banking/1"
+  },
+  {
+   "step": 9,
+   "kind": "say",
+   "url": "/admin/accounting/banking/1"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:52:07.107Z"
+}

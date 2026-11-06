@@ -1,0 +1,139 @@
+{
+ "id": "records-documents",
+ "lang": "en",
+ "title": "Keeping documents up to date",
+ "duration": 77.96,
+ "cues": [
+  {
+   "start": 0.01,
+   "end": 8.55,
+   "text": "Find any document in the office, see what has expired, and replace it with a new version.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.55,
+   "end": 16.12,
+   "text": "Documents is the library of every file in the office: tenant papers, leases, permits, contracts and staff files.",
+   "step": 1,
+   "url": "/admin/documents"
+  },
+  {
+   "start": 16.12,
+   "end": 23.44,
+   "text": "The top shows what is on file, what expires within thirty days and what has already expired.",
+   "step": 2,
+   "url": "/admin/documents"
+  },
+  {
+   "start": 23.44,
+   "end": 32.66,
+   "text": "Search by title or reference, or filter by what the document belongs to: a brand, a lease, an employee or a unit.",
+   "step": 3,
+   "url": "/admin/documents"
+  },
+  {
+   "start": 32.66,
+   "end": 36.76,
+   "text": "Let us deal with the expired ones.",
+   "step": 4,
+   "url": "/admin/documents?status=expired"
+  },
+  {
+   "start": 36.76,
+   "end": 39.84,
+   "text": "Open a document.",
+   "step": 5,
+   "url": "/admin/documents/37"
+  },
+  {
+   "start": 39.84,
+   "end": 44.09,
+   "text": "You can read it right here, without downloading it.",
+   "step": 6,
+   "url": "/admin/documents/37"
+  },
+  {
+   "start": 44.09,
+   "end": 50.78,
+   "text": "Its details show what it belongs to, when it was issued and when it expires.",
+   "step": 7,
+   "url": "/admin/documents/37"
+  },
+  {
+   "start": 50.78,
+   "end": 55.15,
+   "text": "When the renewed copy arrives, use Upload a new version.",
+   "step": 8,
+   "url": "/admin/documents/37"
+  },
+  {
+   "start": 55.15,
+   "end": 66.29,
+   "text": "Set the new issue and expiry dates and drop in the file. The old one stays in Versions, and the reminders start again from the new date.",
+   "step": 9,
+   "url": "/admin/documents/37"
+  },
+  {
+   "start": 66.29,
+   "end": 73.72,
+   "text": "The office reminds the owner of each document thirty days before it expires, so nothing lapses by surprise.",
+   "step": 10,
+   "url": "/admin/documents/37"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/documents"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/documents"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/documents"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/documents?status=expired"
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/documents/37"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/documents/37"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/documents/37"
+  },
+  {
+   "step": 8,
+   "kind": "scroll",
+   "url": "/admin/documents/37"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/documents/37"
+  },
+  {
+   "step": 10,
+   "kind": "say",
+   "url": "/admin/documents/37"
+  }
+ ],
+ "recorded_at": "2026-11-06T00:22:13.341Z"
+}

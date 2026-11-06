@@ -1,0 +1,151 @@
+{
+ "id": "ops-website",
+ "lang": "ar",
+ "title": "تحديث الموقع الإلكتروني",
+ "duration": 63.49,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 6.83,
+   "text": "عدّل بيانات متجر، وميّزه، وأضف فعالية، واعرف من اشترك في الأخبار.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 6.83,
+   "end": 12.11,
+   "text": "من قسم الموقع تُحدّث الموقع العام: دليل المتاجر والفعاليات والعروض.",
+   "step": 1,
+   "url": "/admin/website"
+  },
+  {
+   "start": 12.11,
+   "end": 15.7,
+   "text": "افتح متجرًا.",
+   "step": 2,
+   "url": "/admin/website/stores/2"
+  },
+  {
+   "start": 15.7,
+   "end": 20.02,
+   "text": "بياناته باللغتين العربية والإنجليزية: الاسم والشعار والوصف والفئة.",
+   "step": 3,
+   "url": "/admin/website/stores/2"
+  },
+  {
+   "start": 20.02,
+   "end": 24.07,
+   "text": "أضف مواعيد العمل.",
+   "step": 4,
+   "url": "/admin/website/stores/2"
+  },
+  {
+   "start": 24.07,
+   "end": 30.45,
+   "text": "ضع علامة على «تمييز» ليظهر في أعلى الدليل.",
+   "step": 5,
+   "url": "/admin/website/stores/2"
+  },
+  {
+   "start": 30.45,
+   "end": 34.73,
+   "text": "احفظ، فيظهر التغيير على الموقع فورًا.",
+   "step": 6,
+   "url": "/admin/website/stores/2"
+  },
+  {
+   "start": 34.73,
+   "end": 39.14,
+   "text": "وهنا عنوانه على الموقع، وزر إخفائه أو نشره.",
+   "step": 7,
+   "url": "/admin/website/stores/2"
+  },
+  {
+   "start": 39.14,
+   "end": 41.54,
+   "text": "وتعمل الفعاليات بالطريقة نفسها.",
+   "step": 8,
+   "url": "/admin/website?tab=events"
+  },
+  {
+   "start": 41.54,
+   "end": 46,
+   "text": "اكتب عنوان الفعالية الجديدة وتاريخها.",
+   "step": 9,
+   "url": "/admin/website?tab=events"
+  },
+  {
+   "start": 46,
+   "end": 51.7,
+   "text": "أنشئها، ثم أضف التفاصيل باللغتين والمواعيد وصورة الغلاف، وانشرها.",
+   "step": 10,
+   "url": "/admin/website/events/5"
+  },
+  {
+   "start": 51.7,
+   "end": 58.81,
+   "text": "وتعرض صفحة المشتركين كل من سجّل لتلقي الأخبار عبر الموقع، ويمكنك تصدير القائمة لنشرتك البريدية.",
+   "step": 11,
+   "url": "/admin/subscribers"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/website"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/website/stores/2"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/website/stores/2"
+  },
+  {
+   "step": 4,
+   "kind": "type",
+   "url": "/admin/website/stores/2"
+  },
+  {
+   "step": 5,
+   "kind": "check",
+   "url": "/admin/website/stores/2"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/website/stores/2"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/website/stores/2"
+  },
+  {
+   "step": 8,
+   "kind": "go",
+   "url": "/admin/website?tab=events"
+  },
+  {
+   "step": 9,
+   "kind": "type",
+   "url": "/admin/website?tab=events"
+  },
+  {
+   "step": 10,
+   "kind": "click",
+   "url": "/admin/website/events/5"
+  },
+  {
+   "step": 11,
+   "kind": "go",
+   "url": "/admin/subscribers"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:14:29.346Z"
+}

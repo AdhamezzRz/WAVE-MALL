@@ -1,0 +1,115 @@
+{
+ "id": "overview-away",
+ "lang": "ar",
+ "title": "تسليم العمل أثناء غيابك",
+ "duration": 57.24,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 8.56,
+   "text": "اختر من ينوب عنك في الموافقات والمهام أثناء إجازتك، ومن أي يوم إلى أي يوم.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.56,
+   "end": 12.82,
+   "text": "ستأخذ إجازة؟ سلّم موافقاتك ومهامك قبل أن تذهب.",
+   "step": 1,
+   "url": "/admin/work"
+  },
+  {
+   "start": 12.82,
+   "end": 17.23,
+   "text": "اختر «الغياب».",
+   "step": 2,
+   "url": "/admin/work/away"
+  },
+  {
+   "start": 17.23,
+   "end": 23.46,
+   "text": "يكون اسمك محددًا تلقائيًا، ويمكن للمدير ضبطه لأي شخص في الفريق.",
+   "step": 3,
+   "url": "/admin/work/away"
+  },
+  {
+   "start": 23.46,
+   "end": 26.84,
+   "text": "اختر من ينوب عنك.",
+   "step": 4,
+   "url": "/admin/work/away"
+  },
+  {
+   "start": 26.84,
+   "end": 30.82,
+   "text": "حدد أول يوم وآخر يوم في غيابك.",
+   "step": 5,
+   "url": "/admin/work/away"
+  },
+  {
+   "start": 30.82,
+   "end": 37.26,
+   "text": "أضف ملاحظة لزملائك.",
+   "step": 6,
+   "url": "/admin/work/away"
+  },
+  {
+   "start": 37.26,
+   "end": 45.83,
+   "text": "احفظ. تصل رسالة إلى دينا، فتتخذ القرار في موافقاتك أثناء غيابك وترى مهامك في يومها.",
+   "step": 7,
+   "url": "/admin/work/away"
+  },
+  {
+   "start": 45.83,
+   "end": 52.56,
+   "text": "تعرض «الغياب الحالي والمخطط» كل الإنابات، ويمكنك إنهاء أي منها مبكرًا عند عودتك.",
+   "step": 8,
+   "url": "/admin/work/away"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/work"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/work/away"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/work/away"
+  },
+  {
+   "step": 4,
+   "kind": "select",
+   "url": "/admin/work/away"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/work/away"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/work/away"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/work/away"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/work/away"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:51:13.412Z"
+}

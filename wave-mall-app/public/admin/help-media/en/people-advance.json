@@ -1,0 +1,127 @@
+{
+ "id": "people-advance",
+ "lang": "en",
+ "title": "Giving a salary advance",
+ "duration": 57.61,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 8.19,
+   "text": "Give an employee an advance, choose the instalments, and let payroll deduct it month by month.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.19,
+   "end": 12.82,
+   "text": "Salary advances lists every advance and what is still owed.",
+   "step": 1,
+   "url": "/admin/hr/advances"
+  },
+  {
+   "start": 12.82,
+   "end": 16.49,
+   "text": "Larger advances wait here for approval first.",
+   "step": 2,
+   "url": "/admin/hr/advances"
+  },
+  {
+   "start": 16.49,
+   "end": 20.34,
+   "text": "To give one, choose the employee.",
+   "step": 3,
+   "url": "/admin/hr/advances"
+  },
+  {
+   "start": 20.34,
+   "end": 23.73,
+   "text": "The amount.",
+   "step": 4,
+   "url": "/admin/hr/advances"
+  },
+  {
+   "start": 23.73,
+   "end": 28.77,
+   "text": "And how many monthly instalments. The first deduction is next month's payroll.",
+   "step": 5,
+   "url": "/admin/hr/advances"
+  },
+  {
+   "start": 28.77,
+   "end": 33.25,
+   "text": "How it is paid: cash or bank transfer.",
+   "step": 6,
+   "url": "/admin/hr/advances"
+  },
+  {
+   "start": 33.25,
+   "end": 37.67,
+   "text": "And the reason.",
+   "step": 7,
+   "url": "/admin/hr/advances"
+  },
+  {
+   "start": 37.67,
+   "end": 46.69,
+   "text": "Give the advance. Above the limit in the approval rules, it goes for approval before any money is paid.",
+   "step": 8,
+   "url": "/admin/hr/advances/4"
+  },
+  {
+   "start": 46.69,
+   "end": 52.96,
+   "text": "Each payroll deducts the instalment by itself, and the employee's file shows what is left.",
+   "step": 9,
+   "url": "/admin/hr/advances/4"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/hr/advances"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/hr/advances"
+  },
+  {
+   "step": 3,
+   "kind": "select",
+   "url": "/admin/hr/advances"
+  },
+  {
+   "step": 4,
+   "kind": "type",
+   "url": "/admin/hr/advances"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/hr/advances"
+  },
+  {
+   "step": 6,
+   "kind": "select",
+   "url": "/admin/hr/advances"
+  },
+  {
+   "step": 7,
+   "kind": "type",
+   "url": "/admin/hr/advances"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/hr/advances/4"
+  },
+  {
+   "step": 9,
+   "kind": "say",
+   "url": "/admin/hr/advances/4"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:29:51.432Z"
+}

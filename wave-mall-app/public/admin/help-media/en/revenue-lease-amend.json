@@ -1,0 +1,156 @@
+{
+ "id": "revenue-lease-amend",
+ "lang": "en",
+ "title": "Changing a lease with an addendum",
+ "duration": 77.8,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 8.94,
+   "text": "Change the rent, add a unit or extend the term with an addendum, preview it, then apply it.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.94,
+   "end": 15.8,
+   "text": "A lease is never edited directly once it is active. Changes are made with an addendum.",
+   "step": 1,
+   "url": "/admin/leases?status=active"
+  },
+  {
+   "start": 19.33,
+   "end": 24.79,
+   "text": "On the lease, find Addenda and choose New addendum.",
+   "step": 3,
+   "url": "/admin/leases/3/amend"
+  },
+  {
+   "start": 24.79,
+   "end": 31.07,
+   "text": "The addendum takes effect from this date; earlier invoices stay as they are.",
+   "step": 4,
+   "url": "/admin/leases/3/amend"
+  },
+  {
+   "start": 31.07,
+   "end": 35.92,
+   "text": "Write why the lease is changing.",
+   "step": 5,
+   "url": "/admin/leases/3/amend"
+  },
+  {
+   "start": 35.92,
+   "end": 39.01,
+   "text": "Enter the new rent per square metre.",
+   "step": 6,
+   "url": "/admin/leases/3/amend"
+  },
+  {
+   "start": 39.01,
+   "end": 44.02,
+   "text": "Add a unit, or tick a unit to give back.",
+   "step": 7,
+   "url": "/admin/leases/3/amend"
+  },
+  {
+   "start": 44.02,
+   "end": 48.12,
+   "text": "You can also extend the term in the same addendum.",
+   "step": 8,
+   "url": "/admin/leases/3/amend"
+  },
+  {
+   "start": 48.12,
+   "end": 51.62,
+   "text": "Choose Preview the addendum.",
+   "step": 9,
+   "url": "/admin/leases/3/amendments/2"
+  },
+  {
+   "start": 51.62,
+   "end": 58.42,
+   "text": "The draft lists every change: the new rent, the unit added and the longer term.",
+   "step": 10,
+   "url": "/admin/leases/3/amendments/2"
+  },
+  {
+   "start": 58.42,
+   "end": 65.91,
+   "text": "It also shows the invoices that will be voided, and the new ones issued in their place.",
+   "step": 11,
+   "url": "/admin/leases/3/amendments/2"
+  },
+  {
+   "start": 65.91,
+   "end": 73.15,
+   "text": "Upload the signed addendum, then choose Apply the addendum. The old invoices stay in the history.",
+   "step": 12,
+   "url": "/admin/leases/3/amendments/2"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/leases?status=active"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/leases/3"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/leases/3/amend"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/leases/3/amend"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/leases/3/amend"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/leases/3/amend"
+  },
+  {
+   "step": 7,
+   "kind": "select",
+   "url": "/admin/leases/3/amend"
+  },
+  {
+   "step": 8,
+   "kind": "type",
+   "url": "/admin/leases/3/amend"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/leases/3/amendments/2"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/leases/3/amendments/2"
+  },
+  {
+   "step": 11,
+   "kind": "point",
+   "url": "/admin/leases/3/amendments/2"
+  },
+  {
+   "step": 12,
+   "kind": "point",
+   "url": "/admin/leases/3/amendments/2"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:51:19.966Z"
+}

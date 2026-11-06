@@ -1,0 +1,132 @@
+{
+ "id": "office-review",
+ "lang": "ar",
+ "title": "المراجعة الربع سنوية للصلاحيات",
+ "duration": 73.58,
+ "cues": [
+  {
+   "start": 0.14,
+   "end": 8.23,
+   "text": "راجع من يستطيع فعل ماذا، وأكّد الصلاحيات أو ألغِها شخصًا بشخص، وأوقف الحسابات الخاملة.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.23,
+   "end": 16.07,
+   "text": "مرة كل ربع سنة، راجع من يستطيع فعل ماذا. تجمع مراجعة الصلاحيات ذلك في صفحة واحدة.",
+   "step": 1,
+   "url": "/admin/people/review"
+  },
+  {
+   "start": 16.07,
+   "end": 24.46,
+   "text": "في الأعلى: عدد من تمت مراجعتهم هذا الربع، والصلاحيات القوية، والحسابات الخاملة، والتغييرات خلال آخر ثلاثين يومًا.",
+   "step": 2,
+   "url": "/admin/people/review"
+  },
+  {
+   "start": 24.46,
+   "end": 32.67,
+   "text": "الجميع مقابل كل الأقسام: كل مربع هو مستوى الشخص في القسم، وكلما كان أغمق كانت صلاحياته أكبر.",
+   "step": 3,
+   "url": "/admin/people/review"
+  },
+  {
+   "start": 32.67,
+   "end": 39.65,
+   "text": "في اعتماد مراجعة هذا الربع: لكل شخص، أبقِ صلاحياته أو حدّدها للتعديل أو ألغِها.",
+   "step": 4,
+   "url": "/admin/people/review"
+  },
+  {
+   "start": 42.34,
+   "end": 46.87,
+   "text": "أضف ملاحظة عند الحاجة.",
+   "step": 6,
+   "url": "/admin/people/review"
+  },
+  {
+   "start": 46.87,
+   "end": 51.6,
+   "text": "احفظ المراجعة، فتُحفظ بالتاريخ واسمك، جاهزة للمراجعين.",
+   "step": 7,
+   "url": "/admin/people/review?period=2026-Q4"
+  },
+  {
+   "start": 51.6,
+   "end": 57.62,
+   "text": "الحسابات الخاملة لم تسجّل الدخول منذ مدة طويلة، حدّدها وأوقفها معًا.",
+   "step": 8,
+   "url": "/admin/people/review?period=2026-Q4"
+  },
+  {
+   "start": 57.62,
+   "end": 65.91,
+   "text": "وتعرض «صلاحيات قوية» من يستطيع إدارة المستخدمين أو منح الصلاحيات أو تصدير البيانات، حتى لا يفوتك شيء.",
+   "step": 9,
+   "url": "/admin/people/review?period=2026-Q4"
+  },
+  {
+   "start": 65.91,
+   "end": 68.9,
+   "text": "صدّر المراجعة كجدول بيانات لسجلاتك.",
+   "step": 10,
+   "url": "/admin/people/review?period=2026-Q4"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/people/review"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/people/review"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/people/review"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/people/review"
+  },
+  {
+   "step": 5,
+   "kind": "select",
+   "url": "/admin/people/review"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/people/review"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/people/review?period=2026-Q4"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/people/review?period=2026-Q4"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/people/review?period=2026-Q4"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/people/review?period=2026-Q4"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:35:43.155Z"
+}

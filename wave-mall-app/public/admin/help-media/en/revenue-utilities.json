@@ -1,0 +1,139 @@
+{
+ "id": "revenue-utilities",
+ "lang": "en",
+ "title": "Meter readings and utility bills",
+ "duration": 66.76,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 8.57,
+   "text": "Enter the month's meter readings, check the unusual ones, and bill the tenants for what they used.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.57,
+   "end": 14.23,
+   "text": "Utilities follows electricity, water and gas, for the whole mall and each tenant.",
+   "step": 1,
+   "url": "/admin/utilities"
+  },
+  {
+   "start": 14.23,
+   "end": 19.27,
+   "text": "This month's use, the cost and the amount recovered from tenants.",
+   "step": 2,
+   "url": "/admin/utilities"
+  },
+  {
+   "start": 19.27,
+   "end": 22.49,
+   "text": "Each month, open Readings.",
+   "step": 3,
+   "url": "/admin/utilities/readings"
+  },
+  {
+   "start": 22.49,
+   "end": 29.09,
+   "text": "Type each meter's reading. The use and the cost are worked out as you go.",
+   "step": 4,
+   "url": "/admin/utilities/readings"
+  },
+  {
+   "start": 29.09,
+   "end": 35.64,
+   "text": "A reading far from the usual is flagged, so a typing mistake is never billed.",
+   "step": 5,
+   "url": "/admin/utilities/readings"
+  },
+  {
+   "start": 35.64,
+   "end": 40.68,
+   "text": "Check it, and accept it if it is right.",
+   "step": 6,
+   "url": "/admin/utilities/readings?period=2026-10"
+  },
+  {
+   "start": 40.68,
+   "end": 44.2,
+   "text": "Then open Billing.",
+   "step": 7,
+   "url": "/admin/utilities/billing"
+  },
+  {
+   "start": 44.2,
+   "end": 49.24,
+   "text": "Each tenant's use is priced with the tariff, ready to bill.",
+   "step": 8,
+   "url": "/admin/utilities/billing"
+  },
+  {
+   "start": 49.24,
+   "end": 55.96,
+   "text": "Choose Bill utilities. The invoices go to the tenants with the readings on them.",
+   "step": 9,
+   "url": "/admin/utilities/billing?period=2026-10"
+  },
+  {
+   "start": 55.96,
+   "end": 62.17,
+   "text": "Billed meters move down, and readings held back wait for you to check them.",
+   "step": 10,
+   "url": "/admin/utilities/billing?period=2026-10"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/utilities"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/utilities"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/utilities/readings"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/utilities/readings"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/utilities/readings"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/utilities/readings?period=2026-10"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/utilities/billing"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/utilities/billing"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/utilities/billing?period=2026-10"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/utilities/billing?period=2026-10"
+  }
+ ],
+ "recorded_at": "2026-11-05T23:26:52.031Z"
+}

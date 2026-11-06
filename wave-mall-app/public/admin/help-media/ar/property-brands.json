@@ -1,0 +1,164 @@
+{
+ "id": "property-brands",
+ "lang": "ar",
+ "title": "إضافة علامة تجارية وجهات اتصالها",
+ "duration": 76.88,
+ "cues": [
+  {
+   "start": 0.01,
+   "end": 7.23,
+   "text": "احتفظ بملف واحد لكل علامة تجارية، بفئتها ومستواها والأشخاص الذين تتعامل معهم.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.23,
+   "end": 13.5,
+   "text": "تعرض «العلامات التجارية» كل علامة تواصلت معها، مع فرصها وآخر مرحلة وصلت إليها.",
+   "step": 1,
+   "url": "/admin/brands"
+  },
+  {
+   "start": 13.5,
+   "end": 17.01,
+   "text": "ابحث بالاسم أو صفِّ حسب الفئة.",
+   "step": 2,
+   "url": "/admin/brands"
+  },
+  {
+   "start": 17.01,
+   "end": 20.96,
+   "text": "لإضافة علامة، اختر «إضافة علامة تجارية».",
+   "step": 3,
+   "url": "/admin/brands/new"
+  },
+  {
+   "start": 20.96,
+   "end": 25.55,
+   "text": "اكتب اسم العلامة كما يعرفه العملاء.",
+   "step": 4,
+   "url": "/admin/brands/new"
+  },
+  {
+   "start": 25.55,
+   "end": 30.12,
+   "text": "اختر فئتها ومستواها، فهما أساس التقارير وتنوع المستأجرين.",
+   "step": 5,
+   "url": "/admin/brands/new"
+  },
+  {
+   "start": 35.84,
+   "end": 39.34,
+   "text": "أضف عدد فروعها وموقعها أو حسابها على إنستغرام.",
+   "step": 8,
+   "url": "/admin/brands/new"
+  },
+  {
+   "start": 42.99,
+   "end": 46,
+   "text": "احفظ العلامة.",
+   "step": 10,
+   "url": "/admin/brands/23"
+  },
+  {
+   "start": 46,
+   "end": 54.72,
+   "text": "تُفتح صفحة العلامة. أضف الآن الأشخاص الذين تتعامل معهم: اختر «إضافة جهة اتصال».",
+   "step": 11,
+   "url": "/admin/brands/23"
+  },
+  {
+   "start": 54.72,
+   "end": 58.03,
+   "text": "اكتب الاسم والمسمى الوظيفي والهاتف.",
+   "step": 12,
+   "url": "/admin/brands/23"
+  },
+  {
+   "start": 65.34,
+   "end": 72.63,
+   "text": "أضف جهة الاتصال، فيصبح هاتفها وواتسابها على بُعد ضغطة من كل فرصة لهذه العلامة.",
+   "step": 15,
+   "url": "/admin/brands/23"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/brands"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/brands"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/brands/new"
+  },
+  {
+   "step": 4,
+   "kind": "type",
+   "url": "/admin/brands/new"
+  },
+  {
+   "step": 5,
+   "kind": "select",
+   "url": "/admin/brands/new"
+  },
+  {
+   "step": 6,
+   "kind": "select",
+   "url": "/admin/brands/new"
+  },
+  {
+   "step": 7,
+   "kind": "type",
+   "url": "/admin/brands/new"
+  },
+  {
+   "step": 8,
+   "kind": "type",
+   "url": "/admin/brands/new"
+  },
+  {
+   "step": 9,
+   "kind": "type",
+   "url": "/admin/brands/new"
+  },
+  {
+   "step": 10,
+   "kind": "click",
+   "url": "/admin/brands/23"
+  },
+  {
+   "step": 11,
+   "kind": "click",
+   "url": "/admin/brands/23"
+  },
+  {
+   "step": 12,
+   "kind": "type",
+   "url": "/admin/brands/23"
+  },
+  {
+   "step": 13,
+   "kind": "type",
+   "url": "/admin/brands/23"
+  },
+  {
+   "step": 14,
+   "kind": "type",
+   "url": "/admin/brands/23"
+  },
+  {
+   "step": 15,
+   "kind": "click",
+   "url": "/admin/brands/23"
+  }
+ ],
+ "recorded_at": "2026-11-06T00:38:38.451Z"
+}

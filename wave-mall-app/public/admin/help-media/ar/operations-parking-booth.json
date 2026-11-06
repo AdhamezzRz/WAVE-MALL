@@ -1,0 +1,151 @@
+{
+ "id": "operations-parking-booth",
+ "lang": "ar",
+ "title": "العمل في كابينة المحاسبة بالجراج",
+ "duration": 70.16,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 7.68,
+   "text": "افتح خزينتك، وابحث عن السيارة بالتذكرة أو باللوحة، وحصّل المبلغ واسمح لها بالخروج.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.68,
+   "end": 14.1,
+   "text": "تعرض «المواقف» الجراج لحظة بلحظة: السيارات بالداخل، والأماكن الشاغرة، وما يحدث عند البوابات.",
+   "step": 1,
+   "url": "/admin/parking"
+  },
+  {
+   "start": 14.1,
+   "end": 21.18,
+   "text": "عند المخرج، يعمل المحاسب من «كابينة المحاسبة»، وهي مصممة للأجهزة اللوحية.",
+   "step": 2,
+   "url": "/admin/parking/booth"
+  },
+  {
+   "start": 21.18,
+   "end": 26.33,
+   "text": "افتح خزينتك أولًا، بالمبلغ النقدي الموجود في الدرج عند البداية.",
+   "step": 3,
+   "url": "/admin/parking/booth"
+  },
+  {
+   "start": 26.33,
+   "end": 29.98,
+   "text": "كل مبلغ تحصّله يدخل خزينتك.",
+   "step": 4,
+   "url": "/admin/parking/booth"
+  },
+  {
+   "start": 29.98,
+   "end": 35.91,
+   "text": "امسح رمز التذكرة، أو مرّر البطاقة، أو اكتب رقم اللوحة.",
+   "step": 5,
+   "url": "/admin/parking/booth"
+  },
+  {
+   "start": 35.91,
+   "end": 39.21,
+   "text": "بحث.",
+   "step": 6,
+   "url": "/admin/parking/booth?q=%D8%B3+%D8%B9+%D8%AF+2026"
+  },
+  {
+   "start": 39.21,
+   "end": 45.74,
+   "text": "السيارة، ووقت دخولها، ومدة بقائها، والمبلغ المستحق، بعد خصم أي اعتماد من المحلات.",
+   "step": 7,
+   "url": "/admin/parking/booth?q=%D8%B3+%D8%B9+%D8%AF+2026"
+  },
+  {
+   "start": 45.74,
+   "end": 51.05,
+   "text": "اختر طريقة الدفع: نقدًا أو بطاقة أو محفظة أو إنستاباي.",
+   "step": 8,
+   "url": "/admin/parking/booth?q=%D8%B3+%D8%B9+%D8%AF+2026"
+  },
+  {
+   "start": 51.05,
+   "end": 55.6,
+   "text": "نقدًا. ويمكن طباعة الإيصال أو إرساله برسالة.",
+   "step": 9,
+   "url": "/admin/parking/booth?q=JJVH-QPA5"
+  },
+  {
+   "start": 55.6,
+   "end": 59.34,
+   "text": "ثم افتح الحاجز وأنهِ الزيارة.",
+   "step": 10,
+   "url": "/admin/parking/booth"
+  },
+  {
+   "start": 59.34,
+   "end": 65.49,
+   "text": "تذكرة مفقودة أو ضيف للمول؟ تجد أزرارها في الشاشة نفسها، وكل إجراء يُسجَّل.",
+   "step": 11,
+   "url": "/admin/parking/booth"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/parking"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/parking/booth"
+  },
+  {
+   "step": 3,
+   "kind": "type",
+   "url": "/admin/parking/booth"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/parking/booth"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/parking/booth"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/parking/booth?q=%D8%B3+%D8%B9+%D8%AF+2026"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/parking/booth?q=%D8%B3+%D8%B9+%D8%AF+2026"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/parking/booth?q=%D8%B3+%D8%B9+%D8%AF+2026"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/parking/booth?q=JJVH-QPA5"
+  },
+  {
+   "step": 10,
+   "kind": "click",
+   "url": "/admin/parking/booth"
+  },
+  {
+   "step": 11,
+   "kind": "say",
+   "url": "/admin/parking/booth"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:15:10.263Z"
+}

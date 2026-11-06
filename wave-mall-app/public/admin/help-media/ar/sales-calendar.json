@@ -1,0 +1,161 @@
+{
+ "id": "sales-calendar",
+ "lang": "ar",
+ "title": "حجز معاينة ومتابعة المهام",
+ "duration": 62.68,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 6.36,
+   "text": "ضع المعاينات والاجتماعات والمكالمات في التقويم، وأنجز مهامك أولًا بأول.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 6.36,
+   "end": 10.92,
+   "text": "يعرض التقويم المعاينات والاجتماعات والمكالمات والمهام لفريق التأجير كله.",
+   "step": 1,
+   "url": "/admin/calendar"
+  },
+  {
+   "start": 10.92,
+   "end": 16.5,
+   "text": "اليوم مميز، وكل موعد ملوّن حسب نوعه ويفتح الفرصة المرتبطة به.",
+   "step": 2,
+   "url": "/admin/calendar"
+  },
+  {
+   "start": 16.5,
+   "end": 20.74,
+   "text": "تنقّل بين الشهور، أو اعرض مواعيدك أنت فقط.",
+   "step": 3,
+   "url": "/admin/calendar"
+  },
+  {
+   "start": 20.74,
+   "end": 24.45,
+   "text": "لحجز معاينة استخدم «جدولة» واختر «معاينة».",
+   "step": 4,
+   "url": "/admin/calendar"
+  },
+  {
+   "start": 24.45,
+   "end": 29.03,
+   "text": "اختر الفرصة، لتظهر المعاينة في سجلها الزمني أيضًا.",
+   "step": 5,
+   "url": "/admin/calendar"
+  },
+  {
+   "start": 29.03,
+   "end": 33.16,
+   "text": "اكتب عنوانًا واضحًا.",
+   "step": 6,
+   "url": "/admin/calendar"
+  },
+  {
+   "start": 33.17,
+   "end": 36.56,
+   "text": "حدد اليوم والساعة ومن سيستقبل الزائر.",
+   "step": 7,
+   "url": "/admin/calendar"
+  },
+  {
+   "start": 39.15,
+   "end": 44.93,
+   "text": "أضفها، فيفتح المكتب الفرصة والمعاينة في انتظارك في سجلها الزمني.",
+   "step": 9,
+   "url": "/admin/leads/18"
+  },
+  {
+   "start": 44.93,
+   "end": 50.22,
+   "text": "وتظهر في التقويم أيضًا، ويصل تذكير إلى المستضيف قبل موعدها.",
+   "step": 10,
+   "url": "/admin/leads/18"
+  },
+  {
+   "start": 51.18,
+   "end": 54.67,
+   "text": "تعرض «المهام» المتأخر، والمستحق اليوم، والقادم.",
+   "step": 12,
+   "url": "/admin/calendar"
+  },
+  {
+   "start": 54.67,
+   "end": 58.48,
+   "text": "وعندما تُنجز مهمة، علّمها كمُنجزة من هنا.",
+   "step": 13,
+   "url": "/admin/calendar"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/calendar"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/calendar"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/calendar"
+  },
+  {
+   "step": 4,
+   "kind": "select",
+   "url": "/admin/calendar"
+  },
+  {
+   "step": 5,
+   "kind": "select",
+   "url": "/admin/calendar"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/calendar"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/calendar"
+  },
+  {
+   "step": 8,
+   "kind": "select",
+   "url": "/admin/calendar"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/leads/18"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/leads/18"
+  },
+  {
+   "step": 11,
+   "kind": "go",
+   "url": "/admin/calendar"
+  },
+  {
+   "step": 12,
+   "kind": "point",
+   "url": "/admin/calendar"
+  },
+  {
+   "step": 13,
+   "kind": "point",
+   "url": "/admin/calendar"
+  }
+ ],
+ "recorded_at": "2026-11-06T00:33:49.427Z"
+}

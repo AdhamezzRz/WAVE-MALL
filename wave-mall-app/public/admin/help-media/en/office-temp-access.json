@@ -1,0 +1,166 @@
+{
+ "id": "office-temp-access",
+ "lang": "en",
+ "title": "Giving temporary access",
+ "duration": 75.19,
+ "cues": [
+  {
+   "start": 0.07,
+   "end": 8.61,
+   "text": "Let someone open a module for a few days without changing their role; it ends by itself.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.61,
+   "end": 15.95,
+   "text": "Someone needs a module for a short while? Give them temporary access instead of changing their role.",
+   "step": 1,
+   "url": "/admin/people"
+  },
+  {
+   "start": 15.95,
+   "end": 19.18,
+   "text": "Open the person.",
+   "step": 2,
+   "url": "/admin/people/11"
+  },
+  {
+   "start": 19.18,
+   "end": 23.36,
+   "text": "Then their effective access.",
+   "step": 3,
+   "url": "/admin/people/11/access"
+  },
+  {
+   "start": 23.36,
+   "end": 27.77,
+   "text": "First, check: can Ayman open the reports?",
+   "step": 4,
+   "url": "/admin/people/11/access"
+  },
+  {
+   "start": 30.76,
+   "end": 37.06,
+   "text": "No, and the reason is given: the reports are not part of his role.",
+   "step": 6,
+   "url": "/admin/people/11/access?test=%2Fadmin%2Freports&method=GET"
+  },
+  {
+   "start": 37.06,
+   "end": 41.76,
+   "text": "Under Temporary access, choose the module and the level.",
+   "step": 7,
+   "url": "/admin/people/11/access?test=%2Fadmin%2Freports&method=GET"
+  },
+  {
+   "start": 44.52,
+   "end": 50.74,
+   "text": "Choose the last day. The access ends by itself that night: nothing to remember.",
+   "step": 9,
+   "url": "/admin/people/11/access?test=%2Fadmin%2Freports&method=GET"
+  },
+  {
+   "start": 50.74,
+   "end": 56.68,
+   "text": "Give a reason. It is kept in the history.",
+   "step": 10,
+   "url": "/admin/people/11/access?test=%2Fadmin%2Freports&method=GET"
+  },
+  {
+   "start": 56.68,
+   "end": 60.15,
+   "text": "Grant it.",
+   "step": 11,
+   "url": "/admin/people/11/access"
+  },
+  {
+   "start": 60.15,
+   "end": 64.33,
+   "text": "Check again:",
+   "step": 12,
+   "url": "/admin/people/11/access"
+  },
+  {
+   "start": 67.42,
+   "end": 70.55,
+   "text": "Yes, until the date you chose.",
+   "step": 14,
+   "url": "/admin/people/11/access?test=%2Fadmin%2Freports&method=GET"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/people"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/people/11"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/people/11/access"
+  },
+  {
+   "step": 4,
+   "kind": "type",
+   "url": "/admin/people/11/access"
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/people/11/access?test=%2Fadmin%2Freports&method=GET"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/people/11/access?test=%2Fadmin%2Freports&method=GET"
+  },
+  {
+   "step": 7,
+   "kind": "select",
+   "url": "/admin/people/11/access?test=%2Fadmin%2Freports&method=GET"
+  },
+  {
+   "step": 8,
+   "kind": "select",
+   "url": "/admin/people/11/access?test=%2Fadmin%2Freports&method=GET"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/people/11/access?test=%2Fadmin%2Freports&method=GET"
+  },
+  {
+   "step": 10,
+   "kind": "type",
+   "url": "/admin/people/11/access?test=%2Fadmin%2Freports&method=GET"
+  },
+  {
+   "step": 11,
+   "kind": "click",
+   "url": "/admin/people/11/access"
+  },
+  {
+   "step": 12,
+   "kind": "type",
+   "url": "/admin/people/11/access"
+  },
+  {
+   "step": 13,
+   "kind": "click",
+   "url": "/admin/people/11/access?test=%2Fadmin%2Freports&method=GET"
+  },
+  {
+   "step": 14,
+   "kind": "point",
+   "url": "/admin/people/11/access?test=%2Fadmin%2Freports&method=GET"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:30:01.024Z"
+}

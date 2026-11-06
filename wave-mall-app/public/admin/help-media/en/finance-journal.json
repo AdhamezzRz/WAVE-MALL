@@ -1,0 +1,151 @@
+{
+ "id": "finance-journal",
+ "lang": "en",
+ "title": "Posting a journal entry",
+ "duration": 86.99,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 8.18,
+   "text": "See the books at a glance, then post a manual entry with balanced debits and credits.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.18,
+   "end": 17.39,
+   "text": "Accounting opens on the overview: cash in the banks, what tenants owe, what you owe suppliers and the result of the year.",
+   "step": 1,
+   "url": "/admin/accounting"
+  },
+  {
+   "start": 17.39,
+   "end": 25.94,
+   "text": "Rent invoices, payments, payroll and purchases post here by themselves. You only post what the office does not know about.",
+   "step": 2,
+   "url": "/admin/accounting"
+  },
+  {
+   "start": 25.94,
+   "end": 34.8,
+   "text": "Open the Journal to see every entry, with a link back to the invoice or receipt that made it.",
+   "step": 3,
+   "url": "/admin/accounting/journal"
+  },
+  {
+   "start": 34.8,
+   "end": 38.36,
+   "text": "Choose New entry.",
+   "step": 4,
+   "url": "/admin/accounting/journal/new"
+  },
+  {
+   "start": 38.36,
+   "end": 46.45,
+   "text": "Describe the entry. The date is today; change it if the entry belongs to another day.",
+   "step": 5,
+   "url": "/admin/accounting/journal/new"
+  },
+  {
+   "start": 46.45,
+   "end": 51.49,
+   "text": "On the first line, choose the expense account: bank charges.",
+   "step": 6,
+   "url": "/admin/accounting/journal/new"
+  },
+  {
+   "start": 51.49,
+   "end": 54.54,
+   "text": "And the amount as a debit.",
+   "step": 7,
+   "url": "/admin/accounting/journal/new"
+  },
+  {
+   "start": 54.54,
+   "end": 60.06,
+   "text": "On the second line, the bank account the money left from.",
+   "step": 8,
+   "url": "/admin/accounting/journal/new"
+  },
+  {
+   "start": 60.06,
+   "end": 66.65,
+   "text": "The same amount as a credit. The totals underneath must balance before you can post.",
+   "step": 9,
+   "url": "/admin/accounting/journal/new"
+  },
+  {
+   "start": 66.65,
+   "end": 72.11,
+   "text": "Need more lines? Add a line, for example to split VAT.",
+   "step": 10,
+   "url": "/admin/accounting/journal/new"
+  },
+  {
+   "start": 72.11,
+   "end": 82.34,
+   "text": "Post the entry. It gets its own number, and a posted entry is never edited: to undo it, you reverse it.",
+   "step": 11,
+   "url": "/admin/accounting/journal/624"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/accounting"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/accounting"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/accounting/journal"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/accounting/journal/new"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/accounting/journal/new"
+  },
+  {
+   "step": 6,
+   "kind": "select",
+   "url": "/admin/accounting/journal/new"
+  },
+  {
+   "step": 7,
+   "kind": "type",
+   "url": "/admin/accounting/journal/new"
+  },
+  {
+   "step": 8,
+   "kind": "select",
+   "url": "/admin/accounting/journal/new"
+  },
+  {
+   "step": 9,
+   "kind": "type",
+   "url": "/admin/accounting/journal/new"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/accounting/journal/new"
+  },
+  {
+   "step": 11,
+   "kind": "click",
+   "url": "/admin/accounting/journal/624"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:43:34.723Z"
+}

@@ -1,0 +1,113 @@
+{
+ "id": "insight-wall",
+ "lang": "en",
+ "title": "Putting the wall screen on a TV",
+ "duration": 66,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 10.49,
+   "text": "Show the mall's live numbers on a TV in the office or control room, with a private link that needs no sign-in.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 10.49,
+   "end": 18.1,
+   "text": "The wall screen puts the mall's live numbers on a TV in the office or the control room.",
+   "step": 1,
+   "url": "/admin/wallboard"
+  },
+  {
+   "start": 18.1,
+   "end": 24.83,
+   "text": "It turns through these panels: visitors, the car park, takings, work orders and cheques due.",
+   "step": 2,
+   "url": "/admin/wallboard"
+  },
+  {
+   "start": 24.83,
+   "end": 34.3,
+   "text": "Create a link for the TV. It works without signing in, so use it only on a screen you trust.",
+   "step": 3,
+   "url": "/admin/wallboard"
+  },
+  {
+   "start": 34.3,
+   "end": 42.06,
+   "text": "Open this address in the TV's browser. Make a new link or switch it off at any time.",
+   "step": 4,
+   "url": "/admin/wallboard"
+  },
+  {
+   "start": 42.06,
+   "end": 47.35,
+   "text": "Choose the screen's language and how long each panel stays.",
+   "step": 5,
+   "url": "/admin/wallboard"
+  },
+  {
+   "start": 50.36,
+   "end": 53.42,
+   "text": "Save.",
+   "step": 7,
+   "url": "/admin/wallboard"
+  },
+  {
+   "start": 53.42,
+   "end": 58.62,
+   "text": "And this is the screen. It refreshes every thirty seconds by itself.",
+   "step": 8,
+   "url": "/admin/wallboard/screen"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/wallboard"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/wallboard"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/wallboard"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/wallboard"
+  },
+  {
+   "step": 5,
+   "kind": "select",
+   "url": "/admin/wallboard"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/wallboard"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/wallboard"
+  },
+  {
+   "step": 8,
+   "kind": "go",
+   "url": "/admin/wallboard/screen"
+  },
+  {
+   "step": 9,
+   "kind": "pause",
+   "url": "/admin/wallboard/screen"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:23:25.665Z"
+}

@@ -1,0 +1,162 @@
+{
+ "id": "revenue-cheques-receive",
+ "lang": "ar",
+ "title": "استلام الشيكات الآجلة",
+ "duration": 78.92,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 6.8,
+   "text": "ضع شيكات المستأجر في الحافظة، وكل شيك مربوط بالفاتورة التي يسددها.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 6.8,
+   "end": 11.49,
+   "text": "تحفظ صفحة الشيكات كل شيك آجل لديك حتى يُحصَّل.",
+   "step": 1,
+   "url": "/admin/cheques"
+  },
+  {
+   "start": 11.49,
+   "end": 17.25,
+   "text": "ترى ما يجب إيداعه هذا الأسبوع، وما في البنك، وما ارتد.",
+   "step": 2,
+   "url": "/admin/cheques"
+  },
+  {
+   "start": 17.25,
+   "end": 21.44,
+   "text": "أحضر المستأجر شيكاته. اختر «استلام شيكات».",
+   "step": 3,
+   "url": "/admin/cheques/receive"
+  },
+  {
+   "start": 21.44,
+   "end": 24.72,
+   "text": "اختر المستأجر.",
+   "step": 4,
+   "url": "/admin/cheques/receive"
+  },
+  {
+   "start": 27.79,
+   "end": 30.75,
+   "text": "ثم العقد، واختر «عرض».",
+   "step": 6,
+   "url": "/admin/cheques/receive?brand=1"
+  },
+  {
+   "start": 34.34,
+   "end": 39.09,
+   "text": "صف لكل فاتورة مفتوحة، والمبالغ وتواريخ الاستحقاق معبأة مسبقًا.",
+   "step": 8,
+   "url": "/admin/cheques/receive?brand=1&lease=1"
+  },
+  {
+   "start": 39.09,
+   "end": 43.43,
+   "text": "اكتب رقم كل شيك والبنك المسحوب عليه.",
+   "step": 9,
+   "url": "/admin/cheques/receive?brand=1&lease=1"
+  },
+  {
+   "start": 64.56,
+   "end": 67.77,
+   "text": "اختر «وضع في الحافظة».",
+   "step": 15,
+   "url": "/admin/cheques?brand=1"
+  },
+  {
+   "start": 67.77,
+   "end": 74.25,
+   "text": "أصبحت الشيكات في الحافظة، وكل منها مربوط بفاتورته، وستُذكَّر بموعد إيداع كل شيك.",
+   "step": 16,
+   "url": "/admin/cheques?brand=1"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/cheques"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/cheques"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/cheques/receive"
+  },
+  {
+   "step": 4,
+   "kind": "select",
+   "url": "/admin/cheques/receive"
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/cheques/receive?brand=1"
+  },
+  {
+   "step": 6,
+   "kind": "select",
+   "url": "/admin/cheques/receive?brand=1"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/cheques/receive?brand=1&lease=1"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/cheques/receive?brand=1&lease=1"
+  },
+  {
+   "step": 9,
+   "kind": "type",
+   "url": "/admin/cheques/receive?brand=1&lease=1"
+  },
+  {
+   "step": 10,
+   "kind": "type",
+   "url": "/admin/cheques/receive?brand=1&lease=1"
+  },
+  {
+   "step": 11,
+   "kind": "type",
+   "url": "/admin/cheques/receive?brand=1&lease=1"
+  },
+  {
+   "step": 12,
+   "kind": "type",
+   "url": "/admin/cheques/receive?brand=1&lease=1"
+  },
+  {
+   "step": 13,
+   "kind": "type",
+   "url": "/admin/cheques/receive?brand=1&lease=1"
+  },
+  {
+   "step": 14,
+   "kind": "type",
+   "url": "/admin/cheques/receive?brand=1&lease=1"
+  },
+  {
+   "step": 15,
+   "kind": "click",
+   "url": "/admin/cheques?brand=1"
+  },
+  {
+   "step": 16,
+   "kind": "point",
+   "url": "/admin/cheques?brand=1"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:14:37.727Z"
+}

@@ -1,0 +1,139 @@
+{
+ "id": "insight-owner",
+ "lang": "ar",
+ "title": "التقرير الشهري للمالك",
+ "duration": 61.59,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 8.13,
+   "text": "صفحة واحدة للملاك كل شهر: الأرقام والإيجابيات والمخاطر، تُرسل بالبريد في اليوم الذي تختاره.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.13,
+   "end": 13.95,
+   "text": "يلخّص تقرير المالك الشهر للملاك: الفواتير والتحصيل والإشغال والمبيعات والزوار والجراج.",
+   "step": 1,
+   "url": "/admin/owner-report"
+  },
+  {
+   "start": 13.95,
+   "end": 19.59,
+   "text": "يُفتح على آخر شهر مكتمل، ويمكنك اختيار شهر آخر من هنا.",
+   "step": 2,
+   "url": "/admin/owner-report"
+  },
+  {
+   "start": 19.59,
+   "end": 22.69,
+   "text": "كل رقم مقارن بالشهر السابق.",
+   "step": 3,
+   "url": "/admin/owner-report"
+  },
+  {
+   "start": 22.69,
+   "end": 27.9,
+   "text": "تُكتب الإيجابيات والمخاطر تلقائيًا من الأرقام، وبالجمل نفسها يبدأ التقرير.",
+   "step": 4,
+   "url": "/admin/owner-report"
+  },
+  {
+   "start": 27.9,
+   "end": 33.82,
+   "text": "في «البريد الشهري»، أدخل من يستلم التقرير.",
+   "step": 5,
+   "url": "/admin/owner-report"
+  },
+  {
+   "start": 33.82,
+   "end": 40.19,
+   "text": "اختر اللغة، أو اللغتين معًا، واليوم الذي يُرسل فيه من كل شهر.",
+   "step": 6,
+   "url": "/admin/owner-report"
+  },
+  {
+   "start": 40.19,
+   "end": 44.51,
+   "text": "احفظ، ومن الآن يُرسل التقرير تلقائيًا.",
+   "step": 7,
+   "url": "/admin/owner-report"
+  },
+  {
+   "start": 44.51,
+   "end": 48.86,
+   "text": "وزر «إرسال الآن» يرسل تقرير هذا الشهر فورًا.",
+   "step": 8,
+   "url": "/admin/owner-report"
+  },
+  {
+   "start": 48.86,
+   "end": 53.47,
+   "text": "وهذا هو التقرير نفسه، جاهز للطباعة أو الحفظ كمستند.",
+   "step": 9,
+   "url": "/admin/owner-report/print"
+  },
+  {
+   "start": 53.47,
+   "end": 56.94,
+   "text": "اطبعه، أو احفظه كمستند لإرفاقه.",
+   "step": 10,
+   "url": "/admin/owner-report/print"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/owner-report"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/owner-report"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/owner-report"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/owner-report"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/owner-report"
+  },
+  {
+   "step": 6,
+   "kind": "select",
+   "url": "/admin/owner-report"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/owner-report"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/owner-report"
+  },
+  {
+   "step": 9,
+   "kind": "go",
+   "url": "/admin/owner-report/print"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/owner-report/print"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:21:40.798Z"
+}

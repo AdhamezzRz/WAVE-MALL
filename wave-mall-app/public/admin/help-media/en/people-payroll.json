@@ -1,0 +1,139 @@
+{
+ "id": "people-payroll",
+ "lang": "en",
+ "title": "Running the monthly payroll",
+ "duration": 69.84,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 7.42,
+   "text": "Open the month's payroll, add overtime and bonuses, check the payslips and approve it.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.42,
+   "end": 13.08,
+   "text": "Payroll keeps one run per month. Create the month here when it starts.",
+   "step": 1,
+   "url": "/admin/hr/payroll"
+  },
+  {
+   "start": 13.08,
+   "end": 18.89,
+   "text": "Choose the month and Create payroll. Everyone active is added with their salary.",
+   "step": 2,
+   "url": "/admin/hr/payroll"
+  },
+  {
+   "start": 18.89,
+   "end": 22.59,
+   "text": "Open this month's draft.",
+   "step": 3,
+   "url": "/admin/hr/payroll/3"
+  },
+  {
+   "start": 22.59,
+   "end": 28.8,
+   "text": "The totals: gross, deductions, net to pay and what the mall pays on top.",
+   "step": 4,
+   "url": "/admin/hr/payroll/3"
+  },
+  {
+   "start": 28.8,
+   "end": 31.89,
+   "text": "Add overtime on someone's line.",
+   "step": 5,
+   "url": "/admin/hr/payroll/3"
+  },
+  {
+   "start": 31.89,
+   "end": 37.01,
+   "text": "Or a bonus. Unpaid days and other deductions have their own columns.",
+   "step": 6,
+   "url": "/admin/hr/payroll/3"
+  },
+  {
+   "start": 37.01,
+   "end": 43.8,
+   "text": "Save and recalculate. Social insurance, tax and advance instalments are worked out again.",
+   "step": 7,
+   "url": "/admin/hr/payroll/3"
+  },
+  {
+   "start": 43.8,
+   "end": 50.33,
+   "text": "Every line has its payslip, in English and Arabic, ready to print or send.",
+   "step": 8,
+   "url": "/admin/hr/payroll/3"
+  },
+  {
+   "start": 50.33,
+   "end": 58.84,
+   "text": "When it is right, approve it. It is locked, and the salaries are posted to the books.",
+   "step": 9,
+   "url": "/admin/hr/payroll/3"
+  },
+  {
+   "start": 58.84,
+   "end": 65.09,
+   "text": "Then download the bank file to pay everyone, and mark the payroll as paid.",
+   "step": 10,
+   "url": "/admin/hr/payroll/3"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/hr/payroll"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/hr/payroll"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/hr/payroll/3"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/hr/payroll/3"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/hr/payroll/3"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/hr/payroll/3"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/hr/payroll/3"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/hr/payroll/3"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/hr/payroll/3"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/hr/payroll/3"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:37:37.061Z"
+}

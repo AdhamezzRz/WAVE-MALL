@@ -1,0 +1,137 @@
+{
+ "id": "revenue-cheques-deposit",
+ "lang": "en",
+ "title": "Depositing and collecting cheques",
+ "duration": 69.28,
+ "cues": [
+  {
+   "start": 0.05,
+   "end": 9.74,
+   "text": "Deposit the cheques that are due in one go, then mark each one collected, or bounced if it comes back.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 9.74,
+   "end": 14.64,
+   "text": "The portfolio lists the cheques you hold, the earliest due first.",
+   "step": 1,
+   "url": "/admin/cheques"
+  },
+  {
+   "start": 14.64,
+   "end": 20.22,
+   "text": "Cheques that are due are already ticked. Tick or untick any others.",
+   "step": 2,
+   "url": "/admin/cheques"
+  },
+  {
+   "start": 20.22,
+   "end": 25.77,
+   "text": "Under Deposit at the bank, choose the account and the deposit slip number.",
+   "step": 3,
+   "url": "/admin/cheques"
+  },
+  {
+   "start": 34,
+   "end": 37.61,
+   "text": "Choose Deposit the ticked cheques.",
+   "step": 6,
+   "url": "/admin/cheques?status=deposited"
+  },
+  {
+   "start": 37.61,
+   "end": 41.54,
+   "text": "They move to Deposited, waiting for the bank.",
+   "step": 7,
+   "url": "/admin/cheques?status=deposited"
+  },
+  {
+   "start": 41.54,
+   "end": 45.74,
+   "text": "When the bank clears one, open it.",
+   "step": 8,
+   "url": "/admin/cheques/17"
+  },
+  {
+   "start": 45.75,
+   "end": 54.4,
+   "text": "Next step: mark it collected, and its invoice is paid. If it bounced, record that and the tenant is told.",
+   "step": 9,
+   "url": "/admin/cheques/17"
+  },
+  {
+   "start": 54.4,
+   "end": 58.1,
+   "text": "This one cleared.",
+   "step": 10,
+   "url": "/admin/cheques/17"
+  },
+  {
+   "start": 58.1,
+   "end": 64.6,
+   "text": "The history keeps every step of the cheque, with who did it and when.",
+   "step": 11,
+   "url": "/admin/cheques/17"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/cheques"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/cheques"
+  },
+  {
+   "step": 3,
+   "kind": "scroll",
+   "url": "/admin/cheques"
+  },
+  {
+   "step": 4,
+   "kind": "type",
+   "url": "/admin/cheques"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/cheques"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/cheques?status=deposited"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/cheques?status=deposited"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/cheques/17"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/cheques/17"
+  },
+  {
+   "step": 10,
+   "kind": "click",
+   "url": "/admin/cheques/17"
+  },
+  {
+   "step": 11,
+   "kind": "point",
+   "url": "/admin/cheques/17"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:16:30.676Z"
+}

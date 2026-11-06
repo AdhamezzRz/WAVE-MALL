@@ -73,4 +73,85 @@ module.exports = [
       { go: '/admin/work/board', say: { en: 'On the board, drag cards between To do, In progress, Waiting and Done.', ar: 'على اللوحة، اسحب البطاقات بين «للتنفيذ» و«قيد التنفيذ» و«بانتظار» و«تم».' } },
     ],
   },
+  {
+    id: 'overview-board',
+    area: 'overview',
+    module: '/admin/work/board',
+    also: ['/admin/work/list', '/admin/work/calendar', '/admin/work/team'],
+    order: 40,
+    roles: ['all'],
+    title: { en: 'Working with the board', ar: 'العمل على لوحة المهام' },
+    summary: {
+      en: 'See tasks and approvals as cards by stage, move them along, and switch to the list, calendar and team views.',
+      ar: 'اعرض المهام والموافقات كبطاقات حسب المرحلة، وانقلها بين المراحل، وانتقل إلى عرض القائمة والتقويم والفريق.',
+    },
+    steps: [
+      { go: '/admin/work/board', say: { en: 'The board shows tasks and approvals as cards, one column per stage.', ar: 'تعرض اللوحة المهام والموافقات كبطاقات، عمود لكل مرحلة.' } },
+      { point: '.wk-filters', say: { en: 'Filter by what to show, whose work it is, the priority or a label.', ar: 'صفِّ حسب ما تريد عرضه، وصاحب العمل، والأولوية، أو الوسم.' } },
+      { point: 'section.wk-lane--todo', say: { en: 'Each card shows its reference, the amount or due date, and who has it. Overdue cards are marked in red.', ar: 'تعرض كل بطاقة رقمها والمبلغ أو موعد التسليم ومن يتولاها، والمتأخرة مميزة باللون الأحمر.' } },
+      { click: 'details.wk-move > summary', say: { en: 'Drag a task to another column, or use the menu on its card.', ar: 'اسحب المهمة إلى عمود آخر، أو استخدم القائمة على بطاقتها.' } },
+      { click: 'details.wk-move[open] button[value=doing]', say: { en: 'Move it to In progress. Everyone following the task sees the change.', ar: 'انقلها إلى «قيد التنفيذ»، فيرى التغيير كل من يتابع المهمة.' } },
+      { say: { en: 'Approvals move by themselves as they are decided: open one to decide it.', ar: 'أما الموافقات فتنتقل وحدها عند البت فيها، افتح الطلب لتتخذ القرار.' } },
+      { click: 'a.tab[href="/admin/work/list"]', nav: true, say: { en: 'List shows the same work as a table, with filters by state, due date, label and dates.', ar: 'تعرض «القائمة» العمل نفسه كجدول، مع تصفية حسب الحالة والموعد والوسم والتاريخ.' } },
+      { click: 'a.tab[href="/admin/work/calendar"]', nav: true, say: { en: 'Calendar puts everything on its due date.', ar: 'ويضع «التقويم» كل شيء في موعد تسليمه.' } },
+      { click: 'a.tab[href="/admin/work/team"]', nav: true, say: { en: 'Team shows what is on each person\'s plate, so work can be shared fairly.', ar: 'ويعرض «الفريق» ما لدى كل شخص من عمل، ليُوزَّع بعدل.' } },
+      { point: 'a.tab[href="/admin/work/recurring"]', say: { en: 'And Recurring creates the tasks that come back every week or month, by themselves.', ar: 'و«المتكررة» تُنشئ المهام التي تتكرر كل أسبوع أو شهر تلقائيًا.' } },
+    ],
+  },
+  {
+    id: 'overview-away',
+    area: 'overview',
+    module: '/admin/work/away',
+    order: 50,
+    roles: ['all'],
+    title: { en: 'Handing over while you are away', ar: 'تسليم العمل أثناء غيابك' },
+    summary: {
+      en: 'Choose who covers your approvals and tasks while you are on leave, from and until which day.',
+      ar: 'اختر من ينوب عنك في الموافقات والمهام أثناء إجازتك، ومن أي يوم إلى أي يوم.',
+    },
+    steps: [
+      { go: '/admin/work', say: { en: 'Going on leave? Hand over your approvals and tasks before you go.', ar: 'ستأخذ إجازة؟ سلّم موافقاتك ومهامك قبل أن تذهب.' } },
+      { click: '.bar__actions a[href="/admin/work/away"]', nav: true, say: { en: 'Choose Away.', ar: 'اختر «الغياب».' } },
+      { point: 'form[action="/admin/work/away"] select[name=user_id]', say: { en: 'It is filled in for you. A manager can also set it for someone on the team.', ar: 'يكون اسمك محددًا تلقائيًا، ويمكن للمدير ضبطه لأي شخص في الفريق.' } },
+      { select: ['form[action="/admin/work/away"] select[name=delegate_id]', '6'], say: { en: 'Choose who covers for you.', ar: 'اختر من ينوب عنك.' } },
+      { point: 'form[action="/admin/work/away"] input[name=starts]', say: { en: 'Set the first and the last day you are away.', ar: 'حدد أول يوم وآخر يوم في غيابك.' } },
+      { type: ['form[action="/admin/work/away"] input[name=note]', { en: 'Annual leave, reachable by phone for urgent matters', ar: 'إجازة سنوية، ومتاح هاتفيًا للأمور العاجلة' }], say: { en: 'Add a note for your colleagues.', ar: 'أضف ملاحظة لزملائك.' } },
+      { click: 'form[action="/admin/work/away"] button.btn--primary', say: { en: 'Save. Dina is told, decides your approvals while you are away, and sees your tasks in her day.', ar: 'احفظ. تصل رسالة إلى دينا، فتتخذ القرار في موافقاتك أثناء غيابك وترى مهامك في يومها.' } },
+      { point: 'section.card:has(form[action$="/end"])', say: { en: 'Away now and planned lists every cover. End one early when you are back.', ar: 'تعرض «الغياب الحالي والمخطط» كل الإنابات، ويمكنك إنهاء أي منها مبكرًا عند عودتك.' } },
+    ],
+  },
+  {
+    id: 'overview-ask',
+    area: 'overview',
+    module: '/admin/approvals/new',
+    also: ['/admin/approvals'],
+    order: 60,
+    roles: ['all'],
+    title: { en: 'Asking for approval and answering questions', ar: 'طلب موافقة والرد على الأسئلة' },
+    summary: {
+      en: 'Send a request for approval with the amount and the reason, and answer when the approver asks for more information.',
+      ar: 'أرسل طلب موافقة بالمبلغ والسبب، وأجب عندما يطلب صاحب القرار معلومات إضافية.',
+    },
+    prepare: ({ db, h, lang }) => {
+      const A = h.approvals;
+      const me = db.get("SELECT * FROM users WHERE email = 'admin@thewave.test'");
+      const by = db.get("SELECT * FROM users WHERE name = 'Karim Mostafa'");
+      const ar = lang === 'ar';
+      const r = A.request({ kind: 'other', title: ar ? 'لافتات جديدة لمداخل الجراج' : 'New signs for the car park entrances', amount: 28500, note: ar ? 'ست لافتات مضيئة.' : 'Six lit signs.', user: me });
+      A.askInfo(r.id, by, ar ? 'هل يشمل هذا السعر التركيب؟' : 'Does this price include installation?');
+    },
+    steps: [
+      { go: '/admin/work', say: { en: 'Need a manager\'s agreement for something? Ask for approval from Approvals & tasks.', ar: 'تحتاج إلى موافقة المدير على شيء؟ اطلبها من الموافقات والمهام.' } },
+      { click: '.bar__actions a[href="/admin/approvals/new"]', nav: true, say: { en: 'Choose Ask for approval.', ar: 'اختر «طلب موافقة».' } },
+      { type: ['form[action="/admin/approvals/new"] input[name=title]', { en: 'Replace the food court chairs', ar: 'استبدال كراسي ساحة المطاعم' }], say: { en: 'Say what needs approval,', ar: 'اكتب ما يحتاج إلى موافقة،' } },
+      { type: ['form[action="/admin/approvals/new"] input[name=amount]', '86000'], say: { en: 'the amount,', ar: 'والمبلغ،' } },
+      { type: ['form[action="/admin/approvals/new"] textarea[name=note]', { en: 'Forty chairs are broken. Three quotes; this is the cheapest.', ar: 'أربعون كرسيًا تالفة، ولدينا ثلاثة عروض أسعار وهذا أرخصها.' }], say: { en: 'and why. A clear reason gets a faster answer.', ar: 'والسبب. السبب الواضح يأتي بالرد أسرع.' } },
+      { click: 'form[action="/admin/approvals/new"] button.btn--primary', nav: true, say: { en: 'Send it. The approver is told at once, and the request page shows who has it now.', ar: 'أرسله. يُبلَّغ صاحب القرار فورًا، وتعرض صفحة الطلب لدى من هو الآن.' } },
+      { go: '/admin/work', say: { en: 'If the approver has a question, you see it under What you asked for.', ar: 'إذا كان لدى صاحب القرار سؤال، تجده تحت «ما طلبته».' } },
+      { click: 'section.card a[href^="/admin/approvals/"]', has: { en: 'New signs for the car park entrances', ar: 'لافتات جديدة لمداخل الجراج' }, nav: true },
+      { point: '.wk-answer', say: { en: 'Here is the question. While it waits for your answer, the approver\'s clock is paused.', ar: 'هذا هو السؤال، وطالما ينتظر ردك يتوقف حساب المهلة لدى صاحب القرار.' } },
+      { type: ['.wk-answer textarea[name=answer]', { en: 'Yes, installation and delivery are included.', ar: 'نعم، يشمل السعر التركيب والتوصيل.' }], say: { en: 'Write your answer.', ar: 'اكتب ردك.' } },
+      { click: '.wk-answer button.btn--primary', say: { en: 'Send it. The request goes back to the approver and the clock runs again.', ar: 'أرسله، فيعود الطلب إلى صاحب القرار ويستأنف حساب المهلة.' } },
+    ],
+  },
 ];

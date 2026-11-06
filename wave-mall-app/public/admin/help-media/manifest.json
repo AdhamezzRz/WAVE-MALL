@@ -1,5 +1,165 @@
 {
  "lessons": {
+  "finance-bank": {
+   "en": {
+    "duration": 78.32,
+    "size": 1545052,
+    "v": "88574c7a1c",
+    "cues": 10,
+    "recorded_at": "2026-11-05T22:52:07.107Z"
+   },
+   "ar": {
+    "duration": 73.53,
+    "size": 1393690,
+    "v": "3dd658c378",
+    "cues": 10,
+    "recorded_at": "2026-11-05T22:53:50.960Z"
+   }
+  },
+  "finance-bill": {
+   "en": {
+    "duration": 74.06,
+    "size": 1132384,
+    "v": "be295ebca1",
+    "cues": 11,
+    "recorded_at": "2026-11-05T21:55:30.169Z"
+   },
+   "ar": {
+    "duration": 64.36,
+    "size": 940359,
+    "v": "9b302bb77f",
+    "cues": 11,
+    "recorded_at": "2026-11-05T21:57:12.845Z"
+   }
+  },
+  "finance-close": {
+   "en": {
+    "duration": 71.92,
+    "size": 1521592,
+    "v": "261c593298",
+    "cues": 10,
+    "recorded_at": "2026-11-05T22:46:33.025Z"
+   },
+   "ar": {
+    "duration": 69.64,
+    "size": 1321180,
+    "v": "d13cdf6db3",
+    "cues": 10,
+    "recorded_at": "2026-11-05T22:48:18.442Z"
+   }
+  },
+  "finance-journal": {
+   "en": {
+    "duration": 86.99,
+    "size": 1508039,
+    "v": "e23394a193",
+    "cues": 12,
+    "recorded_at": "2026-11-05T21:43:34.723Z"
+   },
+   "ar": {
+    "duration": 84.32,
+    "size": 1270399,
+    "v": "4c3b3c5ced",
+    "cues": 12,
+    "recorded_at": "2026-11-05T21:45:42.287Z"
+   }
+  },
+  "finance-reports": {
+   "en": {
+    "duration": 66.63,
+    "size": 1250709,
+    "v": "f389bb0aa5",
+    "cues": 10,
+    "recorded_at": "2026-11-05T21:47:38.628Z"
+   },
+   "ar": {
+    "duration": 59.09,
+    "size": 1114151,
+    "v": "525e7fbb44",
+    "cues": 10,
+    "recorded_at": "2026-11-05T21:49:16.370Z"
+   }
+  },
+  "insight-owner": {
+   "en": {
+    "duration": 70.15,
+    "size": 1454533,
+    "v": "44cedc5f2f",
+    "cues": 11,
+    "recorded_at": "2026-11-05T22:20:12.092Z"
+   },
+   "ar": {
+    "duration": 61.59,
+    "size": 1244613,
+    "v": "372d5c23c5",
+    "cues": 11,
+    "recorded_at": "2026-11-05T22:21:40.798Z"
+   }
+  },
+  "insight-reports": {
+   "en": {
+    "duration": 79.75,
+    "size": 1637199,
+    "v": "d2f1c52c44",
+    "cues": 11,
+    "recorded_at": "2026-11-05T22:16:36.869Z"
+   },
+   "ar": {
+    "duration": 70.78,
+    "size": 1562133,
+    "v": "32cdaceac9",
+    "cues": 11,
+    "recorded_at": "2026-11-05T22:18:23.619Z"
+   }
+  },
+  "insight-wall": {
+   "en": {
+    "duration": 66,
+    "size": 1238843,
+    "v": "ff3ebd80c3",
+    "cues": 8,
+    "recorded_at": "2026-11-05T22:23:25.665Z"
+   },
+   "ar": {
+    "duration": 58.6,
+    "size": 1072633,
+    "v": "c50b6d9f73",
+    "cues": 8,
+    "recorded_at": "2026-11-05T22:24:54.595Z"
+   }
+  },
+  "office-audit": {
+   "en": {
+    "duration": 46.81,
+    "size": 1196791,
+    "v": "c1c58aca89",
+    "cues": 6,
+    "recorded_at": "2026-11-05T22:43:46.107Z"
+   },
+   "ar": {
+    "duration": 40.72,
+    "size": 1227242,
+    "v": "507dcc3ce0",
+    "cues": 6,
+    "recorded_at": "2026-11-05T22:44:43.795Z"
+   }
+  },
+  "office-backups": {
+   "en": {
+    "duration": 76.79,
+    "size": 1817771,
+    "v": "2379fa440a",
+    "cues": 10,
+    "recorded_at": "2026-11-05T22:41:00.737Z"
+   },
+   "ar": {
+    "duration": 68.96,
+    "size": 1605359,
+    "v": "96fa6eb68c",
+    "cues": 10,
+    "recorded_at": "2026-11-05T22:42:31.538Z"
+   }
+  },
   "office-invite": {
    "en": {
     "duration": 62.4,
@@ -14,6 +174,22 @@
     "v": "2bafb66891",
     "cues": 9,
     "recorded_at": "2026-11-05T21:12:04.388Z"
+   }
+  },
+  "office-review": {
+   "en": {
+    "duration": 81.31,
+    "size": 2122893,
+    "v": "fa6e3a690a",
+    "cues": 10,
+    "recorded_at": "2026-11-05T22:33:51.085Z"
+   },
+   "ar": {
+    "duration": 73.58,
+    "size": 1878646,
+    "v": "3498482d7c",
+    "cues": 10,
+    "recorded_at": "2026-11-05T22:35:43.155Z"
    }
   },
   "office-role": {
@@ -32,6 +208,246 @@
     "recorded_at": "2026-11-05T21:18:09.347Z"
    }
   },
+  "office-settings": {
+   "en": {
+    "duration": 64.2,
+    "size": 1536101,
+    "v": "1eed611971",
+    "cues": 10,
+    "recorded_at": "2026-11-05T22:37:29.098Z"
+   },
+   "ar": {
+    "duration": 60.76,
+    "size": 1390256,
+    "v": "cb8508616a",
+    "cues": 10,
+    "recorded_at": "2026-11-05T22:39:01.046Z"
+   }
+  },
+  "office-targets": {
+   "en": {
+    "duration": 61.26,
+    "size": 1147286,
+    "v": "9a92b0eba3",
+    "cues": 8,
+    "recorded_at": "2026-11-05T22:26:33.042Z"
+   },
+   "ar": {
+    "duration": 56.64,
+    "size": 1080747,
+    "v": "93397b831c",
+    "cues": 8,
+    "recorded_at": "2026-11-05T22:27:59.165Z"
+   }
+  },
+  "office-temp-access": {
+   "en": {
+    "duration": 75.19,
+    "size": 1539157,
+    "v": "974d830dd3",
+    "cues": 12,
+    "recorded_at": "2026-11-05T22:30:01.024Z"
+   },
+   "ar": {
+    "duration": 69.32,
+    "size": 1370667,
+    "v": "c29c5781de",
+    "cues": 12,
+    "recorded_at": "2026-11-05T22:31:43.479Z"
+   }
+  },
+  "operations-parking-booth": {
+   "en": {
+    "duration": 79.35,
+    "size": 1387617,
+    "v": "6083b6445a",
+    "cues": 12,
+    "recorded_at": "2026-11-05T22:13:34.683Z"
+   },
+   "ar": {
+    "duration": 70.16,
+    "size": 1203390,
+    "v": "dcdd591365",
+    "cues": 12,
+    "recorded_at": "2026-11-05T22:15:10.263Z"
+   }
+  },
+  "operations-parking-floor": {
+   "en": {
+    "duration": 56.36,
+    "size": 1132339,
+    "v": "53998ed555",
+    "cues": 8,
+    "recorded_at": "2026-11-05T22:19:48.244Z"
+   },
+   "ar": {
+    "duration": 54.49,
+    "size": 1151311,
+    "v": "b427abe6f4",
+    "cues": 8,
+    "recorded_at": "2026-11-05T22:21:12.902Z"
+   }
+  },
+  "operations-parking-subscription": {
+   "en": {
+    "duration": 66.89,
+    "size": 1062973,
+    "v": "d96e5d6e60",
+    "cues": 11,
+    "recorded_at": "2026-11-05T22:16:51.508Z"
+   },
+   "ar": {
+    "duration": 59.06,
+    "size": 883274,
+    "v": "7eed7da427",
+    "cues": 11,
+    "recorded_at": "2026-11-05T22:18:17.921Z"
+   }
+  },
+  "operations-workorder-close": {
+   "en": {
+    "duration": 80.17,
+    "size": 1633071,
+    "v": "cf0575866e",
+    "cues": 14,
+    "recorded_at": "2026-11-05T22:09:48.575Z"
+   },
+   "ar": {
+    "duration": 74.04,
+    "size": 1498341,
+    "v": "32537f9148",
+    "cues": 14,
+    "recorded_at": "2026-11-05T22:50:07.355Z"
+   }
+  },
+  "operations-workorder-new": {
+   "en": {
+    "duration": 84.92,
+    "size": 1738020,
+    "v": "084a068f70",
+    "cues": 13,
+    "recorded_at": "2026-11-05T22:05:58.958Z"
+   },
+   "ar": {
+    "duration": 76.02,
+    "size": 1525053,
+    "v": "14c30c0aa8",
+    "cues": 13,
+    "recorded_at": "2026-11-05T22:07:49.546Z"
+   }
+  },
+  "ops-compliance": {
+   "en": {
+    "duration": 77.12,
+    "size": 1700159,
+    "v": "2063b1c82c",
+    "cues": 11,
+    "recorded_at": "2026-11-05T22:01:42.144Z"
+   },
+   "ar": {
+    "duration": 70.48,
+    "size": 1490585,
+    "v": "ffa7310778",
+    "cues": 11,
+    "recorded_at": "2026-11-05T22:03:25.335Z"
+   }
+  },
+  "ops-energy": {
+   "en": {
+    "duration": 78.43,
+    "size": 1964826,
+    "v": "7d2f9d7c8b",
+    "cues": 11,
+    "recorded_at": "2026-11-05T22:05:26.882Z"
+   },
+   "ar": {
+    "duration": 66.92,
+    "size": 1745648,
+    "v": "a920c1e5a3",
+    "cues": 11,
+    "recorded_at": "2026-11-05T22:07:08.473Z"
+   }
+  },
+  "ops-feedback": {
+   "en": {
+    "duration": 81.67,
+    "size": 1662876,
+    "v": "8b2be61d63",
+    "cues": 12,
+    "recorded_at": "2026-11-05T22:09:17.480Z"
+   },
+   "ar": {
+    "duration": 71.28,
+    "size": 1512311,
+    "v": "7b865a4e88",
+    "cues": 12,
+    "recorded_at": "2026-11-05T22:11:00.452Z"
+   }
+  },
+  "ops-footfall": {
+   "en": {
+    "duration": 74.54,
+    "size": 1467443,
+    "v": "80e9effb42",
+    "cues": 10,
+    "recorded_at": "2026-11-05T21:33:23.624Z"
+   },
+   "ar": {
+    "duration": 69.08,
+    "size": 1278030,
+    "v": "e6a651515c",
+    "cues": 10,
+    "recorded_at": "2026-11-05T21:35:07.692Z"
+   }
+  },
+  "ops-incident": {
+   "en": {
+    "duration": 87.63,
+    "size": 1486540,
+    "v": "80648ab62d",
+    "cues": 11,
+    "recorded_at": "2026-11-05T21:57:54.681Z"
+   },
+   "ar": {
+    "duration": 76.06,
+    "size": 1223438,
+    "v": "7be9a4a132",
+    "cues": 11,
+    "recorded_at": "2026-11-05T21:59:46.278Z"
+   }
+  },
+  "ops-patrols": {
+   "en": {
+    "duration": 68.22,
+    "size": 1816973,
+    "v": "be9e0dfcbe",
+    "cues": 10,
+    "recorded_at": "2026-11-05T21:36:57.528Z"
+   },
+   "ar": {
+    "duration": 66.61,
+    "size": 1802963,
+    "v": "c4e881e077",
+    "cues": 10,
+    "recorded_at": "2026-11-05T21:38:34.401Z"
+   }
+  },
+  "ops-website": {
+   "en": {
+    "duration": 75.04,
+    "size": 1609233,
+    "v": "16f4e2cf78",
+    "cues": 12,
+    "recorded_at": "2026-11-05T22:12:53.917Z"
+   },
+   "ar": {
+    "duration": 63.49,
+    "size": 1331618,
+    "v": "9e52b51796",
+    "cues": 12,
+    "recorded_at": "2026-11-05T22:14:29.346Z"
+   }
+  },
   "overview-approve": {
    "en": {
     "duration": 69.25,
@@ -46,6 +462,54 @@
     "v": "b6874d1bad",
     "cues": 9,
     "recorded_at": "2026-11-05T21:06:09.923Z"
+   }
+  },
+  "overview-ask": {
+   "en": {
+    "duration": 83.56,
+    "size": 1576195,
+    "v": "9d4001ca47",
+    "cues": 11,
+    "recorded_at": "2026-11-05T21:53:31.937Z"
+   },
+   "ar": {
+    "duration": 72.08,
+    "size": 1368119,
+    "v": "d565f5dd10",
+    "cues": 11,
+    "recorded_at": "2026-11-05T21:55:30.833Z"
+   }
+  },
+  "overview-away": {
+   "en": {
+    "duration": 60.42,
+    "size": 1032380,
+    "v": "2b50a8a6fd",
+    "cues": 9,
+    "recorded_at": "2026-11-05T21:49:37.551Z"
+   },
+   "ar": {
+    "duration": 57.24,
+    "size": 863005,
+    "v": "66c168b6b3",
+    "cues": 9,
+    "recorded_at": "2026-11-05T21:51:13.412Z"
+   }
+  },
+  "overview-board": {
+   "en": {
+    "duration": 82.11,
+    "size": 1987871,
+    "v": "cf55f6b563",
+    "cues": 11,
+    "recorded_at": "2026-11-05T21:45:45.205Z"
+   },
+   "ar": {
+    "duration": 76.64,
+    "size": 1801006,
+    "v": "68b9343e99",
+    "cues": 11,
+    "recorded_at": "2026-11-05T21:47:49.925Z"
    }
   },
   "overview-dashboard": {
@@ -80,6 +544,118 @@
     "recorded_at": "2026-11-05T21:09:23.067Z"
    }
   },
+  "people-advance": {
+   "en": {
+    "duration": 57.61,
+    "size": 1051305,
+    "v": "f8edc97015",
+    "cues": 10,
+    "recorded_at": "2026-11-05T22:29:51.432Z"
+   },
+   "ar": {
+    "duration": 50.19,
+    "size": 965416,
+    "v": "d03b97f597",
+    "cues": 10,
+    "recorded_at": "2026-11-05T22:31:05.373Z"
+   }
+  },
+  "people-employee": {
+   "en": {
+    "duration": 76.28,
+    "size": 1556470,
+    "v": "c406898e62",
+    "cues": 13,
+    "recorded_at": "2026-11-05T22:23:16.384Z"
+   },
+   "ar": {
+    "duration": 69.56,
+    "size": 1370961,
+    "v": "b08d428349",
+    "cues": 13,
+    "recorded_at": "2026-11-05T22:25:02.238Z"
+   }
+  },
+  "people-leave": {
+   "en": {
+    "duration": 66.58,
+    "size": 1401699,
+    "v": "8f049fb4eb",
+    "cues": 10,
+    "recorded_at": "2026-11-05T22:26:47.670Z"
+   },
+   "ar": {
+    "duration": 62.43,
+    "size": 1272057,
+    "v": "ca41d0c9a0",
+    "cues": 10,
+    "recorded_at": "2026-11-05T22:28:18.890Z"
+   }
+  },
+  "people-payroll": {
+   "en": {
+    "duration": 69.84,
+    "size": 1269947,
+    "v": "0e27f21eab",
+    "cues": 11,
+    "recorded_at": "2026-11-05T22:37:37.061Z"
+   },
+   "ar": {
+    "duration": 62.35,
+    "size": 1252935,
+    "v": "d2a55cfae6",
+    "cues": 11,
+    "recorded_at": "2026-11-05T22:43:43.028Z"
+   }
+  },
+  "portal-pay": {
+   "en": {
+    "duration": 72.72,
+    "size": 1366927,
+    "v": "872aade97f",
+    "cues": 10,
+    "recorded_at": "2026-11-06T00:25:27.286Z"
+   },
+   "ar": {
+    "duration": 62.88,
+    "size": 1210901,
+    "v": "bfc7b9bc37",
+    "cues": 10,
+    "recorded_at": "2026-11-06T00:47:21.299Z"
+   }
+  },
+  "portal-request": {
+   "en": {
+    "duration": 60.6,
+    "size": 1150381,
+    "v": "e0f2505f91",
+    "cues": 10,
+    "recorded_at": "2026-11-06T00:26:48.695Z"
+   },
+   "ar": {
+    "duration": 52.4,
+    "size": 943280,
+    "v": "a6a0992101",
+    "cues": 10,
+    "recorded_at": "2026-11-06T00:48:31.414Z"
+   }
+  },
+  "portal-sales": {
+   "en": {
+    "duration": 47.56,
+    "size": 836070,
+    "v": "fc9383442d",
+    "cues": 9,
+    "recorded_at": "2026-11-06T00:27:53.609Z"
+   },
+   "ar": {
+    "duration": 42.72,
+    "size": 749232,
+    "v": "df723bb929",
+    "cues": 9,
+    "recorded_at": "2026-11-06T00:49:29.851Z"
+   }
+  },
   "portal-tour": {
    "en": {
     "duration": 64.7,
@@ -94,6 +670,502 @@
     "v": "48c5f6a4c4",
     "cues": 10,
     "recorded_at": "2026-11-05T21:11:19.161Z"
+   }
+  },
+  "property-brands": {
+   "en": {
+    "duration": 82,
+    "size": 1387673,
+    "v": "e8ff186237",
+    "cues": 11,
+    "recorded_at": "2026-11-06T00:15:41.752Z"
+   },
+   "ar": {
+    "duration": 76.88,
+    "size": 1290712,
+    "v": "10fe194500",
+    "cues": 11,
+    "recorded_at": "2026-11-06T00:38:38.451Z"
+   }
+  },
+  "property-fitout": {
+   "en": {
+    "duration": 70.16,
+    "size": 1746169,
+    "v": "24b4356e7d",
+    "cues": 12,
+    "recorded_at": "2026-11-06T00:19:02.154Z"
+   },
+   "ar": {
+    "duration": 65.6,
+    "size": 1592527,
+    "v": "6ba43c4929",
+    "cues": 12,
+    "recorded_at": "2026-11-06T00:41:43.738Z"
+   }
+  },
+  "property-merge-split": {
+   "en": {
+    "duration": 71.6,
+    "size": 1590470,
+    "v": "21b41be7cb",
+    "cues": 11,
+    "recorded_at": "2026-11-06T00:13:55.379Z"
+   },
+   "ar": {
+    "duration": 63.8,
+    "size": 1436539,
+    "v": "6b58188344",
+    "cues": 11,
+    "recorded_at": "2026-11-06T00:36:58.941Z"
+   }
+  },
+  "property-specialty": {
+   "en": {
+    "duration": 67.04,
+    "size": 1441027,
+    "v": "3a1f4d3c70",
+    "cues": 10,
+    "recorded_at": "2026-11-06T00:20:31.739Z"
+   },
+   "ar": {
+    "duration": 58.36,
+    "size": 1233525,
+    "v": "d161808219",
+    "cues": 10,
+    "recorded_at": "2026-11-06T00:43:02.045Z"
+   }
+  },
+  "property-tenant-file": {
+   "en": {
+    "duration": 80.32,
+    "size": 1898656,
+    "v": "4d9ff63c6e",
+    "cues": 11,
+    "recorded_at": "2026-11-06T00:17:28.598Z"
+   },
+   "ar": {
+    "duration": 74.4,
+    "size": 1838230,
+    "v": "010e071e7b",
+    "cues": 11,
+    "recorded_at": "2026-11-06T00:40:17.028Z"
+   }
+  },
+  "property-units": {
+   "en": {
+    "duration": 96.08,
+    "size": 2218341,
+    "v": "15f4c3f105",
+    "cues": 12,
+    "recorded_at": "2026-11-06T00:12:20.187Z"
+   },
+   "ar": {
+    "duration": 78.64,
+    "size": 1899864,
+    "v": "6d3c906bcd",
+    "cues": 12,
+    "recorded_at": "2026-11-06T00:35:33.861Z"
+   }
+  },
+  "purchasing-order": {
+   "en": {
+    "duration": 58.15,
+    "size": 1111792,
+    "v": "0a8550dc59",
+    "cues": 10,
+    "recorded_at": "2026-11-05T22:34:21.806Z"
+   },
+   "ar": {
+    "duration": 55.66,
+    "size": 1049187,
+    "v": "ce0edb9ce6",
+    "cues": 10,
+    "recorded_at": "2026-11-05T22:40:40.460Z"
+   }
+  },
+  "purchasing-receive": {
+   "en": {
+    "duration": 56.74,
+    "size": 1258057,
+    "v": "e94343d3c2",
+    "cues": 9,
+    "recorded_at": "2026-11-05T22:35:51.167Z"
+   },
+   "ar": {
+    "duration": 51.67,
+    "size": 1097932,
+    "v": "10ade697ae",
+    "cues": 9,
+    "recorded_at": "2026-11-05T22:42:07.090Z"
+   }
+  },
+  "purchasing-request": {
+   "en": {
+    "duration": 73.88,
+    "size": 1236368,
+    "v": "6fffade167",
+    "cues": 11,
+    "recorded_at": "2026-11-05T21:59:22.013Z"
+   },
+   "ar": {
+    "duration": 62.66,
+    "size": 1065237,
+    "v": "8401f63d75",
+    "cues": 11,
+    "recorded_at": "2026-11-05T22:00:56.110Z"
+   }
+  },
+  "purchasing-stock": {
+   "en": {
+    "duration": 58.1,
+    "size": 1209308,
+    "v": "884a706bab",
+    "cues": 10,
+    "recorded_at": "2026-11-05T22:55:18.764Z"
+   },
+   "ar": {
+    "duration": 56.17,
+    "size": 1117297,
+    "v": "2049694d0b",
+    "cues": 10,
+    "recorded_at": "2026-11-05T22:56:37.936Z"
+   }
+  },
+  "records-contracts": {
+   "en": {
+    "duration": 73.12,
+    "size": 1727000,
+    "v": "c5842f1855",
+    "cues": 11,
+    "recorded_at": "2026-11-06T00:23:50.846Z"
+   },
+   "ar": {
+    "duration": 67.48,
+    "size": 1527603,
+    "v": "98da29e233",
+    "cues": 11,
+    "recorded_at": "2026-11-06T00:45:58.015Z"
+   }
+  },
+  "records-documents": {
+   "en": {
+    "duration": 77.96,
+    "size": 1757623,
+    "v": "a306b8b9ce",
+    "cues": 11,
+    "recorded_at": "2026-11-06T00:22:13.341Z"
+   },
+   "ar": {
+    "duration": 67.6,
+    "size": 1506755,
+    "v": "43d9591e3b",
+    "cues": 11,
+    "recorded_at": "2026-11-06T00:44:29.715Z"
+   }
+  },
+  "revenue-billing": {
+   "en": {
+    "duration": 58.19,
+    "size": 1351332,
+    "v": "acd8bd8607",
+    "cues": 9,
+    "recorded_at": "2026-11-05T22:06:10.645Z"
+   },
+   "ar": {
+    "duration": 50.71,
+    "size": 1199180,
+    "v": "12d2aab8c5",
+    "cues": 9,
+    "recorded_at": "2026-11-05T22:07:25.286Z"
+   }
+  },
+  "revenue-cheques-deposit": {
+   "en": {
+    "duration": 69.28,
+    "size": 1457911,
+    "v": "8d703e4d68",
+    "cues": 10,
+    "recorded_at": "2026-11-05T22:16:30.676Z"
+   },
+   "ar": {
+    "duration": 61.78,
+    "size": 1229270,
+    "v": "446c6195bc",
+    "cues": 10,
+    "recorded_at": "2026-11-05T22:18:05.379Z"
+   }
+  },
+  "revenue-cheques-receive": {
+   "en": {
+    "duration": 80.35,
+    "size": 1593920,
+    "v": "18348da504",
+    "cues": 10,
+    "recorded_at": "2026-11-05T22:12:40.268Z"
+   },
+   "ar": {
+    "duration": 78.92,
+    "size": 1480082,
+    "v": "2957dfa96f",
+    "cues": 10,
+    "recorded_at": "2026-11-05T22:14:37.727Z"
+   }
+  },
+  "revenue-collections-day": {
+   "en": {
+    "duration": 68,
+    "size": 1744591,
+    "v": "29e4b21d29",
+    "cues": 11,
+    "recorded_at": "2026-11-05T22:58:18.360Z"
+   },
+   "ar": {
+    "duration": 62.39,
+    "size": 1566021,
+    "v": "19e97eb3c2",
+    "cues": 11,
+    "recorded_at": "2026-11-05T22:59:50.903Z"
+   }
+  },
+  "revenue-collections-plans": {
+   "en": {
+    "duration": 73.72,
+    "size": 1829799,
+    "v": "96b80047e8",
+    "cues": 10,
+    "recorded_at": "2026-11-05T22:23:33.582Z"
+   },
+   "ar": {
+    "duration": 70.41,
+    "size": 1634675,
+    "v": "4bdcce2fa0",
+    "cues": 10,
+    "recorded_at": "2026-11-05T22:25:15.725Z"
+   }
+  },
+  "revenue-collections-writeoff": {
+   "en": {
+    "duration": 56.72,
+    "size": 1105308,
+    "v": "f5fc2a4f05",
+    "cues": 8,
+    "recorded_at": "2026-11-05T23:13:33.513Z"
+   },
+   "ar": {
+    "duration": 56.24,
+    "size": 961440,
+    "v": "f766b273bb",
+    "cues": 8,
+    "recorded_at": "2026-11-05T23:14:57.787Z"
+   }
+  },
+  "revenue-lease-amend": {
+   "en": {
+    "duration": 77.8,
+    "size": 1852321,
+    "v": "2908f32980",
+    "cues": 12,
+    "recorded_at": "2026-11-05T22:51:19.966Z"
+   },
+   "ar": {
+    "duration": 68,
+    "size": 1575428,
+    "v": "38c7bc6f6a",
+    "cues": 12,
+    "recorded_at": "2026-11-05T22:52:59.653Z"
+   }
+  },
+  "revenue-lease-create": {
+   "en": {
+    "duration": 81.08,
+    "size": 1642046,
+    "v": "1c5116f01c",
+    "cues": 12,
+    "recorded_at": "2026-11-05T22:47:38.100Z"
+   },
+   "ar": {
+    "duration": 71.09,
+    "size": 1569517,
+    "v": "87edbe624d",
+    "cues": 12,
+    "recorded_at": "2026-11-05T22:49:22.159Z"
+   }
+  },
+  "revenue-lease-page": {
+   "en": {
+    "duration": 67.31,
+    "size": 1531007,
+    "v": "17c7351687",
+    "cues": 10,
+    "recorded_at": "2026-11-05T21:51:24.580Z"
+   },
+   "ar": {
+    "duration": 59.72,
+    "size": 1282037,
+    "v": "a072dd6dc7",
+    "cues": 10,
+    "recorded_at": "2026-11-05T21:53:02.415Z"
+   }
+  },
+  "revenue-lease-renew": {
+   "en": {
+    "duration": 72.66,
+    "size": 1464204,
+    "v": "772c76a3ae",
+    "cues": 10,
+    "recorded_at": "2026-11-05T21:59:07.754Z"
+   },
+   "ar": {
+    "duration": 67.51,
+    "size": 1252329,
+    "v": "1f920350ef",
+    "cues": 10,
+    "recorded_at": "2026-11-05T22:00:48.722Z"
+   }
+  },
+  "revenue-lease-settle": {
+   "en": {
+    "duration": 83.5,
+    "size": 1641669,
+    "v": "a56dfe55f1",
+    "cues": 12,
+    "recorded_at": "2026-11-05T22:55:05.148Z"
+   },
+   "ar": {
+    "duration": 72.19,
+    "size": 1394627,
+    "v": "972aede1fa",
+    "cues": 12,
+    "recorded_at": "2026-11-05T22:56:43.969Z"
+   }
+  },
+  "revenue-media-campaign": {
+   "en": {
+    "duration": 81.28,
+    "size": 1753476,
+    "v": "ea239ef738",
+    "cues": 12,
+    "recorded_at": "2026-11-05T23:16:52.372Z"
+   },
+   "ar": {
+    "duration": 76.19,
+    "size": 1587493,
+    "v": "2d96c76bed",
+    "cues": 12,
+    "recorded_at": "2026-11-05T23:18:40.062Z"
+   }
+  },
+  "revenue-payment": {
+   "en": {
+    "duration": 65.68,
+    "size": 1261047,
+    "v": "7718464e8a",
+    "cues": 9,
+    "recorded_at": "2026-11-05T22:09:09.810Z"
+   },
+   "ar": {
+    "duration": 57.76,
+    "size": 1105034,
+    "v": "68579c3a4b",
+    "cues": 9,
+    "recorded_at": "2026-11-05T22:10:35.293Z"
+   }
+  },
+  "revenue-service-charge": {
+   "en": {
+    "duration": 72.36,
+    "size": 1710888,
+    "v": "d342554111",
+    "cues": 12,
+    "recorded_at": "2026-11-05T23:23:41.303Z"
+   },
+   "ar": {
+    "duration": 65.96,
+    "size": 1598768,
+    "v": "dcf5b3661a",
+    "cues": 12,
+    "recorded_at": "2026-11-05T23:25:12.465Z"
+   }
+  },
+  "revenue-turnover": {
+   "en": {
+    "duration": 69.86,
+    "size": 1566569,
+    "v": "304d13fcb1",
+    "cues": 10,
+    "recorded_at": "2026-11-05T23:20:19.261Z"
+   },
+   "ar": {
+    "duration": 67.36,
+    "size": 1413431,
+    "v": "f51002c6f1",
+    "cues": 10,
+    "recorded_at": "2026-11-05T23:21:53.321Z"
+   }
+  },
+  "revenue-utilities": {
+   "en": {
+    "duration": 66.76,
+    "size": 1688303,
+    "v": "ad96f5bc53",
+    "cues": 11,
+    "recorded_at": "2026-11-05T23:26:52.031Z"
+   },
+   "ar": {
+    "duration": 57.68,
+    "size": 1490489,
+    "v": "0e14e9e733",
+    "cues": 11,
+    "recorded_at": "2026-11-05T23:28:13.263Z"
+   }
+  },
+  "sales-calendar": {
+   "en": {
+    "duration": 72.44,
+    "size": 1456093,
+    "v": "e443ee88f0",
+    "cues": 12,
+    "recorded_at": "2026-11-06T00:10:14.499Z"
+   },
+   "ar": {
+    "duration": 62.68,
+    "size": 1258921,
+    "v": "c35c147184",
+    "cues": 12,
+    "recorded_at": "2026-11-06T00:33:49.427Z"
+   }
+  },
+  "sales-conversations": {
+   "en": {
+    "duration": 75.72,
+    "size": 1465966,
+    "v": "4f1a317116",
+    "cues": 11,
+    "recorded_at": "2026-11-06T00:08:38.143Z"
+   },
+   "ar": {
+    "duration": 71.52,
+    "size": 1281747,
+    "v": "cf45277aa2",
+    "cues": 11,
+    "recorded_at": "2026-11-06T00:32:25.351Z"
+   }
+  },
+  "sales-inbox": {
+   "en": {
+    "duration": 71.84,
+    "size": 1326407,
+    "v": "dc24c0f87c",
+    "cues": 10,
+    "recorded_at": "2026-11-06T00:05:04.055Z"
+   },
+   "ar": {
+    "duration": 61.84,
+    "size": 1081097,
+    "v": "4a037a2efa",
+    "cues": 10,
+    "recorded_at": "2026-11-06T00:29:15.866Z"
    }
   },
   "sales-lead-new": {
@@ -144,6 +1216,22 @@
     "recorded_at": "2026-11-05T21:15:47.040Z"
    }
   },
+  "sales-pipeline": {
+   "en": {
+    "duration": 87.4,
+    "size": 1745281,
+    "v": "98875e9160",
+    "cues": 11,
+    "recorded_at": "2026-11-06T00:06:57.284Z"
+   },
+   "ar": {
+    "duration": 72.24,
+    "size": 1552909,
+    "v": "aae63ee00e",
+    "cues": 11,
+    "recorded_at": "2026-11-06T00:30:50.866Z"
+   }
+  },
   "start-getting-around": {
    "en": {
     "duration": 78.8,
@@ -161,6 +1249,6 @@
    }
   }
  },
- "recorded_at": "2026-11-05T21:18:09.350Z",
+ "recorded_at": "2026-11-06T01:17:50.451Z",
  "app_version": "1.0.0"
 }

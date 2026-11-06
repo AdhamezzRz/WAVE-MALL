@@ -1,0 +1,139 @@
+{
+ "id": "ops-energy",
+ "lang": "en",
+ "title": "Energy use and the sustainability report",
+ "duration": 78.43,
+ "cues": [
+  {
+   "start": 0.08,
+   "end": 8.24,
+   "text": "Follow electricity and water by meter, see what tenants use, and prepare the yearly sustainability report.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.24,
+   "end": 14.41,
+   "text": "Energy shows the mall's electricity and water, from the building meters or imported readings.",
+   "step": 1,
+   "url": "/admin/energy"
+  },
+  {
+   "start": 14.41,
+   "end": 22.59,
+   "text": "The mall's electricity this month and its cost, the peak demand, the night baseload and the carbon it means.",
+   "step": 2,
+   "url": "/admin/energy"
+  },
+  {
+   "start": 22.59,
+   "end": 28.01,
+   "text": "The last 12 months, so the summer peak is easy to see.",
+   "step": 3,
+   "url": "/admin/energy"
+  },
+  {
+   "start": 28.01,
+   "end": 33.46,
+   "text": "By meter splits it up: chillers, lighting, the car park and more.",
+   "step": 4,
+   "url": "/admin/energy"
+  },
+  {
+   "start": 33.46,
+   "end": 40.57,
+   "text": "Landlord and tenants separates what the mall uses from what is charged on to the tenants.",
+   "step": 5,
+   "url": "/admin/energy"
+  },
+  {
+   "start": 40.57,
+   "end": 47.44,
+   "text": "The sustainability tab turns the same figures into the yearly report.",
+   "step": 6,
+   "url": "/admin/energy/esg"
+  },
+  {
+   "start": 47.44,
+   "end": 54,
+   "text": "Carbon emissions are worked out for you from the electricity, diesel and gas used.",
+   "step": 7,
+   "url": "/admin/energy/esg"
+  },
+  {
+   "start": 54,
+   "end": 61.06,
+   "text": "Figures without a meter, such as diesel, waste and recycling, are recorded here once a month.",
+   "step": 8,
+   "url": "/admin/energy/esg"
+  },
+  {
+   "start": 61.06,
+   "end": 66.47,
+   "text": "Print the report for the owners, or for a green building certificate.",
+   "step": 9,
+   "url": "/admin/energy/esg"
+  },
+  {
+   "start": 66.47,
+   "end": 73.71,
+   "text": "And Meters and import is where meters are added and readings brought in from a file.",
+   "step": 10,
+   "url": "/admin/energy/esg"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/energy"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/energy"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/energy"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/energy"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/energy"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/energy/esg"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/energy/esg"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/energy/esg"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/energy/esg"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/energy/esg"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:05:26.882Z"
+}

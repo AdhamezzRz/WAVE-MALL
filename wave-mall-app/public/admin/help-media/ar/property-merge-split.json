@@ -1,0 +1,149 @@
+{
+ "id": "property-merge-split",
+ "lang": "ar",
+ "title": "دمج الوحدات وتقسيمها",
+ "duration": 63.8,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 8.11,
+   "text": "اجمع المتاجر المتجاورة في وحدة أكبر لعلامة كبيرة، أو قسّم وحدة إلى وحدات أصغر.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.11,
+   "end": 13.93,
+   "text": "علامة تحتاج مساحة أكبر من متجر واحد؟ ادمج متجرين متجاورين. افتح الأول.",
+   "step": 1,
+   "url": "/admin/units"
+  },
+  {
+   "start": 17.14,
+   "end": 21.15,
+   "text": "تجد «الدمج أو التقسيم» في أسفل صفحة الوحدة.",
+   "step": 3,
+   "url": "/admin/units/14"
+  },
+  {
+   "start": 21.15,
+   "end": 25.81,
+   "text": "اختر «الدمج مع وحدات أخرى».",
+   "step": 4,
+   "url": "/admin/units/14"
+  },
+  {
+   "start": 25.81,
+   "end": 30.89,
+   "text": "حدد الوحدة المجاورة التي ستنضم إليها.",
+   "step": 5,
+   "url": "/admin/units/14"
+  },
+  {
+   "start": 30.89,
+   "end": 36.13,
+   "text": "اكتب رمزًا للوحدة الجديدة، أو اتركه فارغًا ليُنشأ من الرموز القديمة.",
+   "step": 6,
+   "url": "/admin/units/14"
+  },
+  {
+   "start": 36.13,
+   "end": 39.16,
+   "text": "ادمج.",
+   "step": 7,
+   "url": "/admin/units/24"
+  },
+  {
+   "start": 39.16,
+   "end": 44.74,
+   "text": "وحدة واحدة بالمساحة والإيجار المعلن مجتمعين، وتبقى الوحدات القديمة في سجلها.",
+   "step": 8,
+   "url": "/admin/units/24"
+  },
+  {
+   "start": 44.74,
+   "end": 48.1,
+   "text": "ويعيد المخطط رسم المتجر كمساحة واحدة.",
+   "step": 9,
+   "url": "/admin/units/24"
+  },
+  {
+   "start": 49.01,
+   "end": 53.22,
+   "text": "والتقسيم يعمل بالطريقة العكسية.",
+   "step": 11,
+   "url": "/admin/units/24"
+  },
+  {
+   "start": 53.22,
+   "end": 59.64,
+   "text": "تُقترح الأجزاء مناصفةً. عدّل الرموز والمساحات، وأضف جزءًا ثالثًا عند الحاجة، ثم قسّم.",
+   "step": 12,
+   "url": "/admin/units/24"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/units"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/units/14"
+  },
+  {
+   "step": 3,
+   "kind": "scroll",
+   "url": "/admin/units/14"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/units/14"
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/units/14"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/units/14"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/units/24"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/units/24"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/units/24"
+  },
+  {
+   "step": 10,
+   "kind": "scroll",
+   "url": "/admin/units/24"
+  },
+  {
+   "step": 11,
+   "kind": "click",
+   "url": "/admin/units/24"
+  },
+  {
+   "step": 12,
+   "kind": "point",
+   "url": "/admin/units/24"
+  }
+ ],
+ "recorded_at": "2026-11-06T00:36:58.941Z"
+}

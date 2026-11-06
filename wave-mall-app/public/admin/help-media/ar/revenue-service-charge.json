@@ -1,0 +1,161 @@
+{
+ "id": "revenue-service-charge",
+ "lang": "ar",
+ "title": "رسوم الخدمات: الموازنة والتكاليف ونهاية العام",
+ "duration": 65.96,
+ "cues": [
+  {
+   "start": 0.04,
+   "end": 8.13,
+   "text": "خطط لموازنة العام، وسجّل التكاليف الفعلية، وسوِّ الفرق مع كل مستأجر في نهاية العام.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.13,
+   "end": 12.3,
+   "text": "تُوزّع رسوم الخدمات تكلفة تشغيل المول على المستأجرين.",
+   "step": 1,
+   "url": "/admin/service-charge"
+  },
+  {
+   "start": 12.3,
+   "end": 16.64,
+   "text": "الموازنة، والتكاليف حتى الآن، وما فُوتر، والرصيد المتوقع.",
+   "step": 2,
+   "url": "/admin/service-charge"
+  },
+  {
+   "start": 16.64,
+   "end": 20.97,
+   "text": "تحدد الموازنة تكلفة كل بند للعام.",
+   "step": 3,
+   "url": "/admin/service-charge/budget?year=2026"
+  },
+  {
+   "start": 20.97,
+   "end": 23.96,
+   "text": "اختر العام القادم.",
+   "step": 4,
+   "url": "/admin/service-charge/budget?year=2027"
+  },
+  {
+   "start": 23.98,
+   "end": 28.63,
+   "text": "ابدأ من العام السابق بنسبة زيادة، ثم عدّل أي بند.",
+   "step": 6,
+   "url": "/admin/service-charge/budget?year=2027"
+  },
+  {
+   "start": 28.63,
+   "end": 32.19,
+   "text": "اختر «البدء من العام الماضي».",
+   "step": 7,
+   "url": "/admin/service-charge/budget?year=2027"
+  },
+  {
+   "start": 32.19,
+   "end": 36.71,
+   "text": "وعلى مدار العام، سجّل التكاليف الحقيقية في «التكاليف الفعلية».",
+   "step": 8,
+   "url": "/admin/service-charge/actuals"
+  },
+  {
+   "start": 36.71,
+   "end": 39.63,
+   "text": "اختر الشهر والبند والمبلغ.",
+   "step": 9,
+   "url": "/admin/service-charge/actuals"
+  },
+  {
+   "start": 42.77,
+   "end": 48.43,
+   "text": "اختر «إضافة تكلفة». ويمكنك أيضًا استيرادها أو جلبها من الحسابات.",
+   "step": 11,
+   "url": "/admin/service-charge/actuals?year=2026"
+  },
+  {
+   "start": 48.43,
+   "end": 54.87,
+   "text": "في نهاية العام، تقارن «التسوية» ما دفعه كل مستأجر بحصته الفعلية.",
+   "step": 12,
+   "url": "/admin/service-charge/reconciliation?year=2026"
+  },
+  {
+   "start": 54.87,
+   "end": 61.38,
+   "text": "يحصل كل مستأجر على كشف للطباعة: مبلغ يُرد له أو رصيد عليه سداده.",
+   "step": 13,
+   "url": "/admin/service-charge/reconciliation?year=2026"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/service-charge"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/service-charge"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/service-charge/budget?year=2026"
+  },
+  {
+   "step": 4,
+   "kind": "select",
+   "url": "/admin/service-charge/budget?year=2027"
+  },
+  {
+   "step": 5,
+   "kind": "wait",
+   "url": "/admin/service-charge/budget?year=2027"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/service-charge/budget?year=2027"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/service-charge/budget?year=2027"
+  },
+  {
+   "step": 8,
+   "kind": "go",
+   "url": "/admin/service-charge/actuals"
+  },
+  {
+   "step": 9,
+   "kind": "select",
+   "url": "/admin/service-charge/actuals"
+  },
+  {
+   "step": 10,
+   "kind": "type",
+   "url": "/admin/service-charge/actuals"
+  },
+  {
+   "step": 11,
+   "kind": "click",
+   "url": "/admin/service-charge/actuals?year=2026"
+  },
+  {
+   "step": 12,
+   "kind": "click",
+   "url": "/admin/service-charge/reconciliation?year=2026"
+  },
+  {
+   "step": 13,
+   "kind": "point",
+   "url": "/admin/service-charge/reconciliation?year=2026"
+  }
+ ],
+ "recorded_at": "2026-11-05T23:25:12.465Z"
+}

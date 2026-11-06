@@ -1,0 +1,139 @@
+{
+ "id": "people-payroll",
+ "lang": "ar",
+ "title": "إعداد مسير الرواتب الشهري",
+ "duration": 62.35,
+ "cues": [
+  {
+   "start": 0.04,
+   "end": 6.39,
+   "text": "افتح مسير الشهر، وأضف الإضافي والمكافآت، وراجع القسائم ثم اعتمده.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 6.39,
+   "end": 11.86,
+   "text": "لكل شهر مسير رواتب واحد، وتنشئه من هنا في بداية الشهر.",
+   "step": 1,
+   "url": "/admin/hr/payroll"
+  },
+  {
+   "start": 11.86,
+   "end": 17.34,
+   "text": "اختر الشهر ثم «إنشاء المسير»، فيُضاف كل الموظفين العاملين برواتبهم.",
+   "step": 2,
+   "url": "/admin/hr/payroll"
+  },
+  {
+   "start": 17.34,
+   "end": 20.63,
+   "text": "افتح مسودة هذا الشهر.",
+   "step": 3,
+   "url": "/admin/hr/payroll/3"
+  },
+  {
+   "start": 20.63,
+   "end": 25.81,
+   "text": "الإجماليات: الإجمالي، والاستقطاعات، والصافي المستحق، وما يتحمله المول فوق ذلك.",
+   "step": 4,
+   "url": "/admin/hr/payroll/3"
+  },
+  {
+   "start": 25.81,
+   "end": 29.75,
+   "text": "أضف قيمة العمل الإضافي في سطر الموظف.",
+   "step": 5,
+   "url": "/admin/hr/payroll/3"
+  },
+  {
+   "start": 29.75,
+   "end": 35.03,
+   "text": "أو مكافأة، ولأيام الغياب بدون أجر والاستقطاعات الأخرى أعمدة خاصة بها.",
+   "step": 6,
+   "url": "/admin/hr/payroll/3"
+  },
+  {
+   "start": 35.03,
+   "end": 41.07,
+   "text": "اضغط «حفظ وإعادة الحساب»، فتُعاد حسبة التأمينات والضريبة وأقساط السلف.",
+   "step": 7,
+   "url": "/admin/hr/payroll/3"
+  },
+  {
+   "start": 41.07,
+   "end": 46.4,
+   "text": "لكل سطر قسيمة راتب بالعربية والإنجليزية، جاهزة للطباعة أو الإرسال.",
+   "step": 8,
+   "url": "/admin/hr/payroll/3"
+  },
+  {
+   "start": 46.4,
+   "end": 52.85,
+   "text": "وعندما يكون صحيحًا، اعتمده. يُقفل المسير وتُرحَّل الرواتب إلى الدفاتر.",
+   "step": 9,
+   "url": "/admin/hr/payroll/3"
+  },
+  {
+   "start": 52.85,
+   "end": 57.59,
+   "text": "ثم نزّل ملف البنك لصرف الرواتب، وسجّل المسير كمدفوع.",
+   "step": 10,
+   "url": "/admin/hr/payroll/3"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/hr/payroll"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/hr/payroll"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/hr/payroll/3"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/hr/payroll/3"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/hr/payroll/3"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/hr/payroll/3"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/hr/payroll/3"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/hr/payroll/3"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/hr/payroll/3"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/hr/payroll/3"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:43:43.028Z"
+}

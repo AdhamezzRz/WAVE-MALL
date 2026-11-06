@@ -1,0 +1,139 @@
+{
+ "id": "records-documents",
+ "lang": "ar",
+ "title": "إبقاء المستندات محدّثة",
+ "duration": 67.6,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 7.67,
+   "text": "اعثر على أي مستند في المكتب، واعرف ما انتهت صلاحيته، واستبدله بإصدار جديد.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.67,
+   "end": 14.38,
+   "text": "«المستندات» هي مكتبة كل ملفات المكتب: أوراق المستأجرين والعقود والتصاريح والعقود الخدمية وملفات الموظفين.",
+   "step": 1,
+   "url": "/admin/documents"
+  },
+  {
+   "start": 14.38,
+   "end": 21.38,
+   "text": "يعرض الأعلى ما هو محفوظ، وما ينتهي خلال ثلاثين يومًا، وما انتهت صلاحيته بالفعل.",
+   "step": 2,
+   "url": "/admin/documents"
+  },
+  {
+   "start": 21.38,
+   "end": 29.97,
+   "text": "ابحث بالعنوان أو الرقم المرجعي، أو صفِّ حسب ما يتبعه المستند: علامة أو عقد أو موظف أو وحدة.",
+   "step": 3,
+   "url": "/admin/documents"
+  },
+  {
+   "start": 29.97,
+   "end": 33.05,
+   "text": "لنبدأ بالمستندات المنتهية.",
+   "step": 4,
+   "url": "/admin/documents?status=expired"
+  },
+  {
+   "start": 33.05,
+   "end": 36.08,
+   "text": "افتح مستندًا.",
+   "step": 5,
+   "url": "/admin/documents/37"
+  },
+  {
+   "start": 36.08,
+   "end": 39.48,
+   "text": "يمكنك قراءته هنا مباشرةً دون تنزيله.",
+   "step": 6,
+   "url": "/admin/documents/37"
+  },
+  {
+   "start": 39.48,
+   "end": 44.23,
+   "text": "تعرض تفاصيله ما يتبعه، ومتى صدر، ومتى تنتهي صلاحيته.",
+   "step": 7,
+   "url": "/admin/documents/37"
+  },
+  {
+   "start": 44.23,
+   "end": 48.22,
+   "text": "عندما تصل النسخة المجددة، استخدم «رفع إصدار جديد».",
+   "step": 8,
+   "url": "/admin/documents/37"
+  },
+  {
+   "start": 48.22,
+   "end": 55.93,
+   "text": "حدد تاريخي الإصدار والانتهاء الجديدين وأضف الملف. يبقى القديم في «الإصدارات»، وتبدأ التذكيرات من التاريخ الجديد.",
+   "step": 9,
+   "url": "/admin/documents/37"
+  },
+  {
+   "start": 55.93,
+   "end": 63.39,
+   "text": "يذكّر المكتب المسؤول عن كل مستند قبل انتهائه بثلاثين يومًا، فلا ينتهي شيء دون أن تعلم.",
+   "step": 10,
+   "url": "/admin/documents/37"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/documents"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/documents"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/documents"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/documents?status=expired"
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/documents/37"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/documents/37"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/documents/37"
+  },
+  {
+   "step": 8,
+   "kind": "scroll",
+   "url": "/admin/documents/37"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/documents/37"
+  },
+  {
+   "step": 10,
+   "kind": "say",
+   "url": "/admin/documents/37"
+  }
+ ],
+ "recorded_at": "2026-11-06T00:44:29.715Z"
+}

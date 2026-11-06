@@ -1,0 +1,84 @@
+{
+ "id": "office-audit",
+ "lang": "en",
+ "title": "Finding who changed what",
+ "duration": 46.81,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 7.8,
+   "text": "The activity log records every change, sign-in and export, with the person and the time.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.8,
+   "end": 13.16,
+   "text": "The activity log records every change, sign-in and export in the office.",
+   "step": 1,
+   "url": "/admin/audit"
+  },
+  {
+   "start": 13.16,
+   "end": 19.9,
+   "text": "Each line shows who, what they did, and when. Click the record to open it.",
+   "step": 2,
+   "url": "/admin/audit"
+  },
+  {
+   "start": 19.9,
+   "end": 25.27,
+   "text": "Choose a person to see only what they did.",
+   "step": 3,
+   "url": "/admin/audit"
+  },
+  {
+   "start": 28.99,
+   "end": 36.64,
+   "text": "Nobody can edit the log from the office, so it is a record you can rely on.",
+   "step": 5,
+   "url": "/admin/audit?user=2"
+  },
+  {
+   "start": 36.64,
+   "end": 42.15,
+   "text": "Changes to people's access have their own detailed history under Users & permissions.",
+   "step": 6,
+   "url": "/admin/audit?user=2"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/audit"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/audit"
+  },
+  {
+   "step": 3,
+   "kind": "select",
+   "url": "/admin/audit"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/audit?user=2"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/audit?user=2"
+  },
+  {
+   "step": 6,
+   "kind": "say",
+   "url": "/admin/audit?user=2"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:43:46.107Z"
+}

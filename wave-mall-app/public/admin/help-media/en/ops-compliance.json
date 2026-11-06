@@ -1,0 +1,144 @@
+{
+ "id": "ops-compliance",
+ "lang": "en",
+ "title": "Keeping licences and safety checks up to date",
+ "duration": 77.12,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 7.42,
+   "text": "The register of certificates, inspections and licences, what is overdue, and recording a renewal.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.42,
+   "end": 14.85,
+   "text": "Safety & licences keeps every certificate, inspection and licence the mall needs, with its next due date.",
+   "step": 1,
+   "url": "/admin/compliance"
+  },
+  {
+   "start": 14.85,
+   "end": 22.66,
+   "text": "At the top: what is overdue, what falls due soon, and tenants whose insurance is missing or expired.",
+   "step": 2,
+   "url": "/admin/compliance"
+  },
+  {
+   "start": 22.66,
+   "end": 28.98,
+   "text": "Filter by type: civil defence, fire alarm, lifts, licences and more.",
+   "step": 3,
+   "url": "/admin/compliance?cat=fire_alarm"
+  },
+  {
+   "start": 28.98,
+   "end": 33.28,
+   "text": "Back to everything. Overdue items come first.",
+   "step": 4,
+   "url": "/admin/compliance"
+  },
+  {
+   "start": 33.28,
+   "end": 39.74,
+   "text": "Open an item when the test, inspection or renewal has been done.",
+   "step": 5,
+   "url": "/admin/compliance/items/11"
+  },
+  {
+   "start": 39.74,
+   "end": 44.92,
+   "text": "Record it here: the date, the result and who did it.",
+   "step": 6,
+   "url": "/admin/compliance/items/11"
+  },
+  {
+   "start": 47.81,
+   "end": 56.17,
+   "text": "Add the certificate number. Leave the next due date empty: it is worked out from how often it repeats.",
+   "step": 8,
+   "url": "/admin/compliance/items/11"
+  },
+  {
+   "start": 56.17,
+   "end": 59.44,
+   "text": "Record it as done.",
+   "step": 9,
+   "url": "/admin/compliance/items/11"
+  },
+  {
+   "start": 59.44,
+   "end": 65.53,
+   "text": "Then upload the certificate, so it is at hand when the inspector visits.",
+   "step": 10,
+   "url": "/admin/compliance/items/11"
+  },
+  {
+   "start": 65.53,
+   "end": 72.47,
+   "text": "The 12-month calendar shows everything falling due this year, and reminders go out before each date.",
+   "step": 11,
+   "url": "/admin/compliance/items/11"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/compliance"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/compliance"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/compliance?cat=fire_alarm"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/compliance"
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/compliance/items/11"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/compliance/items/11"
+  },
+  {
+   "step": 7,
+   "kind": "select",
+   "url": "/admin/compliance/items/11"
+  },
+  {
+   "step": 8,
+   "kind": "type",
+   "url": "/admin/compliance/items/11"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/compliance/items/11"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/compliance/items/11"
+  },
+  {
+   "step": 11,
+   "kind": "point",
+   "url": "/admin/compliance/items/11"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:01:42.144Z"
+}

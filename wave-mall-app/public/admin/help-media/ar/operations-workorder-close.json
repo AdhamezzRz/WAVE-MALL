@@ -1,0 +1,175 @@
+{
+ "id": "operations-workorder-close",
+ "lang": "ar",
+ "title": "متابعة أمر العمل حتى الإنجاز",
+ "duration": 74.04,
+ "cues": [
+  {
+   "start": 0.06,
+   "end": 7.28,
+   "text": "أسند أمر العمل، وسجّل الوقت وقطع الغيار، ثم أغلقه كمُنجَز مع ملاحظة.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.28,
+   "end": 9.77,
+   "text": "ابدأ بأكثر الأعمال إلحاحًا.",
+   "step": 1,
+   "url": "/admin/maintenance"
+  },
+  {
+   "start": 9.77,
+   "end": 13.46,
+   "text": "افتحه.",
+   "step": 2,
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "start": 13.46,
+   "end": 20.08,
+   "text": "اللون الأحمر يعني أن المهلة المتفق عليها انتهت، ويُبلَّغ المديرون عند حدوث ذلك.",
+   "step": 3,
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "start": 20.08,
+   "end": 26.79,
+   "text": "أسنده إلى فني، أو إلى مقاول لديه عقد صيانة.",
+   "step": 4,
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "start": 26.79,
+   "end": 29.71,
+   "text": "اختر المسؤول.",
+   "step": 5,
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "start": 29.71,
+   "end": 35.16,
+   "text": "اضغط «إسناد»، فيظهر الأمر على هاتفه في تطبيق المكتب.",
+   "step": 6,
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "start": 35.16,
+   "end": 40.04,
+   "text": "سجّل الوقت المستغرق في العمل.",
+   "step": 7,
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "start": 40.04,
+   "end": 42.99,
+   "text": "ساعتان، مثلًا.",
+   "step": 8,
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "start": 42.99,
+   "end": 46.12,
+   "text": "سجّله.",
+   "step": 9,
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "start": 46.12,
+   "end": 52.19,
+   "text": "تُصرف قطع الغيار من المخزن من هنا، وتُضاف تكلفتها إلى أمر العمل.",
+   "step": 10,
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "start": 52.2,
+   "end": 56.41,
+   "text": "عند انتهاء العمل، اجعل الحالة «تم الحل».",
+   "step": 11,
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "start": 56.41,
+   "end": 64.01,
+   "text": "اكتب ما تم عمله، فهذه الملاحظة يراها المستأجر الذي أبلغ عن العطل.",
+   "step": 12,
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "start": 64.01,
+   "end": 69.34,
+   "text": "اضغط «تحديث». يُغلق أمر العمل بسجله الكامل وتكاليفه وأوقاته.",
+   "step": 13,
+   "url": "/admin/maintenance/orders/60"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/maintenance"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "step": 5,
+   "kind": "select",
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "step": 8,
+   "kind": "type",
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "step": 11,
+   "kind": "select",
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "step": 12,
+   "kind": "type",
+   "url": "/admin/maintenance/orders/60"
+  },
+  {
+   "step": 13,
+   "kind": "click",
+   "url": "/admin/maintenance/orders/60"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:50:07.355Z"
+}

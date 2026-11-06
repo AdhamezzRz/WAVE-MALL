@@ -1,0 +1,161 @@
+{
+ "id": "revenue-lease-settle",
+ "lang": "ar",
+ "title": "إنهاء العقد وتسوية التأمين",
+ "duration": 72.19,
+ "cues": [
+  {
+   "start": 0.04,
+   "end": 7.69,
+   "text": "أنهِ العقد مبكرًا أو في موعده، واخصم المستحقات من التأمين، واطبع كشف التسوية.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.69,
+   "end": 12.86,
+   "text": "عندما يغادر المستأجر، قم بتسوية العقد ليتفق الجميع على المستحقات.",
+   "step": 1,
+   "url": "/admin/leases?status=active"
+  },
+  {
+   "start": 16.27,
+   "end": 23.79,
+   "text": "اختر «إنهاء العقد». يمكنك إنهاؤه سريعًا من هنا، أو تسويته بالكامل.",
+   "step": 3,
+   "url": "/admin/leases/3"
+  },
+  {
+   "start": 23.79,
+   "end": 26.89,
+   "text": "اختر «إنهاء وتسوية».",
+   "step": 4,
+   "url": "/admin/leases/3/settle"
+  },
+  {
+   "start": 26.89,
+   "end": 32.75,
+   "text": "حدد هل انتهت المدة أم يُنهى العقد مبكرًا، وآخر يوم.",
+   "step": 5,
+   "url": "/admin/leases/3/settle"
+  },
+  {
+   "start": 32.75,
+   "end": 37.82,
+   "text": "قرر هل تُحتسب غرامة الخروج المبكر الواردة في العقد.",
+   "step": 6,
+   "url": "/admin/leases/3/settle"
+  },
+  {
+   "start": 37.82,
+   "end": 42.72,
+   "text": "اذكر ما يُخصم من التأمين، مثل الإصلاحات.",
+   "step": 7,
+   "url": "/admin/leases/3/settle"
+  },
+  {
+   "start": 45.67,
+   "end": 48.99,
+   "text": "اختر طريقة رد المبلغ المتبقي.",
+   "step": 9,
+   "url": "/admin/leases/3/settle"
+  },
+  {
+   "start": 48.99,
+   "end": 52.13,
+   "text": "اختر «احتساب التسوية».",
+   "step": 10,
+   "url": "/admin/settlements/1"
+  },
+  {
+   "start": 52.13,
+   "end": 56.88,
+   "text": "يخصم الكشف الفواتير غير المسددة والغرامات والخصومات من التأمين.",
+   "step": 11,
+   "url": "/admin/settlements/1"
+  },
+  {
+   "start": 56.88,
+   "end": 60.94,
+   "text": "اطبعه ليوقّعه المستأجر، واحفظ معه أوراق التسليم.",
+   "step": 12,
+   "url": "/admin/settlements/1"
+  },
+  {
+   "start": 60.94,
+   "end": 67.41,
+   "text": "ثم أكّد. ينتهي العقد وتُلغى الفواتير المستقبلية ويُسجَّل المبلغ المردود وتصبح الوحدات متاحة.",
+   "step": 13,
+   "url": "/admin/settlements/1"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/leases?status=active"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/leases/3"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/leases/3"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/leases/3/settle"
+  },
+  {
+   "step": 5,
+   "kind": "select",
+   "url": "/admin/leases/3/settle"
+  },
+  {
+   "step": 6,
+   "kind": "select",
+   "url": "/admin/leases/3/settle"
+  },
+  {
+   "step": 7,
+   "kind": "type",
+   "url": "/admin/leases/3/settle"
+  },
+  {
+   "step": 8,
+   "kind": "type",
+   "url": "/admin/leases/3/settle"
+  },
+  {
+   "step": 9,
+   "kind": "select",
+   "url": "/admin/leases/3/settle"
+  },
+  {
+   "step": 10,
+   "kind": "click",
+   "url": "/admin/settlements/1"
+  },
+  {
+   "step": 11,
+   "kind": "point",
+   "url": "/admin/settlements/1"
+  },
+  {
+   "step": 12,
+   "kind": "point",
+   "url": "/admin/settlements/1"
+  },
+  {
+   "step": 13,
+   "kind": "point",
+   "url": "/admin/settlements/1"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:56:43.969Z"
+}

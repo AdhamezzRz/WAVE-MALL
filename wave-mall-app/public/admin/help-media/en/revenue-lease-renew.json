@@ -1,0 +1,142 @@
+{
+ "id": "revenue-lease-renew",
+ "lang": "en",
+ "title": "Renewing a lease",
+ "duration": 72.66,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 8.18,
+   "text": "See which leases end soon and their notice dates, then send the tenant a renewal offer.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.18,
+   "end": 15.04,
+   "text": "Renewals shows the leases ending soon, the notice deadlines and the offers waiting for an answer.",
+   "step": 1,
+   "url": "/admin/leases/renewals"
+  },
+  {
+   "start": 15.04,
+   "end": 19.03,
+   "text": "Look three, six, twelve or twenty-four months ahead.",
+   "step": 2,
+   "url": "/admin/leases/renewals"
+  },
+  {
+   "start": 19.03,
+   "end": 22.67,
+   "text": "To offer a renewal, open the lease.",
+   "step": 3,
+   "url": "/admin/leases?status=active"
+  },
+  {
+   "start": 26.19,
+   "end": 32.37,
+   "text": "In the Renewal card, choose Offer a renewal.",
+   "step": 5,
+   "url": "/admin/leases/3"
+  },
+  {
+   "start": 32.37,
+   "end": 37.55,
+   "text": "Offer a new lease, or an extension of this one.",
+   "step": 6,
+   "url": "/admin/leases/3"
+  },
+  {
+   "start": 37.55,
+   "end": 43.1,
+   "text": "Set how many months, the new rent and the yearly increase.",
+   "step": 7,
+   "url": "/admin/leases/3"
+  },
+  {
+   "start": 49.06,
+   "end": 54.9,
+   "text": "Send it now through the tenant portal, where they can accept it.",
+   "step": 10,
+   "url": "/admin/leases/3"
+  },
+  {
+   "start": 54.9,
+   "end": 58.17,
+   "text": "Choose Make the offer.",
+   "step": 11,
+   "url": "/admin/leases/3#renewal"
+  },
+  {
+   "start": 58.17,
+   "end": 67.93,
+   "text": "The offer waits here with its status. When it is accepted, the lease is extended or a new one is drafted for you.",
+   "step": 12,
+   "url": "/admin/leases/3#renewal"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/leases/renewals"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/leases/renewals"
+  },
+  {
+   "step": 3,
+   "kind": "go",
+   "url": "/admin/leases?status=active"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/leases/3"
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/leases/3"
+  },
+  {
+   "step": 6,
+   "kind": "select",
+   "url": "/admin/leases/3"
+  },
+  {
+   "step": 7,
+   "kind": "type",
+   "url": "/admin/leases/3"
+  },
+  {
+   "step": 8,
+   "kind": "type",
+   "url": "/admin/leases/3"
+  },
+  {
+   "step": 9,
+   "kind": "type",
+   "url": "/admin/leases/3"
+  },
+  {
+   "step": 10,
+   "kind": "select",
+   "url": "/admin/leases/3"
+  },
+  {
+   "step": 11,
+   "kind": "click",
+   "url": "/admin/leases/3#renewal"
+  },
+  {
+   "step": 12,
+   "kind": "point",
+   "url": "/admin/leases/3#renewal"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:59:07.754Z"
+}

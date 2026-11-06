@@ -1,0 +1,132 @@
+{
+ "id": "portal-pay",
+ "lang": "ar",
+ "title": "دفع فاتورة إلكترونيًا",
+ "duration": 62.88,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 8.54,
+   "text": "ادفع المستحق ببطاقة بنكية أو محفظة إلكترونية أو من منفذ دفع، واحصل على إيصالك فورًا.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.54,
+   "end": 13.03,
+   "text": "عندما يحين موعد دفع، تخبرك به الصفحة الرئيسية لبوابتك.",
+   "step": 1,
+   "url": "/portal"
+  },
+  {
+   "start": 13.03,
+   "end": 16,
+   "text": "يعرض رصيدك المستحق عليك الآن.",
+   "step": 2,
+   "url": "/portal"
+  },
+  {
+   "start": 16,
+   "end": 19.05,
+   "text": "اختر «ادفع الآن».",
+   "step": 3,
+   "url": "/portal/invoices/357#pay"
+  },
+  {
+   "start": 19.05,
+   "end": 23.31,
+   "text": "تعرض الفاتورة ما تخصه، وتاريخ استحقاقها، والمبلغ المتبقي.",
+   "step": 4,
+   "url": "/portal/invoices/357#pay"
+  },
+  {
+   "start": 23.31,
+   "end": 30.68,
+   "text": "اختر طريقة الدفع: بطاقة بنكية، أو محفظة إلكترونية، أو نقدًا من منفذ دفع برقم مرجعي.",
+   "step": 5,
+   "url": "/portal/invoices/357#pay"
+  },
+  {
+   "start": 30.68,
+   "end": 35.45,
+   "text": "ادفع، فتنتقل إلى صفحة الدفع الآمنة الخاصة بالبنك.",
+   "step": 6,
+   "url": "/pay/sandbox/ghpW1AmV2gTuA4VnZi9Hosqx0TMzxS3g4iHtfHJPRyY?lang=ar"
+  },
+  {
+   "start": 35.45,
+   "end": 43.71,
+   "text": "تأكد من المبلغ والفاتورة ثم أكّد. في مكتب التدريب هذا صفحة البنك تجريبية، فلا تُخصم أي أموال.",
+   "step": 7,
+   "url": "/pay/sandbox/ghpW1AmV2gTuA4VnZi9Hosqx0TMzxS3g4iHtfHJPRyY?lang=ar"
+  },
+  {
+   "start": 46.51,
+   "end": 51.64,
+   "text": "تم استلام الدفعة. رقم الإيصال هنا، وتصلك نسخة على بريدك.",
+   "step": 9,
+   "url": "/pay/result/ghpW1AmV2gTuA4VnZi9Hosqx0TMzxS3g4iHtfHJPRyY?lang=ar"
+  },
+  {
+   "start": 51.64,
+   "end": 58.58,
+   "text": "وعند العودة إلى البوابة تجد الفاتورة مدفوعة والإيصال جاهزًا للتنزيل في أي وقت.",
+   "step": 10,
+   "url": "/portal/invoices/357"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/portal"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/portal"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/portal/invoices/357#pay"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/portal/invoices/357#pay"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/portal/invoices/357#pay"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/pay/sandbox/ghpW1AmV2gTuA4VnZi9Hosqx0TMzxS3g4iHtfHJPRyY?lang=ar"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/pay/sandbox/ghpW1AmV2gTuA4VnZi9Hosqx0TMzxS3g4iHtfHJPRyY?lang=ar"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/pay/result/ghpW1AmV2gTuA4VnZi9Hosqx0TMzxS3g4iHtfHJPRyY?lang=ar"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/pay/result/ghpW1AmV2gTuA4VnZi9Hosqx0TMzxS3g4iHtfHJPRyY?lang=ar"
+  },
+  {
+   "step": 10,
+   "kind": "click",
+   "url": "/portal/invoices/357"
+  }
+ ],
+ "recorded_at": "2026-11-06T00:47:21.299Z"
+}

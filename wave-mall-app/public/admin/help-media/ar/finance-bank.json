@@ -1,0 +1,127 @@
+{
+ "id": "finance-bank",
+ "lang": "ar",
+ "title": "التسوية البنكية",
+ "duration": 73.53,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 6.81,
+   "text": "طابق كشف البنك مع الدفاتر، ورحّل المصروفات البنكية والفوائد بضغطة واحدة.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 6.81,
+   "end": 14.15,
+   "text": "تعرض «البنوك» حسابات المول البنكية والخزينة، وعدد أسطر الكشف التي ما زالت تحتاج إلى مطابقة.",
+   "step": 1,
+   "url": "/admin/accounting/banking"
+  },
+  {
+   "start": 14.15,
+   "end": 17.61,
+   "text": "افتح حسابًا لتسويته.",
+   "step": 2,
+   "url": "/admin/accounting/banking/1"
+  },
+  {
+   "start": 17.61,
+   "end": 25.05,
+   "text": "في الأعلى: الرصيد في الدفاتر، والرصيد في الكشف، والفرق الذي ما زال يحتاج إلى تفسير.",
+   "step": 3,
+   "url": "/admin/accounting/banking/1"
+  },
+  {
+   "start": 25.05,
+   "end": 33.42,
+   "text": "يظهر كل سطر من الكشف مع ما يمكن أن يطابقه في الدفاتر: المبلغ نفسه خلال أيام قليلة.",
+   "step": 4,
+   "url": "/admin/accounting/banking/1"
+  },
+  {
+   "start": 33.42,
+   "end": 37.46,
+   "text": "المصروفات البنكية والفوائد غير مسجلة في الدفاتر بعد.",
+   "step": 5,
+   "url": "/admin/accounting/banking/1"
+  },
+  {
+   "start": 37.46,
+   "end": 46.5,
+   "text": "اختر «ترحيل» على السطر، ثم الحساب، مثل المصروفات البنكية، ثم «ترحيل ومطابقة»: يُرحَّل القيد وتُعلَّم الحركة كمطابَقة في الحال.",
+   "step": 6,
+   "url": "/admin/accounting/banking/1"
+  },
+  {
+   "start": 46.5,
+   "end": 53.95,
+   "text": "وعندما تحتوي الدفاتر على المبالغ نفسها، يطابق زر «مطابقة تلقائية» كل الأزواج الواضحة دفعة واحدة.",
+   "step": 7,
+   "url": "/admin/accounting/banking/1"
+  },
+  {
+   "start": 53.95,
+   "end": 61.85,
+   "text": "وفي الأسفل القيود الموجودة في الدفاتر ولم تظهر في الكشف بعد، مثل الشيكات التي لم تُحصَّل.",
+   "step": 8,
+   "url": "/admin/accounting/banking/1"
+  },
+  {
+   "start": 61.85,
+   "end": 68.89,
+   "text": "حركة مكررة أو تحويل مسجّل من قبل؟ تجاهلها. ويمكن دائمًا التراجع عن أي مطابقة خاطئة.",
+   "step": 9,
+   "url": "/admin/accounting/banking/1"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/accounting/banking"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/accounting/banking/1"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/accounting/banking/1"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/accounting/banking/1"
+  },
+  {
+   "step": 5,
+   "kind": "scroll",
+   "url": "/admin/accounting/banking/1"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/accounting/banking/1"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/accounting/banking/1"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/accounting/banking/1"
+  },
+  {
+   "step": 9,
+   "kind": "say",
+   "url": "/admin/accounting/banking/1"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:53:50.960Z"
+}

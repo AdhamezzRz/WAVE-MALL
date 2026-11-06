@@ -1,0 +1,137 @@
+{
+ "id": "finance-reports",
+ "lang": "en",
+ "title": "Profit and loss, balance sheet and trial balance",
+ "duration": 66.63,
+ "cues": [
+  {
+   "start": 0.06,
+   "end": 8.6,
+   "text": "Open the financial statements for any period, compare with last year or the budget, and export them.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.6,
+   "end": 13.23,
+   "text": "All the financial reports are in one place, under Reports.",
+   "step": 1,
+   "url": "/admin/accounting/reports"
+  },
+  {
+   "start": 13.23,
+   "end": 21.82,
+   "text": "Profit and loss, balance sheet, cash flow, trial balance, the general ledger, VAT and the ageing of what is owed.",
+   "step": 2,
+   "url": "/admin/accounting/reports"
+  },
+  {
+   "start": 21.82,
+   "end": 25.85,
+   "text": "Open the profit and loss.",
+   "step": 3,
+   "url": "/admin/accounting/reports/pl"
+  },
+  {
+   "start": 25.85,
+   "end": 31.75,
+   "text": "Choose the period. It starts on the first day of the fiscal year.",
+   "step": 4,
+   "url": "/admin/accounting/reports/pl"
+  },
+  {
+   "start": 31.75,
+   "end": 36.18,
+   "text": "Compare with the budget, or with last year.",
+   "step": 5,
+   "url": "/admin/accounting/reports/pl?from=2026-01-01&to=2026-11-05&view=summary&compare=budget"
+  },
+  {
+   "start": 37.38,
+   "end": 43.1,
+   "text": "Every line opens the account, down to the entries behind the number.",
+   "step": 7,
+   "url": "/admin/accounting/reports/pl?from=2026-01-01&to=2026-11-05&view=summary&compare=budget"
+  },
+  {
+   "start": 43.1,
+   "end": 47.99,
+   "text": "Or show it by month to see the trend.",
+   "step": 8,
+   "url": "/admin/accounting/reports/pl?from=2026-01-01&to=2026-11-05&view=monthly&compare=budget"
+  },
+  {
+   "start": 49.19,
+   "end": 55.51,
+   "text": "Print it, or export it to a spreadsheet for the auditor or the owner.",
+   "step": 10,
+   "url": "/admin/accounting/reports/pl?from=2026-01-01&to=2026-11-05&view=monthly&compare=budget"
+  },
+  {
+   "start": 55.51,
+   "end": 61.93,
+   "text": "The trial balance lists every account: opening, movement and closing. Debits and credits always agree.",
+   "step": 11,
+   "url": "/admin/accounting/reports/tb"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/accounting/reports"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/accounting/reports"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/accounting/reports/pl"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/accounting/reports/pl"
+  },
+  {
+   "step": 5,
+   "kind": "select",
+   "url": "/admin/accounting/reports/pl?from=2026-01-01&to=2026-11-05&view=summary&compare=budget"
+  },
+  {
+   "step": 6,
+   "kind": "pause",
+   "url": "/admin/accounting/reports/pl?from=2026-01-01&to=2026-11-05&view=summary&compare=budget"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/accounting/reports/pl?from=2026-01-01&to=2026-11-05&view=summary&compare=budget"
+  },
+  {
+   "step": 8,
+   "kind": "select",
+   "url": "/admin/accounting/reports/pl?from=2026-01-01&to=2026-11-05&view=monthly&compare=budget"
+  },
+  {
+   "step": 9,
+   "kind": "pause",
+   "url": "/admin/accounting/reports/pl?from=2026-01-01&to=2026-11-05&view=monthly&compare=budget"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/accounting/reports/pl?from=2026-01-01&to=2026-11-05&view=monthly&compare=budget"
+  },
+  {
+   "step": 11,
+   "kind": "go",
+   "url": "/admin/accounting/reports/tb"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:47:38.628Z"
+}

@@ -1,0 +1,41 @@
+WEBVTT
+
+1
+00:00:00.080 --> 00:00:08.620
+Take a backup now, download it, schedule the nightly copy and learn how a backup is restored.
+
+2
+00:00:08.620 --> 00:00:14.630
+Backups are in Settings. Every night a checked, compressed copy of everything is kept.
+
+3
+00:00:14.640 --> 00:00:20.890
+Here you see when the last copy was taken and how big it is.
+
+4
+00:00:20.890 --> 00:00:32.060
+Back up now takes a copy straight away, for example before a big change.
+
+5
+00:00:32.060 --> 00:00:38.640
+The copies kept on the server, newest first. Download one to keep it somewhere safe.
+
+6
+00:00:38.640 --> 00:00:45.610
+The schedule: the hour of the nightly copy and how many days of copies to keep.
+
+7
+00:00:45.610 --> 00:00:52.860
+You can also have each night's copy emailed to an address you control.
+
+8
+00:00:52.860 --> 00:00:55.970
+Save.
+
+9
+00:00:55.970 --> 00:01:06.920
+How to restore explains, step by step, how to bring a copy back. It replaces everything, so do it with care.
+
+10
+00:01:06.920 --> 00:01:12.040
+For a copy away from this server, connect off-site storage under Integrations.

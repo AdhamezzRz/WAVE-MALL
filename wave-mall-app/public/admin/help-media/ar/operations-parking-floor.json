@@ -1,0 +1,103 @@
+{
+ "id": "operations-parking-floor",
+ "lang": "ar",
+ "title": "خريطة الجراج المباشرة",
+ "duration": 54.49,
+ "cues": [
+  {
+   "start": 0.04,
+   "end": 9.87,
+   "text": "شاهد كل مكان انتظار في كل دور لحظة بلحظة، وافتح أي مكان لترى السيارة فيه، وتنقّل بين الأدوار.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 9.87,
+   "end": 13.66,
+   "text": "ترسم خريطة الجراج كل دور، وتتحدث تلقائيًا.",
+   "step": 1,
+   "url": "/admin/parking/floor"
+  },
+  {
+   "start": 13.66,
+   "end": 17.91,
+   "text": "المشغول، والشاغر، والمحجوز للحجوزات، والخارج عن الخدمة.",
+   "step": 2,
+   "url": "/admin/parking/floor"
+  },
+  {
+   "start": 17.91,
+   "end": 28.3,
+   "text": "الألوان توضح حالة كل مكان: شاغر، أو مشغول، أو محجوز، أو مخصص لكبار الزوار أو للخدمة أو للسيارات الكهربائية أو لذوي الهمم.",
+   "step": 3,
+   "url": "/admin/parking/floor"
+  },
+  {
+   "start": 28.3,
+   "end": 33.15,
+   "text": "اضغط على أي مكان لترى ما فيه.",
+   "step": 4,
+   "url": "/admin/parking/floor?level=B1&bay=B1-A01"
+  },
+  {
+   "start": 33.15,
+   "end": 38.85,
+   "text": "السيارة، ومدة بقائها، والإجراءات: تسجيل مخالفة، أو إخراج المكان من الخدمة.",
+   "step": 5,
+   "url": "/admin/parking/floor?level=B1&bay=B1-A01"
+  },
+  {
+   "start": 38.85,
+   "end": 42.75,
+   "text": "انتقل إلى الدور الأسفل.",
+   "step": 6,
+   "url": "/admin/parking/floor?level=B2"
+  },
+  {
+   "start": 42.75,
+   "end": 49.81,
+   "text": "حيث لا توجد حساسات، تُوزَّع السيارات على الأماكن الأقرب إلى المصاعد أولًا، كما يفعل السائقون.",
+   "step": 7,
+   "url": "/admin/parking/floor?level=B2"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/parking/floor"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/parking/floor"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/parking/floor"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/parking/floor?level=B1&bay=B1-A01"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/parking/floor?level=B1&bay=B1-A01"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/parking/floor?level=B2"
+  },
+  {
+   "step": 7,
+   "kind": "say",
+   "url": "/admin/parking/floor?level=B2"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:21:12.902Z"
+}

@@ -1,0 +1,163 @@
+{
+ "id": "people-employee",
+ "lang": "en",
+ "title": "Adding an employee",
+ "duration": 76.28,
+ "cues": [
+  {
+   "start": 0.07,
+   "end": 8.61,
+   "text": "Find your way around the employee files, then add a new employee with their job and salary.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.61,
+   "end": 13.56,
+   "text": "Employees is the staff file of the mall: everyone, by department.",
+   "step": 1,
+   "url": "/admin/hr"
+  },
+  {
+   "start": 13.56,
+   "end": 21,
+   "text": "At the top: the monthly payroll cost, who is on leave today and leave waiting for you.",
+   "step": 2,
+   "url": "/admin/hr"
+  },
+  {
+   "start": 21,
+   "end": 25.26,
+   "text": "Headcount by department. Each row filters the list below.",
+   "step": 3,
+   "url": "/admin/hr"
+  },
+  {
+   "start": 25.26,
+   "end": 31.09,
+   "text": "Coming up warns you about contracts and probation periods that end soon.",
+   "step": 4,
+   "url": "/admin/hr"
+  },
+  {
+   "start": 31.09,
+   "end": 34.96,
+   "text": "To add someone, choose New employee.",
+   "step": 5,
+   "url": "/admin/hr/employees/new"
+  },
+  {
+   "start": 34.96,
+   "end": 39.53,
+   "text": "Their name as on their ID, in English.",
+   "step": 6,
+   "url": "/admin/hr/employees/new"
+  },
+  {
+   "start": 39.53,
+   "end": 43.1,
+   "text": "And in Arabic, for payslips and letters.",
+   "step": 7,
+   "url": "/admin/hr/employees/new"
+  },
+  {
+   "start": 43.1,
+   "end": 45.98,
+   "text": "The department.",
+   "step": 8,
+   "url": "/admin/hr/employees/new"
+  },
+  {
+   "start": 45.98,
+   "end": 50.93,
+   "text": "The job title.",
+   "step": 9,
+   "url": "/admin/hr/employees/new"
+  },
+  {
+   "start": 50.93,
+   "end": 58.27,
+   "text": "The start date is today and probation is filled in for three months. Change them if needed.",
+   "step": 10,
+   "url": "/admin/hr/employees/new"
+  },
+  {
+   "start": 58.27,
+   "end": 65.01,
+   "text": "The basic salary. Payroll, social insurance and tax are worked out from it every month.",
+   "step": 11,
+   "url": "/admin/hr/employees/new"
+  },
+  {
+   "start": 65.01,
+   "end": 71.62,
+   "text": "Add employee. Their file holds documents, leave balances, advances and every payslip.",
+   "step": 12,
+   "url": "/admin/hr/employees/26"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/hr"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/hr"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/hr"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/hr"
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/hr/employees/new"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/hr/employees/new"
+  },
+  {
+   "step": 7,
+   "kind": "type",
+   "url": "/admin/hr/employees/new"
+  },
+  {
+   "step": 8,
+   "kind": "select",
+   "url": "/admin/hr/employees/new"
+  },
+  {
+   "step": 9,
+   "kind": "type",
+   "url": "/admin/hr/employees/new"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/hr/employees/new"
+  },
+  {
+   "step": 11,
+   "kind": "type",
+   "url": "/admin/hr/employees/new"
+  },
+  {
+   "step": 12,
+   "kind": "click",
+   "url": "/admin/hr/employees/26"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:23:16.384Z"
+}

@@ -1,0 +1,142 @@
+{
+ "id": "revenue-collections-plans",
+ "lang": "ar",
+ "title": "التذكيرات وخطط السداد",
+ "duration": 70.41,
+ "cues": [
+  {
+   "start": 0.06,
+   "end": 8.58,
+   "text": "أرسل التذكيرات المستحقة دفعة واحدة، ثم اتفق على خطة سداد تقسّم الفواتير القديمة إلى أقساط.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.58,
+   "end": 13.59,
+   "text": "تُرسَل التذكيرات تلقائيًا قبل كل موعد استحقاق وبعده، بالبريد وواتساب.",
+   "step": 1,
+   "url": "/admin/collections/reminders"
+  },
+  {
+   "start": 13.59,
+   "end": 17.94,
+   "text": "هنا كل تذكير أُرسل، ولمن، وعن أي فاتورة.",
+   "step": 2,
+   "url": "/admin/collections/reminders"
+  },
+  {
+   "start": 17.94,
+   "end": 23.2,
+   "text": "لإرسال المستحق منها الآن، اختر «إرسال التذكيرات المستحقة الآن».",
+   "step": 3,
+   "url": "/admin/collections/reminders"
+  },
+  {
+   "start": 23.2,
+   "end": 29.44,
+   "text": "لا يستطيع المستأجر سداد كل شيء دفعة واحدة؟ اتفق معه على خطة سداد.",
+   "step": 4,
+   "url": "/admin/collections"
+  },
+  {
+   "start": 32.69,
+   "end": 37.56,
+   "text": "اختر «خطة سداد جديدة».",
+   "step": 6,
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "start": 37.56,
+   "end": 42.23,
+   "text": "حدد الفواتير التي تشملها.",
+   "step": 7,
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "start": 46.53,
+   "end": 50.79,
+   "text": "قسّمها إلى أقساط، كل شهر أو كل ربع سنة.",
+   "step": 9,
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "start": 54.59,
+   "end": 58.23,
+   "text": "اختر «اعتماد الخطة».",
+   "step": 11,
+   "url": "/admin/collections/plans/2"
+  },
+  {
+   "start": 58.23,
+   "end": 65.68,
+   "text": "لكل قسط موعده. اربط بكل قسط شيكًا، وتتوقف غرامات التأخير ما دامت الخطة ملتزمًا بها.",
+   "step": 12,
+   "url": "/admin/collections/plans/2"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/collections/reminders"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/collections/reminders"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/collections/reminders"
+  },
+  {
+   "step": 4,
+   "kind": "go",
+   "url": "/admin/collections"
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "step": 7,
+   "kind": "check",
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "step": 8,
+   "kind": "check",
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "step": 9,
+   "kind": "type",
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "step": 10,
+   "kind": "type",
+   "url": "/admin/collections/tenants/3"
+  },
+  {
+   "step": 11,
+   "kind": "click",
+   "url": "/admin/collections/plans/2"
+  },
+  {
+   "step": 12,
+   "kind": "point",
+   "url": "/admin/collections/plans/2"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:25:15.725Z"
+}

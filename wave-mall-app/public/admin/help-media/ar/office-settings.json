@@ -1,0 +1,127 @@
+{
+ "id": "office-settings",
+ "lang": "ar",
+ "title": "إعدادات المكتب والخدمات المرتبطة",
+ "duration": 60.76,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 8.12,
+   "text": "أسعار القائمة وقواعد الصفقات وبيانات الشركة التي يعمل بها المكتب، والخدمات الخارجية المرتبطة به.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.12,
+   "end": 12.81,
+   "text": "تحتوي الإعدادات على القواعد التي يعمل بها المكتب كله.",
+   "step": 1,
+   "url": "/admin/settings"
+  },
+  {
+   "start": 12.81,
+   "end": 18.48,
+   "text": "أسعار القائمة: الإيجار المطلوب للمتر المربع في كل مستوى، ورسوم الخدمات.",
+   "step": 2,
+   "url": "/admin/settings"
+  },
+  {
+   "start": 18.48,
+   "end": 24.92,
+   "text": "قواعد الصفقات: المدة المعتادة والزيادة السنوية والتأمين، وأكبر خصم مسموح به دون موافقة.",
+   "step": 3,
+   "url": "/admin/settings"
+  },
+  {
+   "start": 24.92,
+   "end": 28.18,
+   "text": "غيّر القيمة التي تحتاج إليها.",
+   "step": 4,
+   "url": "/admin/settings"
+  },
+  {
+   "start": 28.18,
+   "end": 32.46,
+   "text": "وبيانات شركتك التي تُطبع على كل عرض وفاتورة.",
+   "step": 5,
+   "url": "/admin/settings"
+  },
+  {
+   "start": 32.46,
+   "end": 37.21,
+   "text": "احفظ، وتُطبَّق القواعد الجديدة من العرض التالي.",
+   "step": 6,
+   "url": "/admin/settings"
+  },
+  {
+   "start": 37.22,
+   "end": 43.01,
+   "text": "تعرض صفحة الخدمات المرتبطة: البريد وواتساب والدفع الإلكتروني والفاتورة الإلكترونية والعدادات والبوابات.",
+   "step": 7,
+   "url": "/admin/integrations"
+  },
+  {
+   "start": 43.01,
+   "end": 51.26,
+   "text": "توضح كل بطاقة هل الخدمة متصلة. تُضبط المفاتيح على الخادم لدى شركة الاستضافة، ولا تُكتب هنا أبدًا.",
+   "step": 8,
+   "url": "/admin/integrations"
+  },
+  {
+   "start": 51.26,
+   "end": 56.07,
+   "text": "أرسل رسالة تجريبية للتأكد من خروج الرسائل.",
+   "step": 9,
+   "url": "/admin/integrations"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/settings"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/settings"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/settings"
+  },
+  {
+   "step": 4,
+   "kind": "type",
+   "url": "/admin/settings"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/settings"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/settings"
+  },
+  {
+   "step": 7,
+   "kind": "go",
+   "url": "/admin/integrations"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/integrations"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/integrations"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:39:01.046Z"
+}

@@ -1,0 +1,144 @@
+{
+ "id": "property-tenant-file",
+ "lang": "en",
+ "title": "The tenant file",
+ "duration": 80.32,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 8.57,
+   "text": "Everything about a tenant on one page: lease, documents, legal details, store contacts and what is missing.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.57,
+   "end": 14.17,
+   "text": "Tenant files keep everything about each brand that has signed with The Wave.",
+   "step": 1,
+   "url": "/admin/tenants"
+  },
+  {
+   "start": 14.17,
+   "end": 22.26,
+   "text": "How many are trading, who opens soon, how complete the files are, documents to renew and rent in arrears.",
+   "step": 2,
+   "url": "/admin/tenants"
+  },
+  {
+   "start": 22.26,
+   "end": 29.18,
+   "text": "See them as cards, as a table, or as a compliance matrix of every required document.",
+   "step": 3,
+   "url": "/admin/tenants"
+  },
+  {
+   "start": 29.18,
+   "end": 33.6,
+   "text": "Open a tenant. Atelier Nour is still signing.",
+   "step": 4,
+   "url": "/admin/tenants/5"
+  },
+  {
+   "start": 33.6,
+   "end": 39.78,
+   "text": "The header shows the legal name, units, status and how complete the file is.",
+   "step": 5,
+   "url": "/admin/tenants/5"
+  },
+  {
+   "start": 39.78,
+   "end": 46.1,
+   "text": "Jump to any part of the file from this bar.",
+   "step": 6,
+   "url": "/admin/tenants/5#compliance"
+  },
+  {
+   "start": 46.1,
+   "end": 53.4,
+   "text": "Compliance lists the required documents. Missing ones are marked, so you know exactly what to ask for.",
+   "step": 7,
+   "url": "/admin/tenants/5#compliance"
+  },
+  {
+   "start": 57.41,
+   "end": 64.57,
+   "text": "Legal details, the store team and contacts sit on the right. Edit them as they change.",
+   "step": 9,
+   "url": "/admin/tenants/5#legal"
+  },
+  {
+   "start": 64.57,
+   "end": 71.1,
+   "text": "Portal access invites the tenant to their own portal, to pay invoices and send requests.",
+   "step": 10,
+   "url": "/admin/tenants/5#legal"
+  },
+  {
+   "start": 71.1,
+   "end": 76.12,
+   "text": "Fact sheet prints a one-page summary of the tenant for meetings.",
+   "step": 11,
+   "url": "/admin/tenants/5#legal"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/tenants"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/tenants"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/tenants"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/tenants/5"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/tenants/5"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/tenants/5#compliance"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/tenants/5#compliance"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/tenants/5#legal"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/tenants/5#legal"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/tenants/5#legal"
+  },
+  {
+   "step": 11,
+   "kind": "point",
+   "url": "/admin/tenants/5#legal"
+  }
+ ],
+ "recorded_at": "2026-11-06T00:17:28.598Z"
+}

@@ -1,0 +1,139 @@
+{
+ "id": "sales-conversations",
+ "lang": "ar",
+ "title": "واتساب والبريد في مكان واحد",
+ "duration": 71.52,
+ "cues": [
+  {
+   "start": 0.01,
+   "end": 8.53,
+   "text": "تابع كل محادثة واتساب ورسالة بريد مع العلامات التجارية، وأسندها لزميل، ورد عليها من المكتب.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.53,
+   "end": 14.79,
+   "text": "تجمع «المحادثات» كل محادثة واتساب ورسالة بريد مع العلامات التجارية في قائمة واحدة.",
+   "step": 1,
+   "url": "/admin/conversations"
+  },
+  {
+   "start": 14.79,
+   "end": 21.23,
+   "text": "صفِّ حسب غير المقروءة، أو المسندة إليك، أو واتساب، أو البريد، أو المغلقة.",
+   "step": 2,
+   "url": "/admin/conversations"
+  },
+  {
+   "start": 21.23,
+   "end": 26.09,
+   "text": "افتح محادثة. ريم تريد زيارة الموقع يوم الأحد.",
+   "step": 3,
+   "url": "/admin/conversations?t=2"
+  },
+  {
+   "start": 26.09,
+   "end": 31.8,
+   "text": "يعرض الرأس القناة والرقم والفرصة المرتبطة بها، على بُعد ضغطة واحدة.",
+   "step": 4,
+   "url": "/admin/conversations?t=2"
+  },
+  {
+   "start": 31.8,
+   "end": 36.49,
+   "text": "أسندها إلى الزميل المسؤول عن الرد، فيصله إشعار فورًا.",
+   "step": 5,
+   "url": "/admin/conversations?t=2"
+  },
+  {
+   "start": 36.49,
+   "end": 42.09,
+   "text": "رسائل البريد تعمل بالطريقة نفسها. خالد يطلب إرشادات اللافتات.",
+   "step": 6,
+   "url": "/admin/conversations?t=5"
+  },
+  {
+   "start": 42.09,
+   "end": 46.89,
+   "text": "اكتب ردك هنا.",
+   "step": 7,
+   "url": "/admin/conversations?t=5"
+  },
+  {
+   "start": 46.89,
+   "end": 52.48,
+   "text": "تضيف «ردود سريعة» إجابة جاهزة تستخدمها كثيرًا، مثل تأكيد موعد معاينة.",
+   "step": 8,
+   "url": "/admin/conversations?t=5"
+  },
+  {
+   "start": 52.48,
+   "end": 61.55,
+   "text": "«إرسال البريد» يرسله من عنوان مكتب التأجير، فينضم ردك إلى المحادثة ويحتفظ السجل الزمني للفرصة بنسخة منه للفريق كله.",
+   "step": 9,
+   "url": "/admin/conversations?t=5"
+  },
+  {
+   "start": 61.55,
+   "end": 67.3,
+   "text": "وعندما ينتهي الأمر، أغلق المحادثة، وستُفتح من جديد تلقائيًا إن ردّوا.",
+   "step": 10,
+   "url": "/admin/conversations?t=5"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/conversations"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/conversations"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/conversations?t=2"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/conversations?t=2"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/conversations?t=2"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/conversations?t=5"
+  },
+  {
+   "step": 7,
+   "kind": "type",
+   "url": "/admin/conversations?t=5"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/conversations?t=5"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/conversations?t=5"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/conversations?t=5"
+  }
+ ],
+ "recorded_at": "2026-11-06T00:32:25.351Z"
+}

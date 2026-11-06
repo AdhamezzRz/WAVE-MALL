@@ -1,0 +1,127 @@
+{
+ "id": "people-leave",
+ "lang": "en",
+ "title": "Approving leave",
+ "duration": 66.58,
+ "cues": [
+  {
+   "start": 0.08,
+   "end": 8.23,
+   "text": "Approve or decline leave requests, see who is off this month, and record leave for someone.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.23,
+   "end": 12.48,
+   "text": "Leave opens on the requests waiting for a decision.",
+   "step": 1,
+   "url": "/admin/hr/leave"
+  },
+  {
+   "start": 12.48,
+   "end": 20.23,
+   "text": "Each request shows the person, the type of leave, the dates and how many working days it takes.",
+   "step": 2,
+   "url": "/admin/hr/leave"
+  },
+  {
+   "start": 20.23,
+   "end": 25.34,
+   "text": "Before you decide, check who else is off on those days.",
+   "step": 3,
+   "url": "/admin/hr/leave"
+  },
+  {
+   "start": 25.34,
+   "end": 32.14,
+   "text": "Approve. The days come off their balance, and they are told by email.",
+   "step": 4,
+   "url": "/admin/hr/leave"
+  },
+  {
+   "start": 32.14,
+   "end": 39.2,
+   "text": "To decline, give a reason. It goes back to the person.",
+   "step": 5,
+   "url": "/admin/hr/leave"
+  },
+  {
+   "start": 39.2,
+   "end": 44.57,
+   "text": "For example: peak season, please choose other dates.",
+   "step": 6,
+   "url": "/admin/hr/leave"
+  },
+  {
+   "start": 44.57,
+   "end": 49.37,
+   "text": "Or leave it for later.",
+   "step": 7,
+   "url": "/admin/hr/leave"
+  },
+  {
+   "start": 49.37,
+   "end": 55.34,
+   "text": "Someone called in sick? Record the leave here, and tick Approve it now.",
+   "step": 8,
+   "url": "/admin/hr/leave"
+  },
+  {
+   "start": 55.34,
+   "end": 61.94,
+   "text": "Balances show every employee's entitlement, what they have taken and what is left this year.",
+   "step": 9,
+   "url": "/admin/hr/leave"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/hr/leave"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/hr/leave"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/hr/leave"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/hr/leave"
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/hr/leave"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/hr/leave"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/hr/leave"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/hr/leave"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/hr/leave"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:26:47.670Z"
+}

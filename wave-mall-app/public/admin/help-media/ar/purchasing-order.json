@@ -1,0 +1,127 @@
+{
+ "id": "purchasing-order",
+ "lang": "ar",
+ "title": "تحويل الطلب إلى أمر شراء",
+ "duration": 55.66,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 5.95,
+   "text": "من طلب معتمد، أصدر أمر الشراء واختر المورد وأرسله.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 5.95,
+   "end": 10.24,
+   "text": "تنتظر الطلبات المعتمدة في «معتمدة بانتظار أمر الشراء».",
+   "step": 1,
+   "url": "/admin/purchasing"
+  },
+  {
+   "start": 10.24,
+   "end": 14.07,
+   "text": "افتح الطلب.",
+   "step": 2,
+   "url": "/admin/purchasing/requests/5"
+  },
+  {
+   "start": 14.07,
+   "end": 18.45,
+   "text": "سجل موافقاته هنا، والخطوة التالية هي أمر الشراء.",
+   "step": 3,
+   "url": "/admin/purchasing/requests/5"
+  },
+  {
+   "start": 18.45,
+   "end": 23.45,
+   "text": "اختر «إصدار أمر الشراء»، وتأتي الأصناف من الطلب.",
+   "step": 4,
+   "url": "/admin/purchasing/orders/new?request=5"
+  },
+  {
+   "start": 23.45,
+   "end": 28.07,
+   "text": "اختر المورد، أو اكتب اسم مورد جديد.",
+   "step": 5,
+   "url": "/admin/purchasing/orders/new?request=5"
+  },
+  {
+   "start": 28.07,
+   "end": 33.63,
+   "text": "راجع تاريخ التوريد وشروط السداد، فالتوريدات المتأخرة تظهر في صفحة المشتريات.",
+   "step": 6,
+   "url": "/admin/purchasing/orders/new?request=5"
+  },
+  {
+   "start": 33.63,
+   "end": 37.02,
+   "text": "اكتب السعر الذي عرضه المورد.",
+   "step": 7,
+   "url": "/admin/purchasing/orders/new?request=5"
+  },
+  {
+   "start": 37.02,
+   "end": 44.43,
+   "text": "اضغط «حفظ وتعليم كمُرسل». يأخذ الأمر رقمه ويصبح جاهزًا للطباعة أو الإرسال بالبريد.",
+   "step": 8,
+   "url": "/admin/purchasing/orders/6"
+  },
+  {
+   "start": 44.43,
+   "end": 50.96,
+   "text": "يتابع هذا الجدول كل صنف: ما طُلب، وما استُلم، وما صدرت به فاتورة.",
+   "step": 9,
+   "url": "/admin/purchasing/orders/6"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/purchasing"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/purchasing/requests/5"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/purchasing/requests/5"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/purchasing/orders/new?request=5"
+  },
+  {
+   "step": 5,
+   "kind": "select",
+   "url": "/admin/purchasing/orders/new?request=5"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/purchasing/orders/new?request=5"
+  },
+  {
+   "step": 7,
+   "kind": "type",
+   "url": "/admin/purchasing/orders/new?request=5"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/purchasing/orders/6"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/purchasing/orders/6"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:40:40.460Z"
+}

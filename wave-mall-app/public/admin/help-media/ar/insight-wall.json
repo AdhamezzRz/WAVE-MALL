@@ -1,0 +1,113 @@
+{
+ "id": "insight-wall",
+ "lang": "ar",
+ "title": "عرض شاشة الحائط على التلفاز",
+ "duration": 58.6,
+ "cues": [
+  {
+   "start": 0.06,
+   "end": 9.89,
+   "text": "اعرض أرقام المول المباشرة على تلفاز في المكتب أو غرفة التحكم، برابط خاص لا يحتاج إلى تسجيل دخول.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 9.89,
+   "end": 16.24,
+   "text": "تعرض شاشة الحائط أرقام المول المباشرة على تلفاز في المكتب أو غرفة التحكم.",
+   "step": 1,
+   "url": "/admin/wallboard"
+  },
+  {
+   "start": 16.24,
+   "end": 22.38,
+   "text": "تتنقّل الشاشة بين هذه اللوحات: الزوار والجراج والتحصيل وأوامر العمل والشيكات المستحقة.",
+   "step": 2,
+   "url": "/admin/wallboard"
+  },
+  {
+   "start": 22.38,
+   "end": 29.76,
+   "text": "أنشئ رابطًا للتلفاز. يعمل دون تسجيل دخول، فاستخدمه فقط على شاشة تثق بها.",
+   "step": 3,
+   "url": "/admin/wallboard"
+  },
+  {
+   "start": 29.76,
+   "end": 37.12,
+   "text": "افتح هذا العنوان في متصفح التلفاز، ويمكنك إنشاء رابط جديد أو إيقافه في أي وقت.",
+   "step": 4,
+   "url": "/admin/wallboard"
+  },
+  {
+   "start": 37.12,
+   "end": 41.36,
+   "text": "اختر لغة الشاشة ومدة بقاء كل لوحة.",
+   "step": 5,
+   "url": "/admin/wallboard"
+  },
+  {
+   "start": 44.26,
+   "end": 47.28,
+   "text": "احفظ.",
+   "step": 7,
+   "url": "/admin/wallboard"
+  },
+  {
+   "start": 47.28,
+   "end": 51.35,
+   "text": "وهذه هي الشاشة، وتتحدّث تلقائيًا كل ثلاثين ثانية.",
+   "step": 8,
+   "url": "/admin/wallboard/screen"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/wallboard"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/wallboard"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/wallboard"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/wallboard"
+  },
+  {
+   "step": 5,
+   "kind": "select",
+   "url": "/admin/wallboard"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/wallboard"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/wallboard"
+  },
+  {
+   "step": 8,
+   "kind": "go",
+   "url": "/admin/wallboard/screen"
+  },
+  {
+   "step": 9,
+   "kind": "pause",
+   "url": "/admin/wallboard/screen"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:24:54.595Z"
+}

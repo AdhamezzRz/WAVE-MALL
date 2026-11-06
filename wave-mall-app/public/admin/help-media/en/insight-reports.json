@@ -1,0 +1,139 @@
+{
+ "id": "insight-reports",
+ "lang": "en",
+ "title": "Reading the reports",
+ "duration": 79.75,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 10.1,
+   "text": "Occupancy, the rent roll, the forecast, why deals are lost and unpaid invoices, on one page, ready to print or export.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 10.1,
+   "end": 16.69,
+   "text": "Reports gathers the numbers that matter for leasing on one page, always up to date.",
+   "step": 1,
+   "url": "/admin/reports"
+  },
+  {
+   "start": 16.69,
+   "end": 26.06,
+   "text": "At the top, the headline figures: occupancy, contracted rent, the average lease length left, the pipeline, the win rate and overdue rent.",
+   "step": 2,
+   "url": "/admin/reports"
+  },
+  {
+   "start": 26.06,
+   "end": 31.18,
+   "text": "Occupancy by level shows how full each floor is, by area.",
+   "step": 3,
+   "url": "/admin/reports"
+  },
+  {
+   "start": 31.18,
+   "end": 40.04,
+   "text": "The rent roll lists every lease with its rent, area and end date. Download it as a spreadsheet from its corner.",
+   "step": 4,
+   "url": "/admin/reports"
+  },
+  {
+   "start": 40.04,
+   "end": 46.69,
+   "text": "The forecast shows the rent expected in the months ahead from the leases already signed.",
+   "step": 5,
+   "url": "/admin/reports"
+  },
+  {
+   "start": 46.69,
+   "end": 53.41,
+   "text": "Why deals are lost counts the reasons given when a lead is closed as lost.",
+   "step": 6,
+   "url": "/admin/reports"
+  },
+  {
+   "start": 53.41,
+   "end": 60.04,
+   "text": "Receivables aging shows how old the unpaid invoices are, so the oldest are chased first.",
+   "step": 7,
+   "url": "/admin/reports"
+  },
+  {
+   "start": 60.04,
+   "end": 65.27,
+   "text": "Leases ending within a year, so renewals start in good time.",
+   "step": 8,
+   "url": "/admin/reports"
+  },
+  {
+   "start": 65.27,
+   "end": 70.93,
+   "text": "Export the leads, units, rent roll or invoices for your own analysis.",
+   "step": 9,
+   "url": "/admin/reports"
+  },
+  {
+   "start": 70.93,
+   "end": 75.01,
+   "text": "Or print the whole page for a meeting.",
+   "step": 10,
+   "url": "/admin/reports"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/reports"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/reports"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/reports"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/reports"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/reports"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/reports"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/reports"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/reports"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/reports"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/reports"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:16:36.869Z"
+}

@@ -1,0 +1,127 @@
+{
+ "id": "people-advance",
+ "lang": "ar",
+ "title": "صرف سلفة على الراتب",
+ "duration": 50.19,
+ "cues": [
+  {
+   "start": 0.04,
+   "end": 7.25,
+   "text": "اصرف سلفة لموظف، وحدد الأقساط، ودع مسير الرواتب يخصمها شهرًا بعد شهر.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.25,
+   "end": 11,
+   "text": "تعرض «السلف» كل سلفة وما تبقى منها.",
+   "step": 1,
+   "url": "/admin/hr/advances"
+  },
+  {
+   "start": 11,
+   "end": 14.49,
+   "text": "السلف الكبيرة تنتظر الموافقة هنا أولًا.",
+   "step": 2,
+   "url": "/admin/hr/advances"
+  },
+  {
+   "start": 14.49,
+   "end": 17.5,
+   "text": "لصرف سلفة، اختر الموظف.",
+   "step": 3,
+   "url": "/admin/hr/advances"
+  },
+  {
+   "start": 17.5,
+   "end": 20.36,
+   "text": "المبلغ.",
+   "step": 4,
+   "url": "/admin/hr/advances"
+  },
+  {
+   "start": 20.36,
+   "end": 24.49,
+   "text": "وعدد الأقساط الشهرية، ويبدأ الخصم من مسير الشهر القادم.",
+   "step": 5,
+   "url": "/admin/hr/advances"
+  },
+  {
+   "start": 24.49,
+   "end": 28.43,
+   "text": "طريقة الصرف: نقدًا أو تحويلًا بنكيًا.",
+   "step": 6,
+   "url": "/admin/hr/advances"
+  },
+  {
+   "start": 28.43,
+   "end": 32.24,
+   "text": "والسبب.",
+   "step": 7,
+   "url": "/admin/hr/advances"
+  },
+  {
+   "start": 32.24,
+   "end": 41.11,
+   "text": "اضغط «صرف السلفة». إذا تجاوزت الحد المحدد في قواعد الموافقة، تذهب للموافقة قبل صرف أي مبلغ.",
+   "step": 8,
+   "url": "/admin/hr/advances/5"
+  },
+  {
+   "start": 41.11,
+   "end": 45.53,
+   "text": "يخصم كل مسير القسط تلقائيًا، ويعرض ملف الموظف المتبقي.",
+   "step": 9,
+   "url": "/admin/hr/advances/5"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/hr/advances"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/hr/advances"
+  },
+  {
+   "step": 3,
+   "kind": "select",
+   "url": "/admin/hr/advances"
+  },
+  {
+   "step": 4,
+   "kind": "type",
+   "url": "/admin/hr/advances"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/hr/advances"
+  },
+  {
+   "step": 6,
+   "kind": "select",
+   "url": "/admin/hr/advances"
+  },
+  {
+   "step": 7,
+   "kind": "type",
+   "url": "/admin/hr/advances"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/hr/advances/5"
+  },
+  {
+   "step": 9,
+   "kind": "say",
+   "url": "/admin/hr/advances/5"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:31:05.373Z"
+}

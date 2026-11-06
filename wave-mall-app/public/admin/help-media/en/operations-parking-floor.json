@@ -1,0 +1,103 @@
+{
+ "id": "operations-parking-floor",
+ "lang": "en",
+ "title": "The live floor map",
+ "duration": 56.36,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 9.34,
+   "text": "See every bay on each level live, open a bay to see the car in it, and switch levels.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 9.34,
+   "end": 15.46,
+   "text": "The floor map draws each level of the car park, and updates by itself.",
+   "step": 1,
+   "url": "/admin/parking/floor"
+  },
+  {
+   "start": 15.46,
+   "end": 19.77,
+   "text": "Taken, free, held for bookings and out of service.",
+   "step": 2,
+   "url": "/admin/parking/floor"
+  },
+  {
+   "start": 19.77,
+   "end": 26.73,
+   "text": "Colours show each bay: free, taken, booked, reserved for VIPs, valet, electric cars and accessible bays.",
+   "step": 3,
+   "url": "/admin/parking/floor"
+  },
+  {
+   "start": 26.73,
+   "end": 31.73,
+   "text": "Click a bay to see what is there.",
+   "step": 4,
+   "url": "/admin/parking/floor?level=B1&bay=B1-A01"
+  },
+  {
+   "start": 31.73,
+   "end": 40.82,
+   "text": "The car, how long it has been there, and actions: report a fine, or take the bay out of service.",
+   "step": 5,
+   "url": "/admin/parking/floor?level=B1&bay=B1-A01"
+  },
+  {
+   "start": 40.82,
+   "end": 44.76,
+   "text": "Switch to the level below.",
+   "step": 6,
+   "url": "/admin/parking/floor?level=B2"
+  },
+  {
+   "start": 44.76,
+   "end": 51.41,
+   "text": "Where there are no bay sensors, cars are placed nearest the lifts first, as drivers do.",
+   "step": 7,
+   "url": "/admin/parking/floor?level=B2"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/parking/floor"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/parking/floor"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/parking/floor"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/parking/floor?level=B1&bay=B1-A01"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/parking/floor?level=B1&bay=B1-A01"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/parking/floor?level=B2"
+  },
+  {
+   "step": 7,
+   "kind": "say",
+   "url": "/admin/parking/floor?level=B2"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:19:48.244Z"
+}

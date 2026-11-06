@@ -1,0 +1,127 @@
+{
+ "id": "office-backups",
+ "lang": "ar",
+ "title": "النسخ الاحتياطي والاستعادة",
+ "duration": 68.96,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 7.25,
+   "text": "خذ نسخة احتياطية الآن ونزّلها، وجدول النسخة الليلية، وتعرّف على طريقة الاستعادة.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.25,
+   "end": 13.23,
+   "text": "النسخ الاحتياطية في الإعدادات، وكل ليلة تُحفظ نسخة كاملة مضغوطة ومُتحقَّق منها.",
+   "step": 1,
+   "url": "/admin/settings"
+  },
+  {
+   "start": 13.23,
+   "end": 17.03,
+   "text": "هنا ترى موعد آخر نسخة وحجمها.",
+   "step": 2,
+   "url": "/admin/settings"
+  },
+  {
+   "start": 17.03,
+   "end": 28.08,
+   "text": "زر «نسخ احتياطي الآن» يأخذ نسخة فورًا، مثلًا قبل تغيير كبير.",
+   "step": 3,
+   "url": "/admin/settings#backups"
+  },
+  {
+   "start": 28.08,
+   "end": 34.24,
+   "text": "النسخ المحفوظة على الخادم، الأحدث أولًا. نزّل إحداها واحفظها في مكان آمن.",
+   "step": 4,
+   "url": "/admin/settings#backups"
+  },
+  {
+   "start": 34.24,
+   "end": 38.7,
+   "text": "الجدول: ساعة النسخة الليلية وعدد أيام الاحتفاظ بالنسخ.",
+   "step": 5,
+   "url": "/admin/settings#backups"
+  },
+  {
+   "start": 38.7,
+   "end": 45.76,
+   "text": "ويمكن أيضًا إرسال نسخة كل ليلة إلى بريد تتحكم فيه.",
+   "step": 6,
+   "url": "/admin/settings#backups"
+  },
+  {
+   "start": 45.76,
+   "end": 49.15,
+   "text": "احفظ.",
+   "step": 7,
+   "url": "/admin/settings#backups"
+  },
+  {
+   "start": 49.15,
+   "end": 58.97,
+   "text": "يشرح «طريقة استعادة نسخة» خطوة بخطوة كيفية إرجاعها. الاستعادة تستبدل كل البيانات، فتعامل معها بحذر.",
+   "step": 8,
+   "url": "/admin/settings#backups"
+  },
+  {
+   "start": 58.97,
+   "end": 64.29,
+   "text": "ولنسخة خارج هذا الخادم، اربط تخزينًا خارجيًا من صفحة الخدمات المرتبطة.",
+   "step": 9,
+   "url": "/admin/settings#backups"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/settings"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/settings"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/settings#backups"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/settings#backups"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/settings#backups"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/settings#backups"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/settings#backups"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/settings#backups"
+  },
+  {
+   "step": 9,
+   "kind": "say",
+   "url": "/admin/settings#backups"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:42:31.538Z"
+}

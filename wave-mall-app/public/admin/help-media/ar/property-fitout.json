@@ -1,0 +1,151 @@
+{
+ "id": "property-fitout",
+ "lang": "ar",
+ "title": "مراجعة تصميم التجهيز",
+ "duration": 65.6,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 7.67,
+   "text": "تابع كل متجر من التصميم حتى الافتتاح، وسجّل مراجعتك للرسومات التي يقدمها المستأجر.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.67,
+   "end": 12.68,
+   "text": "تتابع «التجهيز» كل متجر من الرسومات الأولى حتى يوم الافتتاح.",
+   "step": 1,
+   "url": "/admin/fitout"
+  },
+  {
+   "start": 12.68,
+   "end": 17.87,
+   "text": "يعرض الجدول الزمني التصميم والتسليم والأعمال لكل متجر مقارنةً باليوم.",
+   "step": 2,
+   "url": "/admin/fitout"
+  },
+  {
+   "start": 17.87,
+   "end": 24.02,
+   "text": "«بانتظار المراجعة» تعرض الرسومات التي تنتظر رد المول، وإحداها تجاوزت موعدها.",
+   "step": 3,
+   "url": "/admin/fitout?view=attention"
+  },
+  {
+   "start": 24.02,
+   "end": 27.09,
+   "text": "افتح المتجر.",
+   "step": 4,
+   "url": "/admin/fitout/5"
+  },
+  {
+   "start": 27.09,
+   "end": 33.53,
+   "text": "تمتد الخطوات من المتطلبات حتى الافتتاح، اضغط على الخطوة عندما ينتقل المتجر إليها.",
+   "step": 5,
+   "url": "/admin/fitout/5"
+  },
+  {
+   "start": 33.53,
+   "end": 37.78,
+   "text": "تُحفظ كل جولة من الرسومات مع ملفاتها وملاحظاتك.",
+   "step": 6,
+   "url": "/admin/fitout/5"
+  },
+  {
+   "start": 37.78,
+   "end": 42,
+   "text": "اختر «تسجيل نتيجة المراجعة».",
+   "step": 7,
+   "url": "/admin/fitout/5"
+  },
+  {
+   "start": 42,
+   "end": 47.44,
+   "text": "اعتمد، أو اعتمد مع ملاحظات، أو اطلب التعديل وإعادة التقديم.",
+   "step": 8,
+   "url": "/admin/fitout/5"
+  },
+  {
+   "start": 47.44,
+   "end": 51.67,
+   "text": "اكتب ملاحظاتك للمستأجر.",
+   "step": 9,
+   "url": "/admin/fitout/5"
+  },
+  {
+   "start": 51.67,
+   "end": 55.93,
+   "text": "احفظ، فيرى المستأجر النتيجة في بوابته فورًا.",
+   "step": 10,
+   "url": "/admin/fitout/5"
+  },
+  {
+   "start": 55.93,
+   "end": 61.26,
+   "text": "بعدها المقاول والتأمين والتسليم وقوائم التحقق، وكلها في هذه الصفحة.",
+   "step": 11,
+   "url": "/admin/fitout/5"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/fitout"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/fitout"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/fitout?view=attention"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/fitout/5"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/fitout/5"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/fitout/5"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/fitout/5"
+  },
+  {
+   "step": 8,
+   "kind": "select",
+   "url": "/admin/fitout/5"
+  },
+  {
+   "step": 9,
+   "kind": "type",
+   "url": "/admin/fitout/5"
+  },
+  {
+   "step": 10,
+   "kind": "click",
+   "url": "/admin/fitout/5"
+  },
+  {
+   "step": 11,
+   "kind": "point",
+   "url": "/admin/fitout/5"
+  }
+ ],
+ "recorded_at": "2026-11-06T00:41:43.738Z"
+}

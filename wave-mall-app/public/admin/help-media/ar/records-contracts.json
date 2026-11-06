@@ -1,0 +1,139 @@
+{
+ "id": "records-contracts",
+ "lang": "ar",
+ "title": "تجديد عقد خدمة",
+ "duration": 67.48,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 9.42,
+   "text": "تابع ما يدفعه المول لمورديه، واعرف العقود التي بلغت موعد الإخطار، وجدّدها أو أنهها في الوقت المناسب.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 9.42,
+   "end": 16.12,
+   "text": "تحفظ «العقود الخدمية» عقود خدمات المول، كالأمن والنظافة والتأمين وغيرها، إلى جانب عقود المستأجرين.",
+   "step": 1,
+   "url": "/admin/contracts"
+  },
+  {
+   "start": 16.12,
+   "end": 22.24,
+   "text": "ما يدفعه المول سنويًا، والتجديدات المستحقة، وما ينتهي خلال التسعين يومًا القادمة.",
+   "step": 2,
+   "url": "/admin/contracts"
+  },
+  {
+   "start": 22.24,
+   "end": 30.63,
+   "text": "تعرض «تجديدات مستحقة» العقود التي حل موعد إخطارها. قرر الآن قبل أن تتجدد أو تنتهي تلقائيًا.",
+   "step": 3,
+   "url": "/admin/contracts?tab=renewals"
+  },
+  {
+   "start": 30.63,
+   "end": 33.67,
+   "text": "افتح العقد.",
+   "step": 4,
+   "url": "/admin/contracts/5"
+  },
+  {
+   "start": 33.67,
+   "end": 38.81,
+   "text": "المورد والقيمة وطريقة الدفع ومدة الإخطار والمسؤول عنه في المكتب.",
+   "step": 5,
+   "url": "/admin/contracts/5"
+  },
+  {
+   "start": 38.81,
+   "end": 43.02,
+   "text": "للإبقاء عليه، اختر «تجديد».",
+   "step": 6,
+   "url": "/admin/contracts/5"
+  },
+  {
+   "start": 43.02,
+   "end": 48.57,
+   "text": "تاريخ الانتهاء الجديد بعد عام، وغيّره إن اتفقتم على مدة أخرى.",
+   "step": 7,
+   "url": "/admin/contracts/5"
+  },
+  {
+   "start": 48.57,
+   "end": 51.72,
+   "text": "أدخل القيمة الجديدة إن تغيّر السعر.",
+   "step": 8,
+   "url": "/admin/contracts/5"
+  },
+  {
+   "start": 51.72,
+   "end": 54.61,
+   "text": "جدّد العقد.",
+   "step": 9,
+   "url": "/admin/contracts/5"
+  },
+  {
+   "start": 54.61,
+   "end": 63.27,
+   "text": "يُسجَّل التجديد في سجله. وإن لم يكن العقد مناسبًا، فإن «إنهاء» يوقفه في يوم تختاره مع ذكر السبب.",
+   "step": 10,
+   "url": "/admin/contracts/5"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/contracts"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/contracts"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/contracts?tab=renewals"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/contracts/5"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/contracts/5"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/contracts/5"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/contracts/5"
+  },
+  {
+   "step": 8,
+   "kind": "type",
+   "url": "/admin/contracts/5"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/contracts/5"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/contracts/5"
+  }
+ ],
+ "recorded_at": "2026-11-06T00:45:58.015Z"
+}

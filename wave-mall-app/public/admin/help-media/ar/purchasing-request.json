@@ -1,0 +1,139 @@
+{
+ "id": "purchasing-request",
+ "lang": "ar",
+ "title": "تقديم طلب شراء",
+ "duration": 62.66,
+ "cues": [
+  {
+   "start": 0.06,
+   "end": 5.54,
+   "text": "قدّم طلب شراء بأصنافه وأسعاره التقديرية، وأرسله للموافقة.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 5.54,
+   "end": 11.16,
+   "text": "تتابع «المشتريات» كل عملية شراء: الطلب، والموافقة، وأمر الشراء، والاستلام، والفاتورة.",
+   "step": 1,
+   "url": "/admin/purchasing"
+  },
+  {
+   "start": 11.16,
+   "end": 17.78,
+   "text": "في الأعلى: أوامر الشراء المفتوحة، والتوريدات المتأخرة، والأصناف تحت الحد الأدنى، والطلبات المنتظرة.",
+   "step": 2,
+   "url": "/admin/purchasing"
+  },
+  {
+   "start": 17.78,
+   "end": 24.08,
+   "text": "يستطيع أي شخص طلب شراء شيء. اختر «طلب شراء جديد».",
+   "step": 3,
+   "url": "/admin/purchasing/requests/new"
+  },
+  {
+   "start": 24.08,
+   "end": 28.62,
+   "text": "اكتب الغرض من الطلب.",
+   "step": 4,
+   "url": "/admin/purchasing/requests/new"
+  },
+  {
+   "start": 28.62,
+   "end": 31.63,
+   "text": "والإدارة التي تتحمل التكلفة.",
+   "step": 5,
+   "url": "/admin/purchasing/requests/new"
+  },
+  {
+   "start": 31.63,
+   "end": 37.02,
+   "text": "ولماذا. السبب الواضح يُسرّع الموافقة.",
+   "step": 6,
+   "url": "/admin/purchasing/requests/new"
+  },
+  {
+   "start": 37.02,
+   "end": 43.14,
+   "text": "لكل سطر، اختر صنفًا من المخزن، أو اتركه فارغًا لشيء جديد.",
+   "step": 7,
+   "url": "/admin/purchasing/requests/new"
+  },
+  {
+   "start": 43.14,
+   "end": 45.93,
+   "text": "الكمية.",
+   "step": 8,
+   "url": "/admin/purchasing/requests/new"
+  },
+  {
+   "start": 45.93,
+   "end": 50.3,
+   "text": "والسعر المتوقع، وهو الذي يحدد من يجب أن يوافق.",
+   "step": 9,
+   "url": "/admin/purchasing/requests/new"
+  },
+  {
+   "start": 50.3,
+   "end": 57.89,
+   "text": "أرسل الطلب. يذهب تلقائيًا إلى أصحاب الموافقة المناسبين، ويصلك إشعار عند البت فيه.",
+   "step": 10,
+   "url": "/admin/purchasing/requests/9"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/purchasing"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/purchasing"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/purchasing/requests/new"
+  },
+  {
+   "step": 4,
+   "kind": "type",
+   "url": "/admin/purchasing/requests/new"
+  },
+  {
+   "step": 5,
+   "kind": "select",
+   "url": "/admin/purchasing/requests/new"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/purchasing/requests/new"
+  },
+  {
+   "step": 7,
+   "kind": "select",
+   "url": "/admin/purchasing/requests/new"
+  },
+  {
+   "step": 8,
+   "kind": "type",
+   "url": "/admin/purchasing/requests/new"
+  },
+  {
+   "step": 9,
+   "kind": "type",
+   "url": "/admin/purchasing/requests/new"
+  },
+  {
+   "step": 10,
+   "kind": "click",
+   "url": "/admin/purchasing/requests/9"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:00:56.110Z"
+}

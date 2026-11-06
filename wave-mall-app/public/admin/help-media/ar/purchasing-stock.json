@@ -1,0 +1,137 @@
+{
+ "id": "purchasing-stock",
+ "lang": "ar",
+ "title": "المخزن: صرف القطع وإعادة الطلب",
+ "duration": 56.17,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 9.42,
+   "text": "ابحث عن صنف، واصرفه على أمر عمل، وأعد طلب كل ما هو تحت الحد الأدنى بضغطة واحدة.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 9.42,
+   "end": 14.03,
+   "text": "يعرض «المخزون» كل صنف في المخزن، والكمية المتاحة وقيمتها.",
+   "step": 1,
+   "url": "/admin/purchasing/stock"
+  },
+  {
+   "start": 14.03,
+   "end": 17.51,
+   "text": "ابحث بالكود أو الاسم أو مكان الرف.",
+   "step": 2,
+   "url": "/admin/purchasing/stock"
+  },
+  {
+   "start": 19.32,
+   "end": 22.52,
+   "text": "افتح الصنف.",
+   "step": 5,
+   "url": "/admin/purchasing/stock/1"
+  },
+  {
+   "start": 22.52,
+   "end": 26.02,
+   "text": "لصرف قطع من المخزن، استخدم «صرف».",
+   "step": 6,
+   "url": "/admin/purchasing/stock/1"
+  },
+  {
+   "start": 26.02,
+   "end": 28.67,
+   "text": "الكمية.",
+   "step": 7,
+   "url": "/admin/purchasing/stock/1"
+  },
+  {
+   "start": 28.67,
+   "end": 34.16,
+   "text": "وأمر العمل الذي تُصرف له، فتُحمَّل التكلفة على هذه المهمة.",
+   "step": 8,
+   "url": "/admin/purchasing/stock/1"
+  },
+  {
+   "start": 34.16,
+   "end": 40.3,
+   "text": "اضغط «صرف من المخزن». تُسجَّل الحركة مع من قام بها ومتى.",
+   "step": 9,
+   "url": "/admin/purchasing/stock/1"
+  },
+  {
+   "start": 40.3,
+   "end": 44.8,
+   "text": "وبالعودة إلى المخزون، تظهر الأصناف تحت الحد الأدنى مميزة.",
+   "step": 10,
+   "url": "/admin/purchasing/stock"
+  },
+  {
+   "start": 44.8,
+   "end": 51.49,
+   "text": "زر «اطلب كل الأصناف تحت الحد الأدنى» ينشئ طلب شراء واحدًا بالكميات المناسبة.",
+   "step": 11,
+   "url": "/admin/purchasing/stock"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/purchasing/stock"
+  },
+  {
+   "step": 2,
+   "kind": "type",
+   "url": "/admin/purchasing/stock"
+  },
+  {
+   "step": 3,
+   "kind": "key",
+   "url": "/admin/purchasing/stock?q=LED&category=&low="
+  },
+  {
+   "step": 4,
+   "kind": "pause",
+   "url": "/admin/purchasing/stock?q=LED&category=&low="
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/purchasing/stock/1"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/purchasing/stock/1"
+  },
+  {
+   "step": 7,
+   "kind": "type",
+   "url": "/admin/purchasing/stock/1"
+  },
+  {
+   "step": 8,
+   "kind": "select",
+   "url": "/admin/purchasing/stock/1"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/purchasing/stock/1"
+  },
+  {
+   "step": 10,
+   "kind": "go",
+   "url": "/admin/purchasing/stock"
+  },
+  {
+   "step": 11,
+   "kind": "point",
+   "url": "/admin/purchasing/stock"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:56:37.936Z"
+}

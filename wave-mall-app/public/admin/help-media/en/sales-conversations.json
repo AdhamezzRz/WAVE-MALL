@@ -1,0 +1,139 @@
+{
+ "id": "sales-conversations",
+ "lang": "en",
+ "title": "WhatsApp and email in one place",
+ "duration": 75.72,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 8.18,
+   "text": "Follow every WhatsApp chat and email thread with brands, assign them and reply from the office.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.18,
+   "end": 13.41,
+   "text": "Conversations brings every WhatsApp chat and email with brands into one list.",
+   "step": 1,
+   "url": "/admin/conversations"
+  },
+  {
+   "start": 13.41,
+   "end": 17.38,
+   "text": "Filter by unread, yours, WhatsApp, email or closed.",
+   "step": 2,
+   "url": "/admin/conversations"
+  },
+  {
+   "start": 17.38,
+   "end": 23.4,
+   "text": "Open a conversation. Reem would like to visit the site on Sunday.",
+   "step": 3,
+   "url": "/admin/conversations?t=2"
+  },
+  {
+   "start": 23.4,
+   "end": 30.47,
+   "text": "The header shows the channel, the number and the lead it belongs to, one click away.",
+   "step": 4,
+   "url": "/admin/conversations?t=2"
+  },
+  {
+   "start": 30.47,
+   "end": 36.24,
+   "text": "Assign it to the colleague who should answer. They are notified at once.",
+   "step": 5,
+   "url": "/admin/conversations?t=2"
+  },
+  {
+   "start": 36.24,
+   "end": 42.64,
+   "text": "Email threads work the same way. Khaled asks for the signage guidelines.",
+   "step": 6,
+   "url": "/admin/conversations?t=5"
+  },
+  {
+   "start": 42.64,
+   "end": 48.13,
+   "text": "Write your reply here.",
+   "step": 7,
+   "url": "/admin/conversations?t=5"
+  },
+  {
+   "start": 48.13,
+   "end": 53.89,
+   "text": "Quick replies paste a ready answer you use often, like a viewing confirmation.",
+   "step": 8,
+   "url": "/admin/conversations?t=5"
+  },
+  {
+   "start": 53.89,
+   "end": 63.91,
+   "text": "Send email delivers it from the leasing address. Your reply joins the thread, and the lead's timeline keeps a copy for the whole team.",
+   "step": 9,
+   "url": "/admin/conversations?t=5"
+  },
+  {
+   "start": 63.91,
+   "end": 71.45,
+   "text": "When the matter is settled, close the conversation. It opens again by itself if they write back.",
+   "step": 10,
+   "url": "/admin/conversations?t=5"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/conversations"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/conversations"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/conversations?t=2"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/conversations?t=2"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/conversations?t=2"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/conversations?t=5"
+  },
+  {
+   "step": 7,
+   "kind": "type",
+   "url": "/admin/conversations?t=5"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/conversations?t=5"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/conversations?t=5"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/conversations?t=5"
+  }
+ ],
+ "recorded_at": "2026-11-06T00:08:38.143Z"
+}

@@ -1,0 +1,127 @@
+{
+ "id": "finance-close",
+ "lang": "en",
+ "title": "Closing the month",
+ "duration": 71.92,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 8.18,
+   "text": "Lock a month once it is reviewed, so nothing can be posted into it by mistake.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.18,
+   "end": 14.7,
+   "text": "When a month is reviewed, close it. The overview shows which month is closed last.",
+   "step": 1,
+   "url": "/admin/accounting"
+  },
+  {
+   "start": 14.7,
+   "end": 17.23,
+   "text": "Choose Close a month.",
+   "step": 2,
+   "url": "/admin/accounting"
+  },
+  {
+   "start": 17.23,
+   "end": 25.27,
+   "text": "Before closing, the office checks the month: entries waiting, receipts not posted, the bank not reconciled.",
+   "step": 3,
+   "url": "/admin/accounting/settings#close"
+  },
+  {
+   "start": 25.27,
+   "end": 31.85,
+   "text": "If something is open, you see it here, with a link to fix it.",
+   "step": 4,
+   "url": "/admin/accounting/settings#close"
+  },
+  {
+   "start": 31.85,
+   "end": 36.65,
+   "text": "Add a note for the record.",
+   "step": 5,
+   "url": "/admin/accounting/settings#close"
+  },
+  {
+   "start": 36.65,
+   "end": 45.84,
+   "text": "Some checks are optional, like supplier bills still to approve. If you are sure, tick Close anyway.",
+   "step": 6,
+   "url": "/admin/accounting/settings#close"
+  },
+  {
+   "start": 45.84,
+   "end": 53.82,
+   "text": "Close the month. Nothing can be posted on or before that date any more, from any module.",
+   "step": 7,
+   "url": "/admin/accounting/settings"
+  },
+  {
+   "start": 53.83,
+   "end": 60.47,
+   "text": "Need a correction? A manager can reopen the last closed month, and it is logged.",
+   "step": 8,
+   "url": "/admin/accounting/settings"
+  },
+  {
+   "start": 60.47,
+   "end": 67.27,
+   "text": "At the end of the year, close the year: the result moves to retained earnings.",
+   "step": 9,
+   "url": "/admin/accounting/settings"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/accounting"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/accounting"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/accounting/settings#close"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/accounting/settings#close"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/accounting/settings#close"
+  },
+  {
+   "step": 6,
+   "kind": "check",
+   "url": "/admin/accounting/settings#close"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/accounting/settings"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/accounting/settings"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/accounting/settings"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:46:33.025Z"
+}

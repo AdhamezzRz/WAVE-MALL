@@ -1,0 +1,127 @@
+{
+ "id": "ops-footfall",
+ "lang": "en",
+ "title": "Reading footfall",
+ "duration": 74.54,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 8.94,
+   "text": "How many people came in, when and through which door, compared with last week and with tenant sales.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.94,
+   "end": 14.24,
+   "text": "Footfall counts the visitors at every entrance, live from the door counters.",
+   "step": 1,
+   "url": "/admin/footfall"
+  },
+  {
+   "start": 14.24,
+   "end": 23.16,
+   "text": "Visitors so far today, the busiest hour and the cars, each compared with the same day last week at this hour.",
+   "step": 2,
+   "url": "/admin/footfall"
+  },
+  {
+   "start": 23.16,
+   "end": 29.39,
+   "text": "The solid line is today; the dashed line is the same day last week.",
+   "step": 3,
+   "url": "/admin/footfall"
+  },
+  {
+   "start": 29.39,
+   "end": 36.66,
+   "text": "Change the period: yesterday, the last 7 days or the last 30 days.",
+   "step": 4,
+   "url": "/admin/footfall?p=week"
+  },
+  {
+   "start": 36.66,
+   "end": 43.48,
+   "text": "By entrance shows which doors bring people in. It helps you place promotions and guards.",
+   "step": 5,
+   "url": "/admin/footfall?p=week"
+  },
+  {
+   "start": 43.48,
+   "end": 52.43,
+   "text": "Visitors and tenant sales puts the crowd next to what the stores sold, so you see how much each visitor spends.",
+   "step": 6,
+   "url": "/admin/footfall?p=week"
+  },
+  {
+   "start": 52.43,
+   "end": 57.17,
+   "text": "Export the figures to a spreadsheet whenever you need them.",
+   "step": 7,
+   "url": "/admin/footfall?p=week"
+  },
+  {
+   "start": 57.17,
+   "end": 63.66,
+   "text": "If a counter was offline, import its counts from a file here.",
+   "step": 8,
+   "url": "/admin/footfall/import"
+  },
+  {
+   "start": 63.66,
+   "end": 69.88,
+   "text": "And Entrances and counters is where the doors and their counters are set up.",
+   "step": 9,
+   "url": "/admin/footfall/import"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/footfall"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/footfall"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/footfall"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/footfall?p=week"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/footfall?p=week"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/footfall?p=week"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/footfall?p=week"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/footfall/import"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/footfall/import"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:33:23.624Z"
+}

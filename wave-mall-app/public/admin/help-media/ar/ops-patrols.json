@@ -1,0 +1,127 @@
+{
+ "id": "ops-patrols",
+ "lang": "ar",
+ "title": "متابعة جولات الحراسة والنظافة",
+ "duration": 66.61,
+ "cues": [
+  {
+   "start": 0.07,
+   "end": 8.59,
+   "text": "اعرف أي جولات الحراسة تمت أو فاتت أو تأخرت، وأي الأماكن تحتاج إلى تنظيف الآن.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.59,
+   "end": 14.96,
+   "text": "يُفتح قسم الأمن والنظافة على «اليوم»: الجولات والنظافة والحوادث المفتوحة والمفاتيح غير المرتجعة.",
+   "step": 1,
+   "url": "/admin/security"
+  },
+  {
+   "start": 14.96,
+   "end": 19.37,
+   "text": "كل ما يحتاج إلى تدخلك مميز باللون الأحمر.",
+   "step": 2,
+   "url": "/admin/security"
+  },
+  {
+   "start": 19.37,
+   "end": 24.38,
+   "text": "افتح «جولات الحراسة» لترى كل جولات اليوم.",
+   "step": 3,
+   "url": "/admin/security/patrols"
+  },
+  {
+   "start": 24.38,
+   "end": 30.21,
+   "text": "كم نقطة تفتيش تم الوصول إليها، وكم جولة فاتت أو تأخرت.",
+   "step": 4,
+   "url": "/admin/security/patrols"
+  },
+  {
+   "start": 30.21,
+   "end": 36.69,
+   "text": "يعرض كل مسار جولاته: الأخضر مكتمل، والكهرماني يعني تخطي نقاط، والأحمر جولة فائتة.",
+   "step": 5,
+   "url": "/admin/security/patrols"
+  },
+  {
+   "start": 36.69,
+   "end": 42.33,
+   "text": "يمسح الحارس ملصقًا عند كل نقطة بهاتفه، ومن هنا تطبع الملصقات.",
+   "step": 6,
+   "url": "/admin/security/patrols"
+  },
+  {
+   "start": 42.33,
+   "end": 46.92,
+   "text": "وتعمل النظافة بالطريقة نفسها، مكانًا بمكان.",
+   "step": 7,
+   "url": "/admin/security/cleaning"
+  },
+  {
+   "start": 46.92,
+   "end": 55.6,
+   "text": "يعرض كل مكان آخر موعد تنظيف له وهل حان موعده، وتظهر هنا أيضًا تنبيهات التقييمات المنخفضة من المتسوقين.",
+   "step": 8,
+   "url": "/admin/security/cleaning"
+  },
+  {
+   "start": 55.6,
+   "end": 61.95,
+   "text": "افتح المكان لترى كل عملية تنظيف: من قام بها ومتى والصور.",
+   "step": 9,
+   "url": "/admin/security/cleaning/areas/1"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/security"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/security"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/security/patrols"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/security/patrols"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/security/patrols"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/security/patrols"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/security/cleaning"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/security/cleaning"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/security/cleaning/areas/1"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:38:34.401Z"
+}

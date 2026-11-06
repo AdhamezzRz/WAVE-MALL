@@ -1,0 +1,115 @@
+{
+ "id": "purchasing-receive",
+ "lang": "ar",
+ "title": "استلام البضاعة وفاتورة المورد",
+ "duration": 51.67,
+ "cues": [
+  {
+   "start": 0.04,
+   "end": 7.25,
+   "text": "سجّل الاستلام على أمر الشراء، ليُطابَق المخزن والفاتورة مع ما وصل فعلًا.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.25,
+   "end": 12.32,
+   "text": "عندما يورّد المورد، افتح أمر الشراء. المتأخر منها مذكور هنا.",
+   "step": 1,
+   "url": "/admin/purchasing"
+  },
+  {
+   "start": 12.32,
+   "end": 16.18,
+   "text": "افتح «توريدات متأخرة».",
+   "step": 2,
+   "url": "/admin/purchasing/orders?status=late"
+  },
+  {
+   "start": 16.18,
+   "end": 19.38,
+   "text": "ثم أمر الشراء.",
+   "step": 3,
+   "url": "/admin/purchasing/orders/2"
+  },
+  {
+   "start": 19.38,
+   "end": 24.16,
+   "text": "يعرض «استلام بضاعة» ما لم يصل بعد، صنفًا صنفًا.",
+   "step": 4,
+   "url": "/admin/purchasing/orders/2"
+  },
+  {
+   "start": 24.16,
+   "end": 27.87,
+   "text": "اكتب رقم إذن التسليم الخاص بالمورد.",
+   "step": 5,
+   "url": "/admin/purchasing/orders/2"
+  },
+  {
+   "start": 27.87,
+   "end": 33.16,
+   "text": "عدّل الكمية إذا وصل أقل، ويبقى الباقي مفتوحًا على الأمر.",
+   "step": 6,
+   "url": "/admin/purchasing/orders/2"
+  },
+  {
+   "start": 33.16,
+   "end": 39.13,
+   "text": "اضغط «تسجيل الاستلام». تدخل أصناف المخزون إلى المخزن بتكلفتها الفعلية.",
+   "step": 7,
+   "url": "/admin/purchasing/orders/2"
+  },
+  {
+   "start": 39.13,
+   "end": 46.95,
+   "text": "وعند وصول الفاتورة، تُطابَق مع ما طُلب وما استُلم، وأي فرق يظهر قبل أن يدفع أحد.",
+   "step": 8,
+   "url": "/admin/purchasing/orders/2"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/purchasing"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/purchasing/orders?status=late"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/purchasing/orders/2"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/purchasing/orders/2"
+  },
+  {
+   "step": 5,
+   "kind": "type",
+   "url": "/admin/purchasing/orders/2"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/purchasing/orders/2"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/purchasing/orders/2"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/purchasing/orders/2"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:42:07.090Z"
+}

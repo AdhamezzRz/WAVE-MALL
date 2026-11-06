@@ -1,0 +1,166 @@
+{
+ "id": "office-temp-access",
+ "lang": "ar",
+ "title": "منح صلاحية مؤقتة",
+ "duration": 69.32,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 7.25,
+   "text": "اسمح لشخص بفتح قسم لبضعة أيام دون تغيير دوره، وتنتهي الصلاحية تلقائيًا.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.25,
+   "end": 13.31,
+   "text": "يحتاج شخص إلى قسم لفترة قصيرة؟ امنحه صلاحية مؤقتة بدل تغيير دوره.",
+   "step": 1,
+   "url": "/admin/people"
+  },
+  {
+   "start": 13.31,
+   "end": 17.11,
+   "text": "افتح صفحة الشخص.",
+   "step": 2,
+   "url": "/admin/people/11"
+  },
+  {
+   "start": 17.11,
+   "end": 20.62,
+   "text": "ثم صلاحياته الفعلية.",
+   "step": 3,
+   "url": "/admin/people/11/access"
+  },
+  {
+   "start": 20.62,
+   "end": 25.74,
+   "text": "تحقق أولًا: هل يستطيع أيمن فتح التقارير؟",
+   "step": 4,
+   "url": "/admin/people/11/access"
+  },
+  {
+   "start": 29.16,
+   "end": 33.06,
+   "text": "لا، ويظهر السبب: التقارير ليست ضمن دوره.",
+   "step": 6,
+   "url": "/admin/people/11/access?test=%2Fadmin%2Freports&method=GET"
+  },
+  {
+   "start": 33.06,
+   "end": 36.8,
+   "text": "في «الصلاحيات المؤقتة»، اختر القسم والمستوى.",
+   "step": 7,
+   "url": "/admin/people/11/access?test=%2Fadmin%2Freports&method=GET"
+  },
+  {
+   "start": 39.54,
+   "end": 45.59,
+   "text": "اختر آخر يوم. تنتهي الصلاحية تلقائيًا في تلك الليلة، فلا داعي للتذكّر.",
+   "step": 9,
+   "url": "/admin/people/11/access?test=%2Fadmin%2Freports&method=GET"
+  },
+  {
+   "start": 45.59,
+   "end": 51.09,
+   "text": "اكتب السبب، فهو يُحفظ في السجل.",
+   "step": 10,
+   "url": "/admin/people/11/access?test=%2Fadmin%2Freports&method=GET"
+  },
+  {
+   "start": 51.09,
+   "end": 54.18,
+   "text": "امنح الصلاحية.",
+   "step": 11,
+   "url": "/admin/people/11/access"
+  },
+  {
+   "start": 54.18,
+   "end": 58.57,
+   "text": "تحقق مرة أخرى:",
+   "step": 12,
+   "url": "/admin/people/11/access"
+  },
+  {
+   "start": 61.66,
+   "end": 64.67,
+   "text": "نعم، حتى التاريخ الذي اخترته.",
+   "step": 14,
+   "url": "/admin/people/11/access?test=%2Fadmin%2Freports&method=GET"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/people"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/people/11"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/people/11/access"
+  },
+  {
+   "step": 4,
+   "kind": "type",
+   "url": "/admin/people/11/access"
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/people/11/access?test=%2Fadmin%2Freports&method=GET"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/people/11/access?test=%2Fadmin%2Freports&method=GET"
+  },
+  {
+   "step": 7,
+   "kind": "select",
+   "url": "/admin/people/11/access?test=%2Fadmin%2Freports&method=GET"
+  },
+  {
+   "step": 8,
+   "kind": "select",
+   "url": "/admin/people/11/access?test=%2Fadmin%2Freports&method=GET"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/people/11/access?test=%2Fadmin%2Freports&method=GET"
+  },
+  {
+   "step": 10,
+   "kind": "type",
+   "url": "/admin/people/11/access?test=%2Fadmin%2Freports&method=GET"
+  },
+  {
+   "step": 11,
+   "kind": "click",
+   "url": "/admin/people/11/access"
+  },
+  {
+   "step": 12,
+   "kind": "type",
+   "url": "/admin/people/11/access"
+  },
+  {
+   "step": 13,
+   "kind": "click",
+   "url": "/admin/people/11/access?test=%2Fadmin%2Freports&method=GET"
+  },
+  {
+   "step": 14,
+   "kind": "point",
+   "url": "/admin/people/11/access?test=%2Fadmin%2Freports&method=GET"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:31:43.479Z"
+}

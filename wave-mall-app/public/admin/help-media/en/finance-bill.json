@@ -1,0 +1,139 @@
+{
+ "id": "finance-bill",
+ "lang": "en",
+ "title": "Recording a supplier bill",
+ "duration": 74.06,
+ "cues": [
+  {
+   "start": 0.31,
+   "end": 8.85,
+   "text": "Enter a bill from a supplier, approve it, and see what is due to whom and when.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.85,
+   "end": 14.59,
+   "text": "Payables shows what the mall owes its suppliers, and which bills are overdue.",
+   "step": 1,
+   "url": "/admin/accounting/payables"
+  },
+  {
+   "start": 14.59,
+   "end": 19.11,
+   "text": "Choose New bill.",
+   "step": 2,
+   "url": "/admin/accounting/bills/new"
+  },
+  {
+   "start": 19.11,
+   "end": 22.49,
+   "text": "Choose the supplier.",
+   "step": 3,
+   "url": "/admin/accounting/bills/new"
+  },
+  {
+   "start": 22.49,
+   "end": 30.58,
+   "text": "Type the supplier's own invoice number, so it is never entered twice.",
+   "step": 4,
+   "url": "/admin/accounting/bills/new"
+  },
+  {
+   "start": 30.58,
+   "end": 36.21,
+   "text": "On each line, the expense account. Here, cleaning.",
+   "step": 5,
+   "url": "/admin/accounting/bills/new"
+  },
+  {
+   "start": 36.21,
+   "end": 43.24,
+   "text": "What it is for.",
+   "step": 6,
+   "url": "/admin/accounting/bills/new"
+  },
+  {
+   "start": 43.24,
+   "end": 47.38,
+   "text": "And the amount before VAT.",
+   "step": 7,
+   "url": "/admin/accounting/bills/new"
+  },
+  {
+   "start": 47.38,
+   "end": 52.68,
+   "text": "The VAT rate. The office adds the VAT and the total.",
+   "step": 8,
+   "url": "/admin/accounting/bills/new"
+  },
+  {
+   "start": 52.68,
+   "end": 61.97,
+   "text": "Save and approve. The bill is posted to the books and waits to be paid by its due date.",
+   "step": 9,
+   "url": "/admin/accounting/bills/44"
+  },
+  {
+   "start": 61.97,
+   "end": 69.01,
+   "text": "Bills from a purchase order are created from the order itself, and checked against what was received.",
+   "step": 10,
+   "url": "/admin/accounting/bills/44"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/accounting/payables"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/accounting/bills/new"
+  },
+  {
+   "step": 3,
+   "kind": "select",
+   "url": "/admin/accounting/bills/new"
+  },
+  {
+   "step": 4,
+   "kind": "type",
+   "url": "/admin/accounting/bills/new"
+  },
+  {
+   "step": 5,
+   "kind": "select",
+   "url": "/admin/accounting/bills/new"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/accounting/bills/new"
+  },
+  {
+   "step": 7,
+   "kind": "type",
+   "url": "/admin/accounting/bills/new"
+  },
+  {
+   "step": 8,
+   "kind": "type",
+   "url": "/admin/accounting/bills/new"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/accounting/bills/44"
+  },
+  {
+   "step": 10,
+   "kind": "say",
+   "url": "/admin/accounting/bills/44"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:55:30.169Z"
+}

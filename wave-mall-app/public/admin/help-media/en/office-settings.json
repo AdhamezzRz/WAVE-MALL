@@ -1,0 +1,127 @@
+{
+ "id": "office-settings",
+ "lang": "en",
+ "title": "Office settings and integrations",
+ "duration": 64.2,
+ "cues": [
+  {
+   "start": 0.04,
+   "end": 9.35,
+   "text": "The list rates, deal rules and company details the office works by, and the outside services it connects to.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 9.35,
+   "end": 13.5,
+   "text": "Settings holds the rules the whole office works by.",
+   "step": 1,
+   "url": "/admin/settings"
+  },
+  {
+   "start": 13.5,
+   "end": 20.16,
+   "text": "List rates: the asking rent per square metre on each level, and the service charge.",
+   "step": 2,
+   "url": "/admin/settings"
+  },
+  {
+   "start": 20.16,
+   "end": 27.09,
+   "text": "Deal rules: the usual term, yearly increase and deposit, and the largest discount allowed without approval.",
+   "step": 3,
+   "url": "/admin/settings"
+  },
+  {
+   "start": 27.09,
+   "end": 30.03,
+   "text": "Change a value where you need to.",
+   "step": 4,
+   "url": "/admin/settings"
+  },
+  {
+   "start": 30.03,
+   "end": 34.42,
+   "text": "Your company details, printed on every proposal and invoice.",
+   "step": 5,
+   "url": "/admin/settings"
+  },
+  {
+   "start": 34.42,
+   "end": 39.45,
+   "text": "Save. The new rules apply from the next offer.",
+   "step": 6,
+   "url": "/admin/settings"
+  },
+  {
+   "start": 39.45,
+   "end": 45.08,
+   "text": "Integrations shows the outside services: email, WhatsApp, online payments, e-invoicing, counters and gates.",
+   "step": 7,
+   "url": "/admin/integrations"
+  },
+  {
+   "start": 45.08,
+   "end": 54.03,
+   "text": "Each card says whether it is connected. The keys are set on the server by your web host, never typed here.",
+   "step": 8,
+   "url": "/admin/integrations"
+  },
+  {
+   "start": 54.03,
+   "end": 59.42,
+   "text": "Send a test email to check that messages go out.",
+   "step": 9,
+   "url": "/admin/integrations"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/settings"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/settings"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/settings"
+  },
+  {
+   "step": 4,
+   "kind": "type",
+   "url": "/admin/settings"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/settings"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/settings"
+  },
+  {
+   "step": 7,
+   "kind": "go",
+   "url": "/admin/integrations"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/integrations"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/integrations"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:37:29.098Z"
+}

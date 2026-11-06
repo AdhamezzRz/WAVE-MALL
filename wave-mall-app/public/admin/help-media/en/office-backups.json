@@ -1,0 +1,127 @@
+{
+ "id": "office-backups",
+ "lang": "en",
+ "title": "Backing up and restoring",
+ "duration": 76.79,
+ "cues": [
+  {
+   "start": 0.08,
+   "end": 8.62,
+   "text": "Take a backup now, download it, schedule the nightly copy and learn how a backup is restored.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.62,
+   "end": 14.63,
+   "text": "Backups are in Settings. Every night a checked, compressed copy of everything is kept.",
+   "step": 1,
+   "url": "/admin/settings"
+  },
+  {
+   "start": 14.64,
+   "end": 20.89,
+   "text": "Here you see when the last copy was taken and how big it is.",
+   "step": 2,
+   "url": "/admin/settings"
+  },
+  {
+   "start": 20.89,
+   "end": 32.06,
+   "text": "Back up now takes a copy straight away, for example before a big change.",
+   "step": 3,
+   "url": "/admin/settings#backups"
+  },
+  {
+   "start": 32.06,
+   "end": 38.64,
+   "text": "The copies kept on the server, newest first. Download one to keep it somewhere safe.",
+   "step": 4,
+   "url": "/admin/settings#backups"
+  },
+  {
+   "start": 38.64,
+   "end": 45.61,
+   "text": "The schedule: the hour of the nightly copy and how many days of copies to keep.",
+   "step": 5,
+   "url": "/admin/settings#backups"
+  },
+  {
+   "start": 45.61,
+   "end": 52.86,
+   "text": "You can also have each night's copy emailed to an address you control.",
+   "step": 6,
+   "url": "/admin/settings#backups"
+  },
+  {
+   "start": 52.86,
+   "end": 55.97,
+   "text": "Save.",
+   "step": 7,
+   "url": "/admin/settings#backups"
+  },
+  {
+   "start": 55.97,
+   "end": 66.92,
+   "text": "How to restore explains, step by step, how to bring a copy back. It replaces everything, so do it with care.",
+   "step": 8,
+   "url": "/admin/settings#backups"
+  },
+  {
+   "start": 66.92,
+   "end": 72.04,
+   "text": "For a copy away from this server, connect off-site storage under Integrations.",
+   "step": 9,
+   "url": "/admin/settings#backups"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/settings"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/settings"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/settings#backups"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/settings#backups"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/settings#backups"
+  },
+  {
+   "step": 6,
+   "kind": "type",
+   "url": "/admin/settings#backups"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/settings#backups"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/settings#backups"
+  },
+  {
+   "step": 9,
+   "kind": "say",
+   "url": "/admin/settings#backups"
+  }
+ ],
+ "recorded_at": "2026-11-05T22:41:00.737Z"
+}

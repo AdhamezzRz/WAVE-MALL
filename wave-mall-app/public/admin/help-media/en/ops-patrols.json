@@ -1,0 +1,127 @@
+{
+ "id": "ops-patrols",
+ "lang": "en",
+ "title": "Checking patrols and cleaning",
+ "duration": 68.22,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 7.8,
+   "text": "See which guard rounds were walked, missed or late, and which areas need cleaning now.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 7.8,
+   "end": 14.28,
+   "text": "Security & cleaning opens on Today: patrols, cleaning, open incidents and keys that are out.",
+   "step": 1,
+   "url": "/admin/security"
+  },
+  {
+   "start": 14.28,
+   "end": 18.16,
+   "text": "Anything that needs you is marked in red.",
+   "step": 2,
+   "url": "/admin/security"
+  },
+  {
+   "start": 18.16,
+   "end": 23.16,
+   "text": "Open Patrols to see every round of the day.",
+   "step": 3,
+   "url": "/admin/security/patrols"
+  },
+  {
+   "start": 23.16,
+   "end": 29,
+   "text": "How many checkpoints were reached, and how many rounds were missed or late.",
+   "step": 4,
+   "url": "/admin/security/patrols"
+  },
+  {
+   "start": 29,
+   "end": 35.96,
+   "text": "Each route shows its rounds: green is complete, amber means checkpoints were skipped, red was missed.",
+   "step": 5,
+   "url": "/admin/security/patrols"
+  },
+  {
+   "start": 35.96,
+   "end": 42.76,
+   "text": "Guards scan a sticker at each checkpoint with their phone. Print the stickers from here.",
+   "step": 6,
+   "url": "/admin/security/patrols"
+  },
+  {
+   "start": 42.76,
+   "end": 47.66,
+   "text": "Cleaning works the same way, area by area.",
+   "step": 7,
+   "url": "/admin/security/cleaning"
+  },
+  {
+   "start": 47.66,
+   "end": 56.58,
+   "text": "Every area shows when it was last cleaned and whether it is due. Low shopper ratings raise an alert here too.",
+   "step": 8,
+   "url": "/admin/security/cleaning"
+  },
+  {
+   "start": 56.58,
+   "end": 63.58,
+   "text": "Open an area to see each clean: who did it, when and the photos.",
+   "step": 9,
+   "url": "/admin/security/cleaning/areas/1"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/security"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/security"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/security/patrols"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/security/patrols"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/security/patrols"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/security/patrols"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/security/cleaning"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/security/cleaning"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/security/cleaning/areas/1"
+  }
+ ],
+ "recorded_at": "2026-11-05T21:36:57.528Z"
+}
