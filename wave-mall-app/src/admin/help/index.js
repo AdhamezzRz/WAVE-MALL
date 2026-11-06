@@ -112,7 +112,8 @@ function manifest() {
 function media(id, lang) {
   const m = (manifest().lessons || {})[id];
   const e = m && m[lang];
-  if (!e) return null;
+  // the manifest without its files (a deploy without the videos): treat as not recorded yet
+  if (!e || !fs.existsSync(path.join(MEDIA_DIR, lang, `${id}.mp4`))) return null;
   const base = `/admin/help-media/${lang}/${id}`;
   return { ...e, mp4: `${base}.mp4?v=${e.v}`, vtt: `${base}.vtt?v=${e.v}`, json: `${base}.json?v=${e.v}`, jpg: `${base}.jpg?v=${e.v}`, file: path.join(MEDIA_DIR, lang, `${id}.json`) };
 }
