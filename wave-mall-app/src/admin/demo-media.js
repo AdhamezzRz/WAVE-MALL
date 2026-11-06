@@ -279,14 +279,14 @@ function load(db, admin, opts = {}) {
     need, approval, approval === 'approved' ? extra : null, approval === 'approved' ? mgr : null, approval === 'approved' ? at(created + 2) : null,
     approval === 'rejected' ? 'Too deep for a summer booking: 15% at most.' : null,
     artwork, artwork !== 'none' ? at(Math.min(start - 6, -1), '14:20') : null, artwork !== 'none' ? mgr : null, fate === 'late' ? 'Received late: the sampling stand opens once the printer delivers.' : null,
-    SOLD(status) || fate === 'cancelled' ? at(created + 3, '12:00') : null, ['live', 'ended'].includes(status) ? at(start, '08:00') : null, status === 'ended' ? at(start + len, '08:00') : null,
+    SOLD(status) || fate === 'cancelled' ? at(Math.min(created + 3, -1), '12:00') : null, ['live', 'ended'].includes(status) ? at(start, '08:00') : null, status === 'ended' ? at(start + len, '08:00') : null,
     fate === 'cancelled' ? (start < 0 ? 'The car model launch moved to next year.' : 'Budget moved to next quarter.') : null, uid, at(created, '11:00'), at(Math.min(-1, created + 3), '12:00')).lastInsertRowid);
     for (const l of p.lines) db.run('INSERT INTO media_lines (campaign_id, item_id, start_date, end_date, slots, days, rate, base, season_days, list, price, demo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)', id, l.item_id, l.start_date, l.end_date, l.slots, l.days, l.rate, l.base, l.season_days, l.list, l.price);
     // history
     const log = (action, d, time) => db.run('INSERT INTO audit (user_id, action, entity, entity_id, detail, created_at) VALUES (?, ?, ?, ?, ?, ?)', uid, action, 'media_campaign', id, ref, at(d, time));
     log('Created a media proposal', created, '11:00');
     if (approval === 'pending') log('Asked for a media discount approval', -1, '16:10');
-    if (SOLD(status)) log('Confirmed a media campaign', created + 3, '12:00');
+    if (SOLD(status)) log('Confirmed a media campaign', Math.min(created + 3, -1), '12:00');
     if (status === 'held') log('Held media spaces', -1, '10:05');
     if (artwork !== 'none') log('Received media artwork', Math.min(start - 6, -1), '14:20');
     if (fate === 'cancelled') log('Cancelled a media campaign', Math.min(-1, created + 6), '09:40');
