@@ -1,0 +1,50 @@
+'use strict';
+
+// Arabic for the dashboard's period bar and its sorting (dash2|): quick ranges, the comparison with
+// the period before, the "now" tag on figures that are always as of today, and each card's Sort by.
+
+const { plural } = require('./_util');
+
+module.exports = {
+  'dash2|Period': 'الفترة',
+  'dash2|Usual view': 'العرض المعتاد',
+  'dash2|Today': 'اليوم',
+  'dash2|Last 7 days': 'آخر 7 أيام',
+  'dash2|This quarter': 'هذا الربع',
+  'dash2|From': 'من',
+  'dash2|To': 'إلى',
+  'dash2|Show this period': 'اعرض هذه الفترة',
+  'dash2|Sort': 'رتّب',
+  'dash2|{n} day': 'يوم واحد',
+  'dash2|{n} days': ({ n }) => plural(n, 'يوم واحد', 'يومان', '{n} أيام', '{n} يومًا'),
+  'dash2|compared with {a} – {b}': 'مقارنةً بالفترة من {a} إلى {b}',
+  'dash2|Leads over the last 30 days, leases and cash this month. Choose a period to see any dates.': 'الفرص خلال آخر 30 يومًا، والعقود والتحصيل في هذا الشهر. اختر فترة لترى أي تواريخ تريدها.',
+  'dash2|vs the previous {n} days': 'مقارنةً بالأيام الـ{n} السابقة',
+  'dash2|none in either period': 'لا شيء في الفترتين',
+  'dash2|now': 'الآن',
+  'dash2|As of today, whatever period is chosen': 'كما هو اليوم، أيًّا كانت الفترة المختارة',
+  'dash2|{a} leased of {b} · {c} committed': '{a} مؤجرة من {b} · {c} محجوزة أو مؤجرة',
+  'dash2|{deals} · {won} won, {lost} lost in the period': '{deals} · {won} مكسوبة و{lost} خاسرة في الفترة',
+  'dash2|New leads': 'فرص جديدة',
+  'dash2|Leases signed': 'عقود موقعة',
+  'dash2|Collected': 'المحصّل',
+  'dash2|{rate} of {billed} falling due': '{rate} من {billed} مستحقة في الفترة',
+  'dash2|nothing past due': 'لا شيء متأخر',
+  'dash2|{won} won and {lost} lost in the period ({wonBefore} and {lostBefore} before)': '{won} مكسوبة و{lost} خاسرة في الفترة (مقابل {wonBefore} و{lostBefore} قبلها)',
+  'dash2|New leads in the period': 'الفرص الجديدة في الفترة',
+  'dash2|No new leads in this period.': 'لا فرص جديدة في هذه الفترة.',
+  'dash2|Leads per day': 'الفرص يوميًا',
+  'dash2|Leads per week': 'الفرص أسبوعيًا',
+  'dash2|Leads per quarter': 'الفرص كل ربع سنة',
+  'dash2|Area signed per day': 'المساحة الموقعة يوميًا',
+  'dash2|Area signed per week': 'المساحة الموقعة أسبوعيًا',
+  'dash2|Area signed per quarter': 'المساحة الموقعة كل ربع سنة',
+  'dash2|Faded bars: the {n} days before': 'الأعمدة الباهتة: الأيام الـ{n} السابقة',
+  'dash2|The next two weeks, whatever the period': 'الأسبوعان القادمان، أيًّا كانت الفترة',
+  'dash2|By lead: A to Z': 'حسب الفرصة: تصاعديًا',
+  'dash2|Activity in the period': 'النشاط في الفترة',
+  'dash2|The latest 12 entries': 'أحدث 12 إدخالًا',
+  'dash2|The first 12 entries': 'أقدم 12 إدخالًا',
+  'dash2|Nothing was recorded in this period.': 'لم يُسجَّل شيء في هذه الفترة.',
+  'dash2|Full log': 'السجل الكامل',
+};

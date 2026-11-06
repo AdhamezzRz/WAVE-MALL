@@ -199,7 +199,13 @@ function estimateValue(db, lead) {
 }
 
 // ---------- the numbers ----------
-function dashboard(db, user) {
+// opts (all optional; without them the dashboard is exactly as before):
+//   from, to       a period (YYYY-MM-DD, inclusive): flows over time are counted inside it and compared
+//                  with the same number of days just before it (d.period)
+//   sortUp         'soon' (default) | 'late'      the coming viewings and meetings
+//   sortTasks      'due' (default) | 'due_late' | 'lead'
+//   sortFeed       'newest' (default) | 'oldest'  (the feed follows the period when there is one)
+function dashboard(db, user, opts = {}) {
   const t = today();
   const units = db.all("SELECT * FROM units WHERE status != 'retired'");
   const area = (list) => list.reduce((s, u) => s + u.indoor_m2, 0);
@@ -243,25 +249,96 @@ function dashboard(db, user) {
   }
   const mine = user && user.role === 'agent' ? ' AND (a.user_id = ? OR l.owner_id = ?)' : '';
   const mineArgs = user && user.role === 'agent' ? [user.id, user.id] : [];
+  // the next 8 (soonest first) or the 8 furthest out in the next two weeks (latest first)
   const upcoming = db.all(
     `SELECT a.*, l.title lead_title, l.ref lead_ref, u.name user_name FROM activities a LEFT JOIN leads l ON l.id = a.lead_id LEFT JOIN users u ON u.id = a.user_id
-     WHERE a.type IN ('viewing','meeting') AND a.done_at IS NULL AND a.due_at >= ? AND a.due_at < ?${mine} ORDER BY a.due_at LIMIT 8`,
+     WHERE a.type IN ('viewing','meeting') AND a.done_at IS NULL AND a.due_at >= ? AND a.due_at < ?${mine} ORDER BY a.due_at ${opts.sortUp === 'late' ? 'DESC' : 'ASC'}, a.id LIMIT 8`,
     t, addDays(t, 15), ...mineArgs,
   );
+  // the 8 most pressing tasks, then shown in the chosen order
   const tasks = db.all(
     `SELECT a.*, l.title lead_title, l.ref lead_ref FROM activities a LEFT JOIN leads l ON l.id = a.lead_id
      WHERE a.done_at IS NULL AND a.due_at IS NOT NULL AND a.type NOT IN ('viewing','meeting') AND a.due_at < ? ${user ? 'AND a.user_id = ?' : ''} ORDER BY a.due_at LIMIT 8`,
     addDays(t, 3), ...(user ? [user.id] : []),
   );
+  if (opts.sortTasks === 'due_late') tasks.reverse();
+  else if (opts.sortTasks === 'lead') tasks.sort((a, b) => String(a.lead_title || '').localeCompare(String(b.lead_title || ''), 'en', { sensitivity: 'base' }) || String(a.due_at).localeCompare(String(b.due_at)));
   const approvals = db.all("SELECT o.*, l.title lead_title FROM offers o JOIN leads l ON l.id = o.lead_id WHERE o.status = 'pending' ORDER BY o.created_at");
   const holds = db.all("SELECT u.*, l.title lead_title FROM units u LEFT JOIN leads l ON l.id = u.hold_lead_id WHERE u.status = 'hold' AND u.hold_until IS NOT NULL AND u.hold_until <= ? ORDER BY u.hold_until", addDays(t, 3));
   const inbox = db.value("SELECT COUNT(*) FROM messages WHERE status = 'new'");
-  const feed = db.all('SELECT a.*, u.name user_name FROM audit a LEFT JOIN users u ON u.id = a.user_id ORDER BY a.id DESC LIMIT 12');
+  const isDay = (x) => /^\d{4}-\d{2}-\d{2}$/.test(String(x || '')) && !Number.isNaN(Date.parse(x)) && new Date(Date.parse(x)).toISOString().slice(0, 10) === x; // a real calendar day
+  const P = isDay(opts.from) && isDay(opts.to) ? (opts.from <= opts.to ? { from: opts.from, to: opts.to } : { from: opts.to, to: opts.from }) : null;
+  const feed = db.all(`SELECT a.*, u.name user_name FROM audit a LEFT JOIN users u ON u.id = a.user_id ${P ? 'WHERE substr(a.created_at, 1, 10) BETWEEN ? AND ?' : ''} ORDER BY ${!P && opts.sortFeed !== 'oldest' ? 'a.id DESC' : `a.created_at ${opts.sortFeed === 'oldest' ? 'ASC' : 'DESC'}, a.id ${opts.sortFeed === 'oldest' ? 'ASC' : 'DESC'}`} LIMIT 12`, ...(P ? [P.from, P.to] : []));
+  const period = P ? periodFigures(db, P) : null;
   return {
     gla, leased, committed, occupancy: gla ? leased / gla : 0, commitment: gla ? committed / gla : 0,
     openCount: open.length, pipeline, weighted, leads30, leadsPrev, conversion: won + lost ? won / (won + lost) : null,
     signedCount: signedMonth.length, signedArea, overdue, collected, annualRent,
-    byStage, bySource, months, upcoming, tasks, approvals, holds, inbox, feed, units,
+    byStage, bySource: period ? period.bySource : bySource, months: period ? period.series : months, upcoming, tasks, approvals, holds, inbox, feed, units, period,
+  };
+}
+
+// The flows of a period and of the same number of days just before it. Dates are compared on the
+// day (the first 10 characters), as the lists' date filters do.
+function periodFigures(db, P) {
+  const days = daysBetween(P.from, P.to) + 1;
+  const prev = { from: addDays(P.from, -days), to: addDays(P.from, -1) };
+  const inR = (col) => `substr(${col}, 1, 10) BETWEEN ? AND ?`;
+  const flows = (r) => {
+    const signed = db.all(`SELECT id FROM leases WHERE status IN ('active','draft') AND ${inR('COALESCE(signed_at, created_at)')}`, r.from, r.to);
+    const billed = db.get(`SELECT COUNT(*) n, COALESCE(SUM(total), 0) amount FROM invoices WHERE status != 'void' AND due_date BETWEEN ? AND ?`, r.from, r.to);
+    return {
+      leads: db.value(`SELECT COUNT(*) FROM leads WHERE ${inR('created_at')}`, r.from, r.to),
+      signedCount: signed.length,
+      signedArea: signed.reduce((s, l) => s + leaseArea(db, l.id), 0),
+      collected: db.value(`SELECT COALESCE(SUM(paid), 0) FROM invoices WHERE paid_at IS NOT NULL AND ${inR('paid_at')}`, r.from, r.to),
+      billed: billed.amount,
+      billedCount: billed.n,
+      won: db.value(`SELECT COUNT(*) FROM leads WHERE stage = 'won' AND ${inR('COALESCE(closed_at, stage_at)')}`, r.from, r.to),
+      lost: db.value(`SELECT COUNT(*) FROM leads WHERE stage = 'lost' AND ${inR('COALESCE(closed_at, stage_at)')}`, r.from, r.to),
+    };
+  };
+  // the chart: by day up to a month, by week up to four months, by month up to 18 months, then by quarter
+  const unit = days <= 31 ? 'day' : days <= 124 ? 'week' : days <= 550 ? 'month' : 'quarter';
+  const buckets = [];
+  if (unit === 'day' || unit === 'week') {
+    const step = unit === 'day' ? 1 : 7;
+    for (let d = P.from; d <= P.to; d = addDays(d, step)) {
+      const end = addDays(d, step - 1) < P.to ? addDays(d, step - 1) : P.to;
+      buckets.push({ from: d, to: end });
+    }
+  } else {
+    const months = unit === 'month' ? 1 : 3;
+    let start = `${P.from.slice(0, 7)}-01`;
+    if (unit === 'quarter') { const m = Number(start.slice(5, 7)); start = `${start.slice(0, 4)}-${pad(m - ((m - 1) % 3))}-01`; }
+    for (let d = start; d <= P.to; d = addMonths(d, months)) buckets.push({ from: d < P.from ? P.from : d, to: addDays(addMonths(d, months), -1) > P.to ? P.to : addDays(addMonths(d, months), -1), key: d });
+  }
+  const shift = (iso) => addDays(iso, -days);
+  const series = buckets.map((b) => {
+    const signed = db.all(`SELECT id FROM leases WHERE status != 'terminated' AND ${inR('COALESCE(signed_at, created_at)')}`, b.from, b.to);
+    const key = b.key || b.from;
+    return {
+      key, unit, from: b.from, to: b.to,
+      month: Number(key.slice(5, 7)), day: Number(key.slice(8, 10)), year: key.slice(0, 4),
+      // the bar's label: the day, the week's first day, the month or the quarter's months
+      get label() {
+        const ui = require('./ui');
+        if (unit === 'day') return String(this.day);
+        if (unit === 'week') return `${this.day} ${ui.monthName(this.month)}`;
+        if (unit === 'month') return days > 366 ? `${ui.monthName(this.month)} ${this.year.slice(2)}` : ui.monthName(this.month);
+        return `${ui.monthName(this.month)}–${ui.monthName(((this.month + 1) % 12) + 1)} ${this.year.slice(2)}`;
+      },
+      leads: db.value(`SELECT COUNT(*) FROM leads WHERE ${inR('created_at')}`, b.from, b.to),
+      leadsPrev: db.value(`SELECT COUNT(*) FROM leads WHERE ${inR('created_at')}`, shift(b.from), shift(b.to)),
+      signed: signed.reduce((s, l) => s + leaseArea(db, l.id), 0),
+      signedPrev: db.all(`SELECT id FROM leases WHERE status != 'terminated' AND ${inR('COALESCE(signed_at, created_at)')}`, shift(b.from), shift(b.to)).reduce((s, l) => s + leaseArea(db, l.id), 0),
+    };
+  });
+  return {
+    from: P.from, to: P.to, days, prev, unit,
+    now: flows(P), before: flows(prev),
+    bySource: db.all(`SELECT source, COUNT(*) n FROM leads WHERE ${inR('created_at')} GROUP BY source ORDER BY n DESC`, P.from, P.to),
+    series,
   };
 }
 

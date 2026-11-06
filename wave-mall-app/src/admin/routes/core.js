@@ -269,8 +269,45 @@ function privateRoutes(router, h) {
   // ---------- dashboard ----------
   router.get('/', (req, res) => {
     h.sweep(req);
-    const d = M.dashboard(db, req.user);
-    const kpis = [
+    const q = req.query || {};
+    const isDay = (x) => /^\d{4}-\d{2}-\d{2}$/.test(String(x || '')) && !Number.isNaN(Date.parse(x)) && new Date(Date.parse(x)).toISOString().slice(0, 10) === x; // a real calendar day
+    // the period (both dates, or none: then the dashboard is as it always was)
+    let from = isDay(q.from) ? q.from : '';
+    let to = isDay(q.to) ? q.to : '';
+    if (from && !to) to = M.today() < from ? from : M.today();
+    if (to && !from) from = to;
+    if (from > to) [from, to] = [to, from];
+    // ten years at most (the charts count bucket by bucket)
+    if (from && M.daysBetween(from, to) > 3652) from = M.addDays(to, -3652);
+    const pick = (v, allowed) => (allowed.includes(v) ? v : allowed[0]);
+    const sorts = { up: pick(q.up, ['soon', 'late']), tasks: pick(q.tasks, ['due', 'due_late', 'lead']), feed: pick(q.feed, ['newest', 'oldest']) };
+    const d = M.dashboard(db, req.user, { from, to, sortUp: sorts.up, sortTasks: sorts.tasks, sortFeed: sorts.feed });
+    const P = d.period;
+    // the address of this dashboard with some parameters changed (empty values are dropped)
+    const here = (change = {}) => {
+      const p = new URLSearchParams();
+      const all = { from, to, up: sorts.up === 'soon' ? '' : sorts.up, tasks: sorts.tasks === 'due' ? '' : sorts.tasks, feed: sorts.feed === 'newest' ? '' : sorts.feed, ...change };
+      for (const [k, v] of Object.entries(all)) if (v) p.set(k, v);
+      const qs = p.toString();
+      return `/admin${qs ? `?${qs}` : ''}`;
+    };
+    const periodQs = P ? `from=${P.from}&to=${P.to}` : '';
+    const trendP = (now, before) => {
+      if (!before) return now ? `<span class="up">${ui.esc(tr('trend|new'))}</span> ${ui.esc(tr('dash2|vs the previous {n} days', { n: P.days }))}` : `<span class="muted">${ui.esc(tr('dash2|none in either period'))}</span>`;
+      const x = (now - before) / before;
+      return `<span class="${x >= 0 ? 'up' : 'down'}">${x >= 0 ? '▲' : '▼'} ${Math.abs(x * 100).toFixed(0)}%</span> ${ui.esc(tr('dash2|vs the previous {n} days', { n: P.days }))}`;
+    };
+    const nowTag = `<span class="dash2-now" title="${ui.esc(tr('dash2|As of today, whatever period is chosen'))}">${ui.esc(tr('dash2|now'))}</span>`;
+    const N = P && P.now;
+    const B = P && P.before;
+    const kpis = P ? [
+      ui.kpi({ label: tr('Occupancy'), value: ui.pct(d.occupancy, 1), bar: d.occupancy, sub: `${nowTag} ${ui.esc(tr('dash2|{a} leased of {b} · {c} committed', { a: ui.m2(d.leased), b: ui.m2(d.gla), c: ui.pct(d.commitment, 1) }))}`, href: '/admin/units' }),
+      ui.kpi({ label: tr('Weighted pipeline'), value: ui.money(d.weighted, { compact: true }), sub: `${nowTag} ${ui.esc(tr('dash2|{deals} · {won} won, {lost} lost in the period', { deals: tn(d.openCount, 'dash|{n} open deal', 'dash|{n} open deals'), won: ui.n0(N.won), lost: ui.n0(N.lost) }))}`, href: '/admin/pipeline' }),
+      ui.kpi({ label: tr('dash2|New leads'), value: ui.n0(N.leads), sub: trendP(N.leads, B.leads), href: ui.esc(`/admin/leads?${periodQs}`) }),
+      ui.kpi({ label: tr('dash2|Leases signed'), value: ui.n0(N.signedCount), sub: `${N.signedArea ? `${ui.esc(tr('dash|{area} let', { area: ui.m2(N.signedArea) }))} · ` : ''}${trendP(N.signedArea || N.signedCount, B.signedArea || B.signedCount)}`, href: '/admin/leases' }),
+      ui.kpi({ label: tr('dash2|Collected'), value: ui.money(N.collected, { compact: true }), sub: `${N.billed ? `${ui.esc(tr('dash2|{rate} of {billed} falling due', { rate: ui.pct(Math.min(9.99, N.collected / N.billed)), billed: ui.money(N.billed, { compact: true }) }))} · ` : ''}${trendP(N.collected, B.collected)}`, href: '/admin/billing' }),
+      ui.kpi({ label: tr('Overdue rent'), value: ui.money(d.overdue.amount, { compact: true }), tone: d.overdue.amount ? 'kpi--alert' : '', sub: `${nowTag} ${ui.esc(d.overdue.n ? tn(d.overdue.n, '{n} invoice', '{n} invoices') : tr('dash2|nothing past due'))}`, href: '/admin/billing?status=overdue' }),
+    ].join('') : [
       ui.kpi({ label: tr('Occupancy'), value: ui.pct(d.occupancy, 1), bar: d.occupancy, sub: ui.esc(tr('dash|{a} leased of {b}', { a: ui.m2(d.leased), b: ui.m2(d.gla) })), href: '/admin/units' }),
       ui.kpi({ label: tr('Committed'), value: ui.pct(d.commitment, 1), bar: d.commitment, sub: ui.esc(tr('Leased and reserved')), href: '/admin/units' }),
       ui.kpi({ label: tr('Weighted pipeline'), value: ui.money(d.weighted, { compact: true }), sub: ui.esc(tr('dash|{deals} · {value} a year in play', { deals: tn(d.openCount, 'dash|{n} open deal', 'dash|{n} open deals'), value: ui.money(d.pipeline, { compact: true }) })), href: '/admin/pipeline' }),
@@ -322,24 +359,55 @@ function privateRoutes(router, h) {
     ].join('');
     const feed = d.feed.length
       ? `<ul class="feed">${d.feed.map((a) => `<li><span class="avatar avatar--sm">${ui.esc(ui.initials(a.user_name || 'Website'))}</span><p><b>${ui.esc(a.user_name || tr('System'))}</b> ${ui.esc(isAr() ? tx(a.action) : a.action.toLowerCase())}${a.detail ? ` <span>${ui.esc(tx(a.detail))}</span>` : ''}</p><time>${ui.rel(a.created_at)}</time></li>`).join('')}</ul>`
-      : `<p class="muted pad">${ui.esc(tr('Activity will appear here.'))}</p>`;
+      : `<p class="muted pad">${ui.esc(P ? tr('dash2|Nothing was recorded in this period.') : tr('Activity will appear here.'))}</p>`;
+
+    // ---- the period bar: quick ranges, any two dates, back to the usual view
+    const t0 = M.today();
+    const [Y, Mo] = t0.slice(0, 7).split('-').map(Number);
+    const ymd = (y, m, dd) => `${y}-${String(m).padStart(2, '0')}-${String(dd).padStart(2, '0')}`;
+    const lastDay = (y, m) => new Date(Date.UTC(y, m, 0)).getUTCDate();
+    const prevM = Mo === 1 ? [Y - 1, 12] : [Y, Mo - 1];
+    const qStart = Mo - ((Mo - 1) % 3);
+    const presets = [
+      ['dash2|Today', t0, t0],
+      ['dash2|Last 7 days', M.addDays(t0, -6), t0],
+      ['sort|This month', ymd(Y, Mo, 1), ymd(Y, Mo, lastDay(Y, Mo))],
+      ['sort|Last month', ymd(prevM[0], prevM[1], 1), ymd(prevM[0], prevM[1], lastDay(prevM[0], prevM[1]))],
+      ['dash2|This quarter', ymd(Y, qStart, 1), ymd(Y, qStart + 2, lastDay(Y, qStart + 2))],
+      ['sort|This year', ymd(Y, 1, 1), ymd(Y, 12, 31)],
+    ];
+    const keepSorts = Object.entries({ up: sorts.up === 'soon' ? '' : sorts.up, tasks: sorts.tasks === 'due' ? '' : sorts.tasks, feed: sorts.feed === 'newest' ? '' : sorts.feed })
+      .filter(([, v]) => v).map(([k, v]) => `<input type="hidden" name="${k}" value="${ui.esc(v)}">`).join('');
+    const periodBar = `<form method="get" action="/admin" class="filters dash2-period" aria-label="${ui.esc(tr('dash2|Period'))}">${keepSorts}
+      <div class="filters__quick"><a class="chip${P ? '' : ' is-on'}" href="${ui.esc(here({ from: '', to: '' }))}">${ui.esc(tr('dash2|Usual view'))}</a>${presets.map(([label, f, tt]) => `<a class="chip${P && P.from === f && P.to === tt ? ' is-on' : ''}" href="${ui.esc(here({ from: f, to: tt }))}">${ui.esc(tr(label))}</a>`).join('')}</div>
+      ${ui.input('from', tr('dash2|From'), from, { type: 'date' })}${ui.input('to', tr('dash2|To'), to, { type: 'date' })}
+      <div class="filters__go">${ui.btn(ui.esc(tr('dash2|Show this period')), { cls: 'btn--ghost btn--sm', ic: 'cal' })}${P ? `<a class="btn btn--ghost btn--sm" href="${ui.esc(here({ from: '', to: '' }))}">${ui.esc(tr('Clear'))}</a>` : ''}</div>
+      <p class="dash2-period__note">${P ? `${ui.icon('cal')} <b>${ui.esc(P.from === P.to ? ui.date(P.from) : `${ui.date(P.from)} – ${ui.date(P.to)}`)}</b> · ${ui.esc(tn(P.days, 'dash2|{n} day', 'dash2|{n} days'))} · ${ui.esc(tr('dash2|compared with {a} – {b}', { a: ui.date(P.prev.from), b: ui.date(P.prev.to) }))}` : ui.esc(tr('dash2|Leads over the last 30 days, leases and cash this month. Choose a period to see any dates.'))}</p>
+    </form>`;
+    // a card's own "Sort by", kept with the period and the other cards' choices
+    const sortForm = (name, options, current) => `<form method="get" action="/admin" class="dash2-sort">${Object.entries({ from, to, up: sorts.up === 'soon' ? '' : sorts.up, tasks: sorts.tasks === 'due' ? '' : sorts.tasks, feed: sorts.feed === 'newest' ? '' : sorts.feed })
+      .filter(([k, v]) => v && k !== name).map(([k, v]) => `<input type="hidden" name="${k}" value="${ui.esc(v)}">`).join('')}<label><select name="${name}" data-autosubmit aria-label="${ui.esc(tr('sort|Sort by'))}">${options.map(([v, label]) => `<option value="${v}"${v === current ? ' selected' : ''}>${ui.esc(tr(label))}</option>`).join('')}</select></label><noscript><button class="btn btn--ghost btn--sm">${ui.esc(tr('dash2|Sort'))}</button></noscript></form>`;
+    const withSort = (form, btn) => `<div class="dash2-act">${form}${btn}</div>`;
+    const unitTitle = P ? { day: ['dash2|Leads per day', 'dash2|Area signed per day'], week: ['dash2|Leads per week', 'dash2|Area signed per week'], month: ['Leads per month', 'Area signed per month'], quarter: ['dash2|Leads per quarter', 'dash2|Area signed per quarter'] }[P.unit] : ['Leads per month', 'Area signed per month'];
+    const chartSub = P ? ui.esc(tr('dash2|Faded bars: the {n} days before', { n: P.days })) : null;
 
     const hour = new Date().getUTCHours() + 2;
     const greet = hour < 12 ? 'Good morning, {name}.' : hour < 18 ? 'Good afternoon, {name}.' : 'Good evening, {name}.';
     const body = `
+${periodBar}
 <p class="hello">${ui.esc(tr(greet, { name: req.user.name.split(' ')[0] }))} ${d.tasks.length ? tn(d.tasks.length, 'You have <b>{n}</b> task due soon.', 'You have <b>{n}</b> tasks due soon.') : ui.esc(tr('Your desk is clear.'))}</p>
-<div class="kpis">${kpis}</div>
+<div class="kpis kpis--six">${kpis}</div>
 <div class="grid">
   ${start}
-  ${ui.card(tr('Pipeline'), ui.funnel(stageRows), { cls: 'span-2', sub: ui.esc(tr('dash|{n} lost · annual rent value per stage', { n: lostCount })), action: ui.btn(ui.esc(tr('Open board')), { href: '/admin/pipeline', cls: 'btn--ghost btn--sm' }) })}
-  ${ui.card(tr('Where leads come from'), sourceParts.length ? ui.donut(sourceParts, { label: ui.n0(sourceParts.reduce((s, p) => s + p.value, 0)) }) : `<p class="muted pad">${ui.esc(tr('No leads yet.'))}</p>`)}
-  ${ui.card(tr('Leads per month'), ui.bars(d.months, { key: 'leads', label: 'label', tone: 'sea' }), { sub: ui.esc(tr('Last six months')) })}
-  ${ui.card(tr('Area signed per month'), ui.bars(d.months, { key: 'signed', label: 'label', fmtv: (n) => `${ui.n0(n)}`, tone: 'forest' }), { sub: ui.esc(tr('m² of leases signed')) })}
+  ${ui.card(tr('Pipeline'), ui.funnel(stageRows), { cls: 'span-2', sub: P ? `${nowTag} ${ui.esc(tr('dash2|{won} won and {lost} lost in the period ({wonBefore} and {lostBefore} before)', { won: ui.n0(N.won), lost: ui.n0(N.lost), wonBefore: ui.n0(B.won), lostBefore: ui.n0(B.lost) }))}` : ui.esc(tr('dash|{n} lost · annual rent value per stage', { n: lostCount })), action: ui.btn(ui.esc(tr('Open board')), { href: '/admin/pipeline', cls: 'btn--ghost btn--sm' }) })}
+  ${ui.card(tr('Where leads come from'), sourceParts.length ? ui.donut(sourceParts, { label: ui.n0(sourceParts.reduce((s, p) => s + p.value, 0)) }) : `<p class="muted pad">${ui.esc(P ? tr('dash2|No new leads in this period.') : tr('No leads yet.'))}</p>`, P ? { sub: ui.esc(tr('dash2|New leads in the period')) } : {})}
+  ${ui.card(tr(unitTitle[0]), `<div class="dash2-bars dash2-bars--${P ? P.unit : 'month'}${d.months.length > 8 ? ' dash2-bars--dense' : ''}">${ui.bars(d.months, { key: 'leads', label: 'label', tone: 'sea', compare: P ? 'leadsPrev' : null })}</div>`, { sub: chartSub || ui.esc(tr('Last six months')) })}
+  ${ui.card(tr(unitTitle[1]), `<div class="dash2-bars dash2-bars--${P ? P.unit : 'month'}${d.months.length > 8 ? ' dash2-bars--dense' : ''}">${ui.bars(d.months, { key: 'signed', label: 'label', fmtv: (n) => `${ui.n0(n)}`, tone: 'forest', compare: P ? 'signedPrev' : null })}</div>`, { sub: chartSub ? `${ui.esc(tr('m² of leases signed'))} · ${chartSub}` : ui.esc(tr('m² of leases signed')) })}
   ${ui.card(tr('Plaza level'), `${ui.plan(d.units, 'G')}${ui.planLegend()}`, { action: ui.btn(ui.esc(tr('All units')), { href: '/admin/units', cls: 'btn--ghost btn--sm' }) })}
-  ${ui.card(tr('Coming up'), upcoming, { action: ui.btn(ui.esc(tr('Calendar')), { href: '/admin/calendar', cls: 'btn--ghost btn--sm' }) })}
-  ${ui.card(tr('Your tasks'), tasks, { action: ui.btn(ui.esc(tr('All tasks')), { href: '/admin/calendar#tasks', cls: 'btn--ghost btn--sm' }) })}
+  ${ui.card(tr('Coming up'), upcoming, { sub: P ? ui.esc(tr('dash2|The next two weeks, whatever the period')) : '', action: withSort(sortForm('up', [['soon', 'sort|Soonest first'], ['late', 'sort|Latest first']], sorts.up), ui.btn(ui.esc(tr('Calendar')), { href: '/admin/calendar', cls: 'btn--ghost btn--sm' })) })}
+  ${ui.card(tr('Your tasks'), tasks, { action: withSort(sortForm('tasks', [['due', 'sort|Due date: soonest first'], ['due_late', 'sort|Due date: latest first'], ['lead', 'dash2|By lead: A to Z']], sorts.tasks), ui.btn(ui.esc(tr('All tasks')), { href: '/admin/calendar#tasks', cls: 'btn--ghost btn--sm' })) })}
   ${ui.card(tr('Needs attention'), attention ? `<ul class="list">${attention}</ul>` : `<p class="muted pad">${ui.esc(tr('Nothing needs you right now.'))}</p>`)}
-  ${ui.card(tr('Latest activity'), feed, { cls: 'span-3' })}
+  ${ui.card(P ? tr('dash2|Activity in the period') : tr('Latest activity'), feed, { cls: 'span-3', sub: P ? ui.esc(tr(sorts.feed === 'oldest' ? 'dash2|The first 12 entries' : 'dash2|The latest 12 entries')) : '', action: withSort(sortForm('feed', [['newest', 'sort|Newest first'], ['oldest', 'sort|Oldest first']], sorts.feed), h.can(req, 'manager') ? ui.btn(ui.esc(tr('dash2|Full log')), { href: `/admin/audit${periodQs ? `?${periodQs}` : ''}`, cls: 'btn--ghost btn--sm' }) : '') })}
 </div>`;
     h.page(req, res, {
       title: tr('Dashboard'), active: '/admin', body,

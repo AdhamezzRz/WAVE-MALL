@@ -3284,3 +3284,37 @@ kbd, .hlp-key { display: inline-block; min-width: 24px; padding: 3px 7px; border
 /* a row's popover (details.pop) must not be clipped by its table's sideways scroll frame */
 .tablewrap:has(details.pop[open]) { overflow: visible; }
 .tablewrap:has(details.pop[open]) details.pop[open] > form { z-index: 40; }
+
+/* ---------- dashboard: period bar, "now" tag, each card's Sort by (routes/core.js) ---------- */
+.dash2-period .filters__quick { order: -1; }
+.dash2-period__note { flex: 1 1 100%; display: block; margin: 0; font-size: 12.5px; line-height: 1.6; color: var(--ink-3); }
+.dash2-period__note .ic { display: inline-block; width: 14px; height: 14px; vertical-align: -2px; margin-inline-end: 4px; }
+.dash2-period__note b { color: var(--ink); font-weight: 600; }
+.dash2-now { display: inline-block; padding: 1px 7px; border-radius: 999px; background: var(--stone); border: 1px solid var(--line); color: var(--ink-3); font: 700 10px/16px var(--sans); letter-spacing: .06em; text-transform: uppercase; vertical-align: 1px; }
+:lang(ar) .dash2-now { letter-spacing: 0; font-size: 11px; }
+.dash2-act { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.dash2-sort { margin: 0; }
+.dash2-sort select { height: 30px; padding: 0 28px 0 10px; font-size: 12px; border-radius: 8px; max-width: 170px; }
+:lang(ar) .dash2-sort select { padding: 0 10px 0 28px; }
+.dash2-bars--day .bars, .dash2-bars--week .bars { gap: 3px; }
+.dash2-bars--day .bars__c b { visibility: hidden; }
+.dash2-bars--day .bars__c:not(:nth-child(5n+1)) span, .dash2-bars--week .bars__c:nth-child(even) span { visibility: hidden; }
+.dash2-bars--week .bars__c b { font-size: 10px; }
+.dash2-bars--dense .bars { gap: 3px; }
+.dash2-bars--dense .bars__c b { font-size: 9.5px; letter-spacing: -.02em; }
+.dash2-bars--dense.dash2-bars--month .bars__c:nth-child(even) span, .dash2-bars--dense.dash2-bars--quarter .bars__c:nth-child(even) span { visibility: hidden; }
+.dash2-bars--dense .bars__c span { overflow: visible; text-overflow: clip; }
+.card__head:has(.dash2-act) h2 { white-space: nowrap; }
+.card__head .dash2-act { flex-direction: column; align-items: flex-end; gap: 6px; }
+.card__head .dash2-act { flex: 0 0 auto; }
+.dash2-sort select { width: auto; }
+/* the dashboard's six figures stay on one row on a desktop, in Arabic too */
+@media (min-width: 861px) { .kpis--six { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+@media (min-width: 861px) and (max-width: 1680px) { [dir="rtl"] .kpis--six { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 861px) and (max-width: 1280px) { .kpis--six { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 640px) {
+  .dash2-act { justify-content: flex-start; }
+  .dash2-sort select { max-width: 150px; }
+  .dash2-period .filters__quick { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 2px; }
+  .dash2-period .filters__quick .chip { flex: 0 0 auto; }
+}
