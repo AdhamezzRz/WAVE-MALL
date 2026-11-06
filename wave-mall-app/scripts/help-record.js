@@ -49,7 +49,16 @@ const readMs = (text, lang) => {
 const log = (...a) => console.log(...a);
 
 // ---------------------------------------------------------------- the office, booted for one lesson
-async function boot(port) {
+// a failed start (a fetch that did not go through) closes its server and tries once more, so the
+// port is free for the next lesson
+async function boot(port, tries = 2) {
+  try { return await bootOnce(port); } catch (e) {
+    if (tries <= 1) throw e;
+    await sleep(1500);
+    return boot(port, tries - 1);
+  }
+}
+async function bootOnce(port) {
   for (const k of Object.keys(require.cache)) if (k.startsWith(path.join(ROOT, 'src'))) delete require.cache[k];
   const { createApp } = require(path.join(ROOT, 'src', 'app'));
   // the sample tenants' portal password (read by src/admin/demo-portal.js)
@@ -57,6 +66,9 @@ async function boot(port) {
   const app = createApp({ env: { ADMIN_DB: ':memory:', ADMIN_JOBS: '0', SITE_URL: `http://127.0.0.1:${port}`, PAYMENTS_MODE: 'sandbox', PORTAL_DEMO_PASSWORD: 'portal-demo-1' }, mail: async () => ({ delivered: true }) });
   const server = app.listen(port);
   await new Promise((r, j) => { server.once('listening', r); server.once('error', j); });
+  try { return await signIn(app, server, port); } catch (e) { await new Promise((r) => server.close(r)); throw e; }
+}
+async function signIn(app, server, port) {
   await app.locals.admin.ready;
   const base = `http://127.0.0.1:${port}`;
   const jar = new Map();
