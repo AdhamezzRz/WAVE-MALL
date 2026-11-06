@@ -818,7 +818,9 @@ module.exports = function work(router, h) {
       title = r ? A().titleOf(r) : '';
     }
     const by = n.by_id ? nameOf(n.by_id) : tr('wk|The office');
-    const text = tr(NOTE[n.kind] || 'wk|{title}', { name: by, title, date: p.date ? ui.date(p.date) : '' });
+    // other modules' notifications carry their own words (params.vars: who, …; who_ar in Arabic)
+    const vars = p.vars && typeof p.vars === 'object' ? { ...p.vars, ...(i18n.isAr() && p.vars.who_ar ? { who: p.vars.who_ar } : {}) } : {};
+    const text = tr(NOTE[n.kind] || 'wk|{title}', { ...vars, name: by, title, date: p.date ? ui.date(p.date) : '' });
     const forName = p.for ? ` · ${tr('wk|for {name}', { name: nameOf(p.for) })}` : '';
     return `<li class="wk-note${n.read_at ? '' : ' is-new'}"><a href="/admin/work/inbox/${n.id}">${ui.icon(NOTE_ICON[n.kind] || 'inbox')}<span class="what"><b>${esc(text)}</b>${p.excerpt ? `<small class="wk-excerpt">“${esc(p.excerpt)}”</small>` : ''}<small>${esc(ui.rel(n.created_at))}${esc(forName)}</small></span></a></li>`;
   }
@@ -1173,5 +1175,7 @@ module.exports = function work(router, h) {
   });
 };
 
+module.exports.NOTE = NOTE;
+module.exports.NOTE_ICON = NOTE_ICON;
 module.exports.STATUS = STATUS;
 module.exports.PRIORITY = PRIORITY;

@@ -34,6 +34,15 @@ const SCOPES = {
     start: '/portal?source=pwa',
     shortcuts: [],
   },
+  // the staff app: clocking in and out (routes/attendance.js, attendance/staff.js)
+  staff: {
+    base: '/staff',
+    name: ['The Wave · Staff', 'att|The Wave · Staff'],
+    short: ['Wave Staff', 'att|Wave Staff'],
+    description: ['Clock in and out at The Wave, see your shifts and hours.', 'att|Clock in and out at The Wave, see your shifts and hours.'],
+    start: '/staff?source=pwa',
+    shortcuts: [],
+  },
 };
 
 // The manifest for a scope, in English or Arabic.
@@ -163,6 +172,7 @@ module.exports = function mobile(router, h) {
   };
   first(router, serve('admin', ''));
   if (h.public) first(h.public, serve('portal', '/portal'));
+  if (h.public) first(h.public, serve('staff', '/staff'));
 };
 
 module.exports.manifest = manifest;

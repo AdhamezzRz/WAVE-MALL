@@ -712,7 +712,10 @@ ${ui.card(tr('Balances {year}', { year: year() }), balTable, { sub: esc(tr('Annu
   }
 
   // advances (routes/advances.js) replan a draft payroll when one is given or repaid
-  h.hrRecalc = (run) => db.tx(() => calcRun(run));
+  h.hrRecalc = (run, typed = {}) => db.tx(() => calcRun(run, typed || {}));
+  // attendance (routes/attendance.js) reads approved unpaid leave and the leave balance
+  h.hrUnpaidLeave = (empId, period) => unpaidDaysIn(empId, period);
+  h.hrBalance = (e) => balance(e);
 
   router.get('/hr/payroll', RH, (req, res) => {
     const csrf = req.session.csrf;

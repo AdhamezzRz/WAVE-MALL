@@ -13,7 +13,7 @@ const { t, tn, tx, isAr, lang, dir } = require('./i18n');
 
 const PUBLIC = path.join(__dirname, '..', '..', 'public');
 const v = (f) => crypto.createHash('sha1').update(fs.readFileSync(path.join(PUBLIC, f))).digest('hex').slice(0, 8);
-const ASSETS = { css: v('admin/admin.css'), js: v('admin/admin.js'), pwa: v('admin/app/pwa.js'), parking: v('admin/parking.js'), help: fs.existsSync(path.join(PUBLIC, 'admin/help.js')) ? v('admin/help.js') : '0' };
+const ASSETS = { css: v('admin/admin.css'), js: v('admin/admin.js'), pwa: v('admin/app/pwa.js'), parking: v('admin/parking.js'), help: fs.existsSync(path.join(PUBLIC, 'admin/help.js')) ? v('admin/help.js') : '0', att: fs.existsSync(path.join(PUBLIC, 'admin/attendance.js')) ? v('admin/attendance.js') : '0', beat: fs.existsSync(path.join(PUBLIC, 'admin/beat.js')) ? v('admin/beat.js') : '0', staff: fs.existsSync(path.join(PUBLIC, 'admin/staff.js')) ? v('admin/staff.js') : '0' };
 
 const esc = (s) => (s === null || s === undefined ? '' : String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]));
 const attr = (o) => Object.entries(o).filter(([, x]) => x !== false && x !== null && x !== undefined).map(([k, x]) => (x === true ? k : `${k}="${esc(x)}"`)).join(' ');
@@ -158,7 +158,7 @@ const NAV = [
   ['nav|Finance', [['/admin/accounting', 'nav|Accounting', 'coins', 'finance', 'finance'], ['/admin/purchasing', 'nav|Purchasing', 'file', 'purchase']]],
   ['nav|Operations', [['/admin/maintenance', 'nav|Maintenance', 'wrench', 'maintenance'], ['/admin/parking', 'nav|Parking', 'car', 'parking'], ['/admin/footfall', 'nav|Footfall', 'flow'], ['/admin/security', 'nav|Security & cleaning', 'shield', 'security'], ['/admin/compliance', 'nav|Safety & licences', 'contract', 'compliance'], ['/admin/energy', 'nav|Energy', 'gauge'], ['/admin/feedback', 'nav|Shopper feedback', 'chat', 'feedback'], ['/admin/website', 'nav|Website', 'globe']]],
   ['Records', [['/admin/documents', 'Documents', 'folder', 'docs'], ['/admin/contracts', 'Contracts', 'contract', 'renewals']]],
-  ['People', [['/admin/hr', 'Employees', 'people', null, 'hr'], ['/admin/hr/leave', 'nav|Leave', 'leave', 'leave', 'hr'], ['/admin/hr/payroll', 'Payroll', 'wallet', null, 'hr'], ['/admin/hr/advances', 'nav|Salary advances', 'coins', null, 'hr']]],
+  ['People', [['/admin/hr', 'Employees', 'people', null, 'hr'], ['/admin/hr/leave', 'nav|Leave', 'leave', 'leave', 'hr'], ['/admin/hr/payroll', 'Payroll', 'wallet', null, 'hr'], ['/admin/hr/advances', 'nav|Salary advances', 'coins', null, 'hr'], ['/admin/attendance', 'nav|Attendance & activity', 'gauge', 'attendance', 'hr']]],
   ['Insight', [['/admin/reports', 'Reports', 'report'], ['/admin/owner-report', 'nav|Owner report', 'report'], ['/admin/wallboard', 'nav|Wall screen', 'dash']]],
   ['Office', [['/admin/team', 'Team & targets', 'team'], ['/admin/people', 'nav|Users & permissions', 'shield', 'people'], ['/admin/subscribers', 'Subscribers', 'mail'], ['/admin/integrations', 'nav|Integrations', 'plug', null, 'admin'], ['/admin/settings', 'Settings', 'gear', null, 'admin'], ['/admin/audit', 'Activity log', 'log', null, 'manager'], ['/admin/help', 'nav|Help & training', 'help', 'help']]],
 ];
@@ -218,13 +218,13 @@ const brandName = () => t('The Wave Leasing');
 // The installable app's head tags (manifest, theme colour, home-screen icon, service worker).
 // scope: 'admin' (the leasing office) or 'portal' (the tenant portal). See routes/mobile.js.
 function pwaHead(scope = 'admin') {
-  const base = scope === 'portal' ? '/portal' : '/admin';
+  const base = scope === 'portal' ? '/portal' : scope === 'staff' ? '/staff' : '/admin';
   return `<meta name="theme-color" content="#fbfaf6" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1f2c28" media="(prefers-color-scheme: dark)">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="${esc(t(scope === 'portal' ? 'mob|The Wave · Tenants' : 'mob|The Wave'))}">
+<meta name="apple-mobile-web-app-title" content="${esc(t(scope === 'portal' ? 'mob|The Wave · Tenants' : scope === 'staff' ? 'att|The Wave · Staff' : 'mob|The Wave'))}">
 <link rel="manifest" href="${base}/manifest.webmanifest${isAr() ? '?lang=ar' : ''}">
 <link rel="apple-touch-icon" href="/admin/app/apple-touch-icon.png">
 <script src="/admin/app/pwa.js?v=${ASSETS.pwa}" data-sw="${base}/sw.js" data-scope="${base}/" defer></script>`;
@@ -315,6 +315,7 @@ ${more}
 </div>
 <script src="/admin/admin.js?v=${ASSETS.js}" defer></script>
 <script src="/admin/help.js?v=${ASSETS.help}" defer></script>
+<script src="/admin/beat.js?v=${ASSETS.beat}" defer></script>
 </body>
 </html>`;
 }
