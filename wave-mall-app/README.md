@@ -125,9 +125,14 @@ A sales ERP for the leasing team, built into the same app. It is private (`noind
 | Energy & ESG | Meters read by the building system or smart meters (or CSV), common-area use against what tenants are billed, cost per m², hour-by-hour heat map, peak and night baseload, targets, and a yearly ESG report (electricity, water, diesel, gas, CO₂, waste, intensity per m² and per visitor) |
 | Owner report | A printable monthly report for the owner in English or Arabic (income, occupancy, collections, sales, footfall, parking, operations, cheques, energy, highlights and risks), emailed on the chosen day with the report attached |
 | Wall screen | A dark full-screen dashboard for the office TV (visitors now, parking, today's takings, sales, alerts), refreshed every 30 seconds, opened on the TV by a secret link that can be replaced at any time |
+| Help & training | An academy of 78 short recorded lessons (156 videos, English and Arabic) covering every module and the tenant portal, made on the real office with an animated cursor, spotlight and click sounds. Under each video the transcript follows the playback (click a line to jump, search, copy, print, download), with captions, speed, chapters and *Read aloud* in the device's own voice. *Show me on the real page* replays a lesson as a live tour on your own screen. Learning paths by role with progress, a "?" on every page for that page's lessons, support requests with screenshots and email replies, FAQ, glossary, what's new, keyboard shortcuts and a training report for managers |
 | Phone app | Install the office (and the tenant portal) on a phone from the browser: home-screen icon, full screen, bottom tab bar, works offline for pages already opened |
 
 **Who can do what:** *Office → Users & permissions*. Every request is checked on the server: opening a page needs *view*, saving needs *edit*, deleting, voiding, cancelling, reversing and approving need *full*, and downloads and print-outs need the *export* right; the sidebar follows the same rules. People on the built-in roles keep exactly the access they had until you give them a custom role or a change.
+
+**Lists:** every list has a date range (From/To, plus *This month*, *Last month*, *This year*) and a *Sort by* choice (newest or oldest, due date, amount, name and others that fit the list); exports follow the same choice. Click any column title to sort by it on the page.
+
+**Recording the lessons again:** after changing a screen, `node scripts/help-record.js --check` walks every lesson against the current pages, and `node scripts/help-record.js --only=<lesson ids> --lang=en` (then `--lang=ar`) records them again into `public/admin/help-media`; record on a quiet machine. Lessons live in `src/admin/help/lessons/` and `src/admin/help/README.md` explains how to write one.
 
 **Finance permission:** accounting, payroll costs and bank details are visible only to people with *Finance* ticked under Team (administrators always have it).
 
