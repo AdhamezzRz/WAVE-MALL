@@ -1,0 +1,151 @@
+{
+ "id": "attendance-person",
+ "lang": "en",
+ "title": "One person's day, hour by hour",
+ "duration": 84.2,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 9.71,
+   "text": "Open someone's day: their clocking and breaks, where they were, and everything they did, then follow the whole team's activity.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 9.71,
+   "end": 14.99,
+   "text": "From the live board, open the person you want to look at.",
+   "step": 1,
+   "url": "/admin/attendance"
+  },
+  {
+   "start": 14.99,
+   "end": 18.2,
+   "text": "Choose their name.",
+   "step": 2,
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "start": 18.2,
+   "end": 23.8,
+   "text": "At the top: their last activity, and how long ago it was.",
+   "step": 3,
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "start": 23.8,
+   "end": 30.77,
+   "text": "Today's figures: the shift, first in, last out, time worked against the schedule, breaks and overtime.",
+   "step": 4,
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "start": 30.77,
+   "end": 39.22,
+   "text": "The day, hour by hour: the shift, clocked time and breaks, inside or outside the circle, and every recorded action.",
+   "step": 5,
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "start": 39.22,
+   "end": 46.13,
+   "text": "Point at any bar or dot with the mouse to see exactly what happened and when.",
+   "step": 6,
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "start": 46.13,
+   "end": 54.58,
+   "text": "Each clocking with its distance, precision and verdict. HR can add one or cancel a wrong one, with a note.",
+   "step": 7,
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "start": 54.58,
+   "end": 61.12,
+   "text": "Everything they did, newest first. Filter it by date and source, and choose the order.",
+   "step": 8,
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "start": 61.12,
+   "end": 68.97,
+   "text": "The month at a glance: each day coloured by how it went. Choose a day to open it.",
+   "step": 9,
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "start": 68.97,
+   "end": 73.64,
+   "text": "Activity shows everything the whole team did, as it happens.",
+   "step": 10,
+   "url": "/admin/attendance/activity"
+  },
+  {
+   "start": 73.64,
+   "end": 79.88,
+   "text": "Narrow it to one person, a department, a source or a range of dates.",
+   "step": 11,
+   "url": "/admin/attendance/activity"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/attendance"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "step": 10,
+   "kind": "go",
+   "url": "/admin/attendance/activity"
+  },
+  {
+   "step": 11,
+   "kind": "point",
+   "url": "/admin/attendance/activity"
+  }
+ ],
+ "recorded_at": "2026-11-06T17:51:46.292Z"
+}

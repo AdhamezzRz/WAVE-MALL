@@ -60,7 +60,7 @@ function problems(l) {
     if (s.has !== undefined && !isText(s.has)) out.push(`step ${i + 1}: has must be text or { en, ar }`);
     if (k === 'type' && !(Array.isArray(s.type) && typeof s.type[0] === 'string' && isText(s.type[1]))) out.push(`step ${i + 1}: type is [selector, text or { en, ar }]`);
     if (k === 'select' && !(Array.isArray(s.select) && typeof s.select[0] === 'string')) out.push(`step ${i + 1}: select is [selector, value]`);
-    if (k === 'go' && !/^\/(admin|portal)(\/|$|\?)/.test(String(s.go))) out.push(`step ${i + 1}: go must be an /admin or /portal address`);
+    if (k === 'go' && !/^\/(admin|portal|staff)(\/|$|\?)/.test(String(s.go))) out.push(`step ${i + 1}: go must be an /admin, /portal or /staff address`);
   });
   if (l.steps && !l.steps.some((s) => s.say)) out.push('at least one step must say something');
   if (l.steps && kindOf(l.steps[0]) !== 'go') out.push('the first step must be { go: ... }');

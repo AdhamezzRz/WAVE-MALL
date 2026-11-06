@@ -26,6 +26,7 @@ Areas (the order of the academy page): `start`, `overview`, `sales`, `property`,
   title: { en: 'Receiving cheques', ar: 'استلام الشيكات' },
   summary: { en: 'One sentence: what you will learn.', ar: 'جملة واحدة: ما الذي ستتعلمه.' },
   prepare: async ({ db, h, lang, base }) => {},   // optional: change the sample data before recording (runs before each language)
+  geo: ({ db }) => ({ latitude, longitude, accuracy }),  // optional: the position the browser shares (staff-app lessons)
   steps: [ ... ],
 }
 ```
@@ -36,7 +37,7 @@ The first step must be `{ go }`. Every step may have `say: { en, ar }` (a line o
 
 | Step | What it does |
 | --- | --- |
-| `{ go: '/admin/cheques', say }` | opens a page (an `/admin` or `/portal` address) |
+| `{ go: '/admin/cheques', say }` | opens a page (an `/admin`, `/portal` or `/staff` address; lessons that visit `/staff` or `/portal` have no live tour) |
 | `{ say }` | just a line of narration, no pointing |
 | `{ point: 'css', say }` | glides the cursor to the element and spotlights it |
 | `{ click: 'css', say, nav: true }` | spotlights, then clicks. `nav: true` when the click opens another address (the recorder waits for it). A form that posts back to the same page is detected by itself: no `nav` |

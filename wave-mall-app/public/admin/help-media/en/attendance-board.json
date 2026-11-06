@@ -1,0 +1,139 @@
+{
+ "id": "attendance-board",
+ "lang": "en",
+ "title": "Who is at work right now",
+ "duration": 88.6,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 10.49,
+   "text": "Read the live board: who is in the mall, who is late or outside the circle, and what each person did last.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 10.49,
+   "end": 16.58,
+   "text": "Attendance & activity opens on the live board. It refreshes itself every thirty seconds.",
+   "step": 1,
+   "url": "/admin/attendance"
+  },
+  {
+   "start": 16.58,
+   "end": 25.08,
+   "text": "The counters: in the mall, late, not in yet, on a break, outside the circle, app closed and on leave.",
+   "step": 2,
+   "url": "/admin/attendance"
+  },
+  {
+   "start": 25.08,
+   "end": 32.3,
+   "text": "Each counter is a filter. Late today shows only the people who came in late.",
+   "step": 3,
+   "url": "/admin/attendance?show=late"
+  },
+  {
+   "start": 32.3,
+   "end": 36.01,
+   "text": "Everyone brings the whole team back.",
+   "step": 4,
+   "url": "/admin/attendance"
+  },
+  {
+   "start": 36.01,
+   "end": 43.74,
+   "text": "A card per person: their shift, when they clocked in and how long they have worked so far.",
+   "step": 5,
+   "url": "/admin/attendance"
+  },
+  {
+   "start": 43.74,
+   "end": 51.8,
+   "text": "Where their phone was at the last update: inside or outside the circle, and how far from the centre.",
+   "step": 6,
+   "url": "/admin/attendance"
+  },
+  {
+   "start": 51.8,
+   "end": 61.02,
+   "text": "Last activity is the latest thing they really did: clocking, a patrol scan, a work order or a page in the office.",
+   "step": 7,
+   "url": "/admin/attendance"
+  },
+  {
+   "start": 61.02,
+   "end": 69.1,
+   "text": "The light on the photo: green active in the last fifteen minutes, amber up to an hour, red longer.",
+   "step": 8,
+   "url": "/admin/attendance"
+  },
+  {
+   "start": 69.1,
+   "end": 76.69,
+   "text": "Who is where puts everyone clocked in on the mall's circle, north up and to true scale.",
+   "step": 9,
+   "url": "/admin/attendance"
+  },
+  {
+   "start": 76.69,
+   "end": 84.41,
+   "text": "Alerts from the last two days: late starts, people who left the circle, forgotten clock-outs and new phones.",
+   "step": 10,
+   "url": "/admin/attendance"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/attendance"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/attendance"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/attendance?show=late"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/attendance"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/attendance"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/attendance"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/attendance"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/attendance"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/attendance"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/attendance"
+  }
+ ],
+ "recorded_at": "2026-11-06T17:49:50.898Z"
+}

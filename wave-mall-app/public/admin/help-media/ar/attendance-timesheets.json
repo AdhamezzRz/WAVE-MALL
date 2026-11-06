@@ -1,0 +1,139 @@
+{
+ "id": "attendance-timesheets",
+ "lang": "ar",
+ "title": "كشوف الحضور والرواتب",
+ "duration": 60.28,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 8.12,
+   "text": "اقرأ كشف حضور الشهر، واطبع كشف موظف، وأرسل الوقت الإضافي والغياب إلى مسودة الرواتب.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.12,
+   "end": 10.96,
+   "text": "تعرض «كشوف الحضور» الشهر للجميع.",
+   "step": 1,
+   "url": "/admin/attendance/timesheets"
+  },
+  {
+   "start": 10.96,
+   "end": 17.91,
+   "text": "أيام الوردية، والحضور، والتأخر، والغياب، والإجازات، والساعات المعمولة مقارنة بالجدول، والوقت الإضافي والالتزام بالمواعيد.",
+   "step": 2,
+   "url": "/admin/attendance/timesheets"
+  },
+  {
+   "start": 17.91,
+   "end": 21.71,
+   "text": "اختر شهرًا آخر، أو إدارة، أو الترتيب.",
+   "step": 3,
+   "url": "/admin/attendance/timesheets"
+  },
+  {
+   "start": 21.71,
+   "end": 25.52,
+   "text": "و«التصدير» ينزّل الأرقام نفسها في جدول بيانات.",
+   "step": 4,
+   "url": "/admin/attendance/timesheets"
+  },
+  {
+   "start": 25.52,
+   "end": 29.7,
+   "text": "افتح أحد الموظفين لترى أيامه.",
+   "step": 5,
+   "url": "/admin/attendance/people/7?month=2026-11&date=2026-11-06"
+  },
+  {
+   "start": 29.7,
+   "end": 36.09,
+   "text": "و«طباعة كشف الحضور» يفتح كشف الشهر جاهزًا للطباعة والتوقيع، بالعربية أو الإنجليزية.",
+   "step": 6,
+   "url": "/admin/attendance/people/7?month=2026-11&date=2026-11-06"
+  },
+  {
+   "start": 36.09,
+   "end": 39.28,
+   "text": "وفي نهاية الشهر، أرسله إلى الرواتب.",
+   "step": 7,
+   "url": "/admin/attendance/timesheets"
+  },
+  {
+   "start": 39.28,
+   "end": 42.38,
+   "text": "اختر «إرسال إلى الرواتب».",
+   "step": 8,
+   "url": "/admin/attendance/payroll?month=2026-11"
+  },
+  {
+   "start": 42.38,
+   "end": 49.74,
+   "text": "أولًا معاينة: ساعات الوقت الإضافي لكل شخص وأجرها، والغياب الذي يتحول إلى أيام غير مدفوعة.",
+   "step": 9,
+   "url": "/admin/attendance/payroll?month=2026-11"
+  },
+  {
+   "start": 49.74,
+   "end": 55.92,
+   "text": "و«تطبيق» يغيّر مسودة الرواتب فقط، وتبقى المكافآت والخصومات التي كتبتها كما هي.",
+   "step": 10,
+   "url": "/admin/attendance/payroll?month=2026-11"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/attendance/timesheets"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/attendance/timesheets"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/attendance/timesheets"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/attendance/timesheets"
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/attendance/people/7?month=2026-11&date=2026-11-06"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/attendance/people/7?month=2026-11&date=2026-11-06"
+  },
+  {
+   "step": 7,
+   "kind": "go",
+   "url": "/admin/attendance/timesheets"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/attendance/payroll?month=2026-11"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/attendance/payroll?month=2026-11"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/attendance/payroll?month=2026-11"
+  }
+ ],
+ "recorded_at": "2026-11-06T18:07:10.771Z"
+}

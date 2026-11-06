@@ -1,0 +1,151 @@
+{
+ "id": "attendance-setup",
+ "lang": "en",
+ "title": "Setting the mall's circle and the shifts",
+ "duration": 78.48,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 10.1,
+   "text": "Put the mall's centre on the map, choose the circle and the precision, then set the shifts and who works them.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 10.1,
+   "end": 16.47,
+   "text": "Settings starts with the mall's circle. Nobody can clock in until its centre is set.",
+   "step": 1,
+   "url": "/admin/attendance/settings"
+  },
+  {
+   "start": 16.47,
+   "end": 22.67,
+   "text": "Paste the centre as two numbers, or a map link to the mall's pin.",
+   "step": 2,
+   "url": "/admin/attendance/settings"
+  },
+  {
+   "start": 22.67,
+   "end": 30.36,
+   "text": "Or stand in the middle of the mall with your phone and choose Use where I am standing.",
+   "step": 3,
+   "url": "/admin/attendance/settings"
+  },
+  {
+   "start": 30.36,
+   "end": 37.27,
+   "text": "The circle is a hundred metres by default. Make it bigger if far entrances fall outside.",
+   "step": 4,
+   "url": "/admin/attendance/settings"
+  },
+  {
+   "start": 37.27,
+   "end": 44.94,
+   "text": "Precision needed: a reading less precise than this is refused, so nobody clocks in on a vague signal.",
+   "step": 5,
+   "url": "/admin/attendance/settings"
+  },
+  {
+   "start": 44.94,
+   "end": 49.82,
+   "text": "The preview shows the circle around the centre, to scale.",
+   "step": 6,
+   "url": "/admin/attendance/settings"
+  },
+  {
+   "start": 49.82,
+   "end": 52.94,
+   "text": "Save.",
+   "step": 7,
+   "url": "/admin/attendance/settings"
+  },
+  {
+   "start": 52.94,
+   "end": 58.1,
+   "text": "Shifts: when each group works, the grace minutes and the unpaid break.",
+   "step": 8,
+   "url": "/admin/attendance/shifts"
+  },
+  {
+   "start": 58.1,
+   "end": 64.06,
+   "text": "A shift that ends after midnight counts for the day it started.",
+   "step": 9,
+   "url": "/admin/attendance/shifts/4"
+  },
+  {
+   "start": 64.06,
+   "end": 67.16,
+   "text": "Who works it: tick the people.",
+   "step": 10,
+   "url": "/admin/attendance/shifts/4"
+  },
+  {
+   "start": 67.16,
+   "end": 74.08,
+   "text": "Then assign them from a date. Their lateness and overtime follow this shift from then on.",
+   "step": 11,
+   "url": "/admin/attendance/shifts/4"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/attendance/settings"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/attendance/settings"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/attendance/settings"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/attendance/settings"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/attendance/settings"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/attendance/settings"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/attendance/settings"
+  },
+  {
+   "step": 8,
+   "kind": "go",
+   "url": "/admin/attendance/shifts"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/attendance/shifts/4"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/attendance/shifts/4"
+  },
+  {
+   "step": 11,
+   "kind": "point",
+   "url": "/admin/attendance/shifts/4"
+  }
+ ],
+ "recorded_at": "2026-11-06T17:53:33.681Z"
+}

@@ -1,0 +1,190 @@
+{
+ "id": "attendance-staff-clock",
+ "lang": "en",
+ "title": "Clocking in on your phone",
+ "duration": 96.12,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 9.71,
+   "text": "How staff sign in to the staff app, clock in inside the mall's circle, take a break and clock out.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 9.71,
+   "end": 18.4,
+   "text": "Staff clock in with the staff app on their own phone. HR gives each person a code and a six-digit PIN.",
+   "step": 1,
+   "url": "/staff/login"
+  },
+  {
+   "start": 18.4,
+   "end": 21.58,
+   "text": "Type your employee code.",
+   "step": 2,
+   "url": "/staff/login"
+  },
+  {
+   "start": 21.58,
+   "end": 24.53,
+   "text": "And your PIN.",
+   "step": 3,
+   "url": "/staff/login"
+  },
+  {
+   "start": 24.53,
+   "end": 30.53,
+   "text": "Sign in. The first phone you sign in on becomes your phone.",
+   "step": 4,
+   "url": "/staff/consent"
+  },
+  {
+   "start": 30.53,
+   "end": 39.02,
+   "text": "The first time, it explains what is recorded: your position only when you clock and while you are clocked in.",
+   "step": 5,
+   "url": "/staff/consent"
+  },
+  {
+   "start": 39.02,
+   "end": 42.23,
+   "text": "Choose I understand and agree.",
+   "step": 6,
+   "url": "/staff"
+  },
+  {
+   "start": 42.23,
+   "end": 50.72,
+   "text": "The app finds you and shows how far you are from the mall. Inside the circle, the button wakes up.",
+   "step": 7,
+   "url": "/staff"
+  },
+  {
+   "start": 50.72,
+   "end": 58.96,
+   "text": "Clock in. The office checks the distance, the signal and that this is your phone.",
+   "step": 8,
+   "url": "/staff"
+  },
+  {
+   "start": 58.98,
+   "end": 66.67,
+   "text": "You are clocked in. Keep the app open while you work: it updates your position every few minutes.",
+   "step": 10,
+   "url": "/staff"
+  },
+  {
+   "start": 66.67,
+   "end": 74.54,
+   "text": "Going on a break? Start a break, and end it when you are back.",
+   "step": 11,
+   "url": "/staff"
+  },
+  {
+   "start": 74.56,
+   "end": 78.74,
+   "text": "End the break.",
+   "step": 13,
+   "url": "/staff"
+  },
+  {
+   "start": 78.76,
+   "end": 84.15,
+   "text": "At the end of the shift, Clock out, inside the circle again.",
+   "step": 15,
+   "url": "/staff"
+  },
+  {
+   "start": 84.15,
+   "end": 91.83,
+   "text": "Today lists every clocking. My month and Fix a time are at the bottom, if you forgot one.",
+   "step": 16,
+   "url": "/staff"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/staff/login"
+  },
+  {
+   "step": 2,
+   "kind": "type",
+   "url": "/staff/login"
+  },
+  {
+   "step": 3,
+   "kind": "type",
+   "url": "/staff/login"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/staff/consent"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/staff/consent"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/staff"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/staff"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/staff"
+  },
+  {
+   "step": 9,
+   "kind": "wait",
+   "url": "/staff"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/staff"
+  },
+  {
+   "step": 11,
+   "kind": "click",
+   "url": "/staff"
+  },
+  {
+   "step": 12,
+   "kind": "wait",
+   "url": "/staff"
+  },
+  {
+   "step": 13,
+   "kind": "click",
+   "url": "/staff"
+  },
+  {
+   "step": 14,
+   "kind": "wait",
+   "url": "/staff"
+  },
+  {
+   "step": 15,
+   "kind": "point",
+   "url": "/staff"
+  },
+  {
+   "step": 16,
+   "kind": "point",
+   "url": "/staff"
+  }
+ ],
+ "recorded_at": "2026-11-06T17:58:50.134Z"
+}

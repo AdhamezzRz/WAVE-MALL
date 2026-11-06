@@ -298,7 +298,10 @@ async function playLesson(browser, office, lesson, lang, { record }) {
   db.run("UPDATE users SET lang = ? WHERE email = 'admin@thewave.test'", lang);
   db.run('UPDATE portal_users SET lang = ? WHERE demo = 1', lang);
   if (typeof lesson.prepare === 'function') await lesson.prepare({ db, h, lang, base });
-  const ctx = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: record ? DSF : 1, locale: lang === 'ar' ? 'ar-EG' : 'en-GB', timezoneId: 'Africa/Cairo', reducedMotion: 'no-preference' });
+  // lessons on the staff app stand inside the mall: geo is { latitude, longitude, accuracy } or a
+  // function of the office ({ db, h, lang }) returning one; the browser then shares that position
+  const geo = typeof lesson.geo === 'function' ? await lesson.geo({ db, h, lang }) : lesson.geo || null;
+  const ctx = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: record ? DSF : 1, locale: lang === 'ar' ? 'ar-EG' : 'en-GB', timezoneId: 'Africa/Cairo', reducedMotion: 'no-preference', ...(geo ? { geolocation: geo, permissions: ['geolocation'] } : {}) });
   await ctx.addCookies(office.cookies);
   await ctx.addInitScript(OVERLAY);
   const page = await ctx.newPage();

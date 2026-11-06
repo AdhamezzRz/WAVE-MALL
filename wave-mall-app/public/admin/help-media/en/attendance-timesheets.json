@@ -1,0 +1,139 @@
+{
+ "id": "attendance-timesheets",
+ "lang": "en",
+ "title": "Timesheets and payroll",
+ "duration": 62.12,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 8.18,
+   "text": "Read the month's timesheet, print one person's, and send overtime and absences to the draft payroll.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.18,
+   "end": 11.16,
+   "text": "Timesheets shows the month for everyone.",
+   "step": 1,
+   "url": "/admin/attendance/timesheets"
+  },
+  {
+   "start": 11.16,
+   "end": 17.34,
+   "text": "Shift days, present, late, absent, leave, hours worked against the schedule, overtime and punctuality.",
+   "step": 2,
+   "url": "/admin/attendance/timesheets"
+  },
+  {
+   "start": 17.34,
+   "end": 21.17,
+   "text": "Choose another month, a department, or the order.",
+   "step": 3,
+   "url": "/admin/attendance/timesheets"
+  },
+  {
+   "start": 21.17,
+   "end": 25.07,
+   "text": "Export downloads the same figures as a spreadsheet.",
+   "step": 4,
+   "url": "/admin/attendance/timesheets"
+  },
+  {
+   "start": 25.07,
+   "end": 29.32,
+   "text": "Open someone to see their days.",
+   "step": 5,
+   "url": "/admin/attendance/people/7?month=2026-11&date=2026-11-06"
+  },
+  {
+   "start": 29.32,
+   "end": 37.01,
+   "text": "Print the timesheet opens the month as a sheet to print and sign, in English or Arabic.",
+   "step": 6,
+   "url": "/admin/attendance/people/7?month=2026-11&date=2026-11-06"
+  },
+  {
+   "start": 37.01,
+   "end": 41.43,
+   "text": "At the end of the month, send it to payroll.",
+   "step": 7,
+   "url": "/admin/attendance/timesheets"
+  },
+  {
+   "start": 41.43,
+   "end": 44.49,
+   "text": "Choose Send to payroll.",
+   "step": 8,
+   "url": "/admin/attendance/payroll?month=2026-11"
+  },
+  {
+   "start": 44.49,
+   "end": 51.3,
+   "text": "First a preview: each person's overtime hours and pay, and absences that become unpaid days.",
+   "step": 9,
+   "url": "/admin/attendance/payroll?month=2026-11"
+  },
+  {
+   "start": 51.3,
+   "end": 57.83,
+   "text": "Apply changes only a draft payroll. Bonuses and deductions you typed stay as they are.",
+   "step": 10,
+   "url": "/admin/attendance/payroll?month=2026-11"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/attendance/timesheets"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/attendance/timesheets"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/attendance/timesheets"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/attendance/timesheets"
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/attendance/people/7?month=2026-11&date=2026-11-06"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/attendance/people/7?month=2026-11&date=2026-11-06"
+  },
+  {
+   "step": 7,
+   "kind": "go",
+   "url": "/admin/attendance/timesheets"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/attendance/payroll?month=2026-11"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/attendance/payroll?month=2026-11"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/attendance/payroll?month=2026-11"
+  }
+ ],
+ "recorded_at": "2026-11-06T17:56:44.047Z"
+}

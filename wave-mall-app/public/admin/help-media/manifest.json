@@ -1,5 +1,101 @@
 {
  "lessons": {
+  "attendance-board": {
+   "en": {
+    "duration": 88.6,
+    "size": 2050479,
+    "v": "85f909e2ea",
+    "cues": 11,
+    "recorded_at": "2026-11-06T17:49:50.898Z"
+   },
+   "ar": {
+    "duration": 82.76,
+    "size": 1732431,
+    "v": "9270aeb6c1",
+    "cues": 11,
+    "recorded_at": "2026-11-06T18:00:44.336Z"
+   }
+  },
+  "attendance-person": {
+   "en": {
+    "duration": 84.2,
+    "size": 2035732,
+    "v": "fb761e27d3",
+    "cues": 12,
+    "recorded_at": "2026-11-06T17:51:46.292Z"
+   },
+   "ar": {
+    "duration": 75.72,
+    "size": 1804764,
+    "v": "f673dbad56",
+    "cues": 12,
+    "recorded_at": "2026-11-06T18:02:28.832Z"
+   }
+  },
+  "attendance-phones": {
+   "en": {
+    "duration": 76.08,
+    "size": 1479098,
+    "v": "0085426fd3",
+    "cues": 11,
+    "recorded_at": "2026-11-06T17:55:17.807Z"
+   },
+   "ar": {
+    "duration": 74.28,
+    "size": 1408169,
+    "v": "7e28458846",
+    "cues": 11,
+    "recorded_at": "2026-11-06T18:05:46.349Z"
+   }
+  },
+  "attendance-setup": {
+   "en": {
+    "duration": 78.48,
+    "size": 1692036,
+    "v": "4169b42ec8",
+    "cues": 12,
+    "recorded_at": "2026-11-06T17:53:33.681Z"
+   },
+   "ar": {
+    "duration": 70.16,
+    "size": 1430731,
+    "v": "d4baaf9448",
+    "cues": 12,
+    "recorded_at": "2026-11-06T18:04:05.226Z"
+   }
+  },
+  "attendance-staff-clock": {
+   "en": {
+    "duration": 96.12,
+    "size": 1314777,
+    "v": "6aaef30e9c",
+    "cues": 14,
+    "recorded_at": "2026-11-06T17:58:50.134Z"
+   },
+   "ar": {
+    "duration": 84.48,
+    "size": 1154983,
+    "v": "af775641eb",
+    "cues": 14,
+    "recorded_at": "2026-11-06T18:09:02.231Z"
+   }
+  },
+  "attendance-timesheets": {
+   "en": {
+    "duration": 62.12,
+    "size": 1326458,
+    "v": "c85b0ebf14",
+    "cues": 11,
+    "recorded_at": "2026-11-06T17:56:44.047Z"
+   },
+   "ar": {
+    "duration": 60.28,
+    "size": 1222364,
+    "v": "c838c9d08e",
+    "cues": 11,
+    "recorded_at": "2026-11-06T18:07:10.771Z"
+   }
+  },
   "finance-bank": {
    "en": {
     "duration": 78.32,
@@ -1249,6 +1345,6 @@
    }
   }
  },
- "recorded_at": "2026-11-06T01:17:50.451Z",
+ "recorded_at": "2026-11-06T18:09:02.234Z",
  "app_version": "1.0.0"
 }

@@ -1,0 +1,139 @@
+{
+ "id": "attendance-board",
+ "lang": "ar",
+ "title": "من في العمل الآن",
+ "duration": 82.76,
+ "cues": [
+  {
+   "start": 0.01,
+   "end": 9.41,
+   "text": "اقرأ اللوحة المباشرة: من داخل المول، ومن تأخر أو خرج من الدائرة، وآخر ما فعله كل شخص.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 9.41,
+   "end": 15.35,
+   "text": "يُفتح «الحضور والنشاط» على اللوحة المباشرة، وهي تتحدث وحدها كل ثلاثين ثانية.",
+   "step": 1,
+   "url": "/admin/attendance"
+  },
+  {
+   "start": 15.35,
+   "end": 23.12,
+   "text": "العدادات: داخل المول، والمتأخرون، ومن لم يحضر بعد، وفي استراحة، وخارج الدائرة، والتطبيق مغلق، وفي إجازة.",
+   "step": 2,
+   "url": "/admin/attendance"
+  },
+  {
+   "start": 23.12,
+   "end": 29.4,
+   "text": "كل عداد هو تصفية؛ «متأخرون اليوم» يعرض من حضر متأخرًا فقط.",
+   "step": 3,
+   "url": "/admin/attendance?show=late"
+  },
+  {
+   "start": 29.4,
+   "end": 33.46,
+   "text": "واختر «الجميع» لتعود إلى الفريق كله.",
+   "step": 4,
+   "url": "/admin/attendance"
+  },
+  {
+   "start": 33.46,
+   "end": 38.61,
+   "text": "لكل شخص بطاقة: ورديته، ووقت حضوره، وكم عمل حتى الآن.",
+   "step": 5,
+   "url": "/admin/attendance"
+  },
+  {
+   "start": 38.61,
+   "end": 45.89,
+   "text": "وأين كان هاتفه عند آخر تحديث: داخل الدائرة أو خارجها، وعلى أي بعد من المركز.",
+   "step": 6,
+   "url": "/admin/attendance"
+  },
+  {
+   "start": 45.89,
+   "end": 55.79,
+   "text": "و«آخر نشاط» هو آخر ما قام به فعلًا: تسجيل حضور، أو مسح نقطة دورية، أو أمر عمل، أو صفحة في المكتب.",
+   "step": 7,
+   "url": "/admin/attendance"
+  },
+  {
+   "start": 55.79,
+   "end": 63.06,
+   "text": "والضوء على الصورة: أخضر لنشاط خلال ربع ساعة، وكهرماني حتى ساعة، وأحمر لأكثر من ذلك.",
+   "step": 8,
+   "url": "/admin/attendance"
+  },
+  {
+   "start": 63.06,
+   "end": 70.77,
+   "text": "و«من أين الآن» يضع كل من سجّل حضوره على دائرة المول، والشمال لأعلى وبالمقياس الحقيقي.",
+   "step": 9,
+   "url": "/admin/attendance"
+  },
+  {
+   "start": 70.77,
+   "end": 78.53,
+   "text": "وتنبيهات آخر يومين: التأخر عن بداية الوردية، ومن خرج من الدائرة، ومن نسي الانصراف، والهواتف الجديدة.",
+   "step": 10,
+   "url": "/admin/attendance"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/attendance"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/attendance"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/attendance?show=late"
+  },
+  {
+   "step": 4,
+   "kind": "click",
+   "url": "/admin/attendance"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/attendance"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/attendance"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/attendance"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/attendance"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/attendance"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/attendance"
+  }
+ ],
+ "recorded_at": "2026-11-06T18:00:44.336Z"
+}

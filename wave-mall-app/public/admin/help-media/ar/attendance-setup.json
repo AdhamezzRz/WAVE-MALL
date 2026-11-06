@@ -1,0 +1,151 @@
+{
+ "id": "attendance-setup",
+ "lang": "ar",
+ "title": "ضبط دائرة المول والورديات",
+ "duration": 70.16,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 8.55,
+   "text": "حدّد مركز المول، واختر نصف قطر الدائرة والدقة المطلوبة، ثم اضبط الورديات ومن يعمل بها.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.55,
+   "end": 14.44,
+   "text": "تبدأ «الإعدادات» بدائرة المول، ولا يمكن لأحد تسجيل الحضور قبل تحديد مركزها.",
+   "step": 1,
+   "url": "/admin/attendance/settings"
+  },
+  {
+   "start": 14.44,
+   "end": 18.71,
+   "text": "الصق المركز كرقمين، أو رابط الخريطة لموقع المول.",
+   "step": 2,
+   "url": "/admin/attendance/settings"
+  },
+  {
+   "start": 18.71,
+   "end": 23.82,
+   "text": "أو قف في منتصف المول بهاتفك واختر «استخدم مكان وقوفي».",
+   "step": 3,
+   "url": "/admin/attendance/settings"
+  },
+  {
+   "start": 23.82,
+   "end": 29.84,
+   "text": "نصف قطر الدائرة مئة متر افتراضيًا، وكبّره إن كانت مداخل بعيدة خارجها.",
+   "step": 4,
+   "url": "/admin/attendance/settings"
+  },
+  {
+   "start": 29.84,
+   "end": 37.62,
+   "text": "والدقة المطلوبة: تُرفض أي قراءة أقل دقة من هذا، فلا يسجّل أحد حضوره بإشارة غير واضحة.",
+   "step": 5,
+   "url": "/admin/attendance/settings"
+  },
+  {
+   "start": 37.62,
+   "end": 41.73,
+   "text": "والمعاينة تعرض الدائرة حول المركز بالمقياس الحقيقي.",
+   "step": 6,
+   "url": "/admin/attendance/settings"
+  },
+  {
+   "start": 41.73,
+   "end": 44.78,
+   "text": "اضغط «حفظ».",
+   "step": 7,
+   "url": "/admin/attendance/settings"
+  },
+  {
+   "start": 44.78,
+   "end": 49.69,
+   "text": "و«الورديات»: متى تعمل كل مجموعة، ودقائق السماح، والاستراحة غير المدفوعة.",
+   "step": 8,
+   "url": "/admin/attendance/shifts"
+  },
+  {
+   "start": 49.69,
+   "end": 55.9,
+   "text": "الوردية التي تنتهي بعد منتصف الليل تُحسب لليوم الذي بدأت فيه.",
+   "step": 9,
+   "url": "/admin/attendance/shifts/4"
+  },
+  {
+   "start": 55.9,
+   "end": 58.89,
+   "text": "ومن يعمل بها: حدّد الأشخاص.",
+   "step": 10,
+   "url": "/admin/attendance/shifts/4"
+  },
+  {
+   "start": 58.89,
+   "end": 65.76,
+   "text": "ثم عيّنهم من تاريخ محدد، ويُحسب تأخرهم ووقتهم الإضافي على هذه الوردية من بعده.",
+   "step": 11,
+   "url": "/admin/attendance/shifts/4"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/attendance/settings"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/attendance/settings"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/attendance/settings"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/attendance/settings"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/attendance/settings"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/attendance/settings"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/attendance/settings"
+  },
+  {
+   "step": 8,
+   "kind": "go",
+   "url": "/admin/attendance/shifts"
+  },
+  {
+   "step": 9,
+   "kind": "click",
+   "url": "/admin/attendance/shifts/4"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/attendance/shifts/4"
+  },
+  {
+   "step": 11,
+   "kind": "point",
+   "url": "/admin/attendance/shifts/4"
+  }
+ ],
+ "recorded_at": "2026-11-06T18:04:05.226Z"
+}

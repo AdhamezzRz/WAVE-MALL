@@ -1,0 +1,139 @@
+{
+ "id": "attendance-phones",
+ "lang": "ar",
+ "title": "الهواتف والأرقام السرية والتسجيلات المرفوضة",
+ "duration": 74.28,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 10.73,
+   "text": "وافق على هاتف جديد، وامنح أحدهم رقمًا سريًا أو افتح قفله، واطّلع على كل تسجيل مرفوض أو عليه ملاحظة وسببه.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 10.73,
+   "end": 17.88,
+   "text": "يسجّل كل شخص حضوره من هاتف واحد مسجّل، فلا يستطيع أحد التسجيل نيابة عن غيره.",
+   "step": 1,
+   "url": "/admin/attendance/devices"
+  },
+  {
+   "start": 17.88,
+   "end": 23.11,
+   "text": "ينتظر الهاتف الجديد هنا: لمن، وأي هاتف، ومتى حاول الدخول.",
+   "step": 2,
+   "url": "/admin/attendance/devices"
+  },
+  {
+   "start": 23.11,
+   "end": 29.12,
+   "text": "وافق عليه إن كان قد غيّر هاتفه فعلًا، ويتوقف الهاتف القديم.",
+   "step": 3,
+   "url": "/admin/attendance/devices"
+  },
+  {
+   "start": 29.12,
+   "end": 35.02,
+   "text": "خمسة أرقام سرية خاطئة تقفل الحساب لفترة، و«فتح القفل» يحرره فورًا.",
+   "step": 4,
+   "url": "/admin/attendance/devices"
+  },
+  {
+   "start": 35.02,
+   "end": 42.11,
+   "text": "ولمنح أحدهم رقمًا سريًا، افتح «حفظ الرقم السري» في صفّه.",
+   "step": 5,
+   "url": "/admin/attendance/devices"
+  },
+  {
+   "start": 42.11,
+   "end": 47.65,
+   "text": "اكتب ستة أرقام، أو دع المكتب ينشئ رقمًا، وأبلغه به شخصيًا.",
+   "step": 6,
+   "url": "/admin/attendance/devices"
+  },
+  {
+   "start": 47.65,
+   "end": 51.83,
+   "text": "وأغلقه الآن.",
+   "step": 7,
+   "url": "/admin/attendance/devices"
+  },
+  {
+   "start": 51.83,
+   "end": 55.89,
+   "text": "وتعرض «الاستثناءات» كل تسجيل رُفض أو عليه ملاحظة.",
+   "step": 8,
+   "url": "/admin/attendance/exceptions"
+  },
+  {
+   "start": 55.89,
+   "end": 65.81,
+   "text": "ويذكر كل صف السبب: خارج الدائرة، أو إشارة ضعيفة، أو قراءة قديمة، أو هاتف غير معروف، أو قفزة مستحيلة في الموقع.",
+   "step": 9,
+   "url": "/admin/attendance/exceptions"
+  },
+  {
+   "start": 65.81,
+   "end": 70.05,
+   "text": "ويمكنك التصفية بالمرفوض أو ذي الملاحظة، وبالشخص والتواريخ.",
+   "step": 10,
+   "url": "/admin/attendance/exceptions"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/attendance/devices"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/attendance/devices"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/attendance/devices"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/attendance/devices"
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/attendance/devices"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/attendance/devices"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/attendance/devices"
+  },
+  {
+   "step": 8,
+   "kind": "go",
+   "url": "/admin/attendance/exceptions"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/attendance/exceptions"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/attendance/exceptions"
+  }
+ ],
+ "recorded_at": "2026-11-06T18:05:46.349Z"
+}

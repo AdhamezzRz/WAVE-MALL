@@ -1,0 +1,49 @@
+WEBVTT
+
+1
+00:00:00.020 --> 00:00:10.100
+Put the mall's centre on the map, choose the circle and the precision, then set the shifts and who works them.
+
+2
+00:00:10.100 --> 00:00:16.470
+Settings starts with the mall's circle. Nobody can clock in until its centre is set.
+
+3
+00:00:16.470 --> 00:00:22.670
+Paste the centre as two numbers, or a map link to the mall's pin.
+
+4
+00:00:22.670 --> 00:00:30.360
+Or stand in the middle of the mall with your phone and choose Use where I am standing.
+
+5
+00:00:30.360 --> 00:00:37.270
+The circle is a hundred metres by default. Make it bigger if far entrances fall outside.
+
+6
+00:00:37.270 --> 00:00:44.940
+Precision needed: a reading less precise than this is refused, so nobody clocks in on a vague signal.
+
+7
+00:00:44.940 --> 00:00:49.820
+The preview shows the circle around the centre, to scale.
+
+8
+00:00:49.820 --> 00:00:52.940
+Save.
+
+9
+00:00:52.940 --> 00:00:58.100
+Shifts: when each group works, the grace minutes and the unpaid break.
+
+10
+00:00:58.100 --> 00:01:04.060
+A shift that ends after midnight counts for the day it started.
+
+11
+00:01:04.060 --> 00:01:07.160
+Who works it: tick the people.
+
+12
+00:01:07.160 --> 00:01:14.080
+Then assign them from a date. Their lateness and overtime follow this shift from then on.

@@ -1,0 +1,139 @@
+{
+ "id": "attendance-phones",
+ "lang": "en",
+ "title": "Phones, PINs and refused clocking",
+ "duration": 76.08,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 9.71,
+   "text": "Approve a new phone, give someone a PIN or unlock them, and see every refused or flagged clocking and why.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 9.71,
+   "end": 16.49,
+   "text": "Each person clocks in from one registered phone, so nobody can clock in for someone else.",
+   "step": 1,
+   "url": "/admin/attendance/devices"
+  },
+  {
+   "start": 16.49,
+   "end": 23.06,
+   "text": "A new phone waits here: who it is for, which phone, and when they tried.",
+   "step": 2,
+   "url": "/admin/attendance/devices"
+  },
+  {
+   "start": 23.06,
+   "end": 29,
+   "text": "Approve it if they really changed phones. The old phone stops working.",
+   "step": 3,
+   "url": "/admin/attendance/devices"
+  },
+  {
+   "start": 29,
+   "end": 35.45,
+   "text": "Five wrong PINs lock the account for a while. Unlock frees it at once.",
+   "step": 4,
+   "url": "/admin/attendance/devices"
+  },
+  {
+   "start": 35.45,
+   "end": 42.79,
+   "text": "To give someone a PIN, open Set the PIN on their row.",
+   "step": 5,
+   "url": "/admin/attendance/devices"
+  },
+  {
+   "start": 42.79,
+   "end": 49.33,
+   "text": "Type six digits, or let the office make one. Tell it to them in person.",
+   "step": 6,
+   "url": "/admin/attendance/devices"
+  },
+  {
+   "start": 49.33,
+   "end": 53.48,
+   "text": "Close it for now.",
+   "step": 7,
+   "url": "/admin/attendance/devices"
+  },
+  {
+   "start": 53.48,
+   "end": 57.51,
+   "text": "Exceptions lists every clocking that was refused or flagged.",
+   "step": 8,
+   "url": "/admin/attendance/exceptions"
+  },
+  {
+   "start": 57.51,
+   "end": 67.3,
+   "text": "Each row says why: outside the circle, a weak signal, an old reading, an unknown phone or a jump no one could make.",
+   "step": 9,
+   "url": "/admin/attendance/exceptions"
+  },
+  {
+   "start": 67.3,
+   "end": 71.9,
+   "text": "Filter by refused or flagged, by person and by dates.",
+   "step": 10,
+   "url": "/admin/attendance/exceptions"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/attendance/devices"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/attendance/devices"
+  },
+  {
+   "step": 3,
+   "kind": "click",
+   "url": "/admin/attendance/devices"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/attendance/devices"
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/attendance/devices"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/attendance/devices"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/attendance/devices"
+  },
+  {
+   "step": 8,
+   "kind": "go",
+   "url": "/admin/attendance/exceptions"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/attendance/exceptions"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/attendance/exceptions"
+  }
+ ],
+ "recorded_at": "2026-11-06T17:55:17.807Z"
+}

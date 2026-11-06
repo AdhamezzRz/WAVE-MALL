@@ -294,7 +294,8 @@ module.exports = function helpRoutes(router, h) {
     const [, areaLabel, areaIc] = areaOf(l.area);
     const m = help.media(l.id, lang);
     const dur = seconds(l, lang);
-    const tourable = l.area !== 'portal' && canOpen(req, l.module);
+    // the live tour runs on office pages only (not the portal or the staff phone app)
+    const tourable = l.area !== 'portal' && !l.steps.some((x) => x.go && !String(x.go).startsWith('/admin')) && canOpen(req, l.module);
     const csrf = req.session.csrf;
     const startAt = p && !p.done_at && p.pos > 3 && (!p.dur || p.pos < p.dur - 4) ? p.pos : 0;
     const player = playerHtml(req, l, { lang, progressUrl: `${base}/progress`, startAt, langSwitch: langLinks(req, l, lang, base) });
@@ -313,7 +314,7 @@ module.exports = function helpRoutes(router, h) {
     const facts = `<dl class="hlp-facts"><div><dt>${esc(tr('hlp|Area'))}</dt><dd>${ui.icon(areaIc)}<span>${esc(tr(areaLabel))}</span></dd></div><div><dt>${esc(tr('hlp|Length'))}</dt><dd>${esc(fmtDur(dur))}</dd></div><div><dt>${esc(tr('hlp|Steps'))}</dt><dd>${chapters.length}</dd></div><div><dt>${esc(tr('hlp|Level'))}</dt><dd>${esc(tr(LEVELS[l.level] || LEVELS.basic))}</dd></div></dl>`;
     const doneState = p && p.done_at;
     const actionsCard = `<section class="card hlp-do"><div class="card__body">
-      ${tourable ? `<a class="btn btn--primary btn--block hlp-showme" href="${esc(l.module || '/admin')}${(l.module || '').includes('?') ? '&' : '?'}tour=${esc(l.id)}" data-hlp-tour="${esc(l.id)}">${ui.icon('flow')}<span>${esc(tr('hlp|Show me on the real page'))}</span></a><p class="muted small">${esc(tr('hlp|The office points at each step while you do it yourself.'))}</p>` : l.area === 'portal' ? '' : `<p class="muted small">${esc(tr('hlp|You do not have access to this module, so the live tour is not available.'))}</p>`}
+      ${tourable ? `<a class="btn btn--primary btn--block hlp-showme" href="${esc(l.module || '/admin')}${(l.module || '').includes('?') ? '&' : '?'}tour=${esc(l.id)}" data-hlp-tour="${esc(l.id)}">${ui.icon('flow')}<span>${esc(tr('hlp|Show me on the real page'))}</span></a><p class="muted small">${esc(tr('hlp|The office points at each step while you do it yourself.'))}</p>` : l.area === 'portal' || l.steps.some((x) => x.go && !String(x.go).startsWith('/admin')) ? '' : `<p class="muted small">${esc(tr('hlp|You do not have access to this module, so the live tour is not available.'))}</p>`}
       ${ui.form(`${base}/done`, csrf, `<input type="hidden" name="done" value="${doneState ? 0 : 1}">${ui.btn(esc(doneState ? tr('hlp|Watched · undo') : tr('hlp|Mark as watched')), { cls: `btn--ghost btn--block${doneState ? ' is-done' : ''}`, ic: 'check' })}`)}
     </div></section>`;
     const chaptersCard = timed ? ui.card(tr('hlp|Steps'), `<ol class="hlp-chapters">${chapters.map((c, i) => `<li><button type="button" data-hlp-seek="${c.start}"><span class="hlp-chapters__n">${i + 1}</span><span class="hlp-chapters__t">${esc(c.text.length > 90 ? `${c.text.slice(0, 88)}…` : c.text)}</span><time>${fmtDur(c.start)}</time></button></li>`).join('')}</ol>`, { cls: 'hlp-chapcard' }) : '';

@@ -1,0 +1,151 @@
+{
+ "id": "attendance-person",
+ "lang": "ar",
+ "title": "يوم الموظف ساعة بساعة",
+ "duration": 75.72,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 8.99,
+   "text": "افتح يوم أحد الموظفين: حضوره واستراحاته، وأين كان، وكل ما فعله، ثم تابع نشاط الفريق كله.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 8.99,
+   "end": 13.19,
+   "text": "من اللوحة المباشرة، افتح الشخص الذي تريد متابعته.",
+   "step": 1,
+   "url": "/admin/attendance"
+  },
+  {
+   "start": 13.19,
+   "end": 16.43,
+   "text": "اضغط على اسمه.",
+   "step": 2,
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "start": 16.43,
+   "end": 20.87,
+   "text": "في الأعلى: آخر نشاط له، ومنذ متى كان.",
+   "step": 3,
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "start": 20.87,
+   "end": 27.73,
+   "text": "وأرقام اليوم: الوردية، وأول حضور، وآخر انصراف، والوقت المعمول مقارنة بالجدول، والاستراحات والوقت الإضافي.",
+   "step": 4,
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "start": 27.73,
+   "end": 34.58,
+   "text": "«اليوم ساعة بساعة»: الوردية، ووقت الحضور والاستراحات، وداخل الدائرة أو خارجها، وكل إجراء مسجّل.",
+   "step": 5,
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "start": 34.58,
+   "end": 40.56,
+   "text": "مرّر المؤشر على أي شريط أو نقطة لترى ما حدث بالضبط ومتى.",
+   "step": 6,
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "start": 40.56,
+   "end": 48.27,
+   "text": "كل تسجيل ببعده ودقته والحكم عليه، ويمكن للموارد البشرية إضافة تسجيل أو إلغاء الخاطئ مع ملاحظة.",
+   "step": 7,
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "start": 48.27,
+   "end": 53.82,
+   "text": "كل ما فعله، الأحدث أولًا، ويمكنك تصفيته بالتاريخ والمصدر واختيار الترتيب.",
+   "step": 8,
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "start": 53.82,
+   "end": 60.74,
+   "text": "والشهر في لمحة: كل يوم ملوّن بحسب ما حدث فيه، واضغط على يوم لتفتحه.",
+   "step": 9,
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "start": 60.74,
+   "end": 65.85,
+   "text": "وصفحة «النشاط» تعرض كل ما فعله الفريق كله أولًا بأول.",
+   "step": 10,
+   "url": "/admin/attendance/activity"
+  },
+  {
+   "start": 65.85,
+   "end": 71.43,
+   "text": "وضيّقها على شخص أو إدارة أو مصدر أو فترة من التواريخ.",
+   "step": 11,
+   "url": "/admin/attendance/activity"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/attendance"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "step": 7,
+   "kind": "point",
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/attendance/people/11"
+  },
+  {
+   "step": 10,
+   "kind": "go",
+   "url": "/admin/attendance/activity"
+  },
+  {
+   "step": 11,
+   "kind": "point",
+   "url": "/admin/attendance/activity"
+  }
+ ],
+ "recorded_at": "2026-11-06T18:02:28.832Z"
+}
