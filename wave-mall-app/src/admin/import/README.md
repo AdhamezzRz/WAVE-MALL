@@ -129,6 +129,13 @@ apply(row, ctx) {
 },
 ```
 
+### fileCheck (rules across rows)
+
+`fileCheck(rows, ctx)` sees every row still going in (`{ line, id, full, status, label }`) after the
+row checks, for rules a single row cannot know: an opening trial balance must balance, two leave rows
+of one person must not overlap. Mark a row with `ctx.error(row, col, 'imp|…', params)` or
+`ctx.warn(row, col, …)` (see `opening_balances` in `datasets/finance.js`).
+
 Write activity-log lines with `ctx.log('Added a brand', 'brand', id, name)`, using the actions the
 module already logs (they have Arabic), so an imported record's history reads like a typed one.
 

@@ -1148,3 +1148,4 @@ module.exports = function purchasing(router, h) {
 module.exports.PR_STATUS = PR_STATUS;
 module.exports.PO_STATUS = PO_STATUS;
 module.exports.CATEGORIES = CATEGORIES;
+module.exports.UNITS = UNITS;

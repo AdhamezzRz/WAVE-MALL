@@ -507,3 +507,6 @@ ${ui.card(tn(list.length, '{n} contract', '{n} contracts'), table)}`;
 };
 
 module.exports.KINDS = KINDS;
+// the contract statuses and billing periods, for the Excel import (src/admin/import/datasets/leasing.js)
+module.exports.STATUS = STATUS;
+module.exports.BILLING = BILLING;

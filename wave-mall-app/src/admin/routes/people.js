@@ -333,14 +333,14 @@ module.exports = function people(router, h) {
   }
 
   // ---------- invitations ----------
-  function createInvite({ email, name = null, title = null, role = 'agent', role_id = null, lang = null }, actor, { demo = 0 } = {}) {
+  function createInvite({ email, name = null, title = null, role = 'agent', role_id = null, lang = null }, actor, { demo = 0, send = true } = {}) {
     const token = crypto.randomBytes(24).toString('base64url');
     const t = nowIso();
     const expires = new Date(Date.now() + inviteDays() * 86400000).toISOString();
     const id = Number(db.run('INSERT INTO ppl_invites (kind, email, name, title, role, role_id, lang, token_hash, expires_at, created_by, created_at, demo) VALUES (\'invite\', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
       email.toLowerCase(), name, title, role, role_id, lang, sha(token), expires, actor ? actor.id : null, t, demo ? 1 : 0).lastInsertRowid);
     const link = `${site()}/admin/invite/${token}`;
-    sendLink(id, link);
+    if (send) sendLink(id, link);
     if (!demo) db.audit(actor, 'Invited someone', 'ppl_invite', id, email);
     return { id, link };
   }

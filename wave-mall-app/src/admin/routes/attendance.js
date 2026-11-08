@@ -1016,3 +1016,8 @@ module.exports = function attendance(router, h) {
   // the staff app at /staff
   require('../attendance/staff')(h, S, V);
 };
+
+// the shift choices other parts of the office reuse (the Excel import)
+module.exports.SHIFT_COLORS = SHIFT_COLORS;
+module.exports.COLOR_NAME = COLOR_NAME;
+module.exports.DOW = DOW;

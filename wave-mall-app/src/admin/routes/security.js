@@ -921,3 +921,4 @@ module.exports = function security(router, h) {
 module.exports.SCHEMA = SCHEMA;
 module.exports.SHIFTS = SHIFTS;
 module.exports.AREA_KINDS = AREA_KINDS;
+module.exports.K_KINDS = K_KINDS;

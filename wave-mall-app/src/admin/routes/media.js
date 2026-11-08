@@ -365,7 +365,13 @@ module.exports = function media(router, h) {
     db.run("UPDATE media_campaigns SET status = 'live', live_at = COALESCE(live_at, ?), updated_at = ? WHERE status = 'confirmed' AND artwork_status = 'approved' AND start_date <= ? AND end_date >= ?", M.now(), M.now(), t, t);
     db.run("UPDATE media_campaigns SET status = 'ended', ended_at = COALESCE(ended_at, ?), updated_at = ? WHERE status IN ('confirmed','live') AND end_date < ?", M.now(), M.now(), t);
   }
-  h.media = { sweep, priceLine, priceCampaign, conflicts, invoicePlan, refresh };
+  // fewer slots than already sold on a future day: the first such day ({ date, used }), or null
+  const slotClash = (itemId, slots) => {
+    const t = today();
+    const bad = conflicts(taking(t, addDays(t, 400), { itemId }), { id: itemId, slots }, t, addDays(t, 400), 0).filter((d) => d.used > slots);
+    return bad.length ? bad[0] : null;
+  };
+  h.media = { sweep, priceLine, priceCampaign, conflicts, invoicePlan, refresh, slotClash };
   h.every('media-sweep', 60 * 60 * 1000, () => sweep(), { first: 20 * 1000 });
 
   // starting within a week with artwork not yet approved, and discounts waiting on a manager here
@@ -1463,6 +1469,9 @@ ${ui.card(tr('med|Sell-through by space and month'), items.length ? heat : ui.em
 
 module.exports.SCHEMA = SCHEMA;
 module.exports.TYPES = TYPES;
+module.exports.LEVELS = LEVELS;
+module.exports.ITEM_STATUS = ITEM_STATUS;
+module.exports.CLIENT_KINDS = CLIENT_KINDS;
 module.exports.priceLine = priceLine;
 module.exports.priceCampaign = priceCampaign;
 module.exports.conflicts = conflicts;

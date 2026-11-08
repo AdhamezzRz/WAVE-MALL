@@ -26,6 +26,8 @@ module.exports = function revenue(router, h) {
   const U = require('../revenue/utilities')(router, h, X);
   require('../revenue/portal')(h, X, T, U);
   const { C } = X;
+  // turnover helpers for the Excel import of tenant sales (src/admin/import/datasets/revenue.js)
+  h.turnover = { saveSales: T.saveSales, isLocked: T.isLocked, STATUS: T.STATUS, C };
 
   // a voided invoice releases what it billed
   h.events.on('invoice.voided', ({ invoice }) => {

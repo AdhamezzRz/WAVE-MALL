@@ -1590,3 +1590,7 @@ module.exports = function accounting(router, h) {
   // for other modules (and tests): the ledger itself
   h.ledger = L;
 };
+
+// labels other parts of the office reuse (the Excel import)
+module.exports.TYPES = TYPES;
+module.exports.ASSET_CLASSES = ASSET_CLASSES;

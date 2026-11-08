@@ -1128,3 +1128,6 @@ GET  ${s}/ingest/parking/status   (free spaces for the signs)`;
     });
   }
 };
+
+module.exports.HOLDER = HOLDER;
+module.exports.P_STATUS = P_STATUS;

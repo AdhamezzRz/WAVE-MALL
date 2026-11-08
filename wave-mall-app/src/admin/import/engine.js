@@ -360,6 +360,7 @@ function create({ db, h }) {
     const allRefs = {};
     for (const c of d.columns) if (c.type === 'ref') allRefs[c.key] = refs[c.key] || refIndex(c);
     const current = new Map((d.export ? d.export(db) : []).map((r) => [r.$id, r]));
+    const keyCols = d.keys.flat();
     const seen = new Map();
     const selfKeys = new Map(); // value of the self-referenced column → line, for refs within the file
     const rows = [];
@@ -399,17 +400,21 @@ function create({ db, h }) {
         delete row.v[c.key];
       }
       // which record it is: the first key column with a value
+      // (a key may be several columns together, e.g. ['meter', 'period']: the dataset's find() reads them)
       let keyCol = null;
-      for (const k of d.keys) if (row.v[k] !== undefined && row.v[k] !== null && !(row.v[k] && row.v[k].self)) { keyCol = k; break; }
+      let keyDef = null;
+      const has = (k) => row.v[k] !== undefined && row.v[k] !== null && !(row.v[k] && row.v[k].self);
+      for (const k of d.keys) if ([].concat(k).every(has)) { keyDef = k; keyCol = [].concat(k)[0]; break; }
       if (keyCol) {
-        const sig = `${keyCol}:${P.norm(row.v[keyCol])}`;
-        if (seen.has(sig)) row.errors.push({ col: keyCol, key: 'imp|The same {col} is also on row {line}.', params: { col: T(d.col[keyCol].label, lang), line: seen.get(sig) } });
+        const parts = [].concat(keyDef);
+        const sig = `${parts.join('+')}:${parts.map((k) => P.norm(row.v[k])).join('|')}`;
+        if (seen.has(sig)) row.errors.push({ col: keyCol, key: 'imp|The same {col} is also on row {line}.', params: { col: parts.map((k) => T(d.col[k].label, lang)).join(' + '), line: seen.get(sig) } });
         else seen.set(sig, row.line);
-        const found = d.find ? d.find(db, row.v, keyCol) : findBy(d, keyCol, row.v[keyCol]);
+        const found = d.find ? d.find(db, row.v, keyDef) : findBy(d, keyCol, row.v[keyCol]);
         if (found && found.error) row.errors.push({ col: keyCol, key: found.error, params: found.params });
         else if (found) row.id = Number(found);
       }
-      row.label = d.label ? d.label(row.v, row.names) : String(row.v[d.keys[0]] ?? row.v[d.columns[0].key] ?? '');
+      row.label = d.label ? d.label(row.v, row.names) : String(row.v[[].concat(d.keys[0])[0]] ?? row.v[d.columns[0].key] ?? '');
       // a new record needs its required columns; an update only what it changes
       if (!row.id) {
         for (const c of d.columns) {
@@ -425,7 +430,7 @@ function create({ db, h }) {
         row.full = {};
         for (const c of d.columns) {
           // the column that found the record keeps its stored spelling (a different case finds it too)
-          if (d.keys.includes(c.key) && row.provided.has(c.key) && P.norm(row.v[c.key]) === P.norm(cur[c.key])) row.full[c.key] = cur[c.key];
+          if (keyCols.includes(c.key) && row.provided.has(c.key) && P.norm(row.v[c.key]) === P.norm(cur[c.key])) row.full[c.key] = cur[c.key];
           else if (row.provided.has(c.key)) row.full[c.key] = row.v[c.key];
           else if (opt.empties === 'clear' && c.key in byKey && !c.keepOnUpdate) row.full[c.key] = null;
           else if (c.type === 'ref') {
@@ -440,7 +445,7 @@ function create({ db, h }) {
           const was = cur[c.key] ?? null;
           let now = row.full[c.key];
           if (c.type === 'ref') now = row.provided.has(c.key) ? row.names[c.key] : now === null ? null : was;
-          if (d.keys.includes(c.key) && now !== null && P.norm(now) === P.norm(was)) continue;
+          if (keyCols.includes(c.key) && now !== null && P.norm(now) === P.norm(was)) continue;
           if (!equal(c, was, now)) row.diff.push({ col: c.key, was, now });
         }
         // a value that is already in the system: keep it exactly as stored, and no warnings about it
@@ -464,6 +469,17 @@ function create({ db, h }) {
       row.status = row.errors.length ? 'error' : !row.id ? 'new' : row.diff && row.diff.length ? 'update' : 'same';
       if (row.status === 'new' && opt.action === 'update') row.status = 'skip';
       if (row.status === 'update' && opt.action === 'create') row.status = 'skip';
+    }
+    // rules across the whole file (an opening trial balance must balance, two leave rows must not
+    // overlap): fileCheck(rows, ctx) sees every row still going in, with its full values
+    if (d.fileCheck) {
+      const live = rows.filter((r) => ['new', 'update', 'same'].includes(r.status));
+      const fail = (r, col, key, params) => { r.errors.push({ col, key, params }); r.status = 'error'; };
+      try {
+        d.fileCheck(live.map((r) => ({ line: r.line, id: r.id || null, full: r.full, status: r.status, label: r.label, row: r })), {
+          db, h, lang, user, error: (x, col, key, params) => fail(x.row || x, col, key, params), warn: (x, col, key, params) => (x.row || x).warns.push({ col, key, params }),
+        });
+      } catch (e) { for (const r of live) fail(r, null, String(e.message || e)); }
     }
     const count = (s) => rows.filter((r) => r.status === s).length;
     const counts = { total: rows.length, new: count('new'), update: count('update'), same: count('same'), error: count('error'), skip: count('skip'), warn: rows.filter((r) => r.warns.length && r.status !== 'error').length };
@@ -580,7 +596,10 @@ function create({ db, h }) {
     const snap = (id) => (d.snapshot ? d.snapshot(db, id) : db.get(`SELECT * FROM ${d.table} WHERE id = ?`, id));
     const batchIds = b.created_ids.map((c) => c.id);
     for (const c of b.created_ids) {
-      if (!snap(c.id)) continue;
+      const nowSnap = snap(c.id);
+      if (!nowSnap) continue;
+      // a record the import created and someone changed since (a draft activated, a cheque deposited)
+      if (c.after && !same(nowSnap, c.after)) out.push({ id: c.id, label: c.label, key: 'imp|{label} was changed again after the import.', params: { label: c.label } });
       const uses = d.uses ? d.uses(db, c.id, { skip: batchIds }) : d.table ? usesOf(d.table, c.id, { skip: batchIds }) : [];
       for (const u of uses) if (u.n) out.push({ id: c.id, label: c.label, key: 'imp|{label} is now used by {n} {what}.', params: { label: c.label, n: u.n, what: T(u.what, lang) } });
     }

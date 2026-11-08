@@ -210,7 +210,8 @@ test('import: brands from a workbook — preview, problems workbook, all-or-noth
     ['Nile Bloom', 'fnb', '', '', '', '', '', '', ''],
     ['Sun Spa', 'Sports', '', '', '', '', '', '', ''],
   ];
-  const up = await admin.upload('brands', await xlsx(rows), 'brands.xlsx');
+  const file = await xlsx(rows); // the same bytes are uploaded again below (a workbook built twice differs: it carries its creation time)
+  const up = await admin.upload('brands', file, 'brands.xlsx');
   assert.equal(up.ok, true, up.error);
   const token = tokenOf(up.url);
   const page = await (await admin.go(up.url)).text();
@@ -264,7 +265,7 @@ test('import: brands from a workbook — preview, problems workbook, all-or-noth
   assert.match(done, /Brands imported/);
   assert.match(done, /Undo this import/);
   // the same file again is recognised
-  const again = await admin.upload('brands', await xlsx(rows), 'brands.xlsx');
+  const again = await admin.upload('brands', file, 'brands.xlsx');
   assert.match(await (await admin.go(again.url)).text(), /You already imported this exact file/);
   // undo: the brand and its contact go
   const id = batchUrl.split('/').pop();

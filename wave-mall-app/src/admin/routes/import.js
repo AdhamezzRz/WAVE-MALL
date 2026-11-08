@@ -156,7 +156,7 @@ module.exports = function importer(router, h) {
     const depWarn = deps.filter((x) => !I.status(x).n);
     const dict = `<div class="tablewrap"><table class="table table--resp imp-dict"><thead><tr><th>${esc(tr('imp|Column'))}</th><th>${esc(tr('imp|Type'))}</th><th>${esc(tr('imp|Allowed values / notes'))}</th></tr></thead><tbody>${d.columns.map((c) => {
       const allowed = c.type === 'enum' ? I.enumOf(c).map(([, l]) => T(l)).join(' · ') : c.type === 'ref' ? tr('imp|One of the {what} in the system', { what: T(c.ref.what || c.label) }) : '';
-      return `<tr><td data-label=""><b>${esc(T(c.label))}</b>${c.required ? ` <span class="imp-req">${esc(tr('imp|required'))}</span>` : ''}${d.keys.includes(c.key) ? ` <span class="imp-key">${esc(tr('imp|finds the record'))}</span>` : ''}</td><td data-label="${esc(tr('imp|Type'))}">${esc(tr(TYPE[c.type] || 'imp|Text'))}</td><td data-label="">${allowed ? `<span>${esc(allowed)}</span>` : ''}${c.help ? `<small class="sub">${esc(T(c.help))}</small>` : ''}</td></tr>`;
+      return `<tr><td data-label=""><b>${esc(T(c.label))}</b>${c.required ? ` <span class="imp-req">${esc(tr('imp|required'))}</span>` : ''}${d.keys.flat().includes(c.key) ? ` <span class="imp-key">${esc(tr('imp|finds the record'))}</span>` : ''}</td><td data-label="${esc(tr('imp|Type'))}">${esc(tr(TYPE[c.type] || 'imp|Text'))}</td><td data-label="">${allowed ? `<span>${esc(allowed)}</span>` : ''}${c.help ? `<small class="sub">${esc(T(c.help))}</small>` : ''}</td></tr>`;
     }).join('')}</tbody></table></div>`;
     const upload = can ? `<section class="card imp-drop" data-imp-upload="/admin/import/${esc(d.key)}/upload" data-max="${I.MAX_BYTES}">
         <div class="imp-drop__zone" data-imp-zone tabindex="0" role="button" aria-label="${esc(tr('imp|Choose a file to upload'))}">
@@ -342,7 +342,8 @@ module.exports = function importer(router, h) {
       r = I.commit(st, optsOf(req.body), req.user, lang());
     } catch (e) {
       const text = String(e.message || e);
-      const why = text.startsWith('imp|') ? tr(text) : tr('imp|A row could not be saved.');
+      // a module's own message (imp|…, prk|…, utl|…) is translated; anything else is not shown as is
+      const why = /^[a-z0-9]+\|/.test(text) ? tr(text, e.params) : tr('imp|A row could not be saved.');
       return h.back(req, res, `/admin/import/s/${st.token}?${optQs(optsOf(req.body))}`, 'error', e.line ? tr('imp|Nothing was imported: row {line} — {why}', { line: e.line, why }) : `${tr('imp|Nothing was imported.')} ${why}`);
     }
     if (r.error) return h.back(req, res, `/admin/import/s/${st.token}?${optQs(optsOf(req.body))}`, 'error', tr(r.error));

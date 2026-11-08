@@ -42,7 +42,7 @@ module.exports = function advances(router, h) {
 
   // What has been repaid: cash repayments, and installments of approved or paid payroll runs.
   const repaid = (a, { exceptRun = null } = {}) => r2(db.value(`SELECT COALESCE(SUM(x.amount), 0) FROM hr_advance_repayments x LEFT JOIN payroll_runs r ON r.id = x.run_id
-    WHERE x.advance_id = ? AND (x.source = 'cash' OR r.status IN ('approved','paid')) AND (x.run_id IS NULL OR x.run_id IS NOT ?)`, a.id, exceptRun));
+    WHERE x.advance_id = ? AND (x.source IN ('cash','opening') OR r.status IN ('approved','paid')) AND (x.run_id IS NULL OR x.run_id IS NOT ?)`, a.id, exceptRun));
   const remaining = (a, opts) => r2(Math.max(0, a.amount - repaid(a, opts)));
   // an advance fully repaid is settled; one with more to repay (a run reopened) is active again
   function refresh(a) {
@@ -60,7 +60,7 @@ module.exports = function advances(router, h) {
     for (const a of db.all("SELECT * FROM hr_advances WHERE employee_id = ? AND status != 'cancelled' AND start_period <= ? ORDER BY issued_on, id", emp.id, run.period)) {
       // what earlier runs and cash have not covered yet (draft runs of other months count as planned)
       const planned = r2(db.value(`SELECT COALESCE(SUM(x.amount), 0) FROM hr_advance_repayments x LEFT JOIN payroll_runs r ON r.id = x.run_id
-        WHERE x.advance_id = ? AND (x.source = 'cash' OR (x.run_id != ? AND r.period < ?))`, a.id, run.id, run.period));
+        WHERE x.advance_id = ? AND (x.source IN ('cash','opening') OR (x.run_id != ? AND r.period < ?))`, a.id, run.id, run.period));
       const due = r2(Math.min(a.monthly, Math.max(0, a.amount - planned)));
       if (due <= 0) continue;
       db.run("INSERT INTO hr_advance_repayments (advance_id, run_id, period, amount, source, created_at) VALUES (?, ?, ?, ?, 'payroll', ?)", a.id, run.id, run.period, due, now());
@@ -228,7 +228,7 @@ module.exports = function advances(router, h) {
       period = M.addMonths(`${period}-01`, 1).slice(0, 7);
     }
     const lines = [
-      ...pays.map((p) => `<li><span class="what"><b>${esc(p.source === 'cash' ? tr('adv|Repaid in cash') : tr('adv|Payroll {month}', { month: ui.monthYear(p.period) }))}</b><small>${esc(p.source === 'cash' ? ui.date(p.paid_on) : ['approved', 'paid'].includes(p.run_status) ? tr('adv|Taken off pay') : tr('adv|On the draft payroll'))}</small></span><b>${ui.money(p.amount)}</b>${p.source === 'cash' || ['approved', 'paid'].includes(p.run_status) ? ui.badge('ok', tr('adv|Repaid'), 'ok') : ui.badge('plan', tr('adv|Planned'), 'sky')}</li>`),
+      ...pays.map((p) => `<li><span class="what"><b>${esc(p.source === 'cash' ? tr('adv|Repaid in cash') : p.source === 'opening' ? tr('imp2|Repaid before the start day') : tr('adv|Payroll {month}', { month: ui.monthYear(p.period) }))}</b><small>${esc(p.source === 'cash' || p.source === 'opening' ? ui.date(p.paid_on) : ['approved', 'paid'].includes(p.run_status) ? tr('adv|Taken off pay') : tr('adv|On the draft payroll'))}</small></span><b>${ui.money(p.amount)}</b>${p.source === 'cash' || p.source === 'opening' || ['approved', 'paid'].includes(p.run_status) ? ui.badge('ok', tr('adv|Repaid'), 'ok') : ui.badge('plan', tr('adv|Planned'), 'sky')}</li>`),
       ...schedule.map((x) => `<li class="is-future"><span class="what"><b>${esc(tr('adv|Payroll {month}', { month: ui.monthYear(x.period) }))}</b><small>${esc(tr('adv|To come'))}</small></span><b>${ui.money(x.amount)}</b></li>`),
     ];
     const facts = `<dl class="dl">

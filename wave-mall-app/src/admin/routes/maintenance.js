@@ -1039,3 +1039,7 @@ module.exports.nextDue = nextDue;
 module.exports.generatePpm = generatePpm;
 module.exports.SLA_DEFAULT = SLA_DEFAULT;
 module.exports.CATEGORIES = CATEGORIES;
+module.exports.CRIT = CRIT;
+module.exports.A_STATUS = A_STATUS;
+module.exports.UNITS = UNITS;
+module.exports.PRIORITY = PRIORITY;
