@@ -394,7 +394,7 @@ module.exports = function helpRoutes(router, h) {
     l.steps.forEach((s, i) => {
       const kind = help.kindOf(s);
       const here = kind === 'go' ? s.go : at;
-      const sel = kind === 'type' ? s.type[0] : kind === 'select' ? s.select[0] : ['point', 'click', 'check', 'hover', 'scroll'].includes(kind) && typeof s[kind] === 'string' ? s[kind] : null;
+      const sel = kind === 'type' ? s.type[0] : kind === 'select' ? s.select[0] : kind === 'upload' ? s.upload[0] : ['point', 'click', 'check', 'hover', 'scroll'].includes(kind) && typeof s[kind] === 'string' ? s[kind] : null;
       if (s.say) {
         steps.push({
           n: steps.length + 1, kind, sel, has: s.has === undefined ? null : help.textOf(s.has, lang), nth: s.nth === undefined ? null : s.nth,

@@ -44,6 +44,7 @@ The first step must be `{ go }`. Every step may have `say: { en, ar }` (a line o
 | `{ type: ['css', { en: 'text', ar: 'نص' }], say }` | clicks into a field and types (character by character, with key sounds). The text may be a plain string. `clear: false` keeps what is there |
 | `{ select: ['css', 'value'], say }` | chooses an option of a `<select>` by its **value** (same in both languages), or by label with `{ en, ar }` |
 | `{ check: 'css', say }` | ticks a checkbox |
+| `{ upload: ['css', file], say, nav: true }` | clicks a drop zone or file button and chooses a file for it. `file` is a path from the app folder, or a function `({ db, h, lang, base })` returning `{ name, buffer }` (build the workbook there with exceljs, in the lesson's language). The file goes into the `<input type=file>` inside the element, or `input: 'css'` names another. `nav: true` when choosing it opens another address. The live tour points at the element |
 | `{ hover: 'css', say }` | moves over an element (tooltips) |
 | `{ scroll: 'css' or 400, say }` | scrolls to an element, or by pixels |
 | `{ key: 'Escape', say }` | presses a key |

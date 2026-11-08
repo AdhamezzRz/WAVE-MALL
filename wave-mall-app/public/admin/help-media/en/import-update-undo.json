@@ -1,0 +1,151 @@
+{
+ "id": "import-update-undo",
+ "lang": "en",
+ "title": "Updating records from Excel, and undoing an import",
+ "duration": 72.84,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 11.25,
+   "text": "Edit your current data in Excel and import it back to update records, see exactly what changes, then undo an import from the history.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 11.25,
+   "end": 16.13,
+   "text": "To change many records at once, start from your current data.",
+   "step": 1,
+   "url": "/admin/import/brands"
+  },
+  {
+   "start": 16.13,
+   "end": 22.7,
+   "text": "With current data downloads every brand in the template. Change what you need in Excel.",
+   "step": 2,
+   "url": "/admin/import/brands"
+  },
+  {
+   "start": 22.7,
+   "end": 28.34,
+   "text": "Then upload it. Here, two brands have a new website.",
+   "step": 3,
+   "url": "/admin/import/s/JlNHwvfDgQPxvcgKf9lXg_q3"
+  },
+  {
+   "start": 28.34,
+   "end": 35.44,
+   "text": "Rows that match a brand already here are updates; the rest are unchanged and left alone.",
+   "step": 4,
+   "url": "/admin/import/s/JlNHwvfDgQPxvcgKf9lXg_q3"
+  },
+  {
+   "start": 35.44,
+   "end": 40.62,
+   "text": "Each update shows what the field was and what it becomes.",
+   "step": 5,
+   "url": "/admin/import/s/JlNHwvfDgQPxvcgKf9lXg_q3"
+  },
+  {
+   "start": 40.62,
+   "end": 43.84,
+   "text": "Import the changes.",
+   "step": 6,
+   "url": "/admin/import/b/1"
+  },
+  {
+   "start": 43.84,
+   "end": 48.62,
+   "text": "All imports keeps every batch: what, which file, who and when.",
+   "step": 7,
+   "url": "/admin/import/history"
+  },
+  {
+   "start": 48.62,
+   "end": 53.46,
+   "text": "Open one to see what it added and changed.",
+   "step": 8,
+   "url": "/admin/import/b/1"
+  },
+  {
+   "start": 53.46,
+   "end": 60.82,
+   "text": "Undo puts updated records back as they were and removes new ones, unless something already uses them.",
+   "step": 9,
+   "url": "/admin/import/b/1"
+  },
+  {
+   "start": 60.82,
+   "end": 64.34,
+   "text": "Confirm, and the import is undone.",
+   "step": 10,
+   "url": "/admin/import/b/1"
+  },
+  {
+   "start": 64.34,
+   "end": 68.61,
+   "text": "The record of the import stays, marked as undone.",
+   "step": 11,
+   "url": "/admin/import/b/1"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/import/brands"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/import/brands"
+  },
+  {
+   "step": 3,
+   "kind": "upload",
+   "url": "/admin/import/s/JlNHwvfDgQPxvcgKf9lXg_q3"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/import/s/JlNHwvfDgQPxvcgKf9lXg_q3"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/import/s/JlNHwvfDgQPxvcgKf9lXg_q3"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/import/b/1"
+  },
+  {
+   "step": 7,
+   "kind": "go",
+   "url": "/admin/import/history"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/import/b/1"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/import/b/1"
+  },
+  {
+   "step": 10,
+   "kind": "click",
+   "url": "/admin/import/b/1"
+  },
+  {
+   "step": 11,
+   "kind": "point",
+   "url": "/admin/import/b/1"
+  }
+ ],
+ "recorded_at": "2026-11-08T23:38:39.759Z"
+}

@@ -1,0 +1,49 @@
+WEBVTT
+
+1
+00:00:00.020 --> 00:00:11.250
+Edit your current data in Excel and import it back to update records, see exactly what changes, then undo an import from the history.
+
+2
+00:00:11.250 --> 00:00:16.130
+To change many records at once, start from your current data.
+
+3
+00:00:16.130 --> 00:00:22.700
+With current data downloads every brand in the template. Change what you need in Excel.
+
+4
+00:00:22.700 --> 00:00:28.340
+Then upload it. Here, two brands have a new website.
+
+5
+00:00:28.340 --> 00:00:35.440
+Rows that match a brand already here are updates; the rest are unchanged and left alone.
+
+6
+00:00:35.440 --> 00:00:40.620
+Each update shows what the field was and what it becomes.
+
+7
+00:00:40.620 --> 00:00:43.840
+Import the changes.
+
+8
+00:00:43.840 --> 00:00:48.620
+All imports keeps every batch: what, which file, who and when.
+
+9
+00:00:48.620 --> 00:00:53.460
+Open one to see what it added and changed.
+
+10
+00:00:53.460 --> 00:01:00.820
+Undo puts updated records back as they were and removes new ones, unless something already uses them.
+
+11
+00:01:00.820 --> 00:01:04.340
+Confirm, and the import is undone.
+
+12
+00:01:04.340 --> 00:01:08.610
+The record of the import stays, marked as undone.

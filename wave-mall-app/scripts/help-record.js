@@ -424,7 +424,7 @@ async function playLesson(browser, office, lesson, lang, { record }) {
         await wait(Math.max(900, read));
         pushCue(i, st, text);
       } else {
-        const sel = kind === 'type' ? s.type[0] : kind === 'select' ? s.select[0] : s[kind];
+        const sel = kind === 'type' ? s.type[0] : kind === 'select' ? s.select[0] : kind === 'upload' ? s.upload[0] : s[kind];
         const loc = await locate(i, sel, s);
         if (text) await chip(n);
         const box = await bring(loc);
@@ -483,6 +483,29 @@ async function playLesson(browser, office, lesson, lang, { record }) {
           if (record) for (let k = 0; k < value.length; k++) if (value[k] !== ' ') sounds.push({ kind: 'key', t: tt + (k * delay) / 1000 });
           await loc.pressSequentially(value, { delay });
           await wait(700);
+        } else if (kind === 'upload') {
+          // a file chosen for the page: the cursor clicks the drop zone, the file goes into the page's
+          // file input (s.input, or the first <input type=file> inside the zone or on the page)
+          await wait(Math.max(400, read - 1800));
+          await ov('down', true); await ov('ripple', tx, ty); if (record) sounds.push({ kind: 'click', t: now() }); await wait(120); await ov('down', false);
+          const spec = s.upload[1];
+          const file = typeof spec === 'function' ? await spec({ db: office.db, h: office.h, lang, base }) : { name: path.basename(spec), buffer: fs.readFileSync(path.resolve(ROOT, spec)) };
+          if (!file || !file.buffer) fail(i, 'the upload step has no file');
+          const inside = loc.locator('input[type=file]');
+          const input = s.input ? page.locator(s.input).first() : (await inside.count()) ? inside.first() : page.locator('input[type=file]').first();
+          const before = page.url();
+          const navP = s.nav ? page.waitForURL((u) => u.toString() !== before, { timeout: 20000 }).then(() => true, () => false) : null;
+          const mime = /\.csv$/i.test(file.name) ? 'text/csv' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+          await input.setInputFiles({ name: file.name, mimeType: file.mimeType || mime, buffer: Buffer.from(file.buffer) }).catch((e) => fail(i, `could not choose the file: ${e.message.split('\n')[0]}`));
+          if (navP) {
+            if (!(await navP)) fail(i, 'choosing the file did not open another page (remove nav: true?)');
+            if (record) sounds.push({ kind: 'nav', t: now() });
+            await page.waitForLoadState('load');
+            await placeCursor();
+            await ov('spot', null);
+            if (text) await chip(n);
+          }
+          await wait(s.nav ? 900 : 1200);
         } else if (kind === 'select') {
           await wait(Math.max(400, read - 1600));
           await ov('down', true); await ov('ripple', tx, ty); if (record) sounds.push({ kind: 'click', t: now() }); await wait(120); await ov('down', false);

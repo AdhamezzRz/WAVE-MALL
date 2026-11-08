@@ -1,0 +1,57 @@
+WEBVTT
+
+1
+00:00:00.020 --> 00:00:09.330
+Upload your own contracts sheet, match its columns, check every row, see the problems, and import the good rows.
+
+2
+00:00:09.330 --> 00:00:15.310
+Every list that can be filled from Excel has an Import from Excel button.
+
+3
+00:00:15.310 --> 00:00:18.600
+On Leases, choose it.
+
+4
+00:00:18.600 --> 00:00:26.300
+Drop your workbook here. This is the mall's own contracts sheet, with its own column titles.
+
+5
+00:00:26.300 --> 00:00:34.400
+The office reads your column titles and matches each one to a field. Green is sure; blue is likely.
+
+6
+00:00:34.400 --> 00:00:39.400
+Shop was matched to Units: that is right, so leave it.
+
+7
+00:00:39.400 --> 00:00:43.580
+Our remarks is not needed: choose Don't import.
+
+8
+00:00:43.580 --> 00:00:48.760
+The choices are remembered for next time. Check the rows.
+
+9
+00:00:48.760 --> 00:00:54.950
+Before anything is saved: three new contracts, and one row with a problem.
+
+10
+00:00:54.950 --> 00:01:02.040
+Each problem says the row, the column and why: unit Z99 is not in the system.
+
+11
+00:01:02.040 --> 00:01:08.760
+Download the problems marked in your own workbook, fix them in Excel and upload again.
+
+12
+00:01:08.760 --> 00:01:13.720
+Or import the good rows now and skip the rest.
+
+13
+00:01:13.720 --> 00:01:17.800
+Import. Everything is saved in one go.
+
+14
+00:01:17.800 --> 00:01:25.290
+Done: the new contracts are listed with links, and the import can be undone for fourteen days.

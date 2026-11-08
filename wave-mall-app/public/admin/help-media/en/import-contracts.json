@@ -1,0 +1,175 @@
+{
+ "id": "import-contracts",
+ "lang": "en",
+ "title": "Importing your contracts from Excel",
+ "duration": 89.48,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 9.33,
+   "text": "Upload your own contracts sheet, match its columns, check every row, see the problems, and import the good rows.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 9.33,
+   "end": 15.31,
+   "text": "Every list that can be filled from Excel has an Import from Excel button.",
+   "step": 1,
+   "url": "/admin/leases"
+  },
+  {
+   "start": 15.31,
+   "end": 18.6,
+   "text": "On Leases, choose it.",
+   "step": 2,
+   "url": "/admin/import/leases"
+  },
+  {
+   "start": 18.6,
+   "end": 26.3,
+   "text": "Drop your workbook here. This is the mall's own contracts sheet, with its own column titles.",
+   "step": 3,
+   "url": "/admin/import/s/igQFz6lEUadQ4RH85B6pxTw8/map"
+  },
+  {
+   "start": 26.3,
+   "end": 34.4,
+   "text": "The office reads your column titles and matches each one to a field. Green is sure; blue is likely.",
+   "step": 4,
+   "url": "/admin/import/s/igQFz6lEUadQ4RH85B6pxTw8/map"
+  },
+  {
+   "start": 34.4,
+   "end": 39.4,
+   "text": "Shop was matched to Units: that is right, so leave it.",
+   "step": 5,
+   "url": "/admin/import/s/igQFz6lEUadQ4RH85B6pxTw8/map"
+  },
+  {
+   "start": 39.4,
+   "end": 43.58,
+   "text": "Our remarks is not needed: choose Don't import.",
+   "step": 6,
+   "url": "/admin/import/s/igQFz6lEUadQ4RH85B6pxTw8/map"
+  },
+  {
+   "start": 43.58,
+   "end": 48.76,
+   "text": "The choices are remembered for next time. Check the rows.",
+   "step": 7,
+   "url": "/admin/import/s/igQFz6lEUadQ4RH85B6pxTw8"
+  },
+  {
+   "start": 48.76,
+   "end": 54.95,
+   "text": "Before anything is saved: three new contracts, and one row with a problem.",
+   "step": 8,
+   "url": "/admin/import/s/igQFz6lEUadQ4RH85B6pxTw8"
+  },
+  {
+   "start": 54.95,
+   "end": 62.04,
+   "text": "Each problem says the row, the column and why: unit Z99 is not in the system.",
+   "step": 9,
+   "url": "/admin/import/s/igQFz6lEUadQ4RH85B6pxTw8"
+  },
+  {
+   "start": 62.04,
+   "end": 68.76,
+   "text": "Download the problems marked in your own workbook, fix them in Excel and upload again.",
+   "step": 10,
+   "url": "/admin/import/s/igQFz6lEUadQ4RH85B6pxTw8"
+  },
+  {
+   "start": 68.76,
+   "end": 73.72,
+   "text": "Or import the good rows now and skip the rest.",
+   "step": 11,
+   "url": "/admin/import/s/igQFz6lEUadQ4RH85B6pxTw8?mode=valid&action=both&empties=keep"
+  },
+  {
+   "start": 73.72,
+   "end": 77.8,
+   "text": "Import. Everything is saved in one go.",
+   "step": 12,
+   "url": "/admin/import/b/1"
+  },
+  {
+   "start": 77.8,
+   "end": 85.29,
+   "text": "Done: the new contracts are listed with links, and the import can be undone for fourteen days.",
+   "step": 13,
+   "url": "/admin/import/b/1"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/leases"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/import/leases"
+  },
+  {
+   "step": 3,
+   "kind": "upload",
+   "url": "/admin/import/s/igQFz6lEUadQ4RH85B6pxTw8/map"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/import/s/igQFz6lEUadQ4RH85B6pxTw8/map"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/import/s/igQFz6lEUadQ4RH85B6pxTw8/map"
+  },
+  {
+   "step": 6,
+   "kind": "select",
+   "url": "/admin/import/s/igQFz6lEUadQ4RH85B6pxTw8/map"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/import/s/igQFz6lEUadQ4RH85B6pxTw8"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/import/s/igQFz6lEUadQ4RH85B6pxTw8"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/import/s/igQFz6lEUadQ4RH85B6pxTw8"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/import/s/igQFz6lEUadQ4RH85B6pxTw8"
+  },
+  {
+   "step": 11,
+   "kind": "select",
+   "url": "/admin/import/s/igQFz6lEUadQ4RH85B6pxTw8?mode=valid&action=both&empties=keep"
+  },
+  {
+   "step": 12,
+   "kind": "click",
+   "url": "/admin/import/b/1"
+  },
+  {
+   "step": 13,
+   "kind": "point",
+   "url": "/admin/import/b/1"
+  }
+ ],
+ "recorded_at": "2026-11-08T23:37:00.510Z"
+}

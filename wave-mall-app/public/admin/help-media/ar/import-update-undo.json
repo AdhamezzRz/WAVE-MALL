@@ -1,0 +1,151 @@
+{
+ "id": "import-update-undo",
+ "lang": "ar",
+ "title": "تحديث السجلات من إكسل والتراجع عن استيراد",
+ "duration": 72.48,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 10.72,
+   "text": "عدّل بياناتك الحالية في إكسل وأعد استيرادها لتحديث السجلات، واطّلع على ما سيتغير بالضبط، ثم تراجع عن استيراد من السجل.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 10.72,
+   "end": 15.28,
+   "text": "لتعديل سجلات كثيرة دفعة واحدة، ابدأ من بياناتك الحالية.",
+   "step": 1,
+   "url": "/admin/import/brands"
+  },
+  {
+   "start": 15.28,
+   "end": 22.44,
+   "text": "«مع البيانات الحالية» ينزّل كل العلامات التجارية في القالب، فعدّل ما تحتاجه في إكسل.",
+   "step": 2,
+   "url": "/admin/import/brands"
+  },
+  {
+   "start": 22.44,
+   "end": 27.38,
+   "text": "ثم ارفعه. هنا تغيّر الموقع الإلكتروني لعلامتين.",
+   "step": 3,
+   "url": "/admin/import/s/c9SvWqlk1OF31Yamn0aFxKtF"
+  },
+  {
+   "start": 27.38,
+   "end": 33.47,
+   "text": "الصفوف المطابقة لعلامة موجودة تُعد تحديثًا، والباقي دون تغيير ويبقى كما هو.",
+   "step": 4,
+   "url": "/admin/import/s/c9SvWqlk1OF31Yamn0aFxKtF"
+  },
+  {
+   "start": 33.47,
+   "end": 37.78,
+   "text": "يعرض كل تحديث قيمة الحقل قبل التعديل وبعده.",
+   "step": 5,
+   "url": "/admin/import/s/c9SvWqlk1OF31Yamn0aFxKtF"
+  },
+  {
+   "start": 37.78,
+   "end": 40.92,
+   "text": "استورد التعديلات.",
+   "step": 6,
+   "url": "/admin/import/b/1"
+  },
+  {
+   "start": 40.92,
+   "end": 48.03,
+   "text": "وصفحة «كل عمليات الاستيراد» تحتفظ بكل دفعة: ماذا، ومن أي ملف، ومن قام بها ومتى.",
+   "step": 7,
+   "url": "/admin/import/history"
+  },
+  {
+   "start": 48.03,
+   "end": 52.41,
+   "text": "افتح إحداها لترى ما أضافته وما غيّرته.",
+   "step": 8,
+   "url": "/admin/import/b/1"
+  },
+  {
+   "start": 52.41,
+   "end": 60.59,
+   "text": "«تراجع عن هذا الاستيراد» يعيد السجلات المحدَّثة كما كانت ويحذف الجديدة، ما لم يكن هناك ما يستخدمها.",
+   "step": 9,
+   "url": "/admin/import/b/1"
+  },
+  {
+   "start": 60.59,
+   "end": 64,
+   "text": "أكّد، فيتم التراجع عن الاستيراد.",
+   "step": 10,
+   "url": "/admin/import/b/1"
+  },
+  {
+   "start": 64,
+   "end": 68.27,
+   "text": "ويبقى سجل الاستيراد، معلَّمًا بأنه تم التراجع عنه.",
+   "step": 11,
+   "url": "/admin/import/b/1"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/import/brands"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/import/brands"
+  },
+  {
+   "step": 3,
+   "kind": "upload",
+   "url": "/admin/import/s/c9SvWqlk1OF31Yamn0aFxKtF"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/import/s/c9SvWqlk1OF31Yamn0aFxKtF"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/import/s/c9SvWqlk1OF31Yamn0aFxKtF"
+  },
+  {
+   "step": 6,
+   "kind": "click",
+   "url": "/admin/import/b/1"
+  },
+  {
+   "step": 7,
+   "kind": "go",
+   "url": "/admin/import/history"
+  },
+  {
+   "step": 8,
+   "kind": "click",
+   "url": "/admin/import/b/1"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/import/b/1"
+  },
+  {
+   "step": 10,
+   "kind": "click",
+   "url": "/admin/import/b/1"
+  },
+  {
+   "step": 11,
+   "kind": "point",
+   "url": "/admin/import/b/1"
+  }
+ ],
+ "recorded_at": "2026-11-08T23:43:57.312Z"
+}

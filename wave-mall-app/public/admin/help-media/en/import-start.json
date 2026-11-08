@@ -1,0 +1,127 @@
+{
+ "id": "import-start",
+ "lang": "en",
+ "title": "Bringing your Excel data into the office",
+ "duration": 87.8,
+ "cues": [
+  {
+   "start": 0.03,
+   "end": 12.03,
+   "text": "Find the import centre, the order to import in, and the template for each kind of record: in English, in Arabic or with your current data.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 12.03,
+   "end": 20.01,
+   "text": "Import from Excel, under Office, brings what you keep in spreadsheets into the office: contracts, brands, employees and more.",
+   "step": 1,
+   "url": "/admin/import"
+  },
+  {
+   "start": 20.01,
+   "end": 27.74,
+   "text": "Four steps: download a template, upload your file, check every row, then import. Every import can be undone.",
+   "step": 2,
+   "url": "/admin/import"
+  },
+  {
+   "start": 27.74,
+   "end": 36.21,
+   "text": "Import in this order: each step can refer to the ones before it, like leases to their brands and units.",
+   "step": 3,
+   "url": "/admin/import"
+  },
+  {
+   "start": 36.21,
+   "end": 43.52,
+   "text": "Each card shows how many records are already in the system and when they were last imported.",
+   "step": 4,
+   "url": "/admin/import"
+  },
+  {
+   "start": 43.52,
+   "end": 47.65,
+   "text": "Open the one you need. Here, leases.",
+   "step": 5,
+   "url": "/admin/import/leases"
+  },
+  {
+   "start": 47.65,
+   "end": 57.12,
+   "text": "Download the template in English or in Arabic, or With current data to edit what is already here and import it back.",
+   "step": 6,
+   "url": "/admin/import/leases"
+  },
+  {
+   "start": 57.12,
+   "end": 68.01,
+   "text": "In the template, lists such as units and brands are dropdowns, each column title has a note, and there is an example sheet and a read-me sheet.",
+   "step": 7,
+   "url": "/admin/import/leases"
+  },
+  {
+   "start": 68.01,
+   "end": 76.24,
+   "text": "The columns are listed here too: which are required, which one finds an existing record, and the values allowed.",
+   "step": 8,
+   "url": "/admin/import/leases"
+  },
+  {
+   "start": 76.24,
+   "end": 83.54,
+   "text": "When your file is ready, drop it here. Nothing is saved until you have checked every row.",
+   "step": 9,
+   "url": "/admin/import/leases"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/import"
+  },
+  {
+   "step": 2,
+   "kind": "point",
+   "url": "/admin/import"
+  },
+  {
+   "step": 3,
+   "kind": "point",
+   "url": "/admin/import"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/import"
+  },
+  {
+   "step": 5,
+   "kind": "click",
+   "url": "/admin/import/leases"
+  },
+  {
+   "step": 6,
+   "kind": "point",
+   "url": "/admin/import/leases"
+  },
+  {
+   "step": 7,
+   "kind": "say",
+   "url": "/admin/import/leases"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/import/leases"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/import/leases"
+  }
+ ],
+ "recorded_at": "2026-11-08T23:35:00.519Z"
+}

@@ -40,7 +40,7 @@ const PATHS = [
   { key: 'tenant', label: 'hlp|Tenant portal', sub: 'hlp|What tenants see and do in their portal.', icon: 'tenant', areas: ['portal'] },
 ];
 
-const STEP_KINDS = ['go', 'say', 'point', 'click', 'type', 'select', 'check', 'scroll', 'hover', 'key', 'pause', 'wait'];
+const STEP_KINDS = ['go', 'say', 'point', 'click', 'type', 'select', 'check', 'upload', 'scroll', 'hover', 'key', 'pause', 'wait'];
 // the action of a step: say is only the action when nothing else is
 const kindOf = (s) => STEP_KINDS.find((k) => k !== 'say' && Object.hasOwn(s, k)) || (Object.hasOwn(s, 'say') ? 'say' : null);
 const isText = (x) => typeof x === 'string' || (x && typeof x.en === 'string' && typeof x.ar === 'string');
@@ -60,6 +60,7 @@ function problems(l) {
     if (s.has !== undefined && !isText(s.has)) out.push(`step ${i + 1}: has must be text or { en, ar }`);
     if (k === 'type' && !(Array.isArray(s.type) && typeof s.type[0] === 'string' && isText(s.type[1]))) out.push(`step ${i + 1}: type is [selector, text or { en, ar }]`);
     if (k === 'select' && !(Array.isArray(s.select) && typeof s.select[0] === 'string')) out.push(`step ${i + 1}: select is [selector, value]`);
+    if (k === 'upload' && !(Array.isArray(s.upload) && typeof s.upload[0] === 'string' && ['string', 'function'].includes(typeof s.upload[1]))) out.push(`step ${i + 1}: upload is [selector, file path or ({ db, h, lang }) → { name, buffer }]`);
     if (k === 'go' && !/^\/(admin|portal|staff)(\/|$|\?)/.test(String(s.go))) out.push(`step ${i + 1}: go must be an /admin, /portal or /staff address`);
   });
   if (l.steps && !l.steps.some((s) => s.say)) out.push('at least one step must say something');

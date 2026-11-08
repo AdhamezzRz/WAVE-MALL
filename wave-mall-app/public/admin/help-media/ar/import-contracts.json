@@ -1,0 +1,175 @@
+{
+ "id": "import-contracts",
+ "lang": "ar",
+ "title": "استيراد عقودك من إكسل",
+ "duration": 80.84,
+ "cues": [
+  {
+   "start": 0.02,
+   "end": 9.41,
+   "text": "ارفع جدول عقودك كما هو، وطابق أعمدته، وراجع كل صف، واطّلع على المشكلات، ثم استورد الصفوف السليمة.",
+   "step": 0,
+   "url": "",
+   "intro": true
+  },
+  {
+   "start": 9.41,
+   "end": 14.81,
+   "text": "كل قائمة يمكن تعبئتها من إكسل فيها زر «استيراد من إكسل».",
+   "step": 1,
+   "url": "/admin/leases"
+  },
+  {
+   "start": 14.81,
+   "end": 18.46,
+   "text": "في «العقود»، اضغط عليه.",
+   "step": 2,
+   "url": "/admin/import/leases"
+  },
+  {
+   "start": 18.46,
+   "end": 25.08,
+   "text": "أسقط ملفك هنا. هذا جدول العقود الخاص بالمول، بعناوين أعمدته كما هي.",
+   "step": 3,
+   "url": "/admin/import/s/keNIjlcFP76ZWM4-LhiuXNoZ/map"
+  },
+  {
+   "start": 25.08,
+   "end": 31.09,
+   "text": "يقرأ المكتب عناوين أعمدتك ويطابق كل عنوان بحقل؛ الأخضر مؤكد، والأزرق مرجّح.",
+   "step": 4,
+   "url": "/admin/import/s/keNIjlcFP76ZWM4-LhiuXNoZ/map"
+  },
+  {
+   "start": 31.09,
+   "end": 34.9,
+   "text": "«المحل» طوبق مع «الوحدات»، وهذا صحيح، فاتركه.",
+   "step": 5,
+   "url": "/admin/import/s/keNIjlcFP76ZWM4-LhiuXNoZ/map"
+  },
+  {
+   "start": 34.9,
+   "end": 38.6,
+   "text": "و«ملاحظاتنا» لا نحتاجها، فاختر «لا تستورد».",
+   "step": 6,
+   "url": "/admin/import/s/keNIjlcFP76ZWM4-LhiuXNoZ/map"
+  },
+  {
+   "start": 38.6,
+   "end": 42.98,
+   "text": "تُحفظ اختياراتك للمرة القادمة. اضغط «راجع الصفوف».",
+   "step": 7,
+   "url": "/admin/import/s/keNIjlcFP76ZWM4-LhiuXNoZ"
+  },
+  {
+   "start": 42.98,
+   "end": 49.01,
+   "text": "قبل حفظ أي شيء: ثلاثة عقود جديدة، وصف واحد به مشكلة.",
+   "step": 8,
+   "url": "/admin/import/s/keNIjlcFP76ZWM4-LhiuXNoZ"
+  },
+  {
+   "start": 49.01,
+   "end": 55.07,
+   "text": "كل مشكلة تذكر الصف والعمود والسبب: هنا وحدة غير موجودة في النظام.",
+   "step": 9,
+   "url": "/admin/import/s/keNIjlcFP76ZWM4-LhiuXNoZ"
+  },
+  {
+   "start": 55.07,
+   "end": 61.58,
+   "text": "نزّل المشكلات معلَّمة في ملفك نفسه، وأصلحها في إكسل ثم ارفعه من جديد.",
+   "step": 10,
+   "url": "/admin/import/s/keNIjlcFP76ZWM4-LhiuXNoZ"
+  },
+  {
+   "start": 61.58,
+   "end": 65.73,
+   "text": "أو استورد الصفوف السليمة الآن وتجاوز الباقي.",
+   "step": 11,
+   "url": "/admin/import/s/keNIjlcFP76ZWM4-LhiuXNoZ?mode=valid&action=both&empties=keep"
+  },
+  {
+   "start": 65.73,
+   "end": 70.16,
+   "text": "اضغط «استيراد»، ويُحفظ كل شيء دفعة واحدة.",
+   "step": 12,
+   "url": "/admin/import/b/1"
+  },
+  {
+   "start": 70.16,
+   "end": 76.62,
+   "text": "تم: العقود الجديدة معروضة بروابطها، ويمكن التراجع عن الاستيراد خلال أربعة عشر يومًا.",
+   "step": 13,
+   "url": "/admin/import/b/1"
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "kind": "go",
+   "url": "/admin/leases"
+  },
+  {
+   "step": 2,
+   "kind": "click",
+   "url": "/admin/import/leases"
+  },
+  {
+   "step": 3,
+   "kind": "upload",
+   "url": "/admin/import/s/keNIjlcFP76ZWM4-LhiuXNoZ/map"
+  },
+  {
+   "step": 4,
+   "kind": "point",
+   "url": "/admin/import/s/keNIjlcFP76ZWM4-LhiuXNoZ/map"
+  },
+  {
+   "step": 5,
+   "kind": "point",
+   "url": "/admin/import/s/keNIjlcFP76ZWM4-LhiuXNoZ/map"
+  },
+  {
+   "step": 6,
+   "kind": "select",
+   "url": "/admin/import/s/keNIjlcFP76ZWM4-LhiuXNoZ/map"
+  },
+  {
+   "step": 7,
+   "kind": "click",
+   "url": "/admin/import/s/keNIjlcFP76ZWM4-LhiuXNoZ"
+  },
+  {
+   "step": 8,
+   "kind": "point",
+   "url": "/admin/import/s/keNIjlcFP76ZWM4-LhiuXNoZ"
+  },
+  {
+   "step": 9,
+   "kind": "point",
+   "url": "/admin/import/s/keNIjlcFP76ZWM4-LhiuXNoZ"
+  },
+  {
+   "step": 10,
+   "kind": "point",
+   "url": "/admin/import/s/keNIjlcFP76ZWM4-LhiuXNoZ"
+  },
+  {
+   "step": 11,
+   "kind": "select",
+   "url": "/admin/import/s/keNIjlcFP76ZWM4-LhiuXNoZ?mode=valid&action=both&empties=keep"
+  },
+  {
+   "step": 12,
+   "kind": "click",
+   "url": "/admin/import/b/1"
+  },
+  {
+   "step": 13,
+   "kind": "point",
+   "url": "/admin/import/b/1"
+  }
+ ],
+ "recorded_at": "2026-11-08T23:42:19.701Z"
+}

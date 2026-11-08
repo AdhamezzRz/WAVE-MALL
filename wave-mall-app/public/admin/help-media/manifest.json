@@ -176,6 +176,54 @@
     "recorded_at": "2026-11-05T21:49:16.370Z"
    }
   },
+  "import-contracts": {
+   "en": {
+    "duration": 89.48,
+    "size": 2171558,
+    "v": "30807fcb7b",
+    "cues": 14,
+    "recorded_at": "2026-11-08T23:37:00.510Z"
+   },
+   "ar": {
+    "duration": 80.84,
+    "size": 1894896,
+    "v": "f44bc100a7",
+    "cues": 14,
+    "recorded_at": "2026-11-08T23:42:19.701Z"
+   }
+  },
+  "import-start": {
+   "en": {
+    "duration": 87.8,
+    "size": 2272815,
+    "v": "0ae0cd5656",
+    "cues": 10,
+    "recorded_at": "2026-11-08T23:35:00.519Z"
+   },
+   "ar": {
+    "duration": 81.48,
+    "size": 1875832,
+    "v": "7481ba31ac",
+    "cues": 10,
+    "recorded_at": "2026-11-08T23:40:30.229Z"
+   }
+  },
+  "import-update-undo": {
+   "en": {
+    "duration": 72.84,
+    "size": 1643563,
+    "v": "9669be3e1f",
+    "cues": 12,
+    "recorded_at": "2026-11-08T23:38:39.759Z"
+   },
+   "ar": {
+    "duration": 72.48,
+    "size": 1537236,
+    "v": "8f3781d4cc",
+    "cues": 12,
+    "recorded_at": "2026-11-08T23:43:57.312Z"
+   }
+  },
   "insight-owner": {
    "en": {
     "duration": 70.15,
@@ -1345,6 +1393,6 @@
    }
   }
  },
- "recorded_at": "2026-11-06T18:09:02.234Z",
+ "recorded_at": "2026-11-08T23:43:57.316Z",
  "app_version": "1.0.0"
 }
