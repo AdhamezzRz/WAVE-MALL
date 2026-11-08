@@ -407,3 +407,5 @@ module.exports = function property(router, h) {
     h.back(req, res, h.safeBack(req, c ? `/admin/brands/${c.brand_id}` : '/admin/brands'), 'ok', tr('Contact removed.'));
   });
 };
+// the brand positioning list, for the Excel import (src/admin/import/datasets/core.js)
+module.exports.TIERS = TIERS;

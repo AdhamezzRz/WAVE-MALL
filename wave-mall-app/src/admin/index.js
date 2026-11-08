@@ -89,6 +89,8 @@ function build(db, env, app) {
   h.billing = require('./billing').billing(db, h.events);
   h.jobs = require('./scheduler').scheduler({ enabled: env.ADMIN_JOBS === '1' || (env.ADMIN_DB !== ':memory:' && process.env.NODE_ENV !== 'test' && env.ADMIN_JOBS !== '0') });
   h.every = h.jobs.every;
+  // Import from Excel: every module may register its datasets (src/admin/import/README.md)
+  h.imports = require('./import/engine').create({ db, h });
   // routes outside /admin (see mount()); modules add their own parsers and auth
   h.public = express.Router();
   h.public.use((req, res, next) => {
@@ -125,7 +127,7 @@ function build(db, env, app) {
   require('./routes/files')(router, h);
   // Modules, in load order. The portal goes first (others add tabs to it); accounting goes last
   // (it listens to everyone's events). A module that is not there yet is skipped.
-  for (const mod of ['portal', 'records', 'tenants', 'hr', 'advances', 'comms', 'payments', 'cheques', 'fitout', 'website', 'specialty', 'maintenance', 'footfall', 'revenue', 'parking', 'approvals', 'work', 'collections', 'amendments', 'purchasing', 'media', 'security', 'compliance', 'feedback', 'energy', 'owner-report', 'wallboard', 'people', 'attendance', 'help', 'accounting', 'mobile']) {
+  for (const mod of ['portal', 'records', 'tenants', 'hr', 'advances', 'comms', 'payments', 'cheques', 'fitout', 'website', 'specialty', 'maintenance', 'footfall', 'revenue', 'parking', 'approvals', 'work', 'collections', 'amendments', 'purchasing', 'media', 'security', 'compliance', 'feedback', 'energy', 'owner-report', 'wallboard', 'people', 'attendance', 'help', 'accounting', 'mobile', 'import']) {
     try {
       require.resolve(`./routes/${mod}`);
     } catch {
@@ -161,6 +163,11 @@ function helpers(db) {
     db, ui, M, auth,
     page(req, res, opts) {
       ui.setCurrency(db.setting('currency'));
+      // a list that has an Excel import gets its button next to the page's own actions
+      if (h.imports && h.imports.pageButton && req.user) {
+        const extra = h.imports.pageButton(req);
+        if (extra) opts = { ...opts, actions: `${opts.actions || ''}${extra}` };
+      }
       const html = ui.layout({ path: req.originalUrl, ...opts, user: req.user, csrf: req.session.csrf, nonce: res.locals.nonce, flash: auth.takeFlash(req, res), counts: counts(req.user) });
       res.type('html').send(html);
     },

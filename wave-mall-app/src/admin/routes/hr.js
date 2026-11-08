@@ -937,3 +937,9 @@ module.exports.payLine = payLine;
 module.exports.yearsBetween = yearsBetween;
 module.exports.DEFAULT_DEPTS = DEFAULT_DEPTS;
 module.exports.LEAVE = LEAVE;
+// the label lists, for the Excel import (src/admin/import/datasets/core.js)
+module.exports.TYPES = TYPES;
+module.exports.GENDER = GENDER;
+module.exports.MARITAL = MARITAL;
+module.exports.END_REASONS = END_REASONS;
+module.exports.isDate = isDate;

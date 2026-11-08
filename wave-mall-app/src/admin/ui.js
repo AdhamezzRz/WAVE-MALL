@@ -13,7 +13,7 @@ const { t, tn, tx, isAr, lang, dir } = require('./i18n');
 
 const PUBLIC = path.join(__dirname, '..', '..', 'public');
 const v = (f) => crypto.createHash('sha1').update(fs.readFileSync(path.join(PUBLIC, f))).digest('hex').slice(0, 8);
-const ASSETS = { css: v('admin/admin.css'), js: v('admin/admin.js'), pwa: v('admin/app/pwa.js'), parking: v('admin/parking.js'), help: fs.existsSync(path.join(PUBLIC, 'admin/help.js')) ? v('admin/help.js') : '0', att: fs.existsSync(path.join(PUBLIC, 'admin/attendance.js')) ? v('admin/attendance.js') : '0', beat: fs.existsSync(path.join(PUBLIC, 'admin/beat.js')) ? v('admin/beat.js') : '0', staff: fs.existsSync(path.join(PUBLIC, 'admin/staff.js')) ? v('admin/staff.js') : '0' };
+const ASSETS = { css: v('admin/admin.css'), js: v('admin/admin.js'), pwa: v('admin/app/pwa.js'), parking: v('admin/parking.js'), help: fs.existsSync(path.join(PUBLIC, 'admin/help.js')) ? v('admin/help.js') : '0', att: fs.existsSync(path.join(PUBLIC, 'admin/attendance.js')) ? v('admin/attendance.js') : '0', beat: fs.existsSync(path.join(PUBLIC, 'admin/beat.js')) ? v('admin/beat.js') : '0', staff: fs.existsSync(path.join(PUBLIC, 'admin/staff.js')) ? v('admin/staff.js') : '0', imp: fs.existsSync(path.join(PUBLIC, 'admin/import.js')) ? v('admin/import.js') : '0' };
 
 const esc = (s) => (s === null || s === undefined ? '' : String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]));
 const attr = (o) => Object.entries(o).filter(([, x]) => x !== false && x !== null && x !== undefined).map(([k, x]) => (x === true ? k : `${k}="${esc(x)}"`)).join(' ');
@@ -160,7 +160,7 @@ const NAV = [
   ['Records', [['/admin/documents', 'Documents', 'folder', 'docs'], ['/admin/contracts', 'Contracts', 'contract', 'renewals']]],
   ['People', [['/admin/hr', 'Employees', 'people', null, 'hr'], ['/admin/hr/leave', 'nav|Leave', 'leave', 'leave', 'hr'], ['/admin/hr/payroll', 'Payroll', 'wallet', null, 'hr'], ['/admin/hr/advances', 'nav|Salary advances', 'coins', null, 'hr'], ['/admin/attendance', 'nav|Attendance & activity', 'gauge', 'attendance', 'hr']]],
   ['Insight', [['/admin/reports', 'Reports', 'report'], ['/admin/owner-report', 'nav|Owner report', 'report'], ['/admin/wallboard', 'nav|Wall screen', 'dash']]],
-  ['Office', [['/admin/team', 'Team & targets', 'team'], ['/admin/people', 'nav|Users & permissions', 'shield', 'people'], ['/admin/subscribers', 'Subscribers', 'mail'], ['/admin/integrations', 'nav|Integrations', 'plug', null, 'admin'], ['/admin/settings', 'Settings', 'gear', null, 'admin'], ['/admin/audit', 'Activity log', 'log', null, 'manager'], ['/admin/help', 'nav|Help & training', 'help', 'help']]],
+  ['Office', [['/admin/team', 'Team & targets', 'team'], ['/admin/people', 'nav|Users & permissions', 'shield', 'people'], ['/admin/subscribers', 'Subscribers', 'mail'], ['/admin/integrations', 'nav|Integrations', 'plug', null, 'admin'], ['/admin/import', 'nav|Import from Excel', 'upload'], ['/admin/settings', 'Settings', 'gear', null, 'admin'], ['/admin/audit', 'Activity log', 'log', null, 'manager'], ['/admin/help', 'nav|Help & training', 'help', 'help']]],
 ];
 const RANK = { viewer: 0, agent: 1, manager: 2, admin: 3 };
 
