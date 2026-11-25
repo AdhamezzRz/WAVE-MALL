@@ -61,6 +61,16 @@ overlays = {
   <div class="mono" style="font-size:19px;color:#f3ece0;opacity:.9">Behind the scenes</div>
   <div class="caps" style="font-size:66px;margin-top:14px">We're wrapping</div>
   <div class="script" style="font-size:92px;margin:-2px 0 0 6px">The Wave.</div></div></div>''',
+# work-in-progress timelapse (no reveal): top caption + question end card
+'ov-wip-top': '''<div class="ov" style="color:#fff"><div style="position:absolute;inset:0 0 auto 0;height:380px;background:linear-gradient(#0008,#0000)"></div>
+  <div style="position:absolute;left:72px;top:78px;text-shadow:0 2px 14px #000a">
+  <div class="mono" style="font-size:19px;color:#f3ece0;opacity:.9">Behind the scenes</div>
+  <div class="caps" style="font-size:66px;margin-top:14px">Something big</div>
+  <div class="script" style="font-size:92px;margin:-2px 0 0 6px">is being wrapped.</div></div></div>''',
+'ov-wip-end': f'''<div class="ov" style="color:var(--cream);background:url({U(os.path.join(WP, 'p6-bg.png'))}) center/cover">
+  <div style="position:absolute;left:0;right:0;top:140px;text-align:center"><div class="script" style="font-size:112px">can you guess</div>
+  <div class="caps" style="font-size:66px;margin-top:6px">what's under the wrap?</div></div>
+  <div class="mono" style="position:absolute;left:0;right:0;bottom:150px;text-align:center;color:var(--gold);font-size:20px">Reveal this December</div></div>''',
 # unwrap film: opaque end card on the gold-foil logo background from the brand posts
 'ov-unwrap-end': f'''<div class="ov" style="color:var(--cream);background:url({U(os.path.join(WP, 'p6-bg.png'))}) center/cover">
   <div style="position:absolute;left:0;right:0;top:150px;text-align:center"><div class="script" style="font-size:118px;color:var(--cream)">see you under</div>

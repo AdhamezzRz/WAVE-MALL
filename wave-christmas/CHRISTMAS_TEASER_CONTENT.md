@@ -23,23 +23,24 @@ The Wave is getting ready for its first December. Stay close.
 
 ---
 
-## 02 · We're wrapping The Wave (behind-the-scenes timelapse)
-**Visual (11.6 seconds):** a phone timelapse filmed from across the street, real and documentary rather than cinematic. On a hazy afternoon, workers in hi-vis on boom lifts stretch forest-green velvet bands along the curved balconies. A crane lifts a giant velvet bow up to the roof while cars streak past. The sun flares through sunset, the crane and lifts disappear, and the warm string lights switch on. People gather on the steps to take photos. The film then dissolves into the gold-foil logo end card.
+## 02 · Something big is being wrapped (work-in-progress timelapse)
+**Visual (11.6 seconds):** a phone timelapse of your real building filmed from across the street, showing the work but never the result. On a hazy afternoon, workers in hi-vis on boom lifts pin forest-green velvet along the curved balconies piece by piece while cars streak past. The sky runs through sunset into dusk, work floodlights switch on, and a crane hoists a huge bundle under grey tarp. Its shape stays hidden. The film ends unfinished and dissolves into the gold-foil end card.
 **On the film:**
-- Opening (0–5 s), small at the top: BEHIND THE SCENES / WE'RE WRAPPING *The Wave.*
-- End card: *see you under* THE LIGHTS. · gold-foil logo · COMING THIS DECEMBER
+- Opening (0–5 s), small at the top: BEHIND THE SCENES / SOMETHING BIG *is being wrapped.*
+- End card: *can you guess* WHAT'S UNDER THE WRAP? · gold-foil logo · REVEAL THIS DECEMBER
 
 **Caption (EN):**
-We're wrapping The Wave. 🎀
-One afternoon, a lot of velvet, one very big bow. See you under the lights this December.
+Something big is being wrapped. 🎁
+We're not saying what's under the tarp yet. Your best guess goes in the comments 👇
 
 **Caption (AR):**
-نغلّف ذا ويف. 🎀
-بعد ظهر واحد، وكثير من القطيفة، وفيونكة كبيرة جداً. نراكم تحت الأضواء هذا ديسمبر.
+شيء كبير يتم تغليفه. 🎁
+لن نقول ما تحت الغطاء بعد. اكتبوا توقعاتكم في التعليقات 👇
 
-**Sound:** the film is silent so you can add a trending or licensed track inside Instagram. Upbeat, light and festive works best for a timelapse.
-**Post as:** a Reel shared to the feed, with `02-timelapse-reel-cover.jpg` as the cover. The 3:4 version without text is for Stories or ads.
-**Goal:** reach and shares. Behind-the-scenes content feels real and earns comments like "where is this?"
+**Sound:** the film is silent so you can add a trending or licensed track inside Instagram. Something with suspense or a ticking build fits best.
+**Post as:** a Reel shared to the feed, with `02-wip-reel-cover.jpg` as the cover. The 3:4 version without text is for Stories or ads.
+**Goal:** comments and anticipation. The guessing game keeps people coming back for the reveal.
+**Follow-up:** when the decoration is done, post the real reveal from the same spot, so the two films become a "before and after".
 
 ---
 
@@ -63,13 +64,13 @@ Lights, gifts and long evenings are coming to The Wave. Turn on notifications so
 | Day | Post | Note |
 |---|---|---|
 | Day 1 | 01 Something is wrapping up | Story: the same image with a "🎁 Guess what?" question sticker |
-| Day 3 | 02 We're wrapping The Wave (timelapse) | Reel + feed. Pin it to the top of the profile |
+| Day 3 | 02 Something big is being wrapped (timelapse) | Reel + feed. Pin it to the top of the profile |
 | Day 5 | 03 Dear December | Story: a countdown sticker to the lighting night, once you have a date |
 
 **Hashtags:** #TheWave #TheWaveMall #NewCairo #MoreThanADestination #ChristmasInCairo #DecemberAtTheWave #ذا_ويف #القاهرة_الجديدة
 
 ## About the visuals
 - All three visuals were made with Higgsfield. The building in 02 and 03 is based on your photos of the real building. The ribbon and bow installation is a concept, not the actual decoration plan. Don't present it as real footage until it happens, or film the real installation the same way.
-- Alternate film: `posts/alternate-building-wrap/` holds the earlier, more cinematic wrap film.
+- Alternate films: `posts/alternate-timelapse-with-reveal/` holds the same timelapse idea ending on the finished bow and lights. `posts/alternate-building-wrap/` holds the earlier cinematic wrap film.
 - Alternate film: `posts/alternate-unwrap/` holds an 11.8-second unwrap film. Hands open the gift box from post 01 to reveal a glowing miniature of The Wave, then it ends on the gold-foil logo.
 - Copy such as "first December", "lighting night" and "this December" assumes there will be a seasonal launch. Adjust it to the real plan and date.
