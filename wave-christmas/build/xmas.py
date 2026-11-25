@@ -55,6 +55,12 @@ overlays = {
 'ov-unwrap-intro': '''<div class="ov" style="color:var(--cream)"><div style="position:absolute;inset:auto 0 0 0;height:520px;background:linear-gradient(#0000,#000d)"></div>
   <div class="sh" style="position:absolute;left:84px;bottom:120px"><div class="caps" style="font-size:96px">Something</div>
   <div class="script" style="font-size:128px;margin:-4px 0 0 30px">is wrapping up.</div></div></div>''',
+# behind-the-scenes timelapse: small top caption, native social style
+'ov-bts-top': '''<div class="ov" style="color:#fff"><div style="position:absolute;inset:0 0 auto 0;height:360px;background:linear-gradient(#0008,#0000)"></div>
+  <div style="position:absolute;left:72px;top:78px;text-shadow:0 2px 14px #000a">
+  <div class="mono" style="font-size:19px;color:#f3ece0;opacity:.9">Behind the scenes</div>
+  <div class="caps" style="font-size:66px;margin-top:14px">We're wrapping</div>
+  <div class="script" style="font-size:92px;margin:-2px 0 0 6px">The Wave.</div></div></div>''',
 # unwrap film: opaque end card on the gold-foil logo background from the brand posts
 'ov-unwrap-end': f'''<div class="ov" style="color:var(--cream);background:url({U(os.path.join(WP, 'p6-bg.png'))}) center/cover">
   <div style="position:absolute;left:0;right:0;top:150px;text-align:center"><div class="script" style="font-size:118px;color:var(--cream)">see you under</div>

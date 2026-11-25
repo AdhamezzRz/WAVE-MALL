@@ -23,22 +23,23 @@ The Wave is getting ready for its first December. Stay close.
 
 ---
 
-## 02 · The Wave is getting wrapped (animated film)
-**Visual (9.6 seconds, with sound):** the real building at blue hour, shot from a fixed camera. A giant forest-green velvet ribbon floats down from the sky, wraps the curved facade and ties itself into a huge bow on the roof. Fairy lights then ripple along every curve and the Christmas tree lights up.
+## 02 · We're wrapping The Wave (behind-the-scenes timelapse)
+**Visual (11.6 seconds):** a phone timelapse filmed from across the street, real and documentary rather than cinematic. On a hazy afternoon, workers in hi-vis on boom lifts stretch forest-green velvet bands along the curved balconies. A crane lifts a giant velvet bow up to the roof while cars streak past. The sun flares through sunset, the crane and lifts disappear, and the warm string lights switch on. People gather on the steps to take photos. The film then dissolves into the gold-foil logo end card.
 **On the film:**
-- Opening: THE WAVE IS *getting wrapped.*
-- End card: *see you under* THE LIGHTS. · logo · COMING THIS DECEMBER
+- Opening (0–5 s), small at the top: BEHIND THE SCENES / WE'RE WRAPPING *The Wave.*
+- End card: *see you under* THE LIGHTS. · gold-foil logo · COMING THIS DECEMBER
 
 **Caption (EN):**
-The Wave is getting wrapped. 🎀
-Our biggest gift to New Cairo is almost ready. See you under the lights this December.
+We're wrapping The Wave. 🎀
+One afternoon, a lot of velvet, one very big bow. See you under the lights this December.
 
 **Caption (AR):**
-ذا ويف يتم تغليفها. 🎀
-أكبر هدية منا للقاهرة الجديدة أصبحت جاهزة تقريباً. نراكم تحت الأضواء هذا ديسمبر.
+نغلّف ذا ويف. 🎀
+بعد ظهر واحد، وكثير من القطيفة، وفيونكة كبيرة جداً. نراكم تحت الأضواء هذا ديسمبر.
 
-**Post as:** a Reel shared to the feed, with `02-reel-cover.jpg` as the cover. The 3:4 version without text is for Stories or ads. Use the film's own sound or a licensed seasonal track.
-**Goal:** reach and shares. This is the hero piece of the teaser.
+**Sound:** the film is silent so you can add a trending or licensed track inside Instagram. Upbeat, light and festive works best for a timelapse.
+**Post as:** a Reel shared to the feed, with `02-timelapse-reel-cover.jpg` as the cover. The 3:4 version without text is for Stories or ads.
+**Goal:** reach and shares. Behind-the-scenes content feels real and earns comments like "where is this?"
 
 ---
 
@@ -62,12 +63,13 @@ Lights, gifts and long evenings are coming to The Wave. Turn on notifications so
 | Day | Post | Note |
 |---|---|---|
 | Day 1 | 01 Something is wrapping up | Story: the same image with a "🎁 Guess what?" question sticker |
-| Day 3 | 02 The Wave is getting wrapped (film) | Reel + feed. Pin it to the top of the profile |
+| Day 3 | 02 We're wrapping The Wave (timelapse) | Reel + feed. Pin it to the top of the profile |
 | Day 5 | 03 Dear December | Story: a countdown sticker to the lighting night, once you have a date |
 
 **Hashtags:** #TheWave #TheWaveMall #NewCairo #MoreThanADestination #ChristmasInCairo #DecemberAtTheWave #ذا_ويف #القاهرة_الجديدة
 
 ## About the visuals
-- All three visuals were made with Higgsfield. The building in 02 and 03 is based on your photo of the real building. The bow and ribbon installation in the film is a concept, not the actual decoration plan.
+- All three visuals were made with Higgsfield. The building in 02 and 03 is based on your photos of the real building. The ribbon and bow installation is a concept, not the actual decoration plan. Don't present it as real footage until it happens, or film the real installation the same way.
+- Alternate film: `posts/alternate-building-wrap/` holds the earlier, more cinematic wrap film.
 - Alternate film: `posts/alternate-unwrap/` holds an 11.8-second unwrap film. Hands open the gift box from post 01 to reveal a glowing miniature of The Wave, then it ends on the gold-foil logo.
 - Copy such as "first December", "lighting night" and "this December" assumes there will be a seasonal launch. Adjust it to the real plan and date.
